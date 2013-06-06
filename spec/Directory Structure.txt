@@ -1,0 +1,15 @@
+
+  /                             The root directory
+    data                        Data folder with all web files
+        static                  Static HTTP data. Otherwise also the www root
+        fragments               Cache for Fragments
+        templates               Folder with HTML templates
+
+    lib                         Libraries required to build and run Radiance
+
+    modules                     Folder containing all modules deployed to the site
+        core                    Contains all CORE modules
+        *                       Unlimited number of module folders
+
+    spec                        All specifications including this one go in here
+
