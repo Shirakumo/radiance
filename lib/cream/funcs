@@ -1,0 +1,71 @@
+ *add             Add elements to the set of matched elements.
+ *addClass        Adds the specified class(es) to each of the set of matched elements.
+ *after           Insert content, specified by the parameter, after each element.
+ *append          Insert content, specified by the parameter, to the end of each element in the set of matched els
+ *appendTo        Insert every element to the end of the target.
+ *attr            youknowit
+ *before          Insert content, specified by the parameter, before each element
+ *children        Get the children of each element, optionally filtered by a selector.
+ *clone           Create a deep copy of the set of matched elements.
+ *closest         For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree.
+ *contains        Select all elements that contain the specified text.
+ *contents        Get the children of each element, including text and comment nodes.
+ *css             Get the value of a style property for the first element or set one or more CSS properties for every matched element.
+ *data            Store arbitrary data associated with the matched elements or return the value at the named data store for the first element.
+ *detach          Remove the set of matched elements from the DOM.
+ *each            Iterate over a jQuery object, executing a function for each matched element.
+ *empty           Remove all child nodes of the set of matched elements from the DOM.
+ *eq              Reduce the set of matched elements to the one at the specified index.
+ *even            Selects even elements, zero-indexed. See also odd.
+ *filter          Reduce the set of matched elements to those that match the selector or pass the function’s test.
+ *find            Get the descendants of each element in the current set of matched elements, filtered by a selector, jQuery object, or element.
+ *first           Reduce the set of matched elements to the first in the set.
+ *gt              Select all elements at an index greater than index within the matched set.
+ *has             Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
+ *hasClass        Determine whether any of the matched elements are assigned the given class.
+ *hide            Hide the matched elements. (set style to visible:none)
+ *html            Get the HTML contents of the first element or set the HTML contents of every matched element.
+ *index           Search for a given element from among the matched elements.
+ *insertAfter     Insert every element after the target.
+ *insertBefore    Insert every element before the target.
+ *is              Check the current matched set of elements against a selector, element, or jQuery object and return true if at least one of these elements matches the given arguments.
+ *last            Reduce the set of matched elements to the final one in the set.
+ *length          The number of elements in the jQuery object.
+ *lt              Select all elements at an index less than index within the matched set.
+ *map             Pass each element in the current matched set through a function, producing a new jQuery object containing the return values.
+ *next            Get the immediately following sibling of each element. If a selector is provided, it retrieves the next sibling only if it matches that selector.
+ *nextAll         Get all following siblings of each element, optionally filtered by a selector.
+ *nextUntil       Get all following siblings of each element up to but not including the element matched by the selector, DOM node, or jQuery object passed.
+ not             Remove elements from the set of matched elements.
+ *parent          Get the parent of each element in the current set of matched elements, optionally filtered by a selector.
+ *parents         Get the ancestors of each element in the current set of matched elements, optionally filtered by a selector.
+ *parentsUntil    Get the ancestors of each element in the current set of matched elements, up to but not including the element matched by the selector, DOM node, or jQuery object.
+ *prepend         Insert content, specified by the parameter, to the beginning of each element.
+ *prependTo       Insert every element to the beginning of the target.
+ *prev            Get the immediately preceding sibling of each element, optionally filtered by a selector.
+ *prevAll         Get all preceding siblings of each element, optionally filtered by a selector.
+ *prevUntil       Get all preceding siblings of each element up to but not including the element matched by the selector, DOM node, or jQuery object.
+ -prop            Get the value of a property for the first element or set one or more properties for every matched element.
+ *remove          Remove the set of matched elements from the DOM.
+ *removeAttr      Remove an attribute from each element.
+ *removeClass     Remove a single class, multiple classes, or all classes from each element.
+ *removeData      Remove a previously-stored piece of data.
+ -removeProp      Remove a property for the set of matched elements.
+ *replaceAll      Replace each target element with the set of matched elements.
+ *replaceWith     Replace each element with the provided new content and return the set of elements that was removed.
+ *show            Display the matched elements.
+ *siblings        Get the siblings of each element, optionally filtered by a selector.
+ *size            Return the number of elements in the jQuery object.
+ *slice           Reduce the set of matched elements to a subset specified by a range of indices.
+ *text            Get the combined text contents of each element, including their descendants, or set the text contents of the matched elements.
+ -toggle          Display or hide the matched elements.
+ *toggleClass     Add or remove one or more classes from each element, depending on either the class’s presence or the value of the switch argument.
+ *unwrap          Remove the parents of the set of matched elements from the DOM, leaving the matched elements in their place.
+ *val             Get the current value of the first element or set the value of every matched element.
+ *wrap            Wrap an HTML structure around each element.
+ wrapAll         Wrap an HTML structure around all elements.
+ *wrapInner       Wrap an HTML structure around the content of each element.
+                
+ *parseHTML       a
+ -parseXML        a
+
