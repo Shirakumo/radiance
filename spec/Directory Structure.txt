@@ -6,6 +6,9 @@
         templates               Folder with HTML templates
 
     lib                         Libraries required to build and run Radiance
+        core                    Contains toolkit and small wrapper classes
+	cream			Contains the cream library for jQuery like DOM manipulation
+	*			Unlimited number of library folders
 
     modules                     Folder containing all modules deployed to the site
         core                    Contains all CORE modules
