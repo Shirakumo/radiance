@@ -11,14 +11,16 @@
 (defsystem radiance-mod-core
   :name "Radiance Core"
   :version "0.0.1"
-  :license "GPL3"
+  :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Core system facilities for TyNETv5 Radiance."
   :long-description ""
-  :components ((:file "impls-system")
-               (:file "module-loader")
-               (:file "flash-dispatch" :depends-on ("impls-system" "module-loader"))
-               (:file "mongo-database" :depends-on ("impls-system"))
-               (:file "kickstart-dispatch" :depends-on ("impls-system" "module-loader" "mongo-database")))
+  :components ((:file "package")
+               (:file "modules" :depends-on ("package"))
+               (:file "triggers" :depends-on ("package" "modules"))
+               (:file "implements" :depends-on ("package" "modules"))
+               (:file "flash-dispatch" :depends-on ("package" "implements" "modules"))
+               (:file "mongo-database" :depends-on ("package" "implements"))
+               (:file "kickstart-dispatch" :depends-on ("package" "implements" "modules" "triggers" "mongo-database")))
   :depends-on (:radiance-lib-core))
