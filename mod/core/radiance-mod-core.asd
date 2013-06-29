@@ -16,11 +16,12 @@
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Core system facilities for TyNETv5 Radiance."
   :long-description ""
-  :components ((:file "package")
-               (:file "modules" :depends-on ("package"))
-               (:file "triggers" :depends-on ("package" "modules"))
-               (:file "implements" :depends-on ("package" "modules"))
-               (:file "flash-dispatch" :depends-on ("package" "implements" "modules"))
-               (:file "mongo-database" :depends-on ("package" "implements"))
-               (:file "kickstart-dispatch" :depends-on ("package" "implements" "modules" "triggers" "mongo-database")))
-  :depends-on (:radiance-lib-core))
+  :components ((:file "server")
+               (:file "interfaces")
+               (:file "flash-dispatch" :depends-on ("interfaces"))
+               ;(:file "mongo-database" :depends-on ("interfaces"))
+               ;(:file "kickstart-dispatch" :depends-on ("mongo-database"))
+               )
+  :depends-on (:hunchentoot
+               :split-sequence
+               :radiance-lib-core))

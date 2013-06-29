@@ -16,5 +16,5 @@
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Sub-Build System for the Radiance Modules.."
   :long-description ""
-  :components (())
+  :components ()
   :depends-on (:radiance-mod-core))

@@ -16,10 +16,6 @@
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Sub-Build System for the Radiance Libraries."
   :long-description ""
-  :components (())
-  :depends-on (:hunchentoot
-               :cl-mongo
-               :cl-json
-               
-               :lquery
+  :components ()
+  :depends-on (:lquery
                :radiance-lib-core))

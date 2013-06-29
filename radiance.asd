@@ -11,11 +11,11 @@
 (defsystem radiance
   :name "TymoonNET v5 Radiance"
   :version "0.0.1"
-  :license "Lisp GPL"
+  :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Version 5 of TyNET, a CMS focusing on modularity and expansion."
   :long-description ""
-  :components ((:file "init"))
+  :components ()
   :depends-on (:radiance-lib
                :radiance-mod))
