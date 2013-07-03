@@ -7,17 +7,24 @@
 (in-package :radiance)
 
 (defvar *radiance-log-verbose* NIL "Whether to print a verbose log to stdout.")
-(defvar *radiance-acceptor*    NIL "The main acceptor used in Hunchentoot. Initialized at start.")
+(defvar *radiance-acceptors*   NIL "List of all Hunchentoot acceptors that run this server.")
 (defvar *radiance-request-count* 0 "Counter for the current amount of requests being handled.")
+(defvar *radiance-request-total* 0 "Counter for the total amount of requests handled.")
+(defvar *radiance-request*     NIL "Current request object.")
+(defvar *radiance-handlers*    NIL "List of Hunchentoot handlers.")
 
 (defclass request ()
   ((request :initform (error "Hunchentoot request required.") :initarg :request :accessor request)
    (response :initform () :initarg :response :accessor response)
    (subdomains :initform () :initarg :subdomains :accessor subdomains)
-   (domain :initform (config :domain) :initarg :domain :accessor host)
+   (domain :initform (config :domain) :initarg :domain :accessor domain)
    (path :initform "/" :initarg :path :accessor path)
    (port :initform (config :port) :initarg :port :accessor port))
   (:documentation "Radiance request class."))
+
+(defmethod print-object ((request request) out)
+  (print-unreadable-object (request out :type T)
+    (format out "~a:~a → (~a ~a)" (domain request) (port request) (subdomains request) (path request))))
 
 (defun manage (action &key (config-file) (verbose T))
   "Manage the TymoonNETv5 web server."
@@ -36,25 +43,41 @@
 
 (defun start ()
   "Loads the configuration and starts the TyNETv5 server."
-  (format T "Loading Config...~%")
-  (load-config)
-  (format T "Setting up Hunchentoot...~%")
-  (let ((acceptor (make-instance 'hunchentoot:easy-acceptor :port (config :port))))
-    (setf hunchentoot:*dispatch-table* (list #'handler))
-    (format T "Triggering INIT...~%")
-    (trigger 'init)
-    (format T "Starting Hunchentoot...~%")
-    (hunchentoot:start acceptor)
-    (setf *radiance-acceptor* acceptor)))
-    
+  (if (server-running-p)
+      (log:fatal "Server already running!")
+      (progn
+        (log:info "Loading Config...")
+        (load-config)
+        (log:info "Setting up Hunchentoot...")
+        (let ((acceptors (loop for port in (config :ports) 
+                            collect (make-instance 'hunchentoot:easy-acceptor :port port))))
+          (if (not *radiance-handlers*)
+              (setf *radiance-handlers* 
+                    (list (hunchentoot:create-folder-dispatcher-and-handler "/static/" (merge-pathnames "data/static/" (pathname (config :root))))
+                          #'handler)))
+          (setf hunchentoot:*dispatch-table* *radiance-handlers*)
+          (log:info "Triggering INIT...")
+          (trigger 'init)
+          (loop for acceptor in acceptors
+               do (progn (log:info "Starting acceptor ~a" acceptor)
+                         (hunchentoot:start acceptor)))
+          (setf *radiance-acceptors* acceptors)
+          (log:info "INIT finished.")))))  
 
 (defun stop ()
   "Shuts down the TyNETv5 server."
-  (format T "Stopping Hunchentoot...~%")
-  (hunchentoot:stop *radiance-acceptor*)
-  (format T "Triggering SHUTDOWN...~%")
-  (trigger 'shutdown)
-  (setf *radiance-acceptor* NIL))
+  (if (server-running-p)
+      (progn
+        (loop for acceptor in *radiance-acceptors*
+             do (progn (log:info "Stopping acceptor ~a" acceptor)
+                       (hunchentoot:stop acceptor)))
+        (log:info "Triggering SHUTDOWN...")
+        (trigger 'shutdown)
+        (setf *radiance-request-count* 0)
+        (setf *radiance-request-total* 0)
+        (setf *radiance-acceptors* NIL)
+        (log:info "SHUTDOWN finished."))
+      (log:fatal "Server isn't running!")))
 
 (defun restart ()
   "Performs a stop, followed by a start."
@@ -63,7 +86,11 @@
 
 (defun status ()
   "Prints status information about the running server."
-  )
+  (format T "Server running: ~:[No~;Yes~]~%Acceptors: ~a~%Current requests: ~a~%Total requests: ~a"
+          *radiance-acceptor* (length *radiance-acceptors*) *radiance-request-count* *radiance-request-total*))
+
+(defun server-running-p ()
+  (if *radiance-acceptors* T NIL))
 
 (defun handler (&optional (request hunchentoot:*request*))
   "Propagates the call to the next handler registered in the implements."
@@ -72,21 +99,20 @@
          (port (if (find #\: host)
                    (parse-integer (subseq host (1+ (search ":" host))))
                    80))
-         (domains (split-sequence:split-sequence #\. (if (= port 80)
-                                                         host
-                                                         (subseq host 0 (find ":" host)))))
-         (subdomains (if (> 2 (length domains)) (subseq domains 0 (- (length domains) 2))))
-         (domain (concatenate-strings (subseq domains (length subdomains)) ".")))
-    (let ((*radiance-request* (make-instance 'request
-                                             :request request
-                                             :subdomains subdomains
-                                             :domain domain
-                                             :path path
-                                             :port port)))
-      (setf *radiance-request-count* (1+ *radiance-request-count*))
-      ;;(dispatch (implementation 'dispatcher) *radiance-request*)
-      (setf (response *radiance-request*) "おはよう、これはＬＩＳＰにＴＹＮＥＴです！<br />Hi, this is TyNET in Lisp!")
-      (setf *radiance-request-count* (1- *radiance-request-count*))
-      
-      (hunchentoot:log-message* 100 "~a" *radiance-request*)
-      (lambda () (response *radiance-request*)))))
+         (domains (split-sequence:split-sequence #\. (if (find #\: host)
+                                                         (subseq host 0 (search ":" host))
+                                                         host)))
+         (subdomains (reverse (if (> (length domains) 2) (subseq domains 0 (- (length domains) 2)))))
+         (domain (concatenate-strings (subseq domains (length subdomains)) "."))
+         (request (make-instance 'request :request request :subdomains subdomains :domain domain :path path :port port))
+         (*radiance-request* request))
+
+    (setf *radiance-request-total* (1+ *radiance-request-total*))
+    (setf *radiance-request-count* (1+ *radiance-request-count*))
+    (let ((result (dispatch (implementation 'dispatcher) request)))
+      (cond ((stringp result) (setf (response request) result))
+            ((listp result) (setf (response request) (concatenate-strings result)))))
+    ;;(setf (response *radiance-request*) (format nil "~a ~a ~a" domains subdomains domain))
+    (setf *radiance-request-count* (1- *radiance-request-count*))
+    
+    (lambda () (response request))))

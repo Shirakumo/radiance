@@ -17,8 +17,14 @@
   :description "Core libraries for TyNETv5 Radiance."
   :long-description ""
   :components ((:file "package")
-               (:file "toolkit" :depends-on ("package"))
-               (:file "module" :depends-on ("package"))
-               (:file "trigger" :depends-on ("package" "module"))
-               (:file "implement" :depends-on ("package" "module")))
-  :depends-on (:cl-json))
+	       (:file "logging" :depends-on ("package"))
+               (:file "toolkit" :depends-on ("package" "logging"))
+               (:file "module" :depends-on ("package" "logging"))
+               (:file "trigger" :depends-on ("package" "module" "logging"))
+               (:file "implement" :depends-on ("package" "module" "logging")))
+  :depends-on (:cl-json
+               :hunchentoot
+	       :log4cl
+               :ironclad
+               :uuid
+               :cl-fad))

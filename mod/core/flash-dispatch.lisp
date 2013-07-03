@@ -15,8 +15,21 @@
 
 (defmethod dispatch ((dispatch flash-dispatch) request &key)
   "Dispatches a request to a module based on a subdomain."
-  (trigger (gethash (first (slot-value request 'subdomains)) (table dispatch))))
+  (loop for trigger being the hash-keys of (table dispatch)
+     for specific being the hash-values of (table dispatch)
+     collect (destructuring-bind (subdomain domain port path) specific
+               (when (and (or (not subdomain) (string-equal subdomain (concatenate-strings (subdomains request) ".")))
+                          (or (not domain) (string-equal domain (domain request)))
+                          (or (not port) (= port (port request)))
+                          (or (not path) (string= path (path request) :end1 (length (path request)))))
+                 (trigger trigger)))
+     into responses
+     finally (progn (setf responses (alexandria:flatten responses))
+                    (return (if responses
+                               responses
+                               (read-data-file "static/html/hello.html"))))))
 
-(defmethod register ((dispatch flash-dispatch) trigger &key subdomain)
+(defmethod register ((dispatch flash-dispatch) trigger &key subdomain domain port path)
   "Registers a subdomain for a module. If the subdomain is NIL, all unhandled requests are dispatched to the module."
-  (setf (gethash subdomain (table dispatch)) trigger))
+  (setf (gethash trigger (table dispatch)) (list subdomain domain port path))
+  trigger)

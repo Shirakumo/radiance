@@ -22,6 +22,7 @@
 (defun defhook (name module function &key description)
   "Defines a new hook of name, for a certain function of a module."
   (let ((instance (make-instance 'hook :name name :module module :function function :description description)))
+    (log:info "Defining hook ~a -> ~a:~a" name module function)
     (setf (gethash name *radiance-triggers*)
           (append (gethash name *radiance-triggers*)
                   (list instance)))

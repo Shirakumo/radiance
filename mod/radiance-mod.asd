@@ -17,4 +17,5 @@
   :description "Sub-Build System for the Radiance Modules.."
   :long-description ""
   :components ()
-  :depends-on (:radiance-mod-core))
+  :depends-on (:radiance-mod-core
+               :radiance-mod-mongo))

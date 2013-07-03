@@ -4,6 +4,7 @@
   Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
+
 (defpackage org.tymoonnext.radiance.mod.core.asdf
   (:use :cl :asdf))
 (in-package :org.tymoonnext.radiance.mod.core.asdf)
@@ -19,9 +20,9 @@
   :components ((:file "server")
                (:file "interfaces")
                (:file "flash-dispatch" :depends-on ("interfaces"))
-               ;(:file "mongo-database" :depends-on ("interfaces"))
-               ;(:file "kickstart-dispatch" :depends-on ("mongo-database"))
+               ;(:file "kickstart-dispatch" :depends-on ("interfaces"))
                )
   :depends-on (:hunchentoot
                :split-sequence
+               :alexandria
                :radiance-lib-core))

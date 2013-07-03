@@ -5,12 +5,12 @@
 |#
 
 (defpackage org.tymoonnext.radiance
-  (:nicknames :radiance :tynet-5 :tynet)
-  (:use :cl)
+  (:nicknames :org.tymoonnext.radiance :tynet-5 :tynet :radiance)
+  (:use :cl :log4cl :cl-fad)
   (:export :*radiance-config*
            :*radiance-config-file*
            :*radiance-log-verbose*
-           :*radiance-acceptor*
+           :*radiance-acceptors*
            :*radiance-request*
            :*radiance-modules*
            :*radiance-implements*
@@ -35,6 +35,12 @@
            ;; toolkit.lisp
            :load-config
            :config
+           :config-tree
+           :concatenate-strings
+           :read-data-file
+           :file-size
+           :upload-file
+           :with-uploaded-file
            ;; trigger.lisp
            :hook
            :defhook
@@ -42,13 +48,34 @@
            ;; server.lisp
            :request
            :manage
-           :start
-           :stop
-           :restart
-           :status
+           :server-running-p
            ;; interfaces.lisp
+           :dispatcher
            :dispatch
-           :trigger
+           :register
+           :auth
+           :authenticate
+           :authenticated-p
+           :user
+           :user-get
+           :user-field
+           :user-save
+           :user-saved-p
+           :session
+           :session-start
+           :session-end
+           :database
+           :db-connect
+           :db-disconnect
+           :db-connected-p
+           :db-collections
+           :db-create
+           :db-select
+           :db-insert
+           :db-remove
+           :db-update
+           :db-apropos
+           :query
            )
   (:shadow :restart))
 

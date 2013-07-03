@@ -51,11 +51,13 @@
 (defmacro defmodule (name superclasses docstring metadata &rest extra-slots)
   "Define a new Radiance module."
   (let* ((superclasses (if (not superclasses) '(module) superclasses))
-         (classdef `(defclass ,name ,superclasses
-                      (,@extra-slots)
-                      (:documentation ,docstring)))
-         (initializer `(setf (gethash ',name *radiance-modules*)
-                             (make-instance ',name ,@metadata))))
+         (classdef `(progn (log:info "Defining module ~a" ',name)
+                           (defclass ,name ,superclasses
+                             (,@extra-slots)
+                             (:documentation ,docstring))))
+         (initializer `(progn (log:info "Initializing module ~a" ',name)
+                              (setf (gethash ',name *radiance-modules*)
+                                    (make-instance ',name ,@metadata)))))
     `(restart-case (if (gethash ',name *radiance-modules*)
                        (error 'module-already-initialized :module ',name)
                        (progn ,classdef ,initializer))

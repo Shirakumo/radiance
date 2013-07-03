@@ -27,39 +27,40 @@
 (defmacro defimplclass (slot superclass)
   "Defines an implementations interface class."
   `(progn 
+     (log:info "Defining implementation ~a with ~a" ',slot ',superclass)
      (setf (gethash ',slot *radiance-implements*)
            (make-instance 'implementation :superclass ',superclass))
      (defmethod implement ((slot (eql ',slot)) (module module))
        "Standard implements function for badly requested classes."
        (error "Module does not match implementation superclass ~a!" slot))
      (defmethod implement ((slot (eql ',slot)) (module ,superclass))
+       (log:info "~a implements ~a" module slot)
        (setf (module (gethash ',slot *radiance-implements*)) module))
      ',superclass))
 
 (defmacro defimpl (slot &rest generics)
-  "Define a new implementation."
-  (let ((documentation "")
-        (mod-gens (gensym "IMPL-GENSYM")))
+  "Define a new implementation. A generics definition is a list of the following format: (function-name (additional-args*) docstring?)"
+  (let ((documentation "") (mod-gens (gensym "IMPL-GENSYM")))
     (when (stringp (car generics))
       (setf documentation (car generics)
             generics (cdr generics)))
     `(progn
        (defclass ,slot (module) ()
          (:documentation ,documentation))
-       ,@(loop for generic in generics collect 
-              (let ((func (first generic))
-                    (args (append (second generic)
-                                  (if (not (find '&key (second generic))) '(&key)) 
-                                  '(&allow-other-keys)))
-                    (doc (third generic)))
-                `(progn
-                   (defgeneric ,func ,(append (list mod-gens) args)
-                     (:documentation ,doc))
-                   (defmethod ,func ,(append `((,mod-gens ,slot)) args)
-                     ,(format nil "Standard method implementation for ~a's ~a, always throws an error." slot func)
-                     
-                     (declare (sb-ext:muffle-conditions style-warning))
-                     (error "Module ~a does not implement required method ~a!" ,mod-gens ',func)))))
+       ,@(loop for generic in generics collect
+              (destructuring-bind (func args &optional doc) generic
+                (let* ((args (append args
+                                    (if (not (find '&key args)) '(&key))
+                                    '(&allow-other-keys)))
+                      (gen-args (loop for arg in args collect (if (listp arg) (first arg) arg))))
+                  `(progn
+                     (defgeneric ,func ,(append (list mod-gens) gen-args)
+                       (:documentation ,doc))
+                     (defmethod ,func ,(append `((,mod-gens ,slot)) args)
+                       ,(format nil "Standard method implementation for ~a's ~a, always throws an error." slot func)
+                       
+                       #+sbcl (declare (sb-ext:muffle-conditions style-warning))
+                       (error "Module ~a does not implement required method ~a!" ,mod-gens ',func))))))
        (defimplclass ,slot ,slot))))
 
 (defun implementation (slot)
