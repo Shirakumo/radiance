@@ -1,0 +1,60 @@
+
+== Query Information ==
+
+The structure of a query is in basic as follows:
+
+((function args*)*)
+
+So in other words: A query is a list of functions.
+Each function has its own set of possible arguments.
+
+Logical:     and or not
+Comparators: = != > >= < <= in !in matches
+
+Logical functions expect one or more additional
+functions as the body. Comparators expect two
+arguments, the first being the field to compare
+and the second being another field or a value to
+compare against.
+
+It is up to the implementation to offer additional
+comparators or functions, although using them is
+discouraged as it creates dependencies on a specific
+implementation. How the standard comparators work for
+different variable types is also left open to the
+database implementation.
+
+= Details =
+
+- = -
+Checks for equality between the two. This should
+work between any of the same type, but the specifics
+are up to the implementation.
+
+- != -
+Checks for inequality. Is basically the same as
+(not (=))
+
+- > - < - >= - <= -
+Only really useful for number comparison.
+
+- in -
+Checks if the value of the field can be found in the
+provided list.
+
+- !in -
+Basically the same as (not (in))
+
+- matches -
+Performs a regex match. What version of regex is
+supported is up to the implementation.
+
+== Constructing Queries ==
+
+Queries can be constructed with the query macro.
+Sample usage:
+
+(query (and (= lastname "Müller") (> points 10)))
+
+The definition of the query macro is up to the
+database implementation.
