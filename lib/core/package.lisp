@@ -76,6 +76,15 @@
            :db-update
            :db-apropos
            :query
+           :data-model
+           :model-field
+           :model-get
+           :model-get-one
+           :model-hull
+           :model-save
+           :model-delete
+           :model-insert
+           :with-model-fields
            )
   (:shadow :restart))
 
