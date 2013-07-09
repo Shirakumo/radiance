@@ -40,12 +40,15 @@
 
 (defmacro defimpl (slot &rest generics)
   "Define a new implementation. A generics definition is a list of the following format: (function-name (additional-args*) docstring?)"
-  (let ((documentation "") (mod-gens (gensym "IMPL-GENSYM")))
+  (let ((documentation "") (mod-gens (gensym "IMPL-GENSYM"))
+        (super (if (listp slot) (cdr slot) '(module)))
+        (slot (if (listp slot) (first slot) slot)))
     (when (stringp (car generics))
       (setf documentation (car generics)
             generics (cdr generics)))
+    (log:info "Generating implementation ~a with superclasses ~a." slot super)
     `(progn
-       (defclass ,slot (module) ()
+       (defclass ,slot ,super ()
          (:documentation ,documentation))
        ,@(loop for generic in generics collect
               (destructuring-bind (func args &optional doc) generic
