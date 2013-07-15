@@ -6,6 +6,12 @@
 
 (in-package :radiance)
 
+(defimpl core
+    "Radiance core module."
+  (discover-modules (&key redefine reinitialize) "Searches for and loads all .mod files.")
+  (compile-module ((module module) &key force) "Compiles and loads the module.")
+  (load-implementations (&key force) "Loads all implementations according to the config."))
+
 (defimpl dispatcher
     "Primary dispatcher module that propagates page calls to triggers."
   (dispatch (request) "Dispatch a new webserver call.")
@@ -31,7 +37,9 @@
     "Session instances track whether a given user is still logged in or not."
   (session-start ((user user)) "Creates a new session object for the given user or continues an existing one if applicable.")
   (session-user () "Returns the user associated with this session.")
-  (session-end () "Finalizes the session object and in effect logs the user out."))
+  (session-field (field &key value) "Set or get a session data field.")
+  (session-end () "Finalizes the session object and in effect logs the user out.")
+  (session-active-p () "Returns T if the session is still active, otherwise NIL."))
 
 (defimpl database
     "Base database interface. Tries to be as abstract as possible while still providing all essential functionality.
