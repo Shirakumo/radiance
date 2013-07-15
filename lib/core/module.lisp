@@ -26,16 +26,19 @@
     (format out "~a (~a)" (name col) (access-mode col))))
 
 (defclass module ()
-  ((name :initform NIL :initarg :name :reader name :type string :allocation :class)
-   (author :initform NIL :initarg :author :reader author :type string :allocation :class)
-   (version :initform NIL :initarg :version :reader version :type string :allocation :class)
-   (license :initform NIL :initarg :license :reader license :type string :allocation :class)
-   (url :initform NIL :initarg :url :reader url :type string :allocation :class)
+  ((name :initarg :name :reader name :type string :allocation :class)
+   (author :initarg :author :reader author :type string :allocation :class)
+   (version :initarg :version :reader version :type string :allocation :class)
+   (license :initarg :license :reader license :type string :allocation :class)
+   (url :initarg :url :reader url :type string :allocation :class)
    
-   (dependencies :initform () :initarg :dependencies :reader dependencies :type list :allocation :class)
-   (collections :initform () :initarg :collections :reader collections :type list :allocation :class)
-   (callables :initform () :initarg :callables :reader callables :type list :allocation :class)
-   (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class))
+   (collections :initarg :collections :reader collections :type list :allocation :class)
+   (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
+
+   (implements :initarg :implements :reader implementations :type list :allocation :class)
+   (asdf-system :initarg :asdf-system :reader asdf-system :type symbol :allocation :class)
+   (dependencies :initarg :dependencies :reader dependencies :type list :allocation :class)
+   (compiled :initarg :compiled :reader compiled-p :type boolean :allocation :class))
   (:documentation "Radiance base module class."))
 
 (defmethod print-object ((mod module) out)
@@ -48,16 +51,33 @@
 (defgeneric shutdown (module)
   (:documentation "Called when Radiance is shut down."))
 
-(defmacro defmodule (name superclasses docstring metadata &rest extra-slots)
+(defmacro defmodule (name superclasses docstring (&key fullname author version license url collections (persistent T) implements asdf-system dependencies compiled) &rest extra-slots)
   "Define a new Radiance module."
   (let* ((superclasses (if (not superclasses) '(module) superclasses))
          (classdef `(progn (log:info "Defining module ~a" ',name)
                            (defclass ,name ,superclasses
-                             (,@extra-slots)
+                             ((name :initarg :name :reader name :type string :allocation :class)
+                              (author :initarg :author :reader author :type string :allocation :class)
+                              (version :initarg :version :reader version :type string :allocation :class)
+                              (license :initarg :license :reader license :type string :allocation :class)
+                              (url :initarg :url :reader url :type string :allocation :class)
+                              
+                              (collections :initarg :collections :reader collections :type list :allocation :class)
+                              (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
+                              
+                              (implements :initarg :implements :reader implementations :type list :allocation :class)
+                              (asdf-system :initarg :asdf-system :reader asdf-system :type symbol :allocation :class)
+                              (dependencies :initarg :dependencies :reader dependencies :type list :allocation :class)
+                              (compiled :initarg :compiled :reader compiled-p :type boolean :allocation :class)
+                              ,@extra-slots)
                              (:documentation ,docstring))))
          (initializer `(progn (log:info "Initializing module ~a" ',name)
                               (setf (gethash ',name *radiance-modules*)
-                                    (make-instance ',name ,@metadata)))))
+                                    (make-instance ',name 
+                                                   :name ,fullname :author ,author :version ,version :license ,license :url ,url
+                                                   :collections ,collections :persistent ,persistent
+                                                   :implements ,implements :asdf-system ,asdf-system :dependencies ,dependencies
+                                                   :compiled ,compiled)))))
     `(restart-case (if (gethash ',name *radiance-modules*)
                        (error 'module-already-initialized :module ',name)
                        (progn ,classdef ,initializer))
@@ -85,6 +105,13 @@
                                  do (vector-push (make-column column) array)
                                  finally (return array))))
 
-(defun get-module (module)
+(defgeneric get-module (module)
+  (:documentation "Retrieves the requested module from the instance list."))
+
+(defmethod get-module ((module symbol))
   "Retrieves the requested module from the instance list."
-  (gethash module *radiance-modules*))
+  (get-module (symbol-name module)))
+
+(defmethod get-module ((module string))
+  "Retrieves the requested module from the instance list."
+  (gethash (find-symbol (string-upcase module) :radiance) *radiance-modules*))
