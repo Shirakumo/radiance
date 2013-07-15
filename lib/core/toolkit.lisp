@@ -42,6 +42,8 @@
   "Joins a list of strings into one string using format."
   (format nil (concatenate 'string "~{~A~^" delim "~}") list))
 
+(defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
+
 (defun read-data-file (pathspec &key (if-does-not-exist :ERROR))
   "Returns the file contents in string format. Any path is relative to the radiance data directory."
   (with-open-file (stream (merge-pathnames pathspec (merge-pathnames "data/" (pathname (config :root)))) :if-does-not-exist if-does-not-exist)
