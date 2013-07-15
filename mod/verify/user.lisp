@@ -35,6 +35,10 @@
       (setf (model-field (model user) field) value)
       (model-field (model user) field)))
 
+(defun set-user-field (user field value)
+  (user-field user field :value value))
+(defsetf user-field set-user-field)
+
 (defmethod user-save ((user verify-user) &key)
   "Saves the user to the database."
   (if (user-saved-p user)
@@ -46,16 +50,42 @@
   "Returns T if the user is backed against the database."
   (not (model-hull-p (model user))))
 
-(defmethod check ((user verify-user) &rest branch &key &allow-other-keys)
+(defmethod user-check ((user verify-user) branch &key &allow-other-keys)
   "Check if the user has access to this permission branch. Returns the branch if permitted, otherwise NIL."
-  (let ((perms (user-field user "perms")))
+  (let ((perms (user-field user "perms"))
+        (branch (split-sequence:split-sequence #\. branch)))
     (when perms
       (loop for line in (split-sequence:split-sequence #\newline perms)
          do (loop for leaf-a in branch
-                 for leaf-b in (split-sequence:split-sequence #\. line)
-                 do (cond
-                      ((not (string= leaf-a leaf-b)) (return))
-                      ((string= leaf-a "*") (return-from check branch))
-                      ((string= leaf-b "*") (return-from check branch))
-                      ((eq leaf-a (last branch)) (return-from check branch)))))))
+               for leaf-b in (split-sequence:split-sequence #\. line)
+               do (cond
+                    ((string= leaf-a "*") (return-from user-check branch))
+                    ((string= leaf-b "*") (return-from user-check branch))
+                    ((not (string= leaf-a leaf-b)) (return)))
+               finally (if (string= leaf-a leaf-b) (return-from user-check branch))))))
   NIL)
+
+(defmethod user-grant ((user verify-user) branch &key &allow-other-keys)
+  "Grants a new permission branch to the users permissions."
+  (setf (user-field user "perms")
+        (concatenate 'string 
+                     (user-field user "perms")
+                     (format nil "~%") branch)))
+
+(defmethod user-prohibit ((user verify-user) branch &key &allow-other-keys)
+  "Remove permission from the user's permissions matching this branch."
+  (let ((perms (user-field user "perms"))
+        (branch (split-sequence:split-sequence #\. branch))
+        (to-remove ()))
+    (when perms
+      (setf perms (split-sequence:split-sequence #\newline perms))
+      (loop for line in perms
+         do (loop for leaf-a in branch
+               for leaf-b in (split-sequence:split-sequence #\. line)
+               do (cond 
+                    ((string= leaf-a "*") (nappend to-remove (list line)) (return))
+                    ((string= leaf-b "*") (nappend to-remove (list line)) (return))
+                    ((not (string= leaf-a leaf-b)) (return)))
+               finally (if (string= leaf-a leaf-b) (nappend to-remove (list line)))))
+      (setf (user-field user "perms")
+            (concatenate-strings (remove-if (lambda (item) (find item to-remove :test #'string=)) perms) #\newline)))))
