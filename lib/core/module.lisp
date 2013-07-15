@@ -72,7 +72,7 @@
                               ,@extra-slots)
                              (:documentation ,docstring))))
          (initializer `(progn (log:info "Initializing module ~a" ',name)
-                              (setf (gethash ',name *radiance-modules*)
+                              (setf (gethash (make-keyword ',name) *radiance-modules*)
                                     (make-instance ',name 
                                                    :name ,fullname :author ,author :version ,version :license ,license :url ,url
                                                    :collections ,collections :persistent ,persistent
@@ -114,4 +114,4 @@
 
 (defmethod get-module ((module string))
   "Retrieves the requested module from the instance list."
-  (gethash (find-symbol (string-upcase module) :radiance) *radiance-modules*))
+  (gethash (make-keyword module) *radiance-modules*))
