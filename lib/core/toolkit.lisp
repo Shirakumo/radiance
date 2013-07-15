@@ -40,9 +40,12 @@
 
 (defun concatenate-strings (list &optional (delim ""))
   "Joins a list of strings into one string using format."
-  (format nil (concatenate 'string "~{~A~^" delim "~}") list))
+  (format nil (format nil "~~{~~A~~^~a~~}" delim) list))
 
 (defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
+
+(defmacro nappend (var &rest lists)
+  `(setf ,var (append ,var ,@lists)))
 
 (defun read-data-file (pathspec &key (if-does-not-exist :ERROR))
   "Returns the file contents in string format. Any path is relative to the radiance data directory."
