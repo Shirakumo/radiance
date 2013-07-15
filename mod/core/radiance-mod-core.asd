@@ -17,12 +17,14 @@
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Core system facilities for TyNETv5 Radiance."
   :long-description ""
-  :components ((:file "server")
-               (:file "interfaces")
-               (:file "flash-dispatch" :depends-on ("interfaces"))
-               ;(:file "kickstart-dispatch" :depends-on ("interfaces"))
-               )
+  :components ((:file "interfaces")
+               (:file "core" :pathname #p"core.mod" :depends-on ("interfaces"))
+               (:file "dispatch" :pathname #p"dispatch.mod" :depends-on ("interfaces"))
+               (:file "flash-dispatch" :depends-on ("dispatch"))
+               (:file "system" :depends-on ("core"))
+               (:file "server" :depends-on ("system")))
   :depends-on (:hunchentoot
                :split-sequence
                :alexandria
+               :cl-fad
                :radiance-lib-core))
