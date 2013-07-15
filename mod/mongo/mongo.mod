@@ -5,7 +5,7 @@
 |#
 
 (defpackage radiance-mod-mongo
-  (:use :cl :radiance :cl-mongo)
+  (:use :cl :radiance)
   (:export :mongodb
            :mongo-data-model))
 
