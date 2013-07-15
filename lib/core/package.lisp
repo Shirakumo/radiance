@@ -12,6 +12,7 @@
            :*radiance-log-verbose*
            :*radiance-acceptors*
            :*radiance-request*
+           :*radiance-session*
            :*radiance-modules*
            :*radiance-implements*
            :*radiance-triggers*
@@ -37,6 +38,8 @@
            :config
            :config-tree
            :concatenate-strings
+           :make-keyword
+           :nappend
            :read-data-file
            :file-size
            :upload-file
@@ -60,11 +63,18 @@
            :auth
            :authenticate
            :authenticated-p
+           :auth-page-login
+           :auth-page-logout
+           :auth-page-options
+           :auth-page-register
            :user
            :user-get
            :user-field
            :user-save
            :user-saved-p
+           :user-check
+           :user-grant
+           :user-prohibit
            :session
            :session-start
            :session-end
