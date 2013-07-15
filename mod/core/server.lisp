@@ -48,6 +48,9 @@
       (progn
         (log:info "Loading Config...")
         (load-config)
+        (log:info "Loading implementations...")
+        (discover-modules (implementation 'core))
+        (load-implementations (implementation 'core))
         (log:info "Setting up Hunchentoot...")
         (let ((acceptors (loop for port in (config :ports) 
                             collect (make-instance 'hunchentoot:easy-acceptor :port port))))
