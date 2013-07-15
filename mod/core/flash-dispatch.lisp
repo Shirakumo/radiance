@@ -6,11 +6,6 @@
 
 (in-package :radiance)
 
-(defmodule flash-dispatch (dispatcher)
-  "Simple static lookup-table dispatcher"
-  (:name "Flash Dispatcher" :author "Nicolas Hafner" :version "0.0.1" :license "Artistic" :url "http://tymoon.eu")
-  (table :initform (make-hash-table) :accessor table :allocation :class))
-
 (implement 'dispatcher (get-module 'flash-dispatch))
 
 (defmethod dispatch ((dispatch flash-dispatch) request &key)
