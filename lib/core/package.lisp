@@ -50,6 +50,10 @@
            :manage
            :server-running-p
            ;; interfaces.lisp
+           :core
+           :discover-modules
+           :compile-module
+           :load-implementations
            :dispatcher
            :dispatch
            :register
@@ -64,6 +68,9 @@
            :session
            :session-start
            :session-end
+           :session-field
+           :session-active-p
+           :session-user
            :database
            :db-connect
            :db-disconnect
@@ -81,6 +88,7 @@
            :model-get
            :model-get-one
            :model-hull
+           :model-hull-p
            :model-save
            :model-delete
            :model-insert
