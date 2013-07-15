@@ -17,7 +17,7 @@
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Database implementation for MongoDB."
   :long-description ""
-  :components ((:file "mongo")
-               (:file "data-model" :depends-on ("mongo")))
+  :components ((:file "database")
+               (:file "data-model" :depends-on ("database")))
   :depends-on (:cl-mongo
                :radiance-mod-core))

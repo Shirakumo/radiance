@@ -11,11 +11,6 @@
 
 (in-package :radiance-mod-mongo)
 
-(defmodule mongodb (database)
-  "Database implementation for MongoDB"
-  (:name "MongoDB Binding" :author "Nicolas Hafner" :version "0.0.1" :license "Artistic" :url "http://tymoon.eu")
-  (dbinstance :initform NIL :initarg dbinstance :accessor dbinstance))
-
 (implement 'database (get-module 'mongodb))
 
 (defmethod db-connect ((db mongodb) dbname &key (host (config-tree :database :host))
