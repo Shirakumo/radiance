@@ -14,9 +14,8 @@
 (defvar *radiance-request*     NIL "Current request object.")
 (defvar *radiance-session*     NIL "Current session object, if any,")
 
-(defclass request ()
-  ((request :initform (error "Hunchentoot request required.") :initarg :request :accessor request)
-   (response :initform () :initarg :response :accessor response)
+(defclass request (hunchentoot:request)
+  ((response :initform () :initarg :response :accessor response)
    (subdomains :initform () :initarg :subdomains :accessor subdomains)
    (domain :initform (config :domain) :initarg :domain :accessor domain)
    (path :initform "/" :initarg :path :accessor path)
@@ -54,12 +53,13 @@
         (load-implementations (implementation 'core))
         (log:info "Setting up Hunchentoot...")
         (let ((acceptors (loop for port in (config :ports) 
-                            collect (make-instance 'hunchentoot:easy-acceptor :port port))))
+                            collect (make-instance 'hunchentoot:easy-acceptor :port port :request-class 'radiance:request))))
           (if (not *radiance-handlers*)
               (setf *radiance-handlers* 
                     (list (hunchentoot:create-folder-dispatcher-and-handler "/static/" (merge-pathnames "data/static/" (pathname (config :root))))
                           #'handler)))
           (setf hunchentoot:*dispatch-table* *radiance-handlers*)
+          (setf hunchentoot:*default-content-type* "application/xhtml+xml")
           (log:info "Triggering INIT...")
           (trigger 'init)
           (loop for acceptor in acceptors
@@ -91,7 +91,7 @@
 (defun status ()
   "Prints status information about the running server."
   (format T "Server running: ~:[No~;Yes~]~%Acceptors: ~a~%Current requests: ~a~%Total requests: ~a"
-          *radiance-acceptor* (length *radiance-acceptors*) *radiance-request-count* *radiance-request-total*))
+          *radiance-acceptors* (length *radiance-acceptors*) *radiance-request-count* *radiance-request-total*))
 
 (defun server-running-p ()
   (if *radiance-acceptors* T NIL))
@@ -108,9 +108,13 @@
                                                          host)))
          (subdomains (reverse (if (> (length domains) 2) (subseq domains 0 (- (length domains) 2)))))
          (domain (concatenate-strings (subseq domains (length subdomains)) "."))
-         (request (make-instance 'request :request request :subdomains subdomains :domain domain :path path :port port))
-         (*radiance-request* request))
+         (*radiance-request* request)
+         (*radiance-session* NIL))
 
+    (setf (subdomains request) subdomains
+          (domain request) domain
+          (path request) path
+          (port request) port)
     (setf *radiance-request-total* (1+ *radiance-request-total*))
     (setf *radiance-request-count* (1+ *radiance-request-count*))
     (let ((result (dispatch (implementation 'dispatcher) request)))
@@ -118,5 +122,5 @@
             ((listp result) (setf (response request) (concatenate-strings result)))))
     ;;(setf (response *radiance-request*) (format nil "~a ~a ~a" domains subdomains domain))
     (setf *radiance-request-count* (1- *radiance-request-count*))
-    
+    (log:info "RESPONSE:  ~a" (response request))
     (lambda () (response request))))
