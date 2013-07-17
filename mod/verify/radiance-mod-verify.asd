@@ -17,9 +17,13 @@
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Core verification system for Radiance."
   :long-description ""
-  :components ((:file "user")
-               (:file "auth" :depends-on ("user"))
+  :components ((:file "crypto")
+               (:file "user")
+               (:file "auth" :depends-on ("user" "crypto"))
                (:file "session" :depends-on ("user"))
-               (:file "mechanisms" :depends-on ("auth")))
+               (:file "mechanisms" :depends-on ("auth" "crypto"))
+               (:file "sites" :depends-on ("auth" "session")))
   :depends-on (:radiance-mod-core
-               :split-sequence))
+               :split-sequence
+               :ironclad
+               :uuid))
