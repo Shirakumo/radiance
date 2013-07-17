@@ -25,6 +25,6 @@
   :depends-on (:cl-json
                :hunchentoot
 	       :log4cl
-               :ironclad
                :uuid
-               :cl-fad))
+               :cl-fad
+               :lquery))
