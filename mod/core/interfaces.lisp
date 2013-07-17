@@ -27,18 +27,21 @@
   (user-grant (branch) "Give permission to a certain branch.")
   (user-prohibit (branch) "Reclaim/Prohibit permission to a certain branch."))
 
+(define-condition auth-error (radiance-error) ())
+
 (defimpl auth
     "Handles one or more methods for authentication of a user."
   (authenticate () "Authenticate the current user using whatever method applicable. Returns the user object.")
-  (authenticated-p ((user user)) "Returns T if the user has been authenticated successfully, otherwise NIL.")
   (auth-page-login (&key redirect) "Returns an URL to the login page of the auth system. If redirect is provided, the user will be taken to that page afterwards.")
   (auth-page-logout (&key redirect) "Returns an URL to the logout page of the auth system. If redirect is provided, the user will be taken to that page afterwards.")
-  (auth-page-register (&key target redirect) "Returns an URL to the registration page of the auth system. If redirect is provided, the user will be taken to that page afterwards.")
+  (auth-page-register (&key redirect) "Returns an URL to the registration page of the auth system. If redirect is provided, the user will be taken to that page afterwards.")
   (auth-page-options (&key target) "Either displays a full options page or inserts all necessary things into the target if provided."))
 
 (defimpl (session)
     "Session instances track whether a given user is still logged in or not."
-  (session-start ((username string)) "Creates a new session object for the given user or continues an existing one if applicable.")
+  (session-get ((uuid string)) "Returns the session for the given UUID or NIL if no session is found.")
+  (session-start ((username string)) "Creates a new session object for the given user.")
+  (session-uuid () "Returns the uuid for this session.")
   (session-user () "Returns the user associated with this session.")
   (session-field (field &key value) "Set or get a session data field.")
   (session-end () "Finalizes the session object and in effect logs the user out.")
