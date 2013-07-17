@@ -34,12 +34,17 @@
            :make-collection
            :get-module
            ;; toolkit.lisp
+           :radiance-error
            :load-config
            :config
            :config-tree
            :concatenate-strings
            :make-keyword
            :nappend
+           :universal-to-unix-time
+           :unix-to-universal-time
+           :get-unix-time
+           :template
            :read-data-file
            :file-size
            :upload-file
@@ -50,6 +55,11 @@
            :trigger
            ;; server.lisp
            :request
+           :response
+           :subdomains
+           :domain
+           :path
+           :port
            :manage
            :server-running-p
            ;; interfaces.lisp
@@ -60,6 +70,7 @@
            :dispatcher
            :dispatch
            :register
+           :auth-error
            :auth
            :authenticate
            :authenticated-p
@@ -76,11 +87,13 @@
            :user-grant
            :user-prohibit
            :session
+           :session-get
            :session-start
            :session-end
            :session-field
            :session-active-p
            :session-user
+           :session-uuid
            :database
            :db-connect
            :db-disconnect
