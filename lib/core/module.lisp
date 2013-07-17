@@ -53,57 +53,62 @@
 
 (defmacro defmodule (name superclasses docstring (&key fullname author version license url collections (persistent T) implements asdf-system dependencies compiled) &rest extra-slots)
   "Define a new Radiance module."
-  (let* ((superclasses (if (not superclasses) '(module) superclasses))
-         (classdef `(progn (log:info "Defining module ~a" ',name)
-                           (defclass ,name ,superclasses
-                             ((name :initarg :name :reader name :type string :allocation :class)
-                              (author :initarg :author :reader author :type string :allocation :class)
-                              (version :initarg :version :reader version :type string :allocation :class)
-                              (license :initarg :license :reader license :type string :allocation :class)
-                              (url :initarg :url :reader url :type string :allocation :class)
-                              
-                              (collections :initarg :collections :reader collections :type list :allocation :class)
-                              (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
-                              
-                              (implements :initarg :implements :reader implementations :type list :allocation :class)
-                              (asdf-system :initarg :asdf-system :reader asdf-system :type symbol :allocation :class)
-                              (dependencies :initarg :dependencies :reader dependencies :type list :allocation :class)
-                              (compiled :initarg :compiled :reader compiled-p :type boolean :allocation :class)
-                              ,@extra-slots)
-                             (:documentation ,docstring))))
-         (initializer `(progn (log:info "Initializing module ~a" ',name)
-                              (setf (gethash (make-keyword ',name) *radiance-modules*)
-                                    (make-instance ',name 
-                                                   :name ,fullname :author ,author :version ,version :license ,license :url ,url
-                                                   :collections ,collections :persistent ,persistent
-                                                   :implements ,implements :asdf-system ,asdf-system :dependencies ,dependencies
-                                                   :compiled ,compiled)))))
-    `(restart-case (if (gethash ',name *radiance-modules*)
-                       (error 'module-already-initialized :module ',name)
-                       (progn ,classdef ,initializer))
+  (let ((superclasses (if (not superclasses) '(module) superclasses))
+        (classdef (gensym "CLASSDEF"))
+        (initializer (gensym "INITIALIZER")))
+    `(flet ((,classdef () (log:info "Defining module ~a" ',name)
+                       (defclass ,name ,superclasses
+                         ((name :initarg :name :reader name :type string :allocation :class)
+                          (author :initarg :author :reader author :type string :allocation :class)
+                          (version :initarg :version :reader version :type string :allocation :class)
+                          (license :initarg :license :reader license :type string :allocation :class)
+                          (url :initarg :url :reader url :type string :allocation :class)
+                          
+                          (collections :initarg :collections :reader collections :type list :allocation :class)
+                          (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
+                          
+                          (implements :initarg :implements :reader implementations :type list :allocation :class)
+                          (asdf-system :initarg :asdf-system :reader asdf-system :type symbol :allocation :class)
+                          (dependencies :initarg :dependencies :reader dependencies :type list :allocation :class)
+                          (compiled :initarg :compiled :reader compiled-p :type boolean :allocation :class)
+                          ,@extra-slots)
+                         (:documentation ,docstring)))
+            (,initializer () (log:info "Initializing module ~a" ',name)
+                          (setf (gethash (make-keyword ',name) *radiance-modules*)
+                                (make-instance ',name 
+                                               :name ,fullname :author ,author :version ,version :license ,license :url ,url
+                                               :collections ,collections :persistent ,persistent
+                                               :implements ,implements :asdf-system ,asdf-system :dependencies ,dependencies
+                                               :compiled ,compiled))))
+       (restart-case (if (gethash ',name *radiance-modules*)
+                         (error 'module-already-initialized :module ',name)
+                         (progn (,classdef) (,initializer)))
        (override-both () 
          :report "Redefine the module and create a new instance of the module anyway."
-         ,classdef ,initializer)
+         (,classdef) (,initializer))
        (override-module ()
          :report "Just redefine the module."
-         ,classdef)
+         (,classdef))
        (override-instance ()
          :report "Just create a new instance of the module."
-         ,initializer)
+         (,initializer))
        (do-nothing ()
-         :report "Leave module and instance as they are."))))
+         :report "Leave module and instance as they are.")))))
 
 (defun make-column (name &key (access-mode "000") description)
   "Shorthand function to create a new column instance."
   (make-instance 'column :name name :access-mode access-mode :description description))
 
-(defmacro make-collection (name (&key (access-mode "000") description) &rest columns)
+(defun make-collection (name &key (access-mode "000") description columns)
   "Create a new representation of a collection."
-  `(make-instance 'collection :name ,(symbol-name name) :access-mode ,access-mode :description ,description
-                  :columns ,(loop with array = (make-array (length columns) :element-type 'column :fill-pointer 0)
-                                 for column in columns
-                                 do (vector-push (make-column column) array)
-                                 finally (return array))))
+  (make-instance 'collection :name name :access-mode access-mode :description description
+                 :columns (loop with array = (make-array (length columns) :element-type 'column :fill-pointer 0)
+                             for column in columns
+                             do (vector-push (if (listp column) 
+                                                 (destructuring-bind (name &optional mode description) column
+                                                   (make-column name :access-mode mode :description description))
+                                                 (make-column column)) array)
+                             finally (return array))))
 
 (defgeneric get-module (module)
   (:documentation "Retrieves the requested module from the instance list."))
