@@ -20,9 +20,9 @@
   :components ((:file "interfaces")
                (:file "core" :pathname #p"core.mod" :depends-on ("interfaces"))
                (:file "dispatch" :pathname #p"dispatch.mod" :depends-on ("interfaces"))
-               (:file "flash-dispatch" :depends-on ("dispatch"))
                (:file "system" :depends-on ("core"))
-               (:file "server" :depends-on ("system")))
+               (:file "server" :depends-on ("system"))
+               (:file "flash-dispatch" :depends-on ("dispatch" "server")))
   :depends-on (:hunchentoot
                :split-sequence
                :alexandria
