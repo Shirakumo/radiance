@@ -9,6 +9,11 @@
 (defvar *radiance-config-file* NIL "Radiance's main JSON configuration file.")
 (defvar *radiance-config*      NIL "Radiance's main static configuration.")
 
+(define-condition radiance-error (error)
+  ((text :initarg :text :initform "Undefined Error")
+   (code :initarg :code :initform -1))
+  (:report (lambda (c s) (format s "~a: ~a (E~4d)" (class-name (class-of c)) (slot-value c 'text) (slot-value c 'code)))))
+
 (defun load-config (&optional (config-file *radiance-config-file*))
   "(Re)load the static configuration."
   (when (not config-file)
@@ -46,6 +51,22 @@
 
 (defmacro nappend (var &rest lists)
   `(setf ,var (append ,var ,@lists)))
+
+(defvar *unix-epoch-difference*
+  (encode-universal-time 0 0 0 1 1 1970 0))
+
+(defun universal-to-unix-time (universal-time)
+  (- universal-time *unix-epoch-difference*))
+
+(defun unix-to-universal-time (unix-time)
+  (+ unix-time *unix-epoch-difference*))
+
+(defun get-unix-time ()
+  (universal-to-unix-time (get-universal-time)))
+
+(defun template (path)
+  "Create pathname to template."
+  (merge-pathnames path (merge-pathnames "data/template/" (pathname (config :root)))))
 
 (defun read-data-file (pathspec &key (if-does-not-exist :ERROR))
   "Returns the file contents in string format. Any path is relative to the radiance data directory."
