@@ -52,4 +52,7 @@
 (defmethod load-implementations ((core radiance-core) &key force &allow-other-keys)
   (loop for (key . val) in (config :implementations)
      do (progn (log:info "Choosing ~a for ~a." val key)
-               (compile-module core val :force force))))
+               (if (listp val)
+                   (loop for val in val 
+                      do (compile-module core val :force force))
+                   (compile-module core val :force force)))))
