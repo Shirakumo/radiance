@@ -5,3 +5,14 @@
 |#
 
 (in-package :radiance-mod-verify)
+
+(defmechanism password
+    ""
+  (show-login ()
+    (let ((element (lquery:parse-html (read-data-file "template/verify/login-password.html"))))
+      (if (string= (hunchentoot:get-parameter "mechanism") "password")
+          ($ element "#passworderror" (text (hunchentoot:get-parameter "errortext"))))
+      element))
+
+  (handle-login ()
+    (error 'auth-login-error :text "FOOBAR!" :code 666)))
