@@ -15,7 +15,7 @@
 (defvar *radiance-session*     NIL "Current session object, if any,")
 
 (defclass request (hunchentoot:request)
-  ((response :initform () :initarg :response :accessor response)
+  ((response :initform hunchentoot:*reply* :initarg :response :accessor response)
    (subdomains :initform () :initarg :subdomains :accessor subdomains)
    (domain :initform (config :domain) :initarg :domain :accessor domain)
    (path :initform "/" :initarg :path :accessor path)
@@ -122,5 +122,5 @@
             ((listp result) (setf (response request) (concatenate-strings result)))))
     ;;(setf (response *radiance-request*) (format nil "~a ~a ~a" domains subdomains domain))
     (setf *radiance-request-count* (1- *radiance-request-count*))
-    (log:info "RESPONSE:  ~a" (response request))
+    ;;(log:info "RESPONSE:  ~a" (response request))
     (lambda () (response request))))
