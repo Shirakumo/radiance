@@ -5,7 +5,8 @@
 |#
 
 (in-package :radiance-mod-verify-oauth)
-(use-package :radiance-mod-verify :radiance-mod-verify-oauth)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (use-package :radiance-mod-verify :radiance-mod-verify-oauth))
 
 (defun get-callback ()
   (format NIL "http://~{~a.~}~a:~a/auth/oauth" (subdomains *radiance-request*) (domain *radiance-request*) (port *radiance-request*)))
