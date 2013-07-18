@@ -1,7 +1,7 @@
 <li id="openid">
 	<h2>Via OpenID</h2>
-	<form method="post" action="/auth/openid"> 
-		<ul class="providers"> 
+	<form class="openid" method="post" action="/auth/openid"> 
+		<ul id="openid-providers"> 
 			<li class="openid" title="OpenID"><img src="/static/img/openid/openidW.png" alt="icon" /> 
 			<span><strong>http://{your-openid-url}</strong></span></li> 
 			<li class="direct" title="Google"> 
@@ -48,7 +48,6 @@
 			</div>
 		</fieldset>
 	</form>
-
-	<label class="error" id="openiderror"></label>
-	<script type="text/javascript">$(function(){$("#openid").openid();});</script>
+	<div class="error clear" id="openiderror"></div>
+	<script type="text/javascript">$(function(){$(".openid").openid();});</script>
 </li>

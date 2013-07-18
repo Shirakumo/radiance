@@ -4,19 +4,20 @@ html, body{
 }
 
 label{min-width:100px;display:inline-block;}
-.hidden{display:none;}
 h1,h2{margin:0;padding:0;text-indent: 5px;}
-.error{color: #AA0000;font-weight: bold;}
 img {border-style:none;}
-input{border:1px solid #888;background:#AAA;color: #000;}
+input{border:1px solid #CCC;background:#DDD;color: #000;}
 input[type="submit"]{font-weight:bold;}
-input::-webkit-input-placeholder{color:#777;}
-input:-moz-placeholder{color:#777;}
-input::-moz-placeholder{color:#777;}
-input:-ms-input-placeholder{color:#777;}
+input::-webkit-input-placeholder{color:#AAA;}
+input:-moz-placeholder{color:#AAA;}
+input::-moz-placeholder{color:#AAA;}
+input:-ms-input-placeholder{color:#AAA;}
+.hidden{display:none;}
+.error{color: #AA0000;font-weight: bold;}
+.clear{clear: both;}
 
 #content{
-    background: #CCC;
+    background: #FFF;
     width: 512px;
     margin-left: auto;
     margin-right: auto;
@@ -24,27 +25,22 @@ input:-ms-input-placeholder{color:#777;}
     box-shadow: 0 0 10px #000;
 }
 
-#mechanisms, #oauth-providers, #openid-providers{
-    list-style:none;
-}
+#mechanisms, #oauth-providers, #openid-providers{list-style:none;margin:0;padding:0;}
+#mechanisms{padding:15px 0 0 10px;}
+#mechanisms>li{padding: 0 10px 0 10px; margin-bottom: 10px;}
 
-#mechanisms{
-    padding-left:10px;
-}
+#password fieldset{border:none;padding:3px;margin:0;}
+#password fieldset div{float:right;}
 
-#mechanisms>li{
-    
-    margin-bottom: 10px;
-    padding: 10px;
-
-}
-
-#openid{width: 455px;}
-#openid ul {list-style:none;padding:2px 0 0 0;margin:0;height:20px;}
-#openid li {display: inline-block;padding: 2px;}
+#openid ul {height:20px;}
+#openid li {display: inline-block;margin:0;padding:2px;}
 #openid div+fieldset {display:none}
-#openid label {font-size:11pt;}
-#openid ul li.highlight {background: #666;border-radius: 3px;}
+#openid ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFFF00;border-radius: 3px;}
 #openid ul li.highlight:nth-child(1) {border-radius: 7px;}
 #openid fieldset {border: none;padding:3px;margin:0;border-radius:0 0 5px 5px;}
 #openid fieldset div{float:right;}
+
+#oauth input[type="submit"]{float:right;}
+#oauth ul li{display:inline-block;padding:2px;font-size:10pt;}
+#oauth ul li.twitter span{ background: url("/static/img/oauth/twitter.png") no-repeat no-repeat center left; padding-left: 20px;}
+#oauth ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFFF00;border-radius: 3px;}
