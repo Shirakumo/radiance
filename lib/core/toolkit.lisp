@@ -62,7 +62,27 @@
   (+ unix-time *unix-epoch-difference*))
 
 (defun get-unix-time ()
+  "Returns a unix timestamp."
   (universal-to-unix-time (get-universal-time)))
+
+(defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789")
+
+(defun make-random-string (&optional (length 16) (chars *random-string-characters*))
+  "Generates a random string of alphanumerics."
+  (coerce (loop with charlength = (length chars) 
+             for i below length collect (aref chars (random charlength)))
+          'string))
+
+(defvar *default-cookie-expire* (* 60 60 24 356))
+
+(defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (response (response *radiance-request*)))
+  "Sets a cookie with radiance defaults and ensures proper return object utilization. If domain is NIL, it sets it for multi-subdomain compatibility."
+  (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :reply response)))
+    (log:debug "Setting cookie ~a on ~a/~a exp ~a (H~a;S~a) to ~a" name domain path expires http-only secure value)
+    (if domain
+        (setc domain)
+        (progn (setc (format NIL ".~a" (domain *radiance-request*)))
+               (setc (format NIL "~{~a.~}~a" (subdomains *radiance-request*) (domain *radiance-request*)))))))
 
 (defun template (path)
   "Create pathname to template."
