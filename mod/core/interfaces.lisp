@@ -41,11 +41,13 @@
     "Session instances track whether a given user is still logged in or not."
   (session-get ((uuid string)) "Returns the session for the given UUID or NIL if no session is found.")
   (session-start ((username string)) "Creates a new session object for the given user.")
+  (session-start-temp () "Creates a temporary session without a bound user.")
   (session-uuid () "Returns the uuid for this session.")
   (session-user () "Returns the user associated with this session.")
   (session-field (field &key value) "Set or get a session data field.")
   (session-end () "Finalizes the session object and in effect logs the user out.")
-  (session-active-p () "Returns T if the session is still active, otherwise NIL."))
+  (session-active-p () "Returns T if the session is still active, otherwise NIL.")
+  (session-temp-p () "Returns T if the session is only temporary, otherwise NIL."))
 
 (defimpl database
     "Base database interface. Tries to be as abstract as possible while still providing all essential functionality.
