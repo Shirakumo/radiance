@@ -135,7 +135,7 @@
   (case (length funcs)
     (0 'all)
     (1 `(%query-part ',(car (first funcs)) (list ,@(cdr (first funcs)))))
-    (otherwise `(kv "$and" ,(loop for func in funcs collect `(%query-part ',(car func) (list ,@(cdr func))))))))
+    (otherwise `(kv "$and" (list ,@(loop for func in funcs collect `(%query-part ',(car func) (list ,@(cdr func)))))))))
 
 (defgeneric %query-part (func args))
 
