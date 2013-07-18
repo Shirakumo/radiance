@@ -50,7 +50,7 @@
 
 (defmethod authenticate ((verify verify) &key &allow-other-keys)
   (let ((token (hunchentoot:cookie-in "token" *radiance-request*)))
-    (if token
+    (if (and token (> (length token) 0))
         (progn 
           ;; Decrypt token with global key to get user and session data
           (setf token (decrypt token (config-tree :verify :session :secret))) 
@@ -82,16 +82,23 @@
                 (error 'auth-session-error :text (format nil "Invalid session: ~a" session-id) :code 5))))
         (error 'auth-session-error :text (format nil "Invalid data length: ~a" (length data)) :code 4))))
 
-#|
+
+(defun auth-page (page redirect)
+  (format nil "http://auth.~a:~a/~a?redirect=~a" (domain *radiance-request*) (port *radiance-request*) page redirect))
+
 (defmethod auth-page-login ((verify verify) &key redirect)
-  )
+  (declare (ignore verify))
+  (auth-page "login" redirect))
 
 (defmethod auth-page-logout ((verify verify) &key redirect)
-  )
+  (declare (ignore verify))
+  (auth-page "logout" redirect))
 
 (defmethod auth-page-register ((verify verify) &key redirect)
-  )
+  (declare (ignore verify))
+  (auth-page "register" redirect))
 
+#|
 (defmethod auth-page-options ((verify verify) &key target)
   )
 |#
