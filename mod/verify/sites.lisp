@@ -50,9 +50,10 @@
 (defmethod page-register ((verify verify))
   ($ (initialize (template "verify/register.html")))
   (if (or (not *radiance-session*) (session-temp-p *radiance-session*))
-      (loop with target = ($ "#mechanisms")
-         for mechanism being the hash-values of *verify-mechanisms*
-         do ($ target (append (show-register mechanism))))
+      ;(loop with target = ($ "#mechanisms")
+      ;   for mechanism being the hash-values of *verify-mechanisms*
+      ;   do ($ target (append (show-register mechanism))))
+      NIL
       ($ "#mechanisms" (append (parse-html "<li id=\"loggedin\"><h2>You are already logged in.</h2></li>"))))
   (first ($ (serialize :doctype "html"))))
 
