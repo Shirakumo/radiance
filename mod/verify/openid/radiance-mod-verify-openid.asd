@@ -20,4 +20,5 @@
   :components ((:file "openid"))
   :depends-on (:radiance-mod-core
                :radiance-mod-verify
-               :cl-openid))
+               :cl-openid
+               :puri))
