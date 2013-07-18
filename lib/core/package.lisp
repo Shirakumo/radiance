@@ -44,6 +44,9 @@
            :universal-to-unix-time
            :unix-to-universal-time
            :get-unix-time
+           :random-string
+           :make-random-string
+           :set-cookie
            :template
            :read-data-file
            :file-size
@@ -89,9 +92,11 @@
            :session
            :session-get
            :session-start
+           :session-start-temp
            :session-end
            :session-field
            :session-active-p
+           :session-temp-p
            :session-user
            :session-uuid
            :database
