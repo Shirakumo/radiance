@@ -1,0 +1,32 @@
+html, body{
+    font-family: 'Open Sans', sans-serif;
+    background: #152233;
+}
+
+label{min-width:90px;display:inline-block;font-size:10pt;}
+h1,h2{margin:0;padding:0;text-indent: 5px;}
+img {border-style:none;}
+ul{list-style:none;padding:0;margin:0;}
+input{border:1px solid #CCC;background:#DDD;color: #000;}
+input[type="submit"]{font-weight:bold;}
+input::-webkit-input-placeholder{color:#AAA;}
+input:-moz-placeholder{color:#AAA;}
+input::-moz-placeholder{color:#AAA;}
+input:-ms-input-placeholder{color:#AAA;}
+fieldset{border:none;}
+.hidden{display:none;}
+.error{color: #AA0000;font-weight: bold;}
+.clear{clear: both;}
+
+#content{
+    background: #FFF;
+    width: 512px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    box-shadow: 0 0 10px #000;
+}
+
+#oauth-providers{
+	display:inline-block;
+}
