@@ -11,8 +11,7 @@
 (defmethod dispatch ((dispatch flash-dispatch) (request radiance:request) &key)
   "Dispatches a request to a module based on a subdomain."
   (handler-case (authenticate (implementation 'auth))
-    (auth-error (err) (log:warn "~a" err))
-    (error (err) (log:error "~a" err)))
+    (auth-error (err) (log:warn "~a" err)))
   (loop for trigger being the hash-keys of (table dispatch)
      for specific being the hash-values of (table dispatch)
      collect (destructuring-bind (subdomain domain port path) specific
