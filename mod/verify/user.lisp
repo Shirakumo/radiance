@@ -29,9 +29,9 @@
       (setf (model-field model "username") username))
     (make-instance 'verify-user :name username :model model)))
 
-(defmethod user-field ((user verify-user) (field string) &key value)
+(defmethod user-field ((user verify-user) (field string) &key (value NIL v-p))
   "Set or get a field of the user. Note that this will not save it to the database!"
-  (if value
+  (if v-p
       (setf (model-field (model user) field) value)
       (model-field (model user) field)))
 
