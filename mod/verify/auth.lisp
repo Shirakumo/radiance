@@ -23,7 +23,10 @@
   (:documentation "Handles the login process and redirects to the requested page."))
 
 (defgeneric handle-register (mechanism)
-  (:documentation "Handles the register process and redirects to the requested page."))
+  (:documentation "Handles the registration process.."))
+
+(defgeneric handle-link (mechanism)
+  (:documentation "Handles the linking of logins during the registration process."))
 
 (defmacro defmechanism (name &optional description &rest bodies)
   "Defines a new authentication mechanism. Required bodies: show-login show-register handle-login handle-register"
