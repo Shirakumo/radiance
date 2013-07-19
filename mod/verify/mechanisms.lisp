@@ -15,4 +15,16 @@
       element))
 
   (handle-login ()
-    (error 'auth-login-error :text "FOOBAR!" :code 666)))
+    (error 'auth-login-error :text "FOOBAR!" :code 666))
+  
+  (show-register ()
+    (let ((element (lquery:parse-html (read-data-file "template/verify/register-password.html")))
+          (post-data (session-field *radiance-session* "post-data")))
+      (when (and *radiance-session* post-data)
+        ($ element "#password-in-1" (val (cdr (assoc "password" post-data :test #'string=))))
+        ($ element "#password-in-2" (val (cdr (assoc "pwconfirm" post-data :test #'string=)))))
+      element))
+
+  (handle-link () NIL)
+
+  (handle-register () NIL))
