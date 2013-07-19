@@ -19,9 +19,13 @@
                    :realm (puri:uri realm))))
 
 (defun handle-initiate ()
-  (let ((rp (get-relying-party))
-        (session (session-start-temp (implementation 'session))))
-    (session-field session "relying-party" :value rp)
+  (let ((rp (get-relying-party)))
+    (if *radiance-session*
+        (session-field *radiance-session* "nodelete" :value T)
+        (session-start-temp (implementation 'session)))
+    (session-field *radiance-session* "link-in-progress" :value :openid)
+    (session-field *radiance-session* "relying-party" :value rp)
+    (session-field *radiance-session* "redirect" :value (radiance-mod-verify::get-redirect))
     (hunchentoot:redirect
      (cl-openid:initiate-authentication rp (hunchentoot:post-parameter "openid_identifier")))))
 
@@ -29,7 +33,9 @@
   (if (or (not *radiance-session*) (not (session-temp-p *radiance-session*)))
       (error 'auth-login-error :text "No temporary session active!" :code 12))
   (let ((rp (session-field *radiance-session* "relying-party")))
-    (session-end *radiance-session*)
+    (session-field *radiance-session* "link-in-progress" :value NIL)
+    (unless (session-field *radiance-session* "nodelete")
+        (session-end *radiance-session*))
     (cl-openid:handle-indirect-response 
      rp 
      (hunchentoot:get-parameters *radiance-request*)
@@ -42,6 +48,8 @@
     (if map
         (user-get (implementation 'user) (model-field map "username"))
         (error 'auth-login-error :text "Account not linked!" :code 13))))
+
+(defvar *response-processor* #'process-response)
 
 (defmechanism openid
     "Mechanism for OpenID-Supporting sites."
@@ -60,9 +68,28 @@
        (handler-case
            (multiple-value-bind (id authproc) (handle-response)
              (if id
-                 (process-response authproc)
+                 (funcall *response-processor* authproc)
                  (error 'auth-login-error :text "Authentication failed!" :code 11)))
          (cl-openid:openid-assertion-error (err)
            (error 'auth-login-error :text err :code 12))))
       
-      (T (error 'auth-login-error :text "No ID given!" :code 10)))))
+      (T (error 'auth-login-error :text "No ID given!" :code 10))))
+
+  (show-register ()
+    (let ((element (lquery:parse-html (read-data-file "template/verify/register-openid.html")))
+          (post-data (session-field *radiance-session* "post-data")))
+      (when (and *radiance-session* post-data)
+        (loop for provider in ($ element (find "li"))
+           do (loop for link in (session-field *radiance-session* "openid-links")
+                 do (if (search (first ($ provider (attr :title))) link :test #'string-equal)
+                        ($ provider (add-class "linked")))))
+        )
+      element))
+  
+  (handle-link ()
+    (let ((*response-processor* (lambda (authproc)
+                                  (let ((id (format nil "~a" (cl-openid:claimed-id authproc))))
+                                    (log:debug "Linking: ~a" id)
+                                    (nappend (session-field *radiance-session* "openid-links") (list id))))))
+      (when (or (string= (hunchentoot:post-parameter "openid") "Link") (eq (session-field *radiance-session* "link-in-progress") :openid))
+        (handle-login (radiance-mod-verify::get-mechanism :openid))))))
