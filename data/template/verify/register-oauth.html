@@ -1,0 +1,14 @@
+<li id="oauth">
+	<label>Via OAuth</label>
+	<div>
+		<input type="submit" value="Link" name="oauth"/>
+		<ul id="oauth-providers">
+			<li class="twitter">
+				<input type="radio" name="provider" value="Twitter" /> 
+				<span>Twitter</span>
+			</li>
+		</ul>
+	</div>
+	<div id="oautherror" class="error clear"></div>
+	<script type="text/javascript">$(function(){$("#oauth-providers").oauth();});</script>
+</li>

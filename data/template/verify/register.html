@@ -5,35 +5,35 @@
     <title>Register</title>
     <link rel="stylesheet" href="/static/css/verify/register.css" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css' />
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
+    <script src="/static/js/jquery.openid.js"></script>
+    <script src="/static/js/jquery.oauth.js"></script>
   </head>
   <body>
     <div id="content">
       <h1>Register</h1>
-      <form id="register" method="post" action="#">
+      <i id="registrationok"></i>
+      <form id="register" method="post" action="/regauth">
         <h2>Logins</h2>
+        <i id="loginsok" data-bind="attr: {class: loginsok}, text: loginsokexpl"></i>
         <fieldset>
-          <div id="password">
-            <label>Password</label>
-            <input type="password" name="password" data-bind="value: pw1, valueUpdate: 'keyup'" />
-            <input type="password" name="pwconfirm" data-bind="value: pw2, valueUpdate: 'keyup'" />
-            <span id="passwordmatch" data-bind="text: passwordmatch">X</span>
-          </div>
-          <div id="oauth">
-            <label>OAuth</label>
-            <ul id="oauth-providers">
-              <li id="twitter"><input type="submit" value="Twitter" /></li>
-            </ul>
-          </div>
+          <ul id="mechanisms">
+            
+          </ul>
         </fieldset>
         <h2>Profile</h2>
         <fieldset>
-          <label>Username: </label><input type="text" name="username" required="required" data-bind="value: username, valueUpdate: 'keyup'" /><br />
-          <label>Displayname: </label><input type="text" name="displayname" required="required" data-bind="value: displayname, attr: {placeholder: username}" /><br />
+          <label>Username: </label>
+            <input id="username" type="text" name="username" data-bind="value: username, valueUpdate: 'keyup'" />
+            <i id="usernameok" data-bind="attr: {class: usernameok}, text: usernameokexpl"></i><br />
+          <label>Displayname: </label>
+            <input id="displayname" type="text" name="displayname" data-bind="value: displayname, attr: {placeholder: username}" /><br />
         </fieldset>
-        <input type="submit" value="Register" />
+        <input type="text" name="nil" value="" class="hidden" />
+        <input type="submit" value="Register" name="action" data-bind="enable: registerbutton" />
       </form>
     </div>
     <script src="/static/js/verify/register.js"></script>

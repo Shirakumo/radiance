@@ -3,11 +3,13 @@ html, body{
     background: #152233;
 }
 
+i{font-size: 10pt;position:absolute;background:#FFF;padding: 5px;white-space: nowrap;}
 label{min-width:90px;display:inline-block;font-size:10pt;}
 h1,h2{margin:0;padding:0;text-indent: 5px;}
 img {border-style:none;}
 ul{list-style:none;padding:0;margin:0;}
 input{border:1px solid #CCC;background:#DDD;color: #000;}
+input[disabled]{border:1px solid #CCC;background:#EEE;color: #AAA;}
 input[type="submit"]{font-weight:bold;}
 input::-webkit-input-placeholder{color:#AAA;}
 input:-moz-placeholder{color:#AAA;}
@@ -18,6 +20,9 @@ fieldset{border:none;}
 .error{color: #AA0000;font-weight: bold;}
 .clear{clear: both;}
 
+.icon-ok-sign{color:green;}
+.icon-remove-sign{color:red;}
+
 #content{
     background: #FFF;
     width: 512px;
@@ -27,6 +32,33 @@ fieldset{border:none;}
     box-shadow: 0 0 10px #000;
 }
 
-#oauth-providers{
-	display:inline-block;
-}
+
+#content>i, #register>i{position: static;padding: 0;}
+
+#mechanisms{position:relative;}
+#mechanisms>li {padding:10px 0 10px 0;border-bottom: 1px solid #CCC;}
+#mechanisms>li:last-child{border-bottom: none;}
+
+#openid{height:45px;}
+#openid *{vertical-align: middle;}
+#openid>div {position:absolute;left:95px;right:10px;display:inline-block;}
+#openid div+fieldset {display:none}
+#openid ul {height:20px;}
+#openid ul li {display: inline-block;margin:0;padding:2px;border-radius: 3px;}
+#openid ul li:nth-child(1) {border-radius: 7px;}
+#openid ul li:nth-child(2) {border-radius: 7px;}
+#openid ul li:nth-child(3) {border-radius: 7px;}
+#openid ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFFF00;}
+#openid fieldset {border: none;margin:0;padding:0;}
+#openid fieldset div{float:right;}
+#openid fieldset label{font-size: 10pt;}
+
+#oauth>div{position:absolute;left:100px;right:10px;display:inline-block;}
+#oauth input[type="submit"]{float:right;}
+#oauth ul li{display:inline-block;padding:2px;font-size:10pt;border-radius: 3px;}
+#oauth ul li.twitter span{ background: url("/static/img/oauth/twitter.png") no-repeat no-repeat center left; padding-left: 20px;}
+#oauth ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFFF00;}
+
+.linked, #password.linked input{background: #33FF33 !important;box-shadow: 0 0 5px #33FF33 !important;}
+#password.linked{background: transparent !important;box-shadow: none !important;}
+#password.linked input{border: 1px solid #22EE22;}

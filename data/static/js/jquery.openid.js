@@ -29,8 +29,8 @@ $.fn.openid = function() {
     var $li = $(this);
     $li.parent().find('li').removeClass('highlight');
     $li.addClass('highlight');
-    $usrfs.fadeOut();
-    $idfs.fadeOut();
+    $usrfs.hide();
+    $idfs.show();
 
     $this.unbind('submit').submit(function() {
       $id.val($this.find("li.highlight span").text());

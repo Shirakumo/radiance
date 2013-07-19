@@ -33,10 +33,12 @@ input:-ms-input-placeholder{color:#AAA;}
 #password fieldset div{float:right;}
 
 #openid ul {height:20px;}
-#openid li {display: inline-block;margin:0;padding:2px;}
 #openid div+fieldset {display:none}
-#openid ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFFF00;border-radius: 3px;}
-#openid ul li.highlight:nth-child(1) {border-radius: 7px;}
+#openid ul li {display: inline-block;margin:0;padding:2px;border-radius: 3px;}
+#openid ul li:nth-child(1) {border-radius: 7px;}
+#openid ul li:nth-child(2) {border-radius: 7px;}
+#openid ul li:nth-child(3) {border-radius: 7px;}
+#openid ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFFF00;}
 #openid fieldset {border: none;padding:3px;margin:0;border-radius:0 0 5px 5px;}
 #openid fieldset div{float:right;}
 

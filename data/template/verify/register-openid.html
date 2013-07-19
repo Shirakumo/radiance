@@ -1,6 +1,6 @@
 <li id="openid">
-	<h2>Via OpenID</h2>
-	<form class="openid" method="post" action="/auth/openid"> 
+	<label>Via OpenID</label>
+	<div> 
 		<ul id="openid-providers"> 
 			<li class="openid" title="OpenID"><img src="/static/img/openid/openidW.png" alt="icon" /> 
 			<span><strong>http://{your-openid-url}</strong></span></li> 
@@ -8,38 +8,38 @@
 			<img src="/static/img/openid/googleW.png" alt="icon" /><span>https://www.google.com/accounts/o8/id</span></li> 
 			<li class="direct" title="Yahoo"> 
 			<img src="/static/img/openid/yahooW.png" alt="icon" /><span>http://yahoo.com/</span></li> 
-			<li class="username" title="AOL screen name"> 
+			<li class="username" title="AOL"> 
 			<img src="/static/img/openid/aolW.png" alt="icon" /><span>http://openid.aol.com/<strong>username</strong></span></li> 
-			<li class="username" title="MyOpenID user name"> 
+			<li class="username" title="MyOpenID"> 
 			<img src="/static/img/openid/myopenid.png" alt="icon" /><span>http://<strong>username</strong>.myopenid.com/</span></li> 
-			<li class="username" title="Flickr user name"> 
+			<li class="username" title="Flickr"> 
 			<img src="/static/img/openid/flickr.png" alt="icon" /><span>http://flickr.com/<strong>username</strong>/</span></li> 
-			<li class="username" title="Technorati user name"> 
+			<li class="username" title="Technorati"> 
 			<img src="/static/img/openid/technorati.png" alt="icon" /><span>http://technorati.com/people/technorati/<strong>username</strong>/</span></li> 
-			<li class="username" title="Wordpress blog name"> 
+			<li class="username" title="Wordpress"> 
 			<img src="/static/img/openid/wordpress.png" alt="icon" /><span>http://<strong>username</strong>.wordpress.com</span></li> 
-			<li class="username" title="Blogger blog name"> 
+			<li class="username" title="Blogspot"> 
 			<img src="/static/img/openid/blogger.png" alt="icon" /><span>http://<strong>username</strong>.blogspot.com/</span></li> 
-			<li class="username" title="LiveJournal blog name"> 
+			<li class="username" title="LiveJournal"> 
 			<img src="/static/img/openid/livejournal.png" alt="icon" /><span>http://<strong>username</strong>.livejournal.com</span></li>
 		</ul>
 		<fieldset> 
 			<label for="openid_username">Your <span>Provider user name</span>: </label>
 			<div>
 				<span class="hidden"></span>
-				<input type="text" name="openid_username" required="required"/>
+				<input type="text" name="openid_username"/>
 				<span class="hidden"></span>
-				<input type="submit" value="Login"/>
+				<input type="submit" value="Link" name="openid"/>
 			</div>
 		</fieldset>
 		<fieldset> 
 			<label for="openid_identifier">Your <a href="http://openid.net">OpenID</a>: </label>
 			<div>
-				<input type="url" name="openid_identifier" required="required" placeholder="http://{your-openid-url}" /> 
-				<input type="submit" value="Login" />
+				<input type="url" name="openid_identifier" placeholder="http://{your-openid-url}" /> 
+				<input type="submit" value="Link" name="openid" />
 			</div>
 		</fieldset>
-	</form>
+	</div>
 	<div class="error clear" id="openiderror"></div>
-	<script type="text/javascript">$(function(){$(".openid").openid();});</script>
+	<script type="text/javascript">$(function(){$("#openid div").openid();});</script>
 </li>
