@@ -48,11 +48,16 @@
   (if (eq *radiance-session* session) (set-cookie "token"))
   session)
 
-(defmethod session-field ((session verify-session) (field string) &key value &allow-other-keys)
+(defmethod session-field ((session verify-session) (field string) &key (value NIL v-p) &allow-other-keys)
   "Set or get a field of the user. Note that this will not save it to the database!"
-  (if value
+  (if v-p
       (setf (gethash field (fields session)) value)
       (gethash field (fields session))))
+
+(defun set-session-field (session field value)
+  (session-field session field :value value))
+
+(defsetf session-field set-session-field)
 
 (defmethod session-uuid ((session verify-session) &key &allow-other-keys)
   "Returns the UUID of the session instance."
