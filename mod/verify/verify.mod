@@ -15,6 +15,7 @@
            :show-register 
            :handle-login 
            :handle-register 
+           :handle-link
            :auth-login-error))
 (in-package :radiance-mod-verify)
 
