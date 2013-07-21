@@ -72,13 +72,29 @@
   (handler-case
       (cond 
         ((string= (hunchentoot:post-parameter "action" *radiance-request*) "Register")
-         (error 'auth-register-error :text "NOT IMPLEMENTED YET!"))
+         (let ((username (hunchentoot:post-parameter "username" *radiance-request*))
+               (displayname (hunchentoot:post-parameter "displayname" *radiance-request*)))
+           (if (and username (> (length username) 0))
+               (let ((user (user-get (implementation 'user) username)))
+                 (if (not (user-saved-p user))
+                     (progn
+                       (if (or (not displayname) (= (length displayname) 0))
+                           (setf displayname username))
+                       (user-field user "displayname" :value displayname)
+                       (user-field user "register-date" :value (get-unix-time))
+                       (loop for mechanism being the hash-values of *verify-mechanisms*
+                          do (handle-register mechanism user))
+                       (user-save user))
+                     (error 'auth-register-error :text "Username already taken!" :code 17)))
+               (error 'auth-register-error :text "Username required!" :code 16))))
+
         ((or (hunchentoot:post-parameter "nil" *radiance-request*) (session-field *radiance-session* "link-in-progress"))
          (if (session-field *radiance-session* "link-in-progress")
              (let ((mechanism (get-mechanism (session-field *radiance-session* "link-in-progress"))))
                (funcall #'handle-link mechanism))
              (loop for mechanism being the hash-values of *verify-mechanisms*
                 do (handle-link mechanism))))
+
         (T (error 'auth-register-error :text "Nothing to do!" :code 15)))
     (auth-error (err)
       (hunchentoot:redirect (format nil "/register?errorcode=~a&errortext=~a" (slot-value err 'radiance::code) (slot-value err 'radiance::text)))))
