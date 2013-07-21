@@ -6,6 +6,9 @@
 
 (in-package :radiance-mod-verify)
 
+(defun byte-array-to-ascii-string (array)
+  (coerce (mapcar #'code-char (coerce array 'list)) 'string))
+
 (defgeneric get-cipher (key &key mode IV)
   (:documentation "Return the corresponding cipher."))
 
@@ -39,8 +42,7 @@
 (defmethod decrypt ((text vector) key &key (mode 'ironclad:ecb) IV)
   (let ((cipher (get-cipher key :mode mode :IV IV)))
     (ironclad:decrypt-in-place cipher text)
-    (values (coerce (mapcar #'code-char (coerce text 'list)) 'string)
-            key mode IV)))
+    (values (byte-array-to-ascii-string text) key mode IV)))
 
 
 (defgeneric make-salt (salt)
@@ -62,7 +64,7 @@
   (values (ironclad:byte-array-to-hex-string
            (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array password)
                                           :salt salt :digest digest :iterations iterations))
-          (ironclad:byte-array-to-hex-string salt)
+          (byte-array-to-ascii-string salt)
           digest iterations))
 
 (defmethod simple-hash  ((password string) salt &key (digest 'ironclad:sha512) (iterations 1000))
@@ -74,5 +76,5 @@
              (dotimes (x iterations)
                (ironclad:update-digest hash (ironclad:produce-digest hash)))
              (ironclad:produce-digest hash)))
-          (ironclad:byte-array-to-hex-string salt)
+          (byte-array-to-ascii-string salt)
           digest iterations))
