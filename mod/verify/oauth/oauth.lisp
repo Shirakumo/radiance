@@ -108,4 +108,14 @@
                                   (log:debug "Linking: ~a/~a" id provider)
                                   (nappend (session-field *radiance-session* "oauth-links") (list (cons provider id))))))
       (when (or (string= (hunchentoot:post-parameter "oauth") "Link") (eq (session-field *radiance-session* "link-in-progress") :oauth))
-        (handle-login (radiance-mod-verify::get-mechanism :oauth))))))
+        (handle-login (radiance-mod-verify::get-mechanism :oauth)))))
+  
+  (handle-register (user)
+    (let ((links (session-field *radiance-session* "oauth-links")))
+      (loop with db = (implementation 'database)
+         for link in links
+         do (db-insert db "linked-oauths" 
+                       (acons "provider" (car link)
+                       (acons "claimed-id" (cdr link)
+                       (acons "username" (user-field user "username") 
+                       ()))))))))
