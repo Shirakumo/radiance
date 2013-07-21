@@ -21,7 +21,8 @@
 
 (let ((user-collection (make-collection 'user :access-mode "755" :description "Public user data"
                                         :columns '((id "555") (username "555") (displayname "755")
-                                                   (hash "700") (hash-type "700") (hash-date "700") (secret "700")))))
+                                                   (hash "700") (hash-type "700") (hash-date "700")
+                                                   (secret "700") (salt "700")))))
   
   (defmodule verify (auth)
     "Verification Module to provide user, session and authentication parts."
