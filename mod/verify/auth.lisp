@@ -22,7 +22,7 @@
 (defgeneric handle-login (mechanism)
   (:documentation "Handles the login process and redirects to the requested page."))
 
-(defgeneric handle-register (mechanism)
+(defgeneric handle-register (mechanism user)
   (:documentation "Handles the registration process.."))
 
 (defgeneric handle-link (mechanism)
