@@ -92,4 +92,13 @@
                                     (log:debug "Linking: ~a" id)
                                     (nappend (session-field *radiance-session* "openid-links") (list id))))))
       (when (or (string= (hunchentoot:post-parameter "openid") "Link") (eq (session-field *radiance-session* "link-in-progress") :openid))
-        (handle-login (radiance-mod-verify::get-mechanism :openid))))))
+        (handle-login (radiance-mod-verify::get-mechanism :openid)))))
+  
+  (handle-register (user)
+    (let ((links (session-field *radiance-session* "openid-links")))
+      (loop with db = (implementation 'database)
+         for link in links
+         do (db-insert db "linked-openids" 
+                       (acons "claimed-id" link
+                       (acons "username" (user-field user "username") 
+                       ())))))))
