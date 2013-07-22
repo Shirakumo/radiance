@@ -22,7 +22,7 @@
   (let ((rp (get-relying-party)))
     (if *radiance-session*
         (session-field *radiance-session* "nodelete" :value T)
-        (session-start-temp (implementation 'session)))
+        (setf *radiance-session* (session-start-temp (implementation 'session))))
     (session-field *radiance-session* "link-in-progress" :value :openid)
     (session-field *radiance-session* "relying-party" :value rp)
     (session-field *radiance-session* "redirect" :value (radiance-mod-verify::get-redirect))
