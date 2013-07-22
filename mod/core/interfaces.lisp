@@ -20,7 +20,7 @@
 (defimpl (user)
     "Defines a very basic user class that allows tying arbitrary data to a user."
   (user-get (username) "Returns the user object of an existing user or creates a new hull instance.")
-  (user-field (field &key value) "Set or get a user data field.")
+  (user-field ((field string) &key value) "Set or get a user data field.")
   (user-save () "Save the user to the database.")
   (user-saved-p () "Returns T if the user is not a hull instance, otherwise NIL.")
   (user-check (branch) "Checks if the user has access to that permissions branch")
@@ -44,7 +44,7 @@
   (session-start-temp () "Creates a temporary session without a bound user.")
   (session-uuid () "Returns the uuid for this session.")
   (session-user () "Returns the user associated with this session.")
-  (session-field (field &key value) "Set or get a session data field.")
+  (session-field ((field string) &key value) "Set or get a session data field.")
   (session-end () "Finalizes the session object and in effect logs the user out.")
   (session-active-p () "Returns T if the session is still active, otherwise NIL.")
   (session-temp-p () "Returns T if the session is only temporary, otherwise NIL."))
@@ -76,7 +76,7 @@ Manipulating data directly through this is discouraged and the data-model class 
 
 (defimpl (data-model)
     "Abstract data object for easier database interaction."
-  (model-field ((field string))
+  (model-field ((field string) &key value)
                "Returns the value of a field. Is setf-able.") 
   (model-get ((collection string) query &key (skip 0) (limit 0) sort)
              "Returns a list of model instances built from the query result.")
