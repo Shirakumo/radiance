@@ -31,7 +31,7 @@
   (let ((rt (get-request-token provider)))
     (if *radiance-session*
         (session-field *radiance-session* "nodelete" :value T)
-        (session-start-temp (implementation 'session)))
+        (setf *radiance-session* (session-start-temp (implementation 'session))))
     (session-field *radiance-session* "redirect" :value (radiance-mod-verify::get-redirect))
     (session-field *radiance-session* "link-in-progress" :value :oauth)
     (session-field *radiance-session* "request-token" :value rt)
