@@ -49,7 +49,7 @@
   (handle-register (user)
     (let ((password (hunchentoot:post-parameter "password" *radiance-request*))
           (pwconfirm (hunchentoot:post-parameter "pwconfirm" *radiance-request*)))
-      (if (and password pwconfirm)
+      (if (and password pwconfirm (> (length password) 0))
           (if (string= password pwconfirm)
               (let ((salt (make-salt T)))
                 (user-field user "salt" :value salt)
