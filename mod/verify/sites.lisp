@@ -35,11 +35,13 @@
   (let* ((name (third (split-sequence:split-sequence #\/ (path *radiance-request*))))
          (mechanism (get-mechanism (make-keyword name))))
     (if mechanism 
-        (handler-case (let ((response (handle-login mechanism)))
-                        (if response
-                            (progn 
-                              (session-start (implementation 'session) response)
-                              (hunchentoot:redirect (get-redirect "/login")))
+        (handler-case (let ((user (handle-login mechanism)))
+                        (if user
+                            (if (user-saved-p user)
+                                (progn 
+                                  (session-start (implementation 'session) user)
+                                  (hunchentoot:redirect (get-redirect "/login")))
+                                (error 'auth-login-error :text "Login failed." :code 9))
                             (error 'auth-login-error :text "Login failed." :code 9)))
           (auth-error (err)
             (hunchentoot:redirect (format nil "/login?mechanism=~a&errorcode=~a&errortext=~a" name (slot-value err 'radiance::code) (slot-value err 'radiance::text)))))
@@ -51,9 +53,9 @@
   (hunchentoot:redirect (get-redirect)))
 
 (defmethod page-register ((verify verify))
-  ($ (initialize (template "verify/register.html")))
   (if (or (not *radiance-session*) (session-temp-p *radiance-session*))
       (progn
+        ($ (initialize (template "verify/register.html")))
         (when (not *radiance-session*)
           (setf *radiance-session* (session-start-temp (implementation 'session))))
         (loop with target = ($ "#mechanisms")
@@ -62,9 +64,10 @@
         ($ "#username" (val (cdr (assoc "username" (session-field *radiance-session* "post-data") :test #'string=))))
         ($ "#displayname" (val (cdr (assoc "displayname" (session-field *radiance-session* "post-data") :test #'string=))))
         (if (hunchentoot:get-parameter "errortext")
-            ($ "#registrationok" (add-class "icon-remove-sign") (text (hunchentoot:get-parameter "errortext")))))
-      ($ "#mechanisms" (append (parse-html "<li id=\"loggedin\"><h2>You are already logged in.</h2></li>"))))
-  (first ($ (serialize :doctype "html"))))
+            ($ "#registrationok" (add-class "icon-remove-sign") (text (hunchentoot:get-parameter "errortext"))))
+        (first ($ (serialize :doctype "html"))))
+
+      (hunchentoot:redirect (get-redirect))))
 
 (defmethod page-register-auth ((verify verify))
   (if (hunchentoot:post-parameters *radiance-request*)
@@ -82,6 +85,7 @@
                            (setf displayname username))
                        (user-field user "displayname" :value displayname)
                        (user-field user "register-date" :value (get-unix-time))
+                       (user-field user "secret" :value (make-random-string))
                        (loop for mechanism being the hash-values of *verify-mechanisms*
                           do (handle-register mechanism user))
                        (user-save user))
@@ -111,3 +115,4 @@
 (register (implementation 'dispatcher) 'verify-logout :subdomain "auth" :path "/logout")
 (register (implementation 'dispatcher) 'verify-register :subdomain "auth" :path "/register")
 (register (implementation 'dispatcher) 'verify-register-auth :subdomain "auth" :path "/regauth")
+(register (implementation 'dispatcher) 'verify-login :subdomain "auth")
