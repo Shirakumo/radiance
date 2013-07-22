@@ -23,7 +23,6 @@ function AppViewModel() {
 
     self.computeAllOk = function (){
     	if(self.usernameok() == "icon-ok-sign" &&
-    	   self.passwordmatch() == "icon-ok-sign" &&
     	   self.loginsok() == ""){
     		self.registerbutton(true);
     	}else{
