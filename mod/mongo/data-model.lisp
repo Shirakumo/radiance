@@ -19,13 +19,17 @@
 
 (implement 'data-model (make-instance 'mongo-data-model :collection NIL :document NIL))
 
-(defmethod model-field ((model mongo-data-model) (field string) &key)
+(defmethod model-field ((model mongo-data-model) (field string) &key (value NIL v-p))
   "Get the value of a field in the document."
-  (gethash field (cl-mongo::elements (document model))))
+  (if v-p
+      (setf (gethash field (cl-mongo::elements (document model))) value)
+      (gethash field (cl-mongo::elements (document model)))))
 
 (defun model-field-set (model field value)
   "Set the value of a field in the document."
-  (setf (gethash field (cl-mongo::elements (document model))) value))
+  (model-field model field :value value))
+
+(defsetf model-field model-field-set)
   
 (defmethod model-get ((model mongo-data-model) (collection string) query &key (skip 0) (limit 0) sort)
   "Get a model for each document in the query result."
@@ -74,8 +78,6 @@
     `(let ((,vargens ,model))
        (symbol-macrolet ,(loop for field in fields collect `(,field (model-field ,vargens ,(string-downcase (symbol-name field)))))
          ,@body))))
-
-(defsetf model-field model-field-set)
 
 (defgeneric clone-document (var))
 
