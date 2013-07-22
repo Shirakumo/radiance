@@ -106,6 +106,7 @@
            :db-collections
            :db-create
            :db-select
+           :db-iterate
            :db-insert
            :db-remove
            :db-update
