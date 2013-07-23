@@ -44,7 +44,7 @@
 (defun process-response (authproc)
   (log:debug "Claimed ID: ~a" (cl-openid:claimed-id authproc))
   (let ((map (model-get-one (implementation 'data-model) "linked-openids" 
-                            (query (= "claimed-id" (format nil "~a" (cl-openid:claimed-id authproc)))))))
+                            (:= "claimed-id" (format nil "~a" (cl-openid:claimed-id authproc))))))
     (if map
         (user-get (implementation 'user) (model-field map "username"))
         (error 'auth-login-error :text "Account not linked!" :code 13))))

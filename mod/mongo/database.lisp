@@ -130,50 +130,14 @@
       (loop for val in value collect (%alist->document val))
       (add-element (car value) (%alist->document (cdr value)) (make-document))))
 
-(defmacro query (&rest funcs)
-  "Construct a query parameter. See the spec for more information on how to use it."
-  (case (length funcs)
-    (0 'all)
-    (1 `(%query-part ',(car (first funcs)) (list ,@(cdr (first funcs)))))
-    (otherwise `(kv "$and" (list ,@(loop for func in funcs collect `(%query-part ',(car func) (list ,@(cdr func)))))))))
-
-(defgeneric %query-part (func args))
-
-(defmethod %query-part ((func symbol) args)
-  (error "Function ~a unknown." func))
-
-(defmethod %query-part ((func (eql 'or)) args)
-  (kv "$or" (loop for func in args collect (%query-part (car func) (cdr func)))))
-
-(defmethod %query-part ((func (eql 'and)) args)
-  (kv "$and" (loop for func in args collect (%query-part (car func) (cdr func)))))
-
-(defmethod %query-part ((func (eql 'not)) args)
-  ($not (%query-part (car args) (cdr args))))
-
-(defmethod %query-part ((func (eql '=)) args)
-  (kv (first args) (second args)))
-
-(defmethod %query-part ((func (eql '!=)) args)
-  ($!= (first args) (second args)))
-
-(defmethod %query-part ((func (eql '>)) args)
-  ($> (first args) (second args)))
-
-(defmethod %query-part ((func (eql '<)) args)
-  ($< (first args) (second args)))
-
-(defmethod %query-part ((func (eql '>=)) args)
-  ($>= (first args) (second args)))
-
-(defmethod %query-part ((func (eql '<=)) args)
-  ($<= (first args) (second args)))
-
-(defmethod %query-part ((func (eql 'in)) args)
-  ($in (first args) (second args)))
-
-(defmethod %query-part ((func (eql '!in)) args)
-  ($!in (first args) (second args)))
-
-(defmethod %query-part ((func (eql 'matches)) args)
-  ($/ (first args) (second args)))
+(defun :and (&rest args) (kv "$and" args))
+(defun :or  (&rest args) (kv "$or" args))
+(defun :not (&rest args) `($not ,@args))
+(defun := (a b) (kv a b))
+(defun :< (a b) ($< a b))
+(defun :> (a b) ($> a b))
+(defun :>= (a b) ($>= a b))
+(defun :<= (a b) ($<= a b))
+(defun :in (a b) ($in a b))
+(defun :!in (a b) ($!in a b))
+(defun :matches (a b) ($/ a b))

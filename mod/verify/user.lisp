@@ -24,7 +24,7 @@
   "Retrieve a user from the db or create it if it is inexistent."
   (setf username (string-downcase username))
   (let ((model (model-get-one (implementation 'data-model) 
-                              "verify-users" (query (= "username" username)))))
+                              "verify-users" (:= "username" username))))
     (when (not model)
       (setf model (model-hull (implementation 'data-model) "verify-users"))
       (setf (model-field model "username") username))

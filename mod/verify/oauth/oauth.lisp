@@ -68,7 +68,7 @@
 
 (defun get-linked-user (id provider)
   (let ((model (model-get-one (implementation 'data-model) "linked-oauths" 
-                              (query (= "claimed-id" id) (= "provider" provider)))))
+                              (:and (:= "claimed-id" id) (:= "provider" provider)))))
       (if model
           (user-get (implementation 'user) (model-field model "username"))
           (error 'auth-login-error :text "Account not linked!" :code 15))))
