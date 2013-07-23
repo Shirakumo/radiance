@@ -25,4 +25,9 @@
      :collections (list oauths)
      :dependencies '(verify)
      :implements '()
-     :asdf-system "radiance-mod-verify-oauth")))
+     :asdf-system "radiance-mod-verify-oauth")
+  
+    (:components ((:file "oauth"))
+     :depends-on (:radiance-mod-verify
+                  :cl-oauth
+                  :cl-json))))

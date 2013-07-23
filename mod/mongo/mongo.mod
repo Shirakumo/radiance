@@ -19,7 +19,10 @@
    :license "Artistic" 
    :url "http://tymoon.eu"
 
-   :implements '(database data-model)
-   :asdf-system "radiance-mod-mongo")
+   :implements '(database data-model))
+   
+  (:components ((:file "database")
+                (:file "data-model" :depends-on ("database")))
+   :depends-on (:cl-mongo))
 
   (dbinstance :initform NIL :initarg dbinstance :accessor dbinstance))

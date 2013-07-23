@@ -25,4 +25,9 @@
      :collections (list openids)
      :dependencies '(verify)
      :implements '()
-     :asdf-system "radiance-mod-verify-openid")))
+     :asdf-system "radiance-mod-verify-openid")
+
+    (:components ((:file "openid"))
+     :depends-on (:radiance-mod-verify
+                  :cl-openid
+                  :puri))))

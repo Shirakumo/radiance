@@ -27,12 +27,22 @@
   (defmodule verify (auth)
     "Verification Module to provide user, session and authentication parts."
     (:fullname "Verify Authentication System" 
-               :author "Nicolas Hafner" 
-               :version "0.0.1"
-               :license "Artistic" 
-               :url "http://tymoon.eu"
+     :author "Nicolas Hafner" 
+     :version "0.0.1"
+     :license "Artistic" 
+     :url "http://tymoon.eu"
                
-               :collections (list user-collection)
-               :dependencies '(data-model)
-               :implements '(user session auth)
-               :asdf-system "radiance-mod-verify")))
+     :collections (list user-collection)
+     :dependencies '(data-model dispatcher)
+     :implements '(user session auth)
+     :asdf-system "radiance-mod-verify")
+  
+    (:components ((:file "crypto")
+                  (:file "user")
+                  (:file "auth" :depends-on ("user" "crypto"))
+                  (:file "session" :depends-on ("user"))
+                  (:file "mechanisms" :depends-on ("auth" "crypto"))
+                  (:file "sites" :depends-on ("auth" "session")))
+     :depends-on (:split-sequence
+                  :ironclad
+                  :uuid))))
