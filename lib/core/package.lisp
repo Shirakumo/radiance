@@ -44,7 +44,6 @@
            :universal-to-unix-time
            :unix-to-universal-time
            :get-unix-time
-           :random-string
            :make-random-string
            :set-cookie
            :template
@@ -111,7 +110,6 @@
            :db-remove
            :db-update
            :db-apropos
-           :query
            :data-model
            :model-field
            :model-get
@@ -122,6 +120,17 @@
            :model-delete
            :model-insert
            :with-model-fields
+           ::=
+           ::and
+           ::or
+           ::not
+           ::>
+           ::<
+           ::>=
+           ::<=
+           ::in
+           ::!in
+           ::matches
            )
   (:shadow :restart))
 
