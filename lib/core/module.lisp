@@ -51,49 +51,61 @@
 (defgeneric shutdown (module)
   (:documentation "Called when Radiance is shut down."))
 
-(defmacro defmodule (name superclasses docstring (&key fullname author version license url collections (persistent T) implements asdf-system dependencies compiled) &rest extra-slots)
+(defmacro defmodule (name superclasses docstring (&key fullname author version license url collections (persistent T) implements asdf-system dependencies compiled) (&rest defsystem) &rest extra-slots)
   "Define a new Radiance module."
   (let ((superclasses (if (not superclasses) '(module) superclasses))
         (classdef (gensym "CLASSDEF"))
-        (initializer (gensym "INITIALIZER")))
-    `(flet ((,classdef () (log:info "Defining module ~a" ',name)
-                       (defclass ,name ,superclasses
-                         ((name :initarg :name :reader name :type string :allocation :class)
-                          (author :initarg :author :reader author :type string :allocation :class)
-                          (version :initarg :version :reader version :type string :allocation :class)
-                          (license :initarg :license :reader license :type string :allocation :class)
-                          (url :initarg :url :reader url :type string :allocation :class)
-                          
-                          (collections :initarg :collections :reader collections :type list :allocation :class)
-                          (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
-                          
-                          (implements :initarg :implements :reader implementations :type list :allocation :class)
-                          (asdf-system :initarg :asdf-system :reader asdf-system :type symbol :allocation :class)
-                          (dependencies :initarg :dependencies :reader dependencies :type list :allocation :class)
-                          (compiled :initarg :compiled :reader compiled-p :type boolean :allocation :class)
-                          ,@extra-slots)
-                         (:documentation ,docstring)))
-            (,initializer () (log:info "Initializing module ~a" ',name)
-                          (setf (gethash (make-keyword ',name) *radiance-modules*)
-                                (make-instance ',name 
-                                               :name ,fullname :author ,author :version ,version :license ,license :url ,url
-                                               :collections ,collections :persistent ,persistent
-                                               :implements ,implements :asdf-system ,asdf-system :dependencies ,dependencies
-                                               :compiled ,compiled))))
-       (restart-case (if (gethash ',name *radiance-modules*)
-                         (error 'module-already-initialized :module ',name)
-                         (progn (,classdef) (,initializer)))
-       (override-both () 
-         :report "Redefine the module and create a new instance of the module anyway."
-         (,classdef) (,initializer))
-       (override-module ()
-         :report "Just redefine the module."
-         (,classdef))
-       (override-instance ()
-         :report "Just create a new instance of the module."
-         (,initializer))
-       (do-nothing ()
-         :report "Leave module and instance as they are.")))))
+        (initializer (gensym "INITIALIZER"))
+        (asdf-system (or asdf-system (format nil "RADIANCE-MOD-~a" name))))
+    `(progn 
+       
+       ,(if defsystem
+            `(asdf:defsystem ,(intern (string-upcase asdf-system))
+               :name ,fullname
+               :license ,license
+               :author ,author
+               :version ,version
+               :description ,docstring
+               ,@defsystem))
+
+       (flet ((,classdef () (log:info "Defining module ~a" ',name)
+                         (defclass ,name ,superclasses
+                           ((name :initarg :name :reader name :type string :allocation :class)
+                            (author :initarg :author :reader author :type string :allocation :class)
+                            (version :initarg :version :reader version :type string :allocation :class)
+                            (license :initarg :license :reader license :type string :allocation :class)
+                            (url :initarg :url :reader url :type string :allocation :class)
+                            
+                            (collections :initarg :collections :reader collections :type list :allocation :class)
+                            (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
+                            
+                            (implements :initarg :implements :reader implementations :type list :allocation :class)
+                            (asdf-system :initarg :asdf-system :reader asdf-system :type symbol :allocation :class)
+                            (dependencies :initarg :dependencies :reader dependencies :type list :allocation :class)
+                            (compiled :initarg :compiled :reader compiled-p :type boolean :allocation :class)
+                            ,@extra-slots)
+                           (:documentation ,docstring)))
+              (,initializer () (log:info "Initializing module ~a" ',name)
+                            (setf (gethash (make-keyword ',name) *radiance-modules*)
+                                  (make-instance ',name 
+                                                 :name ,fullname :author ,author :version ,version :license ,license :url ,url
+                                                 :collections ,collections :persistent ,persistent
+                                                 :implements ,implements :asdf-system ,asdf-system :dependencies ,dependencies
+                                                 :compiled ,compiled))))
+         (restart-case (if (gethash ',name *radiance-modules*)
+                           (error 'module-already-initialized :module ',name)
+                           (progn (,classdef) (,initializer)))
+           (override-both () 
+             :report "Redefine the module and create a new instance of the module anyway."
+             (,classdef) (,initializer))
+           (override-module ()
+             :report "Just redefine the module."
+             (,classdef))
+           (override-instance ()
+             :report "Just create a new instance of the module."
+             (,initializer))
+           (do-nothing ()
+             :report "Leave module and instance as they are."))))))
 
 (defun make-column (name &key (access-mode "000") description)
   "Shorthand function to create a new column instance."
@@ -120,3 +132,47 @@
 (defmethod get-module ((module string))
   "Retrieves the requested module from the instance list."
   (gethash (make-keyword module) *radiance-modules*))
+
+(defun discover-modules (&key redefine reinitialize)
+  (cl-fad:walk-directory (merge-pathnames "mod/" (pathname (config :root)))
+                         (lambda (file) (load-module file :redefine redefine :reinitialize reinitialize))
+                         :test (lambda (file) 
+                                 (let ((name (file-namestring file)))
+                                   (equal ".mod" (subseq name (- (length name) 4)))))))
+
+(defun load-module (file &key redefine reinitialize &allow-other-keys)
+  (log:info "Discovered mod file: ~a (~a)" file (file-namestring file))
+  (handler-bind ((module-already-initialized
+                  #'(lambda (c) (declare (ignore c)) 
+                            (cond
+                              ((not (or redefine reinitialize)) (invoke-restart 'do-nothing))
+                              ((and redefine reinitialize) (invoke-restart 'override-both))
+                              (redefine (invoke-restart 'override-module))
+                              (reinitialize (invoke-restart 'override-instance))))))
+    (load file)))
+
+(defgeneric compile-module (module &key force)
+  (:documentation "Compiles a module's source files."))
+
+(defmethod compile-module ((module module) &key force)
+  (when (or (not (slot-value module 'compiled)) force)
+    (log:info "Compiling module ~a (~a)" module (asdf-system module))
+    (loop for dependency in (slot-value module 'dependencies)
+       do (compile-dependency dependency :force force))
+    (ql:quickload (asdf-system module))
+    (setf (slot-value module 'compiled) T)))
+
+(defmethod compile-module ((module string) &key force)
+  (let ((module-instance (get-module module)))
+    (if module-instance
+        (compile-module module-instance :force force)
+        (error "Module ~a not found." module))))
+
+(defmethod compile-module ((module symbol) &key force)
+  (compile-module (symbol-name module) :force force))
+
+(defun compile-dependency (dependency &key force)
+  (cond
+    ((get-module dependency) (compile-module dependency :force force))
+    ((config-tree :implementations (make-keyword dependency)) (compile-module (config-tree :implementations (make-keyword dependency)) :force force))
+    (T (error "Dependency ~a not found!" dependency))))
