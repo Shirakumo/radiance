@@ -17,11 +17,12 @@
   :description "Core libraries for TyNETv5 Radiance."
   :long-description ""
   :components ((:file "package")
-	       (:file "logging" :depends-on ("package"))
-               (:file "toolkit" :depends-on ("package" "logging"))
-               (:file "module" :depends-on ("package" "logging"))
-               (:file "trigger" :depends-on ("package" "module" "logging"))
-               (:file "implement" :depends-on ("package" "module" "logging")))
+               (:file "toolkit" :depends-on ("package"))
+               (:file "module" :depends-on ("package"))
+               (:file "trigger" :depends-on ("package" "module"))
+               (:file "implement" :depends-on ("package" "module"))
+               (:file "server" :depends-on ("package" "module" "implement"))
+               (:file "interfaces" :depends-on ("package" "implement")))
   :depends-on (:cl-json
                :hunchentoot
 	       :log4cl
