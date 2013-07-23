@@ -17,5 +17,4 @@
   :description "Version 5 of TyNET, a CMS focusing on modularity and expansion."
   :long-description ""
   :components ()
-  :depends-on (:radiance-lib-core
-               :radiance-mod-core))
+  :depends-on (:radiance-lib-core))
