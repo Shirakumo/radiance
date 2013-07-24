@@ -16,7 +16,7 @@
 
   (defmodule verify-oauth ()
     "Authentication mechanism for the verify system using OAuth"
-    (:fullname "OAuth Mechanism for Verify." 
+    (:fullname "OAuth Mechanism for Verify" 
      :author "Nicolas Hafner" 
      :version "0.0.1"
      :license "Artistic" 
