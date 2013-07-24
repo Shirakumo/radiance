@@ -76,6 +76,6 @@
   (loop for (key . val) in (config :implementations)
      do (progn (log:info "Choosing ~a for ~a." val key)
                (if (listp val)
-                   (loop for val in val 
-                      do (compile-module val :force force))
+                   (loop for module in val 
+                      do (compile-module module :force force))
                    (compile-module val :force force)))))
