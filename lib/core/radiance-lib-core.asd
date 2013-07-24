@@ -16,13 +16,14 @@
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Core libraries for TyNETv5 Radiance."
   :long-description ""
+  :serial T
   :components ((:file "package")
-               (:file "toolkit" :depends-on ("package"))
-               (:file "module" :depends-on ("package"))
-               (:file "trigger" :depends-on ("package" "module"))
-               (:file "implement" :depends-on ("package" "module"))
-               (:file "server" :depends-on ("package" "module" "implement"))
-               (:file "interfaces" :depends-on ("package" "implement")))
+               (:file "toolkit")
+               (:file "module")
+               (:file "trigger")
+               (:file "implement")
+               (:file "server")
+               (:file "interfaces"))
   :depends-on (:cl-json
                :hunchentoot
 	       :log4cl
