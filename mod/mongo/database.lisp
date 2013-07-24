@@ -140,4 +140,4 @@
 (defun :<= (a b) ($<= a b))
 (defun :in (a b) ($in a b))
 (defun :!in (a b) ($!in a b))
-(defun :matches (a b) ($/ a b))
+(defun :matches (a b &key options) (:= a ($/ b options)))
