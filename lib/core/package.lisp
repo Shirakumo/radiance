@@ -12,6 +12,8 @@
            :*radiance-log-verbose*
            :*radiance-acceptors*
            :*radiance-request*
+           :*radiance-request-count*
+           :*radiance-request-total*
            :*radiance-session*
            :*radiance-modules*
            :*radiance-implements*
