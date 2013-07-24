@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Radiance System Information</title>
+    <link rel="stylesheet" href="/static/css/sysinfo/index.css" />
+  </head>
+  <body>
+    <h1>Radiance System Information</h1>
+    <div id="general">
+      <h2>General Information</h2>
+      <div id="key-val"><label>Acceptors</label><span id="acceptors"></span></div>
+      <div id="key-val"><label>Current Requests</label><span id="cur-requests"></span></div>
+      <div id="key-val"><label>Total Requests</label><span id="tot-requests"></span></div>
+    </div>
+    <div id="host">
+      <h2>Host Information</h2>
+      <div id="key-val"><label>Machine Instance</label><span id="machine-instance"></span></div>
+      <div id="key-val"><label>Machine Type</label><span id="machine-type"></span></div>
+      <div id="key-val"><label>Machine Version</label><span id="machine-version"></span></div>
+      <div id="key-val"><label>Software Type</label><span id="software-type"></span></div>
+      <div id="key-val"><label>Software Version</label><span id="software-version"></span></div>
+    </div>
+    <div id="implementations">
+      <h2>Implementations</h2>
+    </div>
+    <div id="modules">
+      <h2>Modules</h2>
+      <ul>
+        <li id="module">
+          <h3>NAME</h3>
+          <blockquote>DOCSTRING</blockquote>
+          <table class="modinfo">
+            <thead><tr><th>Slot</th><th>Value</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
