@@ -16,7 +16,7 @@
   
   (defmodule verify-openid ()
     "Authentication mechanism for the verify system using OpenID"
-    (:fullname "OpenID Mechanism for Verify." 
+    (:fullname "OpenID Mechanism for Verify" 
      :author "Nicolas Hafner" 
      :version "0.0.1"
      :license "Artistic" 
