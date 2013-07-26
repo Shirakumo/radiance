@@ -73,6 +73,25 @@
              for i below length collect (aref chars (random charlength)))
           'string))
 
+(defgeneric getdf (model field)
+  (:documentation "Attempts to extract the requested field from a variety of different data models."))
+
+(defmethod getdf ((model data-model) field)
+  (model-field model field))
+
+(defmethod getdf ((model user) field)
+  (user-field model field))
+
+(defmethod getdf ((model session) field)
+  (session-field model field))
+
+(defmethod getdf ((model list) field)
+  (if (keywordp (first model))
+      (getf model (if (stringp field) (make-keyword field) field))
+      (if (listp (first model))
+          (assoc field model)
+          (error "Model is of type LIST, but is neither an ALIST or PLIST."))))
+
 (defvar *default-cookie-expire* (* 60 60 24 356))
 
 (defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (response (response *radiance-request*)))

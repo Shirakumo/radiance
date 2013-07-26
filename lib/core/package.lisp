@@ -47,6 +47,7 @@
            :unix-to-universal-time
            :get-unix-time
            :make-random-string
+           :getdf
            :set-cookie
            :template
            :read-data-file
