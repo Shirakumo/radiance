@@ -9,7 +9,8 @@
 (defimpl dispatcher
     "Primary dispatcher module that propagates page calls to triggers."
   (dispatch (request) "Dispatch a new webserver call.")
-  (register (trigger &key subdomain domain port path) "Register a trigger to dispatch to."))
+  (register (trigger &key subdomain domain port path) "Register a trigger to dispatch to.")
+  (dispatch-default (request) "The standard method to invoke when no specific handler has been found."))
 
 (defimpl (user)
     "Defines a very basic user class that allows tying arbitrary data to a user."
