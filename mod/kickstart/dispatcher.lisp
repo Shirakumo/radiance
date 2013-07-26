@@ -29,7 +29,10 @@
           if (or (= (length path) 0)
                  (cl-ppcre:scan (model-field starter "path") path))
           do (return (trigger (make-keyword (model-field starter "trigger")))))
-       (read-data-file "static/html/error/404.html")))))
+       (dispatch-default dispatch request)))))
+
+(defmethod dispatch-default ((dispatch kickstart) (request radiance:request) &key)
+  (read-data-file "static/html/error/404.html"))
 
 (defmethod register ((dispatch kickstart) trigger &key (subdomain "") (domain "") (port "") (path ""))
   (setf trigger (if (symbolp trigger) (symbol-name trigger) (string-upcase trigger)))
