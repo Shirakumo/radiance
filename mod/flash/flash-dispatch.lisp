@@ -19,7 +19,7 @@
                                   (string= path (path request) :end2 (length path)))))
       do (return (trigger trigger)))
    (trigger :dispatch-default)))
-   
+
 (defmethod register ((dispatch flash-dispatch) trigger &key subdomain domain port path)
   "Registers a subdomain for a module. If the subdomain is NIL, all unhandled requests are dispatched to the module."
   (setf (hooks dispatch) 
@@ -27,7 +27,7 @@
               #'sort-dispatcher-hooks))
   trigger)
 
-(defmethod dispatch-default ((dispatch flash-dispatch))
+(defmethod dispatch-default ((dispatch flash-dispatch) (request radiance:request) &key &allow-other-keys)
   (read-data-file "static/html/hello.html"))
 (defhook :dispatch-default (get-module 'flash-dispatch) #'dispatch-default)
 
