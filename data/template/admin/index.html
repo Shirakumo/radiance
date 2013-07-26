@@ -31,29 +31,40 @@
     </div>
     <div id="content">
       <h2>WOWSERS! An admin interface!</h2>
-      <form>
-        <h3>Survey Time</h3>
-        <div class="input-row"><label>Do you give a shit?</label><input type="checkbox" /></div>
-        <div class="input-row"><label>If so, how much?</label><input type="number" /></div>
-        <div class="input-row"><label>Tell us why:</label><textarea></textarea></div>
-        <input type="submit" value="Hot giggedy damn, submit dat shit!" />
+      <div class="tablebox">
+        <table class="selectable actions tablesorter">
+          <thead>
+            <tr>
+              <th><input type="checkbox" class="select-all" /></th>
+              <th>Name</th>
+              <th>Displayname</th>
+              <th>Register Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:username" /></td>
+              <td data-uibox="text:username"></td>
+              <td data-uibox="text:displayname"></td>
+              <td data-uibox="text:register-date"></td>
+              <td><form>
+                <input type="hidden" name="username" data-uibox="value:username" />
+                <input type="submit" name="action" value="Edit" />
+                <input type="submit" name="action" value="Delete" />
+              </form></td>
+            </tr>
+          </tbody>
+      </table>
+      <form class="table-actions" id="massEditForm">
+        <input type="submit" name="action" value="Delete" />
       </form>
+    </div>
 
-
-<p>Nam ac consequat lectus, nec feugiat orci. Aliquam vitae euismod nibh, non tempus purus. Sed rhoncus sagittis lacus, eu laoreet quam. Etiam gravida sapien in facilisis tempus. Vivamus id blandit quam. Phasellus metus metus, ultricies pretium ultricies in, auctor at turpis. Aliquam a dignissim felis, at faucibus lorem. Mauris ac tellus fringilla, posuere odio et, mattis nibh. Praesent leo tellus, feugiat eu vestibulum sit amet, congue eget turpis. Vivamus erat ligula, hendrerit nec erat ac, fringilla tempus sem. Fusce luctus dolor quis neque viverra lacinia.</p>
-
-<p>Mauris iaculis mauris eu ullamcorper aliquam. Vivamus condimentum fringilla sagittis. Integer purus mi, dapibus et varius eget, porta id arcu. Praesent eu sodales odio. Nulla quis erat interdum, hendrerit neque vitae, convallis nisi. Morbi fringilla elementum ante, quis condimentum sapien semper ac. Vivamus eu sapien nisi. Morbi non consectetur velit, ut elementum tortor. Donec est tortor, gravida eget tristique sed, facilisis quis felis. Nullam ac lectus ac mauris tincidunt egestas ac varius mauris. Quisque at odio elit. Pellentesque tellus dolor, mattis ac metus at, dignissim varius nulla. Nulla sem nulla, porta vel sollicitudin eget, luctus at lorem. Nunc vitae nunc at diam ultricies blandit.</p>
-
-<p>Nam ac consequat lectus, nec feugiat orci. Aliquam vitae euismod nibh, non tempus purus. Sed rhoncus sagittis lacus, eu laoreet quam. Etiam gravida sapien in facilisis tempus. Vivamus id blandit quam. Phasellus metus metus, ultricies pretium ultricies in, auctor at turpis. Aliquam a dignissim felis, at faucibus lorem. Mauris ac tellus fringilla, posuere odio et, mattis nibh. Praesent leo tellus, feugiat eu vestibulum sit amet, congue eget turpis. Vivamus erat ligula, hendrerit nec erat ac, fringilla tempus sem. Fusce luctus dolor quis neque viverra lacinia.</p>
-
-<p>Mauris iaculis mauris eu ullamcorper aliquam. Vivamus condimentum fringilla sagittis. Integer purus mi, dapibus et varius eget, porta id arcu. Praesent eu sodales odio. Nulla quis erat interdum, hendrerit neque vitae, convallis nisi. Morbi fringilla elementum ante, quis condimentum sapien semper ac. Vivamus eu sapien nisi. Morbi non consectetur velit, ut elementum tortor. Donec est tortor, gravida eget tristique sed, facilisis quis felis. Nullam ac lectus ac mauris tincidunt egestas ac varius mauris. Quisque at odio elit. Pellentesque tellus dolor, mattis ac metus at, dignissim varius nulla. Nulla sem nulla, porta vel sollicitudin eget, luctus at lorem. Nunc vitae nunc at diam ultricies blandit.</p>
-
-<p>Nam ac consequat lectus, nec feugiat orci. Aliquam vitae euismod nibh, non tempus purus. Sed rhoncus sagittis lacus, eu laoreet quam. Etiam gravida sapien in facilisis tempus. Vivamus id blandit quam. Phasellus metus metus, ultricies pretium ultricies in, auctor at turpis. Aliquam a dignissim felis, at faucibus lorem. Mauris ac tellus fringilla, posuere odio et, mattis nibh. Praesent leo tellus, feugiat eu vestibulum sit amet, congue eget turpis. Vivamus erat ligula, hendrerit nec erat ac, fringilla tempus sem. Fusce luctus dolor quis neque viverra lacinia.</p>
-
-<p>Mauris iaculis mauris eu ullamcorper aliquam. Vivamus condimentum fringilla sagittis. Integer purus mi, dapibus et varius eget, porta id arcu. Praesent eu sodales odio. Nulla quis erat interdum, hendrerit neque vitae, convallis nisi. Morbi fringilla elementum ante, quis condimentum sapien semper ac. Vivamus eu sapien nisi. Morbi non consectetur velit, ut elementum tortor. Donec est tortor, gravida eget tristique sed, facilisis quis felis. Nullam ac lectus ac mauris tincidunt egestas ac varius mauris. Quisque at odio elit. Pellentesque tellus dolor, mattis ac metus at, dignissim varius nulla. Nulla sem nulla, porta vel sollicitudin eget, luctus at lorem. Nunc vitae nunc at diam ultricies blandit.</p>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
     <script src="/static/js/admin/index.js"></script>
   </body>
 </html>

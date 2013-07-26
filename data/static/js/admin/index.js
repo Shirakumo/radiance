@@ -1,11 +1,6 @@
 $(function(){
+	// Basic Panel UI
 	$("#panel>ul>li>ul").hide();
-
-	function AppViewModel() {
-
-	}
-
-	ko.applyBindings(new AppViewModel());
 
 	$("#panel>ul>li>a").click(function(){
 		$("ul", $(this).parent()).stop(true).slideToggle();
@@ -18,4 +13,26 @@ $(function(){
 	});
 
 	$("#panel>ul>li>ul>li.active").click().parent().show();
+
+	// Table checkboxes
+	$(".select-all").click(function(){
+		var checkboxes = $('input[type="checkbox"]', $(this).parent().parent().parent().parent());
+		checkboxes.prop("checked", $(this).is(":checked"));
+	});
+
+	$(".tablebox table").dataTable({
+		"bPaginate": false,
+		"bFilter": true,
+		"bSort": true,
+		"bInfo": false,
+	});
+
+
+	// Complex UI
+
+	function AppViewModel() {
+
+	}
+
+	ko.applyBindings(new AppViewModel());
 });

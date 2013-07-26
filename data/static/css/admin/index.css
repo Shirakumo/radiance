@@ -115,18 +115,6 @@ body,html{
 	max-width:100%;
 	max-height: 100%;
 }
-#content input, #content textarea{
-	border: 1px solid #CCC;
-	background: #DDD;
-	min-width: 200px;
-	box-sizing: border-box;
-}
-#content form{
-	background: #FFF;
-	padding: 5px;
-	display: inline-block;
-}
-#content form h3{padding:0;margin:0;text-indent: 10px}
 
 #content .imgbox{
 	width: 40%;
@@ -136,3 +124,131 @@ body,html{
 #content .right{float:right;}
 #content .left{float:left;}
 #content .input-row *{vertical-align: text-top;}
+
+#content h2{
+	margin: 0 0 10px 0;
+	padding: 2px 10px 2px 10px;
+}
+
+#content .tablebox table{
+	width: 100%;
+	background: #FFF;
+	border-collapse: collapse;
+}
+
+#content .tablebox table thead{
+	background: #0088AA;
+	color: #FFF;
+}
+
+#content .tablebox table td, #content table th{
+	border-right: 1px solid #0088AA;
+	padding: 3px;
+}
+
+#content .tablebox table th{
+	text-indent: 7px;
+}
+
+#content .tablebox table td:last-child, #content table th:last-child{
+	border-right: none;
+}
+
+#content .tablebox table tbody tr{}
+
+#content .tablebox table tbody tr:nth-child(2n){
+	background: #EEE;
+}
+
+#content .tablebox table tbody tr:nth-child(2n+1){
+}
+
+#content .tablebox table.selectable thead tr th:first-child{
+	width: 1px;
+	text-indent: 0;
+}
+
+#content .tablebox table.actions tbody tr td:last-child{
+	width: 1px;
+}
+
+#content .tablebox table.actions tbody tr td:last-child form{
+	white-space: nowrap;
+}
+
+#content .tablebox table form input{
+	border: none;
+	background: #0088AA;
+	color: #FFF;
+}
+
+#content .tablebox table form input:hover{
+	background: #00EEFF;
+}
+
+#content .tablebox table form input:active{
+	background: #00EEFF;
+}
+
+#content .tablebox form.table-actions{
+	background: #0088AA;
+	margin-left: 20px;
+	height: 20px;
+	position: relative;
+	font-size:0pt;
+}
+
+#content .tablebox form.table-actions::before{
+	content: "";
+	position: absolute;
+	left:-20px;top:0;
+	width: 0;height: 0; 
+	border-top: 20px solid #0088AA;
+	border-left: 20px solid transparent;
+}
+
+#content .tablebox form.table-actions input{
+	background: none;
+	border: none;
+	border-left: 1px solid #FFF;
+	padding: 0 5px 0 5px;margin:0;
+	height: 100%;
+	color: #FFF;
+	min-width: 50px;
+	font-size: 10pt;
+}
+
+#content .tablebox form.table-actions input:hover{
+	background: #00EEFF;
+}
+
+#content .tablebox form.table-actions input:first-child{
+	border-left: none;
+}
+
+#content .tablebox input{
+	cursor: pointer;
+}
+
+#content .tablebox .dataTables_filter{
+	background: #0088AA;
+	display: inline-block;
+	float:right;
+	position: relative;
+	height: 20px;
+	color: #FFF;
+}
+
+#content .tablebox .dataTables_filter:before{
+	content: "";
+	position: absolute;
+	left:-20px;top:0;
+	width: 0;height: 0; 
+	border-bottom: 20px solid #0088AA;
+	border-left: 20px solid transparent;
+}
+
+#content .tablebox .dataTables_filter input{
+	border: 1px solid #005588;
+	background: #EEE;
+}
