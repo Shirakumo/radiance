@@ -48,12 +48,18 @@
       (progn
         (log:info "Loading Config...")
         (load-config)
+        (log:info "Resetting globals...")
+        (setf *radiance-triggers* (make-hash-table))
         (log:info "Loading implementations...")
         (discover-modules)
         (load-implementations)
         (log:info "Setting up Hunchentoot...")
         (let ((acceptors (loop for port in (config :ports) 
-                            collect (make-instance 'hunchentoot:easy-acceptor :port port :request-class 'radiance:request))))
+                            collect (make-instance 'hunchentoot:easy-acceptor 
+                                                   :port port
+                                                   :access-log-destination NIL
+                                                   :message-log-destination NIL
+                                                   :request-class 'radiance:request))))
           (if (not *radiance-handlers*)
               (setf *radiance-handlers* 
                     (list (hunchentoot:create-folder-dispatcher-and-handler "/static/" (merge-pathnames "data/static/" (pathname (config :root))))
@@ -115,6 +121,7 @@
           (domain request) domain
           (path request) path
           (port request) port)
+    (log:debug "REQUEST: ~a" request)
     (setf *radiance-request-total* (1+ *radiance-request-total*))
     (setf *radiance-request-count* (1+ *radiance-request-count*))
     (let ((result (dispatch (implementation 'dispatcher) request)))
