@@ -6,7 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.uibox
   (:nicknames :radiance-mod-uibox :uibox)
-  (:use :cl :radiance :lquery :string-case)
+  (:use :cl :radiance :lquery)
   (:export :fill-node :fill-foreach))
 (in-package :radiance-mod-uibox)
 
