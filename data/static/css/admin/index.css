@@ -77,6 +77,10 @@ body,html{
 	padding: 2px 2px 2px 5px;
 	position: relative;
 	height: 16px;
+	text-transform: lowercase;
+}
+#panel>ul>li>ul>li>a:first-letter{
+	text-transform: uppercase;
 }
 
 #panel>ul>li>ul>li.active>a{background: #0088AA;}
