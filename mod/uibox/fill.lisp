@@ -45,27 +45,32 @@ If it is NIL, it is expected that lQuery has already been initialized with a doc
 (defun fill-node (node model)
   "Fills data into the node according to uibox constants. Syntax:
 DATA-UIBOX : TARGET:field*
-TARGET     : text | html | value | class | style | ATTRIBUTE
-ATTRIBUTE  : attr-NAME"
-  (setf node (list node))
+TARGET     : text | html | value | class | style | ATTRIBUTE | FOREACH
+ATTRIBUTE  : attr-NAME
+FOREACH    : foreach-SELECTOR"
   (let ((targets (split-sequence:split-sequence #\space (first ($ node (attr :data-uibox))))))
     (loop for temp in targets
        if (> (length temp) 0)
        do (let* ((temp (split-sequence:split-sequence #\: temp))
                  (target (first temp))
                  (data (getdf model (second temp))))
-            (format t "1 - ~a: ~a ~a~%" ($ node (serialize)) target data)
-            (string-case (target)
-              ("text" ($ node (text data)))
-              ("html" ($ node (html data)))
-              ("value" ($ node (val data)))
-              ("class" ($ node (add-class data)))
-              ("style" (let ((css ($ node (attr :style))))
-                         ($ node (attr :style (concatenate 'string css data)))))
-              (T (if (and (> (length target) 5)
-                          (string= target "attr-" :end1 5))
-                     ($ node (attr (make-keyword (subseq target 5)) data))
-                     (error "Unknown data target directive: ~a" target))))
-            
-            (format t "2 - ~a: ~a ~a~%" ($ node (serialize)) target data))))
+            (when data
+              (string-case:string-case (target)
+                ("text" ($ node (text data)))
+                ("html" ($ node (html data)))
+                ("value" ($ node (val data)))
+                ("class" ($ node (add-class data)))
+                ("style" (let ((css ($ node (attr :style))))
+                           ($ node (attr :style (concatenate 'string css data)))))
+                (T (cond 
+                     ((and (> (length target) 5)
+                           (string= target "attr-" :end1 5))
+                      ($ node (attr (make-keyword (subseq target 5)) data)))
+                     
+                     ((and (> (length target) 8)
+                           (string= target "foreach-" :end1 8))
+                      (fill-foreach data (subseq target 8) :template node))
+                     
+                     (T (error "Unknown data target directive: ~a" target)))))
+              ($ node (attr :data-uibox NIL))))))
   node)
