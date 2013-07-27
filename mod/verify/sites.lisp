@@ -23,6 +23,7 @@
 (define-condition auth-register-error (auth-error) ())
 
 (defmethod page-login ((verify verify))
+  (authenticate (implementation 'auth))
   ($ (initialize (template "verify/login.html")))
   (if (or (not *radiance-session*) (session-temp-p *radiance-session*))
       (loop with target = ($ "#mechanisms")
@@ -32,6 +33,7 @@
   (first ($ (serialize :doctype "html"))))
 
 (defmethod page-auth ((verify verify))
+  (authenticate (implementation 'auth))
   (let* ((name (third (split-sequence:split-sequence #\/ (path *radiance-request*))))
          (mechanism (get-mechanism (make-keyword name))))
     (if mechanism 
@@ -48,11 +50,13 @@
         (error 'auth-error :text (format nil "Unknown authentication mechanism ~a" name) :code 8))))
         
 (defmethod page-logout ((verify verify))
+  (authenticate (implementation 'auth))
   (if *radiance-session*
       (session-end *radiance-session*))
   (hunchentoot:redirect (get-redirect)))
 
 (defmethod page-register ((verify verify))
+  (authenticate (implementation 'auth))
   (if (or (not *radiance-session*) (session-temp-p *radiance-session*))
       (progn
         ($ (initialize (template "verify/register.html")))
@@ -70,6 +74,7 @@
       (hunchentoot:redirect (get-redirect))))
 
 (defmethod page-register-auth ((verify verify))
+  (authenticate (implementation 'auth))
   (if (hunchentoot:post-parameters *radiance-request*)
       (session-field *radiance-session* "post-data" :value (hunchentoot:post-parameters *radiance-request*)))
   (handler-case
