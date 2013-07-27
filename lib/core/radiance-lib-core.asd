@@ -18,12 +18,12 @@
   :long-description ""
   :serial T
   :components ((:file "package")
-               (:file "toolkit")
                (:file "module")
                (:file "trigger")
                (:file "implement")
-               (:file "server")
-               (:file "interfaces"))
+               (:file "interfaces")
+               (:file "toolkit")
+               (:file "server"))
   :depends-on (:cl-json
                :hunchentoot
 	       :log4cl
