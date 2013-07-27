@@ -18,7 +18,8 @@
               (or (not path) (and (<= (length path) (length (path request)))
                                   (string= path (path request) :end2 (length path)))))
       do (return (trigger trigger)))
-   (trigger :dispatch-default)))
+   (trigger :dispatch-default request)
+   (dispatch-default dispatch request)))
 
 (defmethod register ((dispatch flash-dispatch) trigger &key subdomain domain port path)
   "Registers a subdomain for a module. If the subdomain is NIL, all unhandled requests are dispatched to the module."
@@ -29,7 +30,6 @@
 
 (defmethod dispatch-default ((dispatch flash-dispatch) (request radiance:request) &key &allow-other-keys)
   (read-data-file "static/html/hello.html"))
-(defhook :dispatch-default (get-module 'flash-dispatch) #'dispatch-default)
 
 (defun count-path (path)
   (if (or (eq path NIL) (equal path "/")) 0
