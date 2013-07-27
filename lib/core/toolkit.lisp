@@ -14,6 +14,8 @@
    (code :initarg :code :initform -1))
   (:report (lambda (c s) (format s "~a: ~a (E~4d)" (class-name (class-of c)) (slot-value c 'text) (slot-value c 'code)))))
 
+(define-condition auth-error (radiance-error) ())
+
 (defun load-config (&optional (config-file *radiance-config-file*))
   "(Re)load the static configuration."
   (when (not config-file)
@@ -92,6 +94,12 @@
           (assoc field model)
           (error "Model is of type LIST, but is neither an ALIST or PLIST."))))
 
+(defun authenticated-p (&optional (session *radiance-session*))
+  (and session (session-user session) (user-saved-p (session-user session)) (session-active-p session)))
+
+(defun authorized-p (access-branch &optional (session *radiance-session*))
+  (and (authenticated-p session) (user-check (session-user session) access-branch)))
+
 (defvar *default-cookie-expire* (* 60 60 24 356))
 
 (defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (response (response *radiance-request*)))
@@ -100,8 +108,7 @@
     (log:debug "Setting cookie ~a on ~a/~a exp ~a (H~a;S~a) to ~a" name domain path expires http-only secure value)
     (if domain
         (setc domain)
-        (progn (setc (format NIL ".~a" (domain *radiance-request*)))
-               (setc (format NIL "~{~a.~}~a" (subdomains *radiance-request*) (domain *radiance-request*)))))))
+        (setc (format NIL ".~a" (domain *radiance-request*))))))
 
 (defun template (path)
   "Create pathname to template."
@@ -113,6 +120,10 @@
     (let ((seq (make-array (file-length stream) :element-type 'character :fill-pointer t)))
       (setf (fill-pointer seq) (read-sequence seq stream))
       seq)))
+
+(defun error-page (errorcode)
+  "Returns the contents of the requested error page."
+  (read-data-file (format nil "static/html/error/~a.html" errorcode)))
 
 (defun file-size (pathspec)
   "Retrieves the file size in bytes."

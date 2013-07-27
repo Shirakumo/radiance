@@ -22,8 +22,6 @@
   (user-grant (branch) "Give permission to a certain branch.")
   (user-prohibit (branch) "Reclaim/Prohibit permission to a certain branch."))
 
-(define-condition auth-error (radiance-error) ())
-
 (defimpl auth
     "Handles one or more methods for authentication of a user."
   (authenticate () "Authenticate the current user using whatever method applicable. Returns the user object.")
@@ -100,3 +98,9 @@ Manipulating data directly through this is discouraged and the data-model class 
 (define-query-parts (:and &rest args) (:or &rest args) (:not &rest args)
                     (:> a b) (:< a b) (:= a b) (:<= a b) (:>= a b)
                     (:in a b) (:!in a b) (:matches a b))
+
+(defimpl admin
+    "Administration panel."
+  (site () "Handles the admin page rendering.")
+  (admin-category (name) "Defines a new menu category.")
+  (admin-panel (name category function &key funcargs) "Defines a new function that will create the panel."))

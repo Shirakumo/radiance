@@ -48,9 +48,12 @@
            :get-unix-time
            :make-random-string
            :getdf
+           :authenticated-p
+           :authorized-p
            :set-cookie
            :template
            :read-data-file
+           :error-page
            :file-size
            :upload-file
            :with-uploaded-file
@@ -134,6 +137,10 @@
            ::in
            ::!in
            ::matches
+           :admin
+           :site
+           :admin-category
+           :admin-panel
            )
   (:shadow :restart))
 
