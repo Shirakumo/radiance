@@ -1,0 +1,145 @@
+---------------------------------------------------------
+ == EFFECTIVE MODULE USAGE FUNCTIONS ==
+
+
+MACRO:
+(in-module :bla)
+  => module and package set
+
+Sets *module* to the current module, much like in-package.
+Side effect: Also executes in-package to set it to the module's package.
+
+
+FUNCTION:
+(make-uri urispec) => uri
+
+Creates a URI object matching the urispec. Urispec has the following
+syntax:  (subdomain.)*domain?:port?/path?
+The following are all valid examples:
+"foo.bar:80/baz"
+"bar:80/baz"
+"foo.bar/baz"
+"foo./baz"
+"foo.:80/baz"
+"/"
+"/foo"
+If a part of the URI is not given, it is defaulted to "*", which
+matches to anything. make-uri has a read-macro for easier use: #u
+
+
+MACRO:
+(defpage bla uri (&key (module *module*) access-branch lquery)
+  &rest body) => page definition
+
+Defines a new page for the given module that will be available on the
+specified pathspec. If access-branch is given, an authorization check
+on the current session at page load will be performed. If lquery is
+non-NIL, lQuery will be initialized with the given pathspec. The return 
+value of the body should either be a string with the HTML contents
+or NIL, in which case the value stored in *radiance-request* is used
+instead.
+
+
+MACRO:
+(defapi bla (&rest args) (&key (module *module*) access-branch)
+  &rest body) => api definition
+
+Defines a new API function for the given module. The arguments specify
+REST values that are expected (or not according to definition) on the
+API call. If access-branch is given, an authorization check on the
+current session at page load will be performed. The return value of the
+body should be an alist or an URI. This will automatically be transformed
+into the requested output type or a page redirect in the case of an URI.
+
+
+FUNCTION:
+(define-file-link bla uri pathspec &key access-branch) 
+  => link definition
+
+Defines a link of a given URI to a file. Useful for things like
+favicon.ico, robots.txt, humans.txt or other files that cannot be in
+the static/ directory.
+
+
+FUNCTION:
+(link name &key (module *module*) (type :URI) (relation :absolute)) 
+  => type
+
+Returns the link to the requested page or API function. Type can
+be one of the following values: :URI :function :trigger
+Relation only applies for :URI, it can be either :absolute or
+:relative and decides whether the returned URI is merely a path
+or the complete URL.
+
+
+MACRO:
+(with-get (&rest vars) &optional request
+  &rest body) => variable closure
+
+Same as with-slots, but for GET variables.
+
+
+MACRO:
+(with-post (&rest vars) &optional request
+  &rest body) => variable closure
+
+Same as with-slots, but for POST variables.
+
+---------------------------------------------------------
+ == USAGE CASES ==
+
+ = Example 1: Voting Application = 
+
+(in-module :vote)
+
+(define-file-link favicon #u"vote./favicon.ico" (static "vote/favicon.ico"))
+
+(defpage vote #u"vote." (:lquery (template "vote/vote.html"))
+  (let ((options (model-get T "vote" :all)))
+    (uibox:fill-foreach options "ul#options"))
+  (unless (authenticated-p)
+    ($ "input[type=\"submit\"]" (attr :disabled "disabled"))))
+
+(defapi vote (option) (:access-branch "*")
+  (let ((model (model-get-one T "vote" (:= "name" option))))
+    (if model
+        (progn (setf (model-field model "votes")
+                     (1+ (model-field model "votes")))
+               (model-save model))
+        (error 'api-invalid-argument-error :text (format nil "Invalid option ~a selected." option))))
+  (link 'votey))
+
+
+ = Example 2: User-Bound ToDo List = 
+
+(in-module :todo)
+
+(define-file-link favicon #u"todo./favicon.ico" (static "todo/favicon.ico"))
+
+(defpage todo #u"todo." (:lquery (template "todo/todo.html" :access-branch "todo.*"))
+  (let ((todos (model-get T "todo" (:= "user" (username (session-user *radiance-session*))))))
+    (uibox:fill-foreach todos "ul#todos")))
+
+(defapi add-todo (text) (:access-branch "todo.add")
+  (let ((model (model-hull T "todo")))
+    (model-field model "id" (make-uuid))
+    (model-field model "user" (username (session-user *radiance-session*)))
+    (model-field model "text" text)
+    (model-field model "time" (get-unix-time))
+    (model-save model))
+  (link 'todo))
+
+(defapi del-todo (uuid) (:access-branch "todo.del")
+  (let ((model (model-get-one T "todo" (:and (:= "id" uuid) (:= "user" (username (session-user *radiance-session*)))))))
+    (if model
+        (model-delete model)
+        (error 'api-invalid-argument-error :text (format nil "Todo with ID ~a does not exist!" uuid))))
+  (link 'todo))
+
+(defapi edit-todo (uuid text) (:access-branch "todo.edit")
+  (let ((model (model-get-one T "todo" (:and (:= "id" uuid) (:= "user" (username (session-user *radiance-session*)))))))
+    (if model
+        (progn (model-field model "text" text)
+               (model-save model))
+        (error 'api-invalid-argument-error :text (format nil "Todo with ID ~a does not exist!" uuid))))
+  (link 'todo))
