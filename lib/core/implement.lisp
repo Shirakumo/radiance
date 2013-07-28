@@ -63,8 +63,19 @@
                        ,(format nil "Standard method implementation for ~a's ~a, always throws an error." slot func)
                        
                        #+sbcl (declare (sb-ext:muffle-conditions style-warning))
-                       (error "Module ~a does not implement required method ~a!" ,mod-gens ',func))))))
+                       (error "Module ~a does not implement required method ~a!" ,mod-gens ',func))
+                     (defmethod ,func ,(append `((,mod-gens (eql T))) args)
+                       ,(format nil "Standard method implementation for ~a's ~a, always redirects to current implementation." slot func)
+                       (funcall #',func (implementation ',slot) ,@(args-to-funcall gen-args)))))))
+       
        (defimplclass ,slot ,slot))))
+
+(defun args-to-funcall (args)
+  (alexandria:flatten
+   (loop with kwargs = NIL 
+      for var in args
+      unless (if (or (eq var '&key) (eq var '&allow-other-keys)) (setf kwargs T))
+      collect (if kwargs (list (make-keyword var) var) var))))
 
 (defun implementation (slot)
   "Retrieves the implementing module."
