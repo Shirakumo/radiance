@@ -6,8 +6,6 @@
 
 (in-package :radiance)
 
-(defvar *radiance-modules* (make-hash-table) "Map of all loaded modules.")
-
 (define-condition module-already-initialized (error)
   ((module :initarg :module :reader module)))
 
@@ -125,6 +123,8 @@
 (defgeneric get-module (module)
   (:documentation "Retrieves the requested module from the instance list."))
 
+(defmethod get-module ((module module)) module)
+
 (defmethod get-module ((module symbol))
   "Retrieves the requested module from the instance list."
   (get-module (symbol-name module)))
@@ -132,6 +132,10 @@
 (defmethod get-module ((module string))
   "Retrieves the requested module from the instance list."
   (gethash (make-keyword module) *radiance-modules*))
+
+(defun module-package (module)
+  "Retrieve the package of the module."
+  (symbol-package (class-name (class-of (get-module module)))))
 
 (defun discover-modules (&key redefine reinitialize)
   (cl-fad:walk-directory (merge-pathnames "mod/" (pathname (config :root)))
@@ -180,3 +184,11 @@
            (loop for dep in deps do (compile-module dep :force force))
            (compile-module deps :force force))))
     (T (error "Dependency ~a not found!" dependency))))
+
+(defmacro in-module (name)
+  `(progn
+     (eval-when (:compile-toplevel :load-toplevel :execute)
+       (setf *module* 
+             (or (get-module ',name)
+                 (error "Module ~a does not exist." ',name))))
+     (in-package ,(package-name (module-package name)))))

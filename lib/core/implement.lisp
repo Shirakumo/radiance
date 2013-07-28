@@ -6,8 +6,6 @@
 
 (in-package :radiance)
 
-(defvar *radiance-implements* (make-hash-table) "Radiance implements table.")
-
 (defclass implementation ()
   ((module :initform NIL :initarg :module :accessor module :type module)
    (superclass :initform (error "Superclass required.") :initarg :superclass :accessor superclass :type symbol))

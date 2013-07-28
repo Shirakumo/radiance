@@ -6,9 +6,6 @@
 
 (in-package :radiance)
 
-(defvar *radiance-config-file* NIL "Radiance's main JSON configuration file.")
-(defvar *radiance-config*      NIL "Radiance's main static configuration.")
-
 (define-condition radiance-error (error)
   ((text :initarg :text :initform "Undefined Error")
    (code :initarg :code :initform -1))
@@ -51,9 +48,6 @@
 (defmacro nappend (var &rest lists)
   `(setf ,var (append ,var ,@lists)))
 
-(defvar *unix-epoch-difference*
-  (encode-universal-time 0 0 0 1 1 1970 0))
-
 (defun universal-to-unix-time (universal-time)
   (- universal-time *unix-epoch-difference*))
 
@@ -63,8 +57,6 @@
 (defun get-unix-time ()
   "Returns a unix timestamp."
   (universal-to-unix-time (get-universal-time)))
-
-(defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789")
 
 (defun make-random-string (&optional (length 16) (chars *random-string-characters*))
   "Generates a random string of alphanumerics."
@@ -87,8 +79,6 @@
 
 (defun authorized-p (access-branch &optional (session *radiance-session*))
   (and (authenticated-p session) (user-check (session-user session) access-branch)))
-
-(defvar *default-cookie-expire* (* 60 60 24 356))
 
 (defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (response (response *radiance-request*)))
   "Sets a cookie with radiance defaults and ensures proper return object utilization. If domain is NIL, it sets it for multi-subdomain compatibility."

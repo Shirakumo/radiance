@@ -6,14 +6,6 @@
 
 (in-package :radiance)
 
-(defvar *radiance-log-verbose* NIL "Whether to print a verbose log to stdout.")
-(defvar *radiance-acceptors*   NIL "List of all Hunchentoot acceptors that run this server.")
-(defvar *radiance-request-count* 0 "Counter for the current amount of requests being handled.")
-(defvar *radiance-request-total* 0 "Counter for the total amount of requests handled.")
-(defvar *radiance-handlers*    NIL "List of Hunchentoot handlers.")
-(defvar *radiance-request*     NIL "Current request object.")
-(defvar *radiance-session*     NIL "Current session object, if any,")
-
 (defclass request (hunchentoot:request)
   ((response :initform hunchentoot:*reply* :initarg :response :accessor response)
    (subdomains :initform () :initarg :subdomains :accessor subdomains)

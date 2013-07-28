@@ -7,17 +7,22 @@
 (defpackage org.tymoonnext.radiance
   (:nicknames :org.tymoonnext.radiance :tynet-5 :tynet :radiance)
   (:use :cl :log4cl :cl-fad)
-  (:export :*radiance-config*
+  (:export ;; globals.lisp
+           :*module*
            :*radiance-config-file*
-           :*radiance-log-verbose*
+           :*radiance-config*
            :*radiance-acceptors*
+           :*radiance-handlers*
            :*radiance-request*
            :*radiance-request-count*
            :*radiance-request-total*
-           :*radiance-session*
-           :*radiance-modules*
            :*radiance-implements*
+           :*radiance-modules*
            :*radiance-triggers*
+           :*radiance-session*
+           :*random-string-characters*
+           :*default-cookie-expire*
+           :*unix-epoch-difference*
            ;; implement.lisp
            :implementation
            :implement
@@ -35,6 +40,8 @@
            :make-colum
            :make-collection
            :get-module
+           :module-package
+           :in-module
            ;; toolkit.lisp
            :radiance-error
            :load-config

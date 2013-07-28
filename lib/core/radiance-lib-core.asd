@@ -18,6 +18,7 @@
   :long-description ""
   :serial T
   :components ((:file "package")
+               (:file "globals")
                (:file "module")
                (:file "trigger")
                (:file "implement")

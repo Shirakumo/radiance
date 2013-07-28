@@ -6,8 +6,6 @@
 
 (in-package :radiance)
 
-(defvar *radiance-triggers* (make-hash-table) "Map of all registered triggers.")
-
 (defclass hook ()
   ((name :initform (error "Hook name required.") :initarg :name :accessor name :type symbol)
    (module :initform (error "Hook target module required.") :initarg :module :accessor module :type module)
