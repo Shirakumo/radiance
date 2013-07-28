@@ -24,6 +24,7 @@
                (:file "implement")
                (:file "toolkit")
                (:file "interfaces")
+               (:file "site")
                (:file "server"))
   :depends-on (:cl-json
                :hunchentoot
