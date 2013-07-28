@@ -59,8 +59,7 @@
                        (:documentation ,doc))
                      (defmethod ,func ,(append `((,mod-gens ,slot)) args)
                        ,(format nil "Standard method implementation for ~a's ~a, always throws an error." slot func)
-                       
-                       #+sbcl (declare (sb-ext:muffle-conditions style-warning))
+                       (declare (ignore ,@(remove-if #'(lambda (x) (find x '(&key &allow-other-keys &rest &optional))) gen-args)))
                        (error "Module ~a does not implement required method ~a!" ,mod-gens ',func))
                      (defmethod ,func ,(append `((,mod-gens (eql T))) args)
                        ,(format nil "Standard method implementation for ~a's ~a, always redirects to current implementation." slot func)
