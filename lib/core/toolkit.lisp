@@ -27,13 +27,10 @@
     (setf *radiance-config* (json:decode-json file))
     (setf *radiance-config-file* config-file)))
 
-(defun config (setting &optional new-value (config-file *radiance-config-file*))
+(defun config (setting &optional new-value)
   "Get or set configuration values."
   (when new-value
-    (setf (cdr (assoc setting *radiance-config*)) new-value)
-    (with-open-file (file config-file :if-exists :SUPERSEDE)
-      (log:info "Writing radiance config file to ~a" config-file)
-      (json:encode-json *radiance-config* file)))
+    (setf (cdr (assoc setting *radiance-config*)) new-value))
   (cdr (assoc setting *radiance-config*)))
 
 (defun config-tree (&rest branches)
