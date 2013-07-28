@@ -48,6 +48,8 @@
       (progn
         (log:info "Loading Config...")
         (load-config)
+        (if (string-equal (config :root) "autodetect") 
+            (config :root (format nil "~a" (asdf:system-source-directory :radiance))))
         (log:info "Resetting globals...")
         (setf *radiance-triggers* (make-hash-table))
         (log:info "Loading implementations...")
