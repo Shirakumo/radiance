@@ -21,8 +21,8 @@
                (:file "module")
                (:file "trigger")
                (:file "implement")
-               (:file "interfaces")
                (:file "toolkit")
+               (:file "interfaces")
                (:file "server"))
   :depends-on (:cl-json
                :hunchentoot

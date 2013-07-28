@@ -75,15 +75,6 @@
 (defgeneric getdf (model field)
   (:documentation "Attempts to extract the requested field from a variety of different data models."))
 
-(defmethod getdf ((model data-model) field)
-  (model-field model field))
-
-(defmethod getdf ((model user) field)
-  (user-field model field))
-
-(defmethod getdf ((model session) field)
-  (session-field model field))
-
 (defmethod getdf ((model list) field)
   (if (keywordp (first model))
       (getf model (if (stringp field) (make-keyword field) field))

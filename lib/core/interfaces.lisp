@@ -99,6 +99,16 @@ Manipulating data directly through this is discouraged and the data-model class 
                     (:> a b) (:< a b) (:= a b) (:<= a b) (:>= a b)
                     (:in a b) (:!in a b) (:matches a b))
 
+
+(defmethod getdf ((model data-model) field)
+  (model-field model field))
+
+(defmethod getdf ((model user) field)
+  (user-field model field))
+
+(defmethod getdf ((model session) field)
+  (session-field model field))
+
 (defimpl admin
     "Administration panel."
   (site () "Handles the admin page rendering.")
