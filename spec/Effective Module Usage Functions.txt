@@ -129,7 +129,7 @@ in the actual request and are therefore purely temporary.
 
 (define-file-link favicon #u"todo./favicon.ico" (static "todo/favicon.ico"))
 
-(defpage todo #u"todo." (:lquery (template "todo/todo.html" :access-branch "todo.*"))
+(defpage todo #u"todo." (:lquery (template "todo/todo.html") :access-branch "todo.*")
   (let ((todos (model-get T "todo" (:= "user" (username (session-user *radiance-session*))))))
     (uibox:fill-foreach todos "ul#todos")))
 
