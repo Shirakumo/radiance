@@ -17,13 +17,19 @@
   (print-unreadable-object (hook out :type T)
     (format out "~a -> ~a:~a" (name hook) (module hook) (hook-function hook))))
 
+(defmethod hook-equal ((a hook) (b hook))
+  "Checks if two hooks are the same."
+  (and (equal (name a) (name b))
+       (eq (module a) (module b))))
+
 (defun defhook (name module function &key description)
   "Defines a new hook of name, for a certain function of a module."
   (let ((instance (make-instance 'hook :name name :module module :function function :description description)))
     (log:info "Defining hook ~a -> ~a:~a" name module function)
-    (setf (gethash name *radiance-triggers*)
-          (append (gethash name *radiance-triggers*)
-                  (list instance)))
+    (let ((pos (position instance (gethash name *radiance-triggers*) :test #'hook-equal)))
+      (if pos 
+          (setf (nth pos (gethash name *radiance-triggers*)) instance)
+          (nappend (gethash name *radiance-triggers*) (list instance))))
     instance))
 
 (defun trigger (trigger &rest args)
