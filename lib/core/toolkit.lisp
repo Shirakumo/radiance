@@ -6,13 +6,6 @@
 
 (in-package :radiance)
 
-(define-condition radiance-error (error)
-  ((text :initarg :text :initform "Undefined Error")
-   (code :initarg :code :initform -1))
-  (:report (lambda (c s) (format s "~a: ~a (E~4d)" (class-name (class-of c)) (slot-value c 'text) (slot-value c 'code)))))
-
-(define-condition auth-error (radiance-error) ())
-
 (defun load-config (&optional (config-file *radiance-config-file*))
   "(Re)load the static configuration."
   (when (not config-file)
