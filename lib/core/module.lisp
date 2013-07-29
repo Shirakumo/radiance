@@ -23,22 +23,6 @@
   (print-unreadable-object (col out :type t)
     (format out "~a (~a)" (name col) (access-mode col))))
 
-(defclass module ()
-  ((name :initarg :name :reader name :type string :allocation :class)
-   (author :initarg :author :reader author :type string :allocation :class)
-   (version :initarg :version :reader version :type string :allocation :class)
-   (license :initarg :license :reader license :type string :allocation :class)
-   (url :initarg :url :reader url :type string :allocation :class)
-   
-   (collections :initarg :collections :reader collections :type list :allocation :class)
-   (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
-
-   (implements :initarg :implements :reader implementations :type list :allocation :class)
-   (asdf-system :initarg :asdf-system :reader asdf-system :type symbol :allocation :class)
-   (dependencies :initarg :dependencies :reader dependencies :type list :allocation :class)
-   (compiled :initarg :compiled :reader compiled-p :type boolean :allocation :class))
-  (:documentation "Radiance base module class."))
-
 (defmethod print-object ((mod module) out)
   (print-unreadable-object (mod out :type t)
     (if (version mod) (format out "v~a" (version mod)))))
@@ -49,7 +33,30 @@
 (defgeneric shutdown (module)
   (:documentation "Called when Radiance is shut down."))
 
-(defmacro defmodule (name superclasses docstring (&key fullname author version license url collections (persistent T) implements asdf-system dependencies compiled) (&rest defsystem) &rest extra-slots)
+(defmacro make-module-class (name superclasses docstring &optional extra-slots)
+  `(defclass ,name ,superclasses
+     ((name :initarg :name :reader name :type string :allocation :class)
+      (author :initarg :author :reader author :type string :allocation :class)
+      (version :initarg :version :reader version :type string :allocation :class)
+      (license :initarg :license :reader license :type string :allocation :class)
+      (url :initarg :url :reader url :type string :allocation :class)
+      
+      (collections :initarg :collections :reader collections :type list :allocation :class)
+      (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
+                            
+      (implements :initarg :implements :reader implementations :type list :allocation :class)
+      (asdf-system :initarg :asdf-system :reader asdf-system :type symbol :allocation :class)
+      (dependencies :initarg :dependencies :reader dependencies :type list :allocation :class)
+      (compiled :initarg :compiled :accessor compiled-p :type boolean :allocation :class)
+      ,@extra-slots)
+     (:documentation ,docstring)))
+
+(make-module-class module () "Radiance base module class")
+
+(defmacro defmodule (name superclasses docstring 
+                     (&key fullname author version license url collections (persistent T) implements asdf-system dependencies compiled)
+                     (&rest defsystem)
+                     &rest extra-slots)
   "Define a new Radiance module."
   (let ((superclasses (if (not superclasses) '(module) superclasses))
         (classdef (gensym "CLASSDEF"))
@@ -66,23 +73,7 @@
                :description ,docstring
                ,@defsystem))
 
-       (flet ((,classdef () (log:info "Defining module ~a" ',name)
-                         (defclass ,name ,superclasses
-                           ((name :initarg :name :reader name :type string :allocation :class)
-                            (author :initarg :author :reader author :type string :allocation :class)
-                            (version :initarg :version :reader version :type string :allocation :class)
-                            (license :initarg :license :reader license :type string :allocation :class)
-                            (url :initarg :url :reader url :type string :allocation :class)
-                            
-                            (collections :initarg :collections :reader collections :type list :allocation :class)
-                            (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
-                            
-                            (implements :initarg :implements :reader implementations :type list :allocation :class)
-                            (asdf-system :initarg :asdf-system :reader asdf-system :type symbol :allocation :class)
-                            (dependencies :initarg :dependencies :reader dependencies :type list :allocation :class)
-                            (compiled :initarg :compiled :accessor compiled-p :type boolean :allocation :class)
-                            ,@extra-slots)
-                           (:documentation ,docstring)))
+       (flet ((,classdef () (log:info "Defining module ~a" ',name) (make-module-class ,name ,superclasses ,dcostring ,extra-slots))
               (,initializer () (log:info "Initializing module ~a" ',name)
                             (setf (gethash (make-keyword ',name) *radiance-modules*)
                                   (make-instance ',name 
