@@ -116,9 +116,9 @@ in the actual request and are therefore purely temporary.
 (defapi vote (option) (:access-branch "*")
   (let ((model (model-get-one T "vote" (:= "name" option))))
     (if model
-        (progn (setf (model-field model "votes")
-                     (1+ (model-field model "votes")))
-               (model-save model))
+        (with-fields (votes) model 
+          (setf votes (1+ votes))
+          (model-save model))
         (error 'api-invalid-argument-error :text (format nil "Invalid option ~a selected." option))))
   (link 'votey))
 
