@@ -67,8 +67,7 @@ FUNCTION:
   => type
 
 Returns the link to the requested page or API function. Type can
-be one of the following values: :URI :function :hook. If the page
-is linked to multiple URIs, the first one is returned.
+be one of the following values: :URI :function :hook.
 
 
 MACRO (implemented):
@@ -77,6 +76,8 @@ MACRO (implemented):
 
 Same as with-slots, but for GET variables.
 Uses *radiance-request* to retrieve variables.
+Note that changes to the variables will not be saved
+in the actual request and are therefore purely temporary.
 
 
 MACRO (implemented):
@@ -85,7 +86,8 @@ MACRO (implemented):
 
 Same as with-slots, but for POST variables.
 Uses *radiance-request* to retrieve variables.
-
+Note that changes to the variables will not be saved
+in the actual request and are therefore purely temporary.
 
 ---------------------------------------------------------
  == USAGE CASES ==
