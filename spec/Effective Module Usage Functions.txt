@@ -2,7 +2,7 @@
  == EFFECTIVE MODULE USAGE FUNCTIONS ==
 
 
-MACRO:
+MACRO (implemented):
 (in-module :bla)
   => module and package set
 
@@ -10,7 +10,7 @@ Sets *module* to the current module, much like in-package.
 Side effect: Also executes in-package to set it to the module's package.
 
 
-FUNCTION:
+FUNCTION (implemented):
 (make-uri urispec) => uri
 
 Creates a URI object matching the urispec. Urispec has the following
@@ -72,18 +72,19 @@ Relation only applies for :URI, it can be either :absolute or
 or the complete URL.
 
 
-MACRO:
-(with-get (&rest vars) &optional request
+MACRO (implemented):
+(with-get (&rest vars)
   &rest body) => variable closure
 
 Same as with-slots, but for GET variables.
+Uses *radiance-request* to retrieve variables.
 
-
-MACRO:
-(with-post (&rest vars) &optional request
+MACRO (implemented):
+(with-post (&rest vars)
   &rest body) => variable closure
 
 Same as with-slots, but for POST variables.
+Uses *radiance-request* to retrieve variables.
 
 ---------------------------------------------------------
  == USAGE CASES ==
