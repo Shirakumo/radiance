@@ -27,7 +27,7 @@ If a part of the URI is not given, it is defaulted to "*", which
 matches to anything. make-uri has a read-macro for easier use: #u
 
 
-MACRO:
+MACRO (implemented):
 (defpage name uri (&key (module *module*) access-branch lquery (dispatcher T))
   &rest body) => page definition
 
@@ -40,7 +40,7 @@ the *radiance-request* is already set. If lQuery is unset, the return
 value of the request is automatically chosen.
 
 
-MACRO:
+MACRO (implemented):
 (defapi name (&rest args) (&key (module *module*) access-branch)
   &rest body) => api definition
 
@@ -53,6 +53,15 @@ an alist or an URI. This will automatically be transformed into the
 requested output type or a page redirect in the case of an URI.
 
 
+FUNCTION (implemented):
+(api-return code text 
+  &rest plist-data) => alist
+
+Generates an API response in the proper format:
+((:CODE . code) (:TEXT . text) (:DATA . data))
+Additional data is changed from a plist into an alist automatically.
+
+
 FUNCTION:
 (define-file-link name uri pathspec &key access-branch) 
   => link definition
@@ -62,7 +71,7 @@ favicon.ico, robots.txt, humans.txt or other files that cannot be in
 the static/ directory.
 
 
-FUNCTION:
+FUNCTION (implemented):
 (link name &key (module *module*) (type :URI)) 
   => type
 
@@ -126,24 +135,29 @@ in the actual request and are therefore purely temporary.
 
 (defapi add-todo (text) (:access-branch "todo.add")
   (let ((model (model-hull T "todo")))
-    (model-field model "id" (make-uuid))
-    (model-field model "user" (username (session-user *radiance-session*)))
-    (model-field model "text" text)
-    (model-field model "time" (get-unix-time))
-    (model-save model))
-  (link 'todo))
+    (with-fields (id user textf time) model
+      (setf id (make-uuid) 
+            user (username (session-user *radiance-session*))
+            textf text
+            time (get-unix-time))
+      (model-save model))
+      (api-return 200 "Todo added." :id id :text text :time time)))
 
 (defapi del-todo (uuid) (:access-branch "todo.del")
   (let ((model (model-get-one T "todo" (:and (:= "id" uuid) (:= "user" (username (session-user *radiance-session*)))))))
     (if model
-        (model-delete model)
-        (error 'api-invalid-argument-error :text (format nil "Todo with ID ~a does not exist!" uuid))))
-  (link 'todo))
+        (with-fields (id) model
+          (model-delete model)
+          (api-return 200 "Todo deleted." :id id)
+
+        (error 'api-invalid-argument-error :text (format nil "Todo with ID ~a does not exist!" uuid)))))
 
 (defapi edit-todo (uuid text) (:access-branch "todo.edit")
   (let ((model (model-get-one T "todo" (:and (:= "id" uuid) (:= "user" (username (session-user *radiance-session*)))))))
     (if model
-        (progn (model-field model "text" text)
-               (model-save model))
-        (error 'api-invalid-argument-error :text (format nil "Todo with ID ~a does not exist!" uuid))))
-  (link 'todo))
+        (with-fileds (textf time) 
+          (setf textf text)
+          (model-save model)
+          (api-return 200 "Todo edited." :id id :text text :time time))
+
+        (error 'api-invalid-argument-error :text (format nil "Todo with ID ~a does not exist!" uuid)))))
