@@ -6,7 +6,7 @@ Date
 
 
 2013.07.29
-  * Complete get-triggers function.
+  _ Complete get-triggers function.
   * Change *radiance-request* to use URI.
   * Add API dispatch.
   * Add static resource dispatcher with link registry.

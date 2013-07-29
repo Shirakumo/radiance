@@ -54,10 +54,9 @@
     (assert (not (eql namespace NIL)) () "Unknown trigger namespace ~a" space)
     namespace))
 
-;@todo
 (defun get-triggers (space)
   "Retrieve all triggers of a namespace."
-  ())
+  (alexandria:hash-table-keys (get-namespace space)))
 
 (defun get-hooks (space trigger)
   "Retrieve all hooks for a trigger."
