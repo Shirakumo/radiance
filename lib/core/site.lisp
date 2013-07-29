@@ -283,6 +283,13 @@ requested output type or a page redirect in the case of an URI."
                 funcbody)))
        (defhook :api ',name ,module #',name ,(format nil "API call for ~a" module)))))
 
+(defun api-return (code text &rest data)
+  "Generates an API response in the proper format:
+  ((:CODE . code) (:TEXT . text) (:DATA . data))
+Additional data is changed from a plist into an alist automatically."
+  `((:CODE . ,code) (:TEXT . ,text)
+    (:DATA . ,(alexandria:plist-alist data))))
+
 (defun define-file-link (name uri pathspec &key access-branch)
   "Defines a link of a given URI to a file. Useful for things like
 favicon.ico, robots.txt, humans.txt or other files that cannot be in
