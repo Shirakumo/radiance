@@ -21,6 +21,30 @@
         (setc domain)
         (setc (format NIL ".~a" (domain *radiance-request*))))))
 
+(defun get-var (name &optional (request *radiance-request*))
+  "Returns a GET variable. If the name ends with [], it assumed to be an array and a list of all values is returned."
+  (if (and (> (length name) 2) (string= name "[]" :start1 (- (length name) 2)))
+      (assoc-all name (get-vars) :val #'cdr :test #'string=)
+      (hunchentoot:get-parameter name request)))
+
+(defun get-vars (&optional (request *radiance-request*))
+  "Returns an alist of all GET variables."
+  (hunchentoot:get-parameters* request))
+
+(defun post-var (name &optional (request *radiance-request*))
+  "Returns a POST variable. If the name ends with [], it assumed to be an array and a list of all values is returned."
+  (if (and (> (length name) 2) (string= name "[]" :start1 (- (length name) 2)))
+      (assoc-all name (post-vars) :val #'cdr :test #'string=)
+      (hunchentoot:post-parameter name request)))
+
+(defun post-vars (&optional (request *radiance-request*))
+  "Returns an alist of all POST variables."
+  (hunchentoot:post-parameters* request))
+
+(defun static (path)
+  "Create pathname to static resource."
+  (merge-pathnames path (merge-pathnames "data/static/" (pathname (config :root)))))
+
 (defun template (path)
   "Create pathname to template."
   (merge-pathnames path (merge-pathnames "data/template/" (pathname (config :root)))))
@@ -108,3 +132,65 @@ See upload-file for more information."
        
        ,(if open-file `(close ,filepathvar)))))
 
+(defmacro with-var-func (fun (&rest vars) &rest body)
+  "Constructs a basic with-X let."
+  `(let (,@(loop for var in vars
+              for varname = (if (listp var) (first var) var)
+              for funcname = (if (listp var) (second var) (string-downcase (symbol-name var)))
+              collect `(,varname (funcall ,fun ,funcname))))
+     ,@body))
+
+(defmacro with-get ((&rest vars) &rest body)
+  "Similar to with-slots, but for GET variables. Note that changes to the variables will not be saved in the actual request!"
+  `(with-var-func #'get-var (,@vars) ,@body))
+
+(defmacro with-post ((&rest vars) &rest body)
+  "Similar to with-slots, but for GET variables. Note that changes to the variables will not be saved in the actual request!"
+  `(with-var-func #'post-var (,@vars) ,@body))
+
+(defclass uri ()
+  ((subdomains :initarg :subdomains :initform NIL :accessor subdomains)
+   (domain :initarg :domain :initform NIL :accessor domain)
+   (port :initarg :port :initform NIL :accessor port)
+   (path :initarg :path :initform ".*" :accessor path)
+   (pathregex :initarg :regex :initform NIL :accessor regex))
+  (:documentation "URI class used in Radiance to build links and such."))
+
+(defmethod print-object ((uri uri) stream)
+  (with-slots (subdomains domain port path) uri
+    (format stream "~:[*~;~:*~{~a~^.~}~].~:[*~;~:*~a~]:~:[*~;~:*~a~]/~a" subdomains domain port path)))
+
+(defgeneric uri-matches (uri b) (:documentation "Checks if a URI matches."))
+
+(defmethod uri-matches ((uri uri) (string string))
+  "Checks if the given URI is compatible with the string representation of a URI."
+  (uri-matches uri (make-uri string)))
+
+(defmethod uri-matches ((uri uri) (uri2 uri))
+  "Checks if the given URI is compatible with the other URI."
+  (and (equal (domain uri) (domain uri2))
+       (equal (port uri) (port uri))
+       (cl-ppcre:scan (regex uri) (path uri2))
+       (loop for sda in (reverse (subdomains uri))
+          for sdb in (reverse (subdomains uri2))
+          unless (string= sda sdb)
+          return NIL
+          finally (return T))))
+
+(defun make-uri (uristring)
+  "Creates a URI object from its string representation."
+  (cl-ppcre:register-groups-bind (subdomains NIL domain NIL port path) (*uri-matcher* uristring)
+    (setf path (if (= (length path) 0) ".*" path))
+    (setf subdomains (if (= (length subdomains) 0) NIL (split-sequence:split-sequence #\. subdomains)))
+    (make-instance 'uri 
+                   :path path
+                   :subdomains subdomains
+                   :port port :domain domain
+                   :regex (cl-ppcre:create-scanner path))))
+
+(defun make-uri-helper (stream subchar arg)
+  (declare (ignore subchar arg))
+  (let ((string (read stream T)))
+    `(make-uri ,string)))
+
+(set-dispatch-macro-character #\# #\u #'make-uri-helper)

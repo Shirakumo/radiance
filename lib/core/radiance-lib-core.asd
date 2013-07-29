@@ -31,4 +31,5 @@
 	       :log4cl
                :uuid
                :cl-fad
-               :lquery))
+               :lquery
+               :cl-ppcre))

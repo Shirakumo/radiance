@@ -22,6 +22,5 @@
 (defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789" "Default random characters appearing in make-random-string.")
 (defvar *default-cookie-expire* (* 60 60 24 356) "Default expiration time in seconds.")
 (defconstant *unix-epoch-difference* (encode-universal-time 0 0 0 1 1 1970 0) "Time difference between unix epoch and Lisp time.")
-
-
+(defconstant *uri-matcher* (cl-ppcre:create-scanner "((\\w+\\.)*?)(\\w+(\\.[a-z]+)?)?(:\\d+)?/(.*)"))
 
