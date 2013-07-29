@@ -8,13 +8,15 @@
 
 
 (defun authenticated-p (&optional (session *radiance-session*))
+  "Returns T if the current user is using an authenticated session."
   (and session (session-user session) (user-saved-p (session-user session)) (session-active-p session)))
 
 (defun authorized-p (access-branch &optional (session *radiance-session*))
+  "Returns T if the current user is authorized to the given access branch."
   (and (authenticated-p session) (user-check (session-user session) access-branch)))
 
 (defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (response (response *radiance-request*)))
-  "Sets a cookie with radiance defaults and ensures proper return object utilization. If domain is NIL, it sets it for multi-subdomain compatibility."
+  "Sets a cookie with defaults and ensures proper return object utilization. If domain is NIL, it sets it for multi-subdomain compatibility."
   (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :reply response)))
     (log:debug "Setting cookie ~a on ~a/~a exp ~a (H~a;S~a) to ~a" name domain path expires http-only secure value)
     (if domain
@@ -148,11 +150,17 @@ See upload-file for more information."
      ,@body))
 
 (defmacro with-get ((&rest vars) &rest body)
-  "Similar to with-slots, but for GET variables. Note that changes to the variables will not be saved in the actual request!"
+  "Same as with-slots, but for GET variables.
+Uses *radiance-request* to retrieve variables.
+Note that changes to the variables will not be saved
+in the actual request and are therefore purely temporary."
   `(with-var-func #'get-var (,@vars) ,@body))
 
 (defmacro with-post ((&rest vars) &rest body)
-  "Similar to with-slots, but for GET variables. Note that changes to the variables will not be saved in the actual request!"
+  "Same as with-slots, but for POST variables.
+Uses *radiance-request* to retrieve variables.
+Note that changes to the variables will not be saved
+in the actual request and are therefore purely temporary."
   `(with-var-func #'post-var (,@vars) ,@body))
 
 (defclass uri ()
@@ -184,7 +192,8 @@ See upload-file for more information."
           return NIL
           finally (return T))))
 
-(defgeneric uri->url (uri &optional absolute) (:documentation "Turns the URI into a string URL."))
+(defgeneric uri->url (uri &optional absolute)
+  (:documentation "Turns the URI into a string URL."))
 
 (defmethod uri->url ((uri uri) &optional (absolute T))
   (if absolute 
@@ -193,7 +202,12 @@ See upload-file for more information."
               (subdomains uri) (domain uri) (port uri) (path uri))))
 
 (defun make-uri (uristring)
-  "Creates a URI object from its string representation."
+  "Creates a URI object matching the urispec. Urispec has the following
+syntax:  (subdomain.)*domain?:port?/path?
+
+If a part of the URI is not given, it is defaulted to \"*\", which
+matches to anything. make-uri has a read-macro for easier use: #u
+Note that the PATH part is always a regex, excluding the start slash."
   (cl-ppcre:register-groups-bind (subdomains NIL domain NIL port path) (*uri-matcher* uristring)
     (setf path (if (= (length path) 0) ".*" path))
     (setf subdomains (if (= (length subdomains) 0) NIL (split-sequence:split-sequence #\. subdomains)))
@@ -242,7 +256,13 @@ value of the request is automatically chosen."
        (register ,dispatcher ',name ,uri))))
 
 (defmacro defapi (name (&rest args) (&key (module *module*) (modulevar (gensym "MODULE")) access-branch) &rest body)
-  ""
+  "Defines a new API function for the given module. The arguments specify
+REST values that are expected (or not according to definition) on the
+API call. Any variable can have a default value specified. If 
+access-branch is given, an authorization check on the current session
+at page load will be performed. The return value of the body should be
+an alist or an URI. This will automatically be transformed into the
+requested output type or a page redirect in the case of an URI."
   (assert (not (eql module NIL)) () "Module cannot be NIL! (Are you in-module context?)")
   (let ((name (intern (format nil "API-~a" name)))
         (funcbody `(progn ,@body)))
@@ -264,11 +284,14 @@ value of the request is automatically chosen."
        (defhook :api ',name ,module #',name ,(format nil "API call for ~a" module)))))
 
 (defun define-file-link (name uri pathspec &key access-branch)
-  ""
+  "Defines a link of a given URI to a file. Useful for things like
+favicon.ico, robots.txt, humans.txt or other files that cannot be in
+the static/ directory."
   )
 
 (defun link (name &key (module *module*) (type :URI))
-  ""
+  "Returns the link to the requested page or API function. Type can
+be one of the following values: :URI :function :hook."
   (let ((name (intern (format nil "PAGE-~a" name))))
     (loop for hook in (gethash name (gethash :page *radiance-triggers*))
        if (eq module (module hook))
