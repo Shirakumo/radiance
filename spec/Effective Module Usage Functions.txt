@@ -28,32 +28,33 @@ matches to anything. make-uri has a read-macro for easier use: #u
 
 
 MACRO:
-(defpage bla uri (&key (module *module*) access-branch lquery)
+(defpage name uri (&key (module *module*) access-branch lquery (dispatcher T))
   &rest body) => page definition
 
 Defines a new page for the given module that will be available on the
-specified pathspec. If access-branch is given, an authorization check
-on the current session at page load will be performed. If lquery is
-non-NIL, lQuery will be initialized with the given pathspec. The return 
-value of the body should either be a string with the HTML contents
-or NIL, in which case the value stored in *radiance-request* is used
-instead.
+specified URI. If access-branch is given, an authorization check on the
+current session at page load will be performed. If lquery is non-NIL,
+lQuery will be initialized with the given pathspec and the page output
+will be set to the lQuery serialization, unless the response field of
+the *radiance-request* is already set. If lQuery is unset, the return
+value of the request is automatically chosen.
 
 
 MACRO:
-(defapi bla (&rest args) (&key (module *module*) access-branch)
+(defapi name (&rest args) (&key (module *module*) access-branch)
   &rest body) => api definition
 
 Defines a new API function for the given module. The arguments specify
 REST values that are expected (or not according to definition) on the
-API call. If access-branch is given, an authorization check on the
-current session at page load will be performed. The return value of the
-body should be an alist or an URI. This will automatically be transformed
-into the requested output type or a page redirect in the case of an URI.
+API call. Any variable can have a default value specified. If 
+access-branch is given, an authorization check on the current session
+at page load will be performed. The return value of the body should be
+an alist or an URI. This will automatically be transformed into the
+requested output type or a page redirect in the case of an URI.
 
 
 FUNCTION:
-(define-file-link bla uri pathspec &key access-branch) 
+(define-file-link name uri pathspec &key access-branch) 
   => link definition
 
 Defines a link of a given URI to a file. Useful for things like
@@ -62,14 +63,12 @@ the static/ directory.
 
 
 FUNCTION:
-(link name &key (module *module*) (type :URI) (relation :absolute)) 
+(link name &key (module *module*) (type :URI)) 
   => type
 
 Returns the link to the requested page or API function. Type can
-be one of the following values: :URI :function :trigger
-Relation only applies for :URI, it can be either :absolute or
-:relative and decides whether the returned URI is merely a path
-or the complete URL.
+be one of the following values: :URI :function :hook. If the page
+is linked to multiple URIs, the first one is returned.
 
 
 MACRO (implemented):
@@ -79,12 +78,14 @@ MACRO (implemented):
 Same as with-slots, but for GET variables.
 Uses *radiance-request* to retrieve variables.
 
+
 MACRO (implemented):
 (with-post (&rest vars)
   &rest body) => variable closure
 
 Same as with-slots, but for POST variables.
 Uses *radiance-request* to retrieve variables.
+
 
 ---------------------------------------------------------
  == USAGE CASES ==
