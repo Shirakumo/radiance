@@ -78,3 +78,11 @@
   "Retrieves the file size in bytes."
    (with-open-file (in pathspec :direction :input :element-type '(unsigned-byte 8))
     (file-length in)))
+
+(defun assoc-all (item alist &key (key #'car) (test #'eql) (test-not (constantly NIL)) (val #'identity))
+  "Returns all values in the alist that match the predicate.
+By default, the values are the cons cells themselves and the car of each cons is matched with EQL."
+  (loop for cons in alist
+     for keyval = (funcall key cons)
+     if (and (funcall test item keyval) (not (funcall test-not item keyval)))
+     collect (funcall val cons)))
