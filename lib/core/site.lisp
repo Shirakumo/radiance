@@ -41,6 +41,13 @@
   "Returns an alist of all POST variables."
   (hunchentoot:post-parameters* request))
 
+(defun redirect (uri-or-string)
+  "Redirects to the requested URI."
+  (hunchentoot:redirect 
+   (if (stringp uri-or-string)
+       uri-or-string
+       (uri->url uri-or-string))))
+
 (defun static (path)
   "Create pathname to static resource."
   (merge-pathnames path (merge-pathnames "data/static/" (pathname (config :root)))))
@@ -177,6 +184,14 @@ See upload-file for more information."
           return NIL
           finally (return T))))
 
+(defgeneric uri->url (uri &optional absolute) (:documentation "Turns the URI into a string URL."))
+
+(defmethod uri->url ((uri uri) &optional (absolute T))
+  (if absolute 
+      (path uri)
+      (format NIL "http://~{~a.~}~a~:[~;~:*~a~]/~a"
+              (subdomains uri) (domain uri) (port uri) (path uri))))
+
 (defun make-uri (uristring)
   "Creates a URI object from its string representation."
   (cl-ppcre:register-groups-bind (subdomains NIL domain NIL port path) (*uri-matcher* uristring)
@@ -194,3 +209,70 @@ See upload-file for more information."
     `(make-uri ,string)))
 
 (set-dispatch-macro-character #\# #\u #'make-uri-helper)
+
+
+(defmacro defpage (name uri (&key (module *module*) (modulevar (gensym "MODULE")) access-branch lquery (dispatcher T)) &rest body)
+  "Defines a new page for the given module that will be available on the
+specified URI. If access-branch is given, an authorization check on the
+current session at page load will be performed. If lquery is non-NIL,
+lQuery will be initialized with the given pathspec and the page output
+will be set to the lQuery serialization, unless the response field of
+the *radiance-request* is already set. If lQuery is unset, the return
+value of the request is automatically chosen."
+  (assert (not (eql module NIL)) () "Module cannot be NIL! (Are you in-module context?)")
+  (let ((name (intern (format nil "PAGE-~a" name)))
+        (funcbody (if lquery 
+                      `(progn 
+                         (lquery:$ (initialize ,lquery))
+                         ,@body
+                         `(unless (response *radiance-request*) 
+                            (concatenate-strings (lquery:$ (serialize)))))
+                      `(progn ,@body))))
+    `(progn
+       (defmethod ,name ((,modulevar (eql ,module)))
+         (declare (ignorable ,modulevar))
+         ,(if access-branch 
+              `(if (authorized-p ,access-branch)
+                   ,funcbody
+                   (error-page 403))
+              funcbody))
+       (defhook :page ',name ,module #',name 
+                :description ,(format nil "Page call for ~a" module)
+                :fields '((:uri ,uri)))
+       (register ,dispatcher ',name ,uri))))
+
+(defmacro defapi (name (&rest args) (&key (module *module*) (modulevar (gensym "MODULE")) access-branch) &rest body)
+  ""
+  (assert (not (eql module NIL)) () "Module cannot be NIL! (Are you in-module context?)")
+  (let ((name (intern (format nil "API-~a" name)))
+        (funcbody `(progn ,@body)))
+    `(progn
+       (defmethod ,name ((,modulevar (eql ,module)))
+         (declare (ignorable ,modulevar))
+         (let (,@(loop for arg in args 
+                    for argname = (if (listp arg) (car arg) arg) 
+                    for lit = (string-downcase (format NIL "~a" argname))
+                    collect `(,argname (or (post-var ,lit) (get-var ,lit) ,(if (listp arg) (second arg))))))
+           ,@(loop for arg in args
+                if (not (listp arg))
+                collect `(if (not ,arg) (error 'api-args-error :module ,modulevar :apicall ',name :text (format NIL "Argument ~a required." ',arg)))) 
+           ,(if access-branch
+                `(if (authorized-p ,access-branch)
+                     ,funcbody
+                     (error-page 403))
+                funcbody)))
+       (defhook :api ',name ,module #',name ,(format nil "API call for ~a" module)))))
+
+(defun define-file-link (name uri pathspec &key access-branch)
+  ""
+  )
+
+(defun link (name &key (module *module*) (type :URI))
+  ""
+  (let ((name (intern (format nil "PAGE-~a" name))))
+    (loop for hook in (gethash name (gethash :page *radiance-triggers*))
+       if (eq module (module hook))
+       return (case type
+                (:URI (hook-field hook :uri))
+                (:function (hook-function hook))
+                (:hook hook)))))
