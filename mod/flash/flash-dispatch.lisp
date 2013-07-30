@@ -4,7 +4,7 @@
   Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package :radiance)
+(in-package :radiance-mod-flash-dispatch)
 
 (implement 'dispatcher (get-module 'flash-dispatch))
 

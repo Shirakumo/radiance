@@ -6,6 +6,13 @@
 
 (in-package :radiance)
 
+(defpackage :org.tymoonnext.radiance.mod.flash-dispatch
+  (:use :cl :radiance)
+  (:nicknames :radiance-mod-flash-dispatch)
+  (:export :flash-dispatch))
+
+(in-package :radiance-mod-flash-dispatch)
+
 (defmodule flash-dispatch (dispatcher)
   "Simple static lookup-table dispatcher"
   (:fullname "Flash Dispatcher" 
