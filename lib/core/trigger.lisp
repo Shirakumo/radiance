@@ -40,7 +40,7 @@
       (let ((pos (position instance (gethash name namespace) :test #'hook-equal)))
         (if pos 
             (setf (nth pos (gethash name namespace)) instance)
-            (nappend (gethash name space) (list instance)))))
+            (nappend (gethash name namespace) (list instance)))))
     instance))
 
 (defun get-namespace-map ()
