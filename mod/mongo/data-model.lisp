@@ -76,7 +76,11 @@
   "Lets you access fields directly by name. This is the same stuff as with-accessors or with-slots."
   (let ((vargens (gensym "MODEL")))
     `(let ((,vargens ,model))
-       (symbol-macrolet ,(loop for field in fields collect `(,field (model-field ,vargens ,(string-downcase (symbol-name field)))))
+       (symbol-macrolet
+           ,(loop for field in fields 
+               for varname = (if (listp field) (first field) field)
+               for fieldname = (if (listp field) (second field) (string-downcase (symbol-name field)))
+               collect `(,varname (model-field ,vargens ,fieldname)))
          ,@body))))
 
 (defgeneric clone-document (var))
