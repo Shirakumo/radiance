@@ -6,12 +6,8 @@
 
 (in-package :radiance)
 
-(defclass request (hunchentoot:request)
-  ((response :initform hunchentoot:*reply* :initarg :response :accessor response)
-   (subdomains :initform () :initarg :subdomains :accessor subdomains)
-   (domain :initform (config :domain) :initarg :domain :accessor domain)
-   (path :initform "/" :initarg :path :accessor path)
-   (port :initform (config :port) :initarg :port :accessor port))
+(defclass request (hunchentoot:request radiance:uri)
+  ((response :initform hunchentoot:*reply* :initarg :response :accessor response))
   (:documentation "Radiance request class."))
 
 (defmethod print-object ((request request) out)
@@ -42,8 +38,6 @@
         (load-config)
         (if (string-equal (config :root) "autodetect") 
             (config :root (format nil "~a" (asdf:system-source-directory :radiance))))
-        (log:info "Resetting globals...")
-        (setf *radiance-triggers* (make-hash-table))
         (log:info "Loading implementations...")
         (discover-modules)
         (load-implementations)
@@ -61,7 +55,7 @@
           (setf hunchentoot:*dispatch-table* *radiance-handlers*)
           (setf hunchentoot:*default-content-type* "application/xhtml+xml")
           (log:info "Triggering INIT...")
-          (trigger 'init)
+          (trigger :server 'init)
           (loop for acceptor in acceptors
                do (progn (log:info "Starting acceptor ~a" acceptor)
                          (hunchentoot:start acceptor)))
@@ -76,7 +70,7 @@
              do (progn (log:info "Stopping acceptor ~a" acceptor)
                        (hunchentoot:stop acceptor)))
         (log:info "Triggering SHUTDOWN...")
-        (trigger 'shutdown)
+        (trigger :server 'shutdown)
         (setf *radiance-request-count* 0)
         (setf *radiance-request-total* 0)
         (setf *radiance-acceptors* NIL)
