@@ -6,7 +6,6 @@
 
 (in-package :radiance)
 
-(defvar *module* NIL "Currently active module (like *package*)")
 (defvar *radiance-config-file* NIL "Radiance's main JSON configuration file.")
 (defvar *radiance-config*      NIL "Radiance's main static configuration.")
 (defvar *radiance-acceptors*   NIL "List of all Hunchentoot acceptors that run this server.")
@@ -16,11 +15,11 @@
 (defvar *radiance-request-total* 0 "Counter for the total amount of requests handled.")
 (defvar *radiance-implements* (make-hash-table) "Radiance implements table.")
 (defvar *radiance-modules* (make-hash-table) "Map of all loaded modules.")
-(defvar *radiance-triggers* (make-hash-table) "Map of all registered triggers.")
+(defvar *radiance-hooks* (make-hash-table) "Map of all registered triggers.")
 (defvar *radiance-session*     NIL "Current session object, if any,")
 
 (defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789" "Default random characters appearing in make-random-string.")
 (defvar *default-cookie-expire* (* 60 60 24 356) "Default expiration time in seconds.")
 (defconstant *unix-epoch-difference* (encode-universal-time 0 0 0 1 1 1970 0) "Time difference between unix epoch and Lisp time.")
-(defconstant *uri-matcher* (cl-ppcre:create-scanner "((\\w+\\.)*?)(\\w+(\\.[a-z]+)?)?(:\\d+)?/(.*)"))
+(defvar *uri-matcher* (cl-ppcre:create-scanner "((\\w+\\.)*?)(\\w+(\\.[a-z]+)?)?(:\\d+)?/(.*)"))
 
