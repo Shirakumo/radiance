@@ -108,16 +108,3 @@
     (auth-error (err)
       (hunchentoot:redirect (format nil "/register?errorcode=~a&errortext=~a" (slot-value err 'radiance::code) (slot-value err 'radiance::text)))))
   (hunchentoot:redirect "/register"))
-
-(defhook 'verify-login (get-module :verify) #'page-login)
-(defhook 'verify-auth (get-module :verify) #'page-auth)
-(defhook 'verify-logout (get-module :verify) #'page-logout)
-(defhook 'verify-register (get-module :verify) #'page-register)
-(defhook 'verify-register-auth (get-module :verify) #'page-register-auth)
-
-(register (implementation 'dispatcher) 'verify-login :subdomain "auth" :path "/login")
-(register (implementation 'dispatcher) 'verify-auth :subdomain "auth" :path "/auth")
-(register (implementation 'dispatcher) 'verify-logout :subdomain "auth" :path "/logout")
-(register (implementation 'dispatcher) 'verify-register :subdomain "auth" :path "/register")
-(register (implementation 'dispatcher) 'verify-register-auth :subdomain "auth" :path "/regauth")
-(register (implementation 'dispatcher) 'verify-login :subdomain "auth")

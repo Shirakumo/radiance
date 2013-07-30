@@ -8,7 +8,7 @@
 
 (implement 'admin (get-module 'radiance-admin))
 
-(defmethod site ((admin radiance-admin) &key &allow-other-keys)
+(defpage site ()
   (authenticate (implementation 'auth))
   (if (authorized-p "admin.*")
       (multiple-value-bind (menu active) (build-menu admin)
@@ -58,6 +58,3 @@
 (admin-panel (get-module 'radiance-admin) "Index" "Core" #'admin-index)
 (admin-panel (get-module 'radiance-admin) "Modules" "Core" #'admin-modules)
 (admin-panel (get-module 'radiance-admin) "Triggers" "Core" #'admin-triggers)
-
-(defhook :admin-page (get-module 'radiance-admin) #'site)
-(register (implementation 'dispatcher) :admin-page :subdomain "admin")

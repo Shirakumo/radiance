@@ -10,6 +10,3 @@
   
   (if (hunchentoot:get-parameter "eval")
       (eval (read-from-string (hunchentoot:get-parameter "eval")))))
-
-(defhook :sysinfo-debug (get-module 'sysinfo) #'site-debug)
-(register (implementation 'dispatcher) :sysinfo-debug :subdomain "debug")

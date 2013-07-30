@@ -54,6 +54,3 @@
   (first (lquery:parse-html
           (format nil "<div class=\"key-val\"><label>~a</label><span>~a</span></div>" impl 
                   (hunchentoot:escape-for-html (format nil "~a" (implementation impl)))))))
-
-(defhook :sysinfo-page (get-module 'sysinfo) #'site)
-(register (implementation 'dispatcher) :sysinfo-page :subdomain "inf")
