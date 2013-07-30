@@ -110,6 +110,18 @@
   "Retrieve the package of the module."
   (symbol-package (class-name (class-of (get-module module)))))
 
+(defgeneric module-symbol (module)
+  (:documentation "Gets the symbol to access the given module."))
+
+(defmethod module-symbol ((module string))
+  (make-keyword module))
+
+(defmethod module-symbol ((module module))
+  (module-symbol (class-name (class-of module))))
+
+(defmethod module-symbol ((module symbol))
+  (module-symbol (symbol-name module)))
+
 (defun discover-modules (&key redefine reinitialize)
   (cl-fad:walk-directory (merge-pathnames "mod/" (pathname (config :root)))
                          (lambda (file) (load-module file :redefine redefine :reinitialize reinitialize))
