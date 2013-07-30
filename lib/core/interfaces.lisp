@@ -83,7 +83,7 @@ Manipulating data directly through this is discouraged and the data-model class 
   (model-delete () "Deletes the model from the database.")
   (model-insert () "Inserts the model into the database."))
 
-(defmacro with-fields ((&rest fields) model &rest body)
+(defmacro with-fields ((&rest fields) model &body body)
   "Stub for the with-model-fields macro. Should be redefined by the database implementation."
   (declare (ignore fields model) (ignore body))
   (error "With-model-fields macro not implemented!"))

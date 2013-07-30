@@ -36,7 +36,7 @@
        (setf (module (gethash ',slot *radiance-implements*)) module))
      ',superclass))
 
-(defmacro defimpl (slot &rest generics)
+(defmacro defimpl (slot &body generics)
   "Define a new implementation. A generics definition is a list of the following format: (function-name (additional-args*) docstring?)"
   (let ((documentation "") (mod-gens (gensym "IMPL-GENSYM"))
         (super (if (listp slot) (cdr slot) '(module)))

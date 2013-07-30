@@ -28,8 +28,8 @@
 
 (defmacro defmodule (name superclasses docstring 
                      (&key fullname author version license url collections (persistent T) implements asdf-system dependencies compiled)
-                     (&rest defsystem)
-                     &rest extra-slots)
+                     (&body defsystem)
+                     &body extra-slots)
   "Define a new Radiance module."
   (let ((superclasses (if (not superclasses) '(module) superclasses))
         (classdef (gensym "CLASSDEF"))

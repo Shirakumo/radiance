@@ -130,7 +130,7 @@ If any of the predicates fail, an assertion error condition is signalled."
                                     (max-name-length (config-tree :upload :max-name-length))
                                     (use-uuids (config-tree :upload :use-uuids))
                                     (append-extension (config-tree :upload :append-extension)))
-                                    &rest body)
+                                    &body body)
   "Uploads a file and binds either the path to it or a stream to the file to the specified variable, depending on :open-file.
 See upload-file for more information."
   (let ((filepathvar (gensym "RADIANCE-FILE")))
@@ -141,7 +141,7 @@ See upload-file for more information."
        
        ,(if open-file `(close ,filepathvar)))))
 
-(defmacro with-var-func (fun (&rest vars) &rest body)
+(defmacro with-var-func (fun (&rest vars) &body body)
   "Constructs a basic with-X let."
   `(let (,@(loop for var in vars
               for varname = (if (listp var) (first var) var)
@@ -149,14 +149,14 @@ See upload-file for more information."
               collect `(,varname (funcall ,fun ,funcname))))
      ,@body))
 
-(defmacro with-get ((&rest vars) &rest body)
+(defmacro with-get ((&rest vars) &body body)
   "Same as with-slots, but for GET variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
   `(with-var-func #'get-var (,@vars) ,@body))
 
-(defmacro with-post ((&rest vars) &rest body)
+(defmacro with-post ((&rest vars) &body body)
   "Same as with-slots, but for POST variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
@@ -225,7 +225,7 @@ Note that the PATH part is always a regex, excluding the start slash."
 (set-dispatch-macro-character #\# #\u #'make-uri-helper)
 
 
-(defmacro defpage (name uri (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch lquery (dispatcher T)) &rest body)
+(defmacro defpage (name uri (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch lquery (dispatcher T)) &body body)
   "Defines a new page for the given module that will be available on the
 specified URI. If access-branch is given, an authorization check on the
 current session at page load will be performed. If lquery is non-NIL,
@@ -255,7 +255,7 @@ value of the request is automatically chosen."
                 :fields '((:uri ,uri)))
        (register ,dispatcher ',name ,uri))))
 
-(defmacro defapi (name (&rest args) (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch) &rest body)
+(defmacro defapi (name (&rest args) (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch) &body body)
   "Defines a new API function for the given module. The arguments specify
 REST values that are expected (or not according to definition) on the
 API call. Any variable can have a default value specified. If 
@@ -306,3 +306,7 @@ be one of the following values: :URI :function :hook."
                 (:URI (hook-field hook :uri))
                 (:function (hook-function hook))
                 (:hook hook)))))
+
+(defpage api #u"/api/" ()
+  )
+

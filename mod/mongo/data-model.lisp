@@ -72,7 +72,7 @@
   (db.insert (collection model) (document model))
   model)
 
-(defmacro with-fields ((&rest fields) model &rest body)
+(defmacro with-fields ((&rest fields) model &body body)
   "Lets you access fields directly by name. This is the same stuff as with-accessors or with-slots."
   (let ((vargens (gensym "MODEL")))
     `(let ((,vargens ,model))
