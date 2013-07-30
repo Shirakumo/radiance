@@ -19,14 +19,16 @@
   :serial T
   :components ((:file "package")
                (:file "globals")
+               (:file "conditions")
+               (:file "toolkit")
                (:file "module")
                (:file "trigger")
                (:file "implement")
-               (:file "toolkit")
                (:file "interfaces")
                (:file "site")
                (:file "server"))
-  :depends-on (:cl-json
+  :depends-on (:alexandria
+               :cl-json
                :hunchentoot
 	       :log4cl
                :uuid
