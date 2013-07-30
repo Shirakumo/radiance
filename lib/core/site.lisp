@@ -235,6 +235,7 @@ the *radiance-request* is already set. If lQuery is unset, the return
 value of the request is automatically chosen."
   (assert (not (eql module NIL)) () "Module cannot be NIL! (Are you in-module context?)")
   (let ((name (intern (format nil "PAGE-~a" name)))
+        (urigens (gensym "URI")) (modgens (gensym "MODULE"))
         (funcbody (if lquery 
                       `(progn 
                          (lquery:$ (initialize ,lquery))
@@ -242,18 +243,19 @@ value of the request is automatically chosen."
                          `(unless (response *radiance-request*) 
                             (concatenate-strings (lquery:$ (serialize)))))
                       `(progn ,@body))))
-    `(progn
-       (defmethod ,name ((,modulevar (eql ,module)))
+    `(let ((,urigens ,uri)
+           (,modgens (get-module ,(module-symbol module))))
+       (defmethod ,name ((,modulevar (eql ,modgens)))
          (declare (ignorable ,modulevar))
          ,(if access-branch 
               `(if (authorized-p ,access-branch)
                    ,funcbody
                    (error-page 403))
               funcbody))
-       (defhook :page ',name ,module #',name 
+       (defhook :page ',name ,modgens #',name 
                 :description ,(format nil "Page call for ~a" module)
-                :fields '((:uri ,uri)))
-       (register ,dispatcher ',name ,uri))))
+                :fields `((:uri ,,urigens)))
+       (register ,dispatcher ',name ,urigens))))
 
 (defmacro defapi (name (&rest args) (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch) &body body)
   "Defines a new API function for the given module. The arguments specify
@@ -265,9 +267,10 @@ an alist or an URI. This will automatically be transformed into the
 requested output type or a page redirect in the case of an URI."
   (assert (not (eql module NIL)) () "Module cannot be NIL! (Are you in-module context?)")
   (let ((name (intern (format nil "API-~a" name)))
-        (funcbody `(progn ,@body)))
-    `(progn
-       (defmethod ,name ((,modulevar (eql ,module)))
+        (funcbody `(progn ,@body))
+        (modgens (gensym "MODULE")))
+    `(let ((,modgens (get-module ,(module-symbol module))))
+       (defmethod ,name ((,modulevar (eql ,modgens)))
          (declare (ignorable ,modulevar))
          (let (,@(loop for arg in args 
                     for argname = (if (listp arg) (car arg) arg) 
@@ -281,7 +284,7 @@ requested output type or a page redirect in the case of an URI."
                      ,funcbody
                      (error-page 403))
                 funcbody)))
-       (defhook :api ',name ,module #',name ,(format nil "API call for ~a" module)))))
+       (defhook :api ',name ,modgens #',name ,(format nil "API call for ~a" module)))))
 
 (defun api-return (code text &rest data)
   "Generates an API response in the proper format:
@@ -306,7 +309,4 @@ be one of the following values: :URI :function :hook."
                 (:URI (hook-field hook :uri))
                 (:function (hook-function hook))
                 (:hook hook)))))
-
-(defpage api #u"/api/" ()
-  )
 
