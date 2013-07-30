@@ -30,13 +30,17 @@
        do (setf value (cdr (assoc branch value))))
     value))
 
-(defsetf config config) 
+(defsetf config config)
 
 (defun concatenate-strings (list &optional (delim ""))
   "Joins a list of strings into one string using format."
   (format nil (format nil "~~{~~A~~^~a~~}" delim) list))
 
 (defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
+
+(defun package-symbol (&optional (package *package*))
+  "Retrieves the keyword symbol of the package."
+  (make-keyword (package-name package)))
 
 (defmacro nappend (var &rest lists)
   `(setf ,var (append ,var ,@lists)))
