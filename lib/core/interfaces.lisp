@@ -10,6 +10,7 @@
     "Primary dispatcher module that propagates page calls to triggers."
   (dispatch (request) "Dispatch a new webserver call.")
   (register (trigger uri) "Register a trigger to dispatch to on the given URI.")
+  (unregister (uri) "Free a given URI.")
   (dispatch-default (request) "The standard method to invoke when no specific handler has been found."))
 
 (defimpl (user)
@@ -82,7 +83,7 @@ Manipulating data directly through this is discouraged and the data-model class 
   (model-delete () "Deletes the model from the database.")
   (model-insert () "Inserts the model into the database."))
 
-(defmacro with-model-fields ((&rest fields) model &rest body)
+(defmacro with-fields ((&rest fields) model &rest body)
   "Stub for the with-model-fields macro. Should be redefined by the database implementation."
   (declare (ignore fields model) (ignore body))
   (error "With-model-fields macro not implemented!"))
