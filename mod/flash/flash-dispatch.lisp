@@ -9,33 +9,23 @@
 (implement 'dispatcher (get-module 'flash-dispatch))
 
 (defmethod dispatch ((dispatch flash-dispatch) (request radiance:request) &key)
-  "Dispatches a request to a module based on a subdomain."
   (or 
-   (loop for (trigger subdomain domain port path) in (hooks dispatch)
-      if (and (or (not subdomain) (string-equal subdomain (concatenate-strings (subdomains request) ".")))
-              (or (not domain) (string-equal domain (domain request)))
-              (or (not port) (= port (port request)))
-              (or (not path) (and (<= (length path) (length (path request)))
-                                  (string= path (path request) :end2 (length path)))))
-      do (return (trigger trigger)))
-   (trigger :dispatch-default request)
+   (loop for (trigger . uri) in (hooks dispatch)
+      if (uri-matches uri request)
+      do (return (trigger :page trigger)))
+   (trigger :server :dispatch-default request)
    (dispatch-default dispatch request)))
 
-(defmethod register ((dispatch flash-dispatch) trigger &key subdomain domain port path)
-  "Registers a subdomain for a module. If the subdomain is NIL, all unhandled requests are dispatched to the module."
+(defmethod register ((dispatch flash-dispatch) trigger uri &key)
   (setf (hooks dispatch) 
-        (sort (append (hooks dispatch) `((,trigger ,subdomain ,domain ,port ,path)))
+        (sort (append (hooks dispatch) `((,trigger . ,uri)))
               #'sort-dispatcher-hooks))
   trigger)
 
 (defmethod dispatch-default ((dispatch flash-dispatch) (request radiance:request) &key &allow-other-keys)
   (read-data-file "static/html/hello.html"))
 
-(defun count-path (path)
-  (if (or (eq path NIL) (equal path "/")) 0
-      (length (split-sequence:split-sequence #\/ (string-left-trim "/" path)))))
-
 (defun sort-dispatcher-hooks (a b)
-  (flet ((path (hook) (car (last hook))))
-    (> (count-path (path a))
-       (count-path (path b)))))
+  (flet ((path (hook) (path (cdr hook))))
+    (> (count #\/ (path a))
+       (count #\/ (path b)))))
