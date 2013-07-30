@@ -1,15 +1,20 @@
  == SIMPLE TODO PAGE ==
 Date 
   * New todo
-  _ Completed
+  / Done today but created on another day
+  _ Completed today
 
-
+2013.07.30
+  / Change *radiance-triggers* variable to *radiance-hooks*.
+  _ Update package exports.
+  / Change *radiance-request* to use URI.
+  _ Fixed *module* crud.
 
 2013.07.29
   _ Complete get-triggers function.
-  * Change *radiance-request* to use URI.
+  _ Change *radiance-request* to use URI.
   * Add API dispatch.
   * Add static resource dispatcher with link registry.
   * Implement module persistence.
-  * Change *radiance-triggers* variable to *radiance-hooks*.
+  _ Change *radiance-triggers* variable to *radiance-hooks*.
   * Adapt all modules to trigger, dispatcher and site changes.
