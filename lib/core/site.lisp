@@ -185,12 +185,12 @@ in the actual request and are therefore purely temporary."
   "Checks if the given URI is compatible with the other URI."
   (and (equal (domain uri) (domain uri2))
        (equal (port uri) (port uri))
-       (cl-ppcre:scan (regex uri) (path uri2))
        (loop for sda in (reverse (subdomains uri))
           for sdb in (reverse (subdomains uri2))
           unless (string= sda sdb)
           return NIL
-          finally (return T))))
+          finally (return T))
+       (cl-ppcre:scan (regex uri) (path uri2))))
 
 (defgeneric uri->url (uri &optional absolute)
   (:documentation "Turns the URI into a string URL."))
@@ -225,7 +225,7 @@ Note that the PATH part is always a regex, excluding the start slash."
 (set-dispatch-macro-character #\# #\u #'make-uri-helper)
 
 
-(defmacro defpage (name uri (&key (module *module*) (modulevar (gensym "MODULE")) access-branch lquery (dispatcher T)) &rest body)
+(defmacro defpage (name uri (&key (module (get (package-symbol *package*) :module)) (modulevar (gensym "MODULE")) access-branch lquery (dispatcher T)) &rest body)
   "Defines a new page for the given module that will be available on the
 specified URI. If access-branch is given, an authorization check on the
 current session at page load will be performed. If lquery is non-NIL,
@@ -255,7 +255,7 @@ value of the request is automatically chosen."
                 :fields '((:uri ,uri)))
        (register ,dispatcher ',name ,uri))))
 
-(defmacro defapi (name (&rest args) (&key (module *module*) (modulevar (gensym "MODULE")) access-branch) &rest body)
+(defmacro defapi (name (&rest args) (&key (module (get (package-symbol *package*) :module)) (modulevar (gensym "MODULE")) access-branch) &rest body)
   "Defines a new API function for the given module. The arguments specify
 REST values that are expected (or not according to definition) on the
 API call. Any variable can have a default value specified. If 
@@ -296,11 +296,11 @@ favicon.ico, robots.txt, humans.txt or other files that cannot be in
 the static/ directory."
   )
 
-(defun link (name &key (module *module*) (type :URI))
+(defun link (name &key (module (get (package-symbol *package*) :module)) (type :URI))
   "Returns the link to the requested page or API function. Type can
 be one of the following values: :URI :function :hook."
   (let ((name (intern (format nil "PAGE-~a" name))))
-    (loop for hook in (gethash name (gethash :page *radiance-triggers*))
+    (loop for hook in (get-hooks :page name)
        if (eq module (module hook))
        return (case type
                 (:URI (hook-field hook :uri))
