@@ -7,8 +7,13 @@
 (defpackage org.tymoonnext.radiance
   (:nicknames :org.tymoonnext.radiance :tynet-5 :tynet :radiance)
   (:use :cl :log4cl :cl-fad)
-  (:export ;; globals.lisp
-           :*module*
+  (:export ;; conditions.lisp
+           :radiance-error
+           :module-already-initialized
+           :auth-error
+           :api-error
+           :api-args-error
+           ;; globals.lisp
            :*radiance-config-file*
            :*radiance-config*
            :*radiance-acceptors*
@@ -18,7 +23,7 @@
            :*radiance-request-total*
            :*radiance-implements*
            :*radiance-modules*
-           :*radiance-triggers*
+           :*radiance-hooks*
            :*radiance-session*
            :*random-string-characters*
            :*default-cookie-expire*
@@ -29,70 +34,14 @@
            :defimplclass
            :defimpl
            :implementation
-           ;; module.lisp
-           :module-already-initialized
-           :column
-           :collection
-           :module
-           :init
-           :shutdown
-           :defmodule
-           :make-colum
-           :make-collection
-           :get-module
-           :module-package
-           :in-module
-           ;; toolkit.lisp
-           :radiance-error
-           :load-config
-           :config
-           :config-tree
-           :concatenate-strings
-           :make-keyword
-           :nappend
-           :universal-to-unix-time
-           :unix-to-universal-time
-           :get-unix-time
-           :make-random-string
-           :getdf
-           :authenticated-p
-           :authorized-p
-           :set-cookie
-           :template
-           :read-data-file
-           :error-page
-           :file-size
-           :upload-file
-           :with-uploaded-file
-           ;; trigger.lisp
-           :hook
-           :defhook
-           :trigger
-           ;; server.lisp
-           :request
-           :response
-           :subdomains
-           :domain
-           :path
-           :port
-           :manage
-           :server-running-p
-           ;; interfaces.lisp
-           :core
-           :discover-modules
-           :compile-module
            :load-implementations
+           ;; interfaces.lisp
            :dispatcher
            :dispatch
            :register
-           :auth-error
-           :auth
-           :authenticate
-           :authenticated-p
-           :auth-page-login
-           :auth-page-logout
-           :auth-page-options
-           :auth-page-register
+           :unregister
+           :dispatch-default
+           
            :user
            :user-get
            :user-field
@@ -101,16 +50,25 @@
            :user-check
            :user-grant
            :user-prohibit
+
+           :auth
+           :authenticate
+           :auth-page-login
+           :auth-page-logout
+           :auth-page-register
+           :auth-page-options
+
            :session
            :session-get
            :session-start
            :session-start-temp
-           :session-end
+           :session-uuid
+           :session-user
            :session-field
+           :session-end
            :session-active-p
            :session-temp-p
-           :session-user
-           :session-uuid
+
            :database
            :db-connect
            :db-disconnect
@@ -123,6 +81,7 @@
            :db-remove
            :db-update
            :db-apropos
+
            :data-model
            :model-field
            :model-get
@@ -132,22 +91,106 @@
            :model-save
            :model-delete
            :model-insert
-           :with-model-fields
-           ::=
-           ::and
-           ::or
-           ::not
-           ::>
-           ::<
-           ::>=
-           ::<=
-           ::in
-           ::!in
-           ::matches
+           :with-fields
+
+           ::and ::or ::not ::in ::!in ::matches
+           ::= ::< ::> ::<= ::>=
+           
            :admin
            :site
            :admin-category
            :admin-panel
+           ;; module.lisp
+           :module
+           :name
+           :author
+           :version
+           :license
+           :url
+           :collections
+           :persistent
+           :implementations
+           :asdf-system
+           :dependencies
+           :compiled-p
+           :defmodule
+           :init
+           :shutdown
+           :get-module
+           :module-package
+           :discover-modules
+           :load-module
+           :compile-module
+           :compile-dependency
+           :column
+           :collection
+           :make-column
+           :make-collection
+           ;; server.lisp
+           :request
+           :response
+           :manage
+           :server-running-p
+           ;; site.lisp
+           :authenticated-p
+           :authorized-p
+           :set-cookie
+           :get-var
+           :get-vars
+           :post-var
+           :post-vars
+           :redirect
+           :static
+           :template
+           :read-data-file
+           :error-page
+           :upload-file
+           :with-uploaded-file
+           :with-get
+           :with-post
+           :uri
+           :subdomains
+           :domain
+           :port
+           :path
+           :pathregex
+           :uri-matches
+           :uri->url
+           :make-uri
+           :defpage
+           :defapi
+           :api-return
+           :define-file-link
+           :link
+           ;; toolkit.lisp
+           :load-config
+           :config
+           :config-tree
+           :concatenate-strings
+           :make-keyword
+           :package-symbol
+           :nappend
+           :universal-to-unix-time
+           :unix-to-universal-time
+           :get-unix-time
+           :make-random-string
+           :getdf
+           :file-size
+           :assoc-all
+           ;; trigger.lisp
+           :hook
+           :namespace
+           :hook-function
+           :fields
+           :description
+           :hook-equal
+           :defhook
+           :add-namespace
+           :get-namespace-map
+           :get-namespace
+           :get-triggers
+           :get-hooks
+           :trigger
            )
   (:shadow :restart))
 
