@@ -14,6 +14,11 @@
                                  (slot-value c 'text)
                                  (slot-value c 'code)))))
 
+(define-condition module-already-initialized (radiance-error)
+  ((module :initarg :module :reader module))
+  (:report (lambda (c s) (format s "Module ~a already initialized!"
+                                 (slot-value c 'module)))))
+
 (define-condition auth-error (radiance-error) ())
 
 (define-condition api-error (radiance-error)
@@ -26,3 +31,5 @@
                                  (slot-value c 'text)))))
 
 (define-condition api-args-error (api-error) ())
+
+(define-condition namespace-conflict (radiance-error) ())
