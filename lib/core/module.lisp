@@ -6,33 +6,6 @@
 
 (in-package :radiance)
 
-(define-condition module-already-initialized (error)
-  ((module :initarg :module :reader module)))
-
-(defclass column ()
-  ((name :initform (error "Column name required.") :initarg :name :reader name :type string)
-   (access-mode :initform "000" :initarg :access-mode :reader access-mode :type string)
-   (description :initform NIL :initarg :description :reader description :type string))
-  (:documentation "Abstract database column class for metadata purposes."))
-
-(defclass collection (column)
-  ((columns :initform (error "List of columns required.") :initarg :columns :reader columns :type simple-vector))
-  (:documentation "Abstract database collection class for metadata purposes."))
-
-(defmethod print-object ((col column) out)
-  (print-unreadable-object (col out :type t)
-    (format out "~a (~a)" (name col) (access-mode col))))
-
-(defmethod print-object ((mod module) out)
-  (print-unreadable-object (mod out :type t)
-    (if (version mod) (format out "v~a" (version mod)))))
-
-(defgeneric init (module)
-  (:documentation "Called when Radiance is started up."))
-
-(defgeneric shutdown (module)
-  (:documentation "Called when Radiance is shut down."))
-
 (defmacro make-module-class (name superclasses docstring &optional extra-slots)
   `(defclass ,name ,superclasses
      ((name :initarg :name :reader name :type string :allocation :class)
@@ -62,7 +35,7 @@
         (classdef (gensym "CLASSDEF"))
         (initializer (gensym "INITIALIZER"))
         (asdf-system (or asdf-system (format nil "RADIANCE-MOD-~a" name))))
-    `(progn 
+    `(eval-when (:compile-toplevel :load-toplevel :execute) 
        
        ,(if defsystem
             `(asdf:defsystem ,(intern (string-upcase asdf-system))
@@ -73,14 +46,24 @@
                :description ,docstring
                ,@defsystem))
 
-       (flet ((,classdef () (log:info "Defining module ~a" ',name) (make-module-class ,name ,superclasses ,dcostring ,extra-slots))
+       (flet ((,classdef () (log:info "Defining module ~a" ',name) (make-module-class ,name ,superclasses ,docstring ,extra-slots))
               (,initializer () (log:info "Initializing module ~a" ',name)
-                            (setf (gethash (make-keyword ',name) *radiance-modules*)
-                                  (make-instance ',name 
-                                                 :name ,fullname :author ,author :version ,version :license ,license :url ,url
-                                                 :collections ,collections :persistent ,persistent
-                                                 :implements ,implements :asdf-system ,asdf-system :dependencies ,dependencies
-                                                 :compiled ,compiled))))
+                            (let ((instance (make-instance ',name 
+                                                       :name ,fullname :author ,author :version ,version :license ,license :url ,url
+                                                       :collections ,collections :persistent ,persistent
+                                                       :implements ,implements :asdf-system ,asdf-system :dependencies ,dependencies
+                                                       :compiled ,compiled)))
+                              (restart-case
+                                  (progn 
+                                    (unless (eql (class-of instance) (class-of (get (package-symbol *package*) :module)))
+                                      (error 'module-already-initialized :module (get (package-symbol *package*) :module)))
+                                    (setf (get (package-symbol *package*) :module) instance)
+                                    (setf (gethash (make-keyword ',name) *radiance-modules*) instance))
+                                (override-existing-module ()
+                                  :report "Override the existing module in the package (could break things!)"
+                                  (setf (get (package-symbol *package*) :module) instance)
+                                  (setf (gethash (make-keyword ',name) *radiance-modules*) instance))))))
+         
          (restart-case (if (gethash ',name *radiance-modules*)
                            (error 'module-already-initialized :module ',name)
                            (progn (,classdef) (,initializer)))
@@ -96,20 +79,15 @@
            (do-nothing ()
              :report "Leave module and instance as they are."))))))
 
-(defun make-column (name &key (access-mode "000") description)
-  "Shorthand function to create a new column instance."
-  (make-instance 'column :name name :access-mode access-mode :description description))
+(defmethod print-object ((mod module) out)
+  (print-unreadable-object (mod out :type t)
+    (if (version mod) (format out "v~a" (version mod)))))
 
-(defun make-collection (name &key (access-mode "000") description columns)
-  "Create a new representation of a collection."
-  (make-instance 'collection :name name :access-mode access-mode :description description
-                 :columns (loop with array = (make-array (length columns) :element-type 'column :fill-pointer 0)
-                             for column in columns
-                             do (vector-push (if (listp column) 
-                                                 (destructuring-bind (name &optional mode description) column
-                                                   (make-column name :access-mode mode :description description))
-                                                 (make-column column)) array)
-                             finally (return array))))
+(defgeneric init (module)
+  (:documentation "Called when Radiance is started up."))
+
+(defgeneric shutdown (module)
+  (:documentation "Called when Radiance is shut down."))
 
 (defgeneric get-module (module)
   (:documentation "Retrieves the requested module from the instance list."))
@@ -123,6 +101,10 @@
 (defmethod get-module ((module string))
   "Retrieves the requested module from the instance list."
   (gethash (make-keyword module) *radiance-modules*))
+
+(defmethod get-module ((module (eql T)))
+  "Retrieves the module of the current package, if any."
+  (get (package-symbol *package*) :module))
 
 (defun module-package (module)
   "Retrieve the package of the module."
@@ -176,10 +158,34 @@
            (compile-module deps :force force))))
     (T (error "Dependency ~a not found!" dependency))))
 
-(defmacro in-module (name)
-  `(progn
-     (eval-when (:compile-toplevel :load-toplevel :execute)
-       (setf *module* 
-             (or (get-module ',name)
-                 (error "Module ~a does not exist." ',name))))
-     (in-package ,(package-name (module-package name)))))
+
+
+(defclass column ()
+  ((name :initform (error "Column name required.") :initarg :name :reader name :type string)
+   (access-mode :initform "000" :initarg :access-mode :reader access-mode :type string)
+   (description :initform NIL :initarg :description :reader description :type string))
+  (:documentation "Abstract database column class for metadata purposes."))
+
+(defclass collection (column)
+  ((columns :initform (error "List of columns required.") :initarg :columns :reader columns :type simple-vector))
+  (:documentation "Abstract database collection class for metadata purposes."))
+
+(defmethod print-object ((col column) out)
+  (print-unreadable-object (col out :type t)
+    (format out "~a (~a)" (name col) (access-mode col))))
+
+(defun make-column (name &key (access-mode "000") description)
+  "Shorthand function to create a new column instance."
+  (make-instance 'column :name name :access-mode access-mode :description description))
+
+(defun make-collection (name &key (access-mode "000") description columns)
+  "Create a new representation of a collection."
+  (make-instance 'collection :name name :access-mode access-mode :description description
+                 :columns (loop with array = (make-array (length columns) :element-type 'column :fill-pointer 0)
+                             for column in columns
+                             do (vector-push (if (listp column) 
+                                                 (destructuring-bind (name &optional mode description) column
+                                                   (make-column name :access-mode mode :description description))
+                                                 (make-column column)) array)
+                             finally (return array))))
+
