@@ -35,9 +35,8 @@
     (log:info "Defining hook ~a" instance)
     (loop for (key . val) in fields
        do (setf (gethash key (fields instance)) val))
-    (let ((namespace (gethash space *radiance-triggers*)))
-      (unless namespace
-        (setf (gethash space *radiance-triggers*) (make-hash-table)))
+    (let ((namespace (gethash space *radiance-hooks*)))
+      (unless namespace (add-namespace space))
       (let ((pos (position instance (gethash name namespace) :test #'hook-equal)))
         (if pos 
             (setf (nth pos (gethash name namespace)) instance)
@@ -46,12 +45,29 @@
 
 (defun get-namespace-map ()
   "Retrieve the hash-map that contains all trigger namespaces."
-  *radiance-triggers*)
+  *radiance-hooks*)
 
-(defun get-namespace (space)
+(defun add-namespace (space &key ignore-defined)
+  "Create a certain namespace."
+  (restart-case 
+      (let ((namespace (gethash space *radiance-hooks*)))
+        (if (and (not ignore-defined) namespace) (error 'namespace-conflict :text (format nil "Namespace ~a already exists!" space)))
+        (setf (gethash space *radiance-hooks*) (make-hash-table))
+        space)
+    (change-name (name) 
+      :report "Create a different namespace."
+      :interactive read
+      (add-namespace name))
+    (redefine () 
+      :report "Override the definition."
+      (add-namespace space :ignore-defined T))
+    (skip () 
+      :report "Don't define anything.")))
+
+(defun get-namespace (space &key ignore-undefined)
   "Retrieve a certain namespace."
-  (let ((namespace (gethash space *radiance-triggers*)))
-    (assert (not (eql namespace NIL)) () "Unknown trigger namespace ~a" space)
+  (let ((namespace (gethash space *radiance-hooks*)))
+    (if (and (not ignore-undefined) (not namespace)) (error "Unknown trigger namespace ~a" space))
     namespace))
 
 (defun get-triggers (space)
@@ -66,3 +82,7 @@
   "Trigger a certain hook and collect all return values."
   (loop for hook in (gethash trigger (get-namespace space))
      collect (apply (hook-function hook) (module hook) args)))
+
+(add-namespace :server)
+(add-namespace :api)
+(add-namespace :page)
