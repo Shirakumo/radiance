@@ -55,8 +55,10 @@
                                                        :compiled ,compiled)))
                               (restart-case
                                   (progn 
-                                    (unless (eql (class-of instance) (class-of (get (package-symbol *package*) :module)))
-                                      (error 'module-already-initialized :module (get (package-symbol *package*) :module)))
+                                    (when (and (not (eql (class-of instance)
+                                                         (class-of (get-module T))))
+                                               (get-module T))
+                                      (error 'module-already-initialized :module (get-module T)))
                                     (setf (get (package-symbol *package*) :module) instance)
                                     (setf (gethash (make-keyword ',name) *radiance-modules*) instance))
                                 (override-existing-module ()
@@ -132,7 +134,7 @@
 (defun load-module (file &key redefine reinitialize &allow-other-keys)
   (log:info "Discovered mod file: ~a (~a)" file (file-namestring file))
   (handler-bind ((module-already-initialized
-                  #'(lambda (c) (declare (ignore c)) 
+                  #'(lambda (c) (log:warn "Error loading module: ~a" c)
                             (cond
                               ((not (or redefine reinitialize)) (invoke-restart 'do-nothing))
                               ((and redefine reinitialize) (invoke-restart 'override-both))
