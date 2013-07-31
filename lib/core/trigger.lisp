@@ -81,7 +81,10 @@
 (defun trigger (space trigger &rest args)
   "Trigger a certain hook and collect all return values."
   (loop for hook in (gethash trigger (get-namespace space))
-     collect (apply (hook-function hook) (module hook) args)))
+     collect (let* ((module (module hook)))
+               (unless (persistent module)
+                 (setf module (make-instance (class-of module))))
+               (apply (hook-function hook) module args))))
 
 (add-namespace :server)
 (add-namespace :api)
