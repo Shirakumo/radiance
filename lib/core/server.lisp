@@ -12,7 +12,7 @@
 
 (defmethod print-object ((request request) out)
   (print-unreadable-object (request out :type T)
-    (format out "~a:~a → (~a ~a)" (domain request) (port request) (subdomains request) (path request))))
+    (format out "~a:~a → (~a /~a)" (domain request) (port request) (subdomains request) (path request))))
 
 (defun manage (action &key (config-file) (verbose T))
   "Manage the TymoonNETv5 web server."
@@ -48,10 +48,9 @@
                                                    :access-log-destination NIL
                                                    :message-log-destination NIL
                                                    :request-class 'radiance:request))))
-          (if (not *radiance-handlers*)
-              (setf *radiance-handlers* 
-                    (list (hunchentoot:create-folder-dispatcher-and-handler "/static/" (merge-pathnames "data/static/" (pathname (config :root))))
-                          #'handler)))
+          (setf *radiance-handlers* 
+                (list (hunchentoot:create-folder-dispatcher-and-handler "/static/" (merge-pathnames "data/static/" (pathname (config :root))))
+                      (function handler)))
           (setf hunchentoot:*dispatch-table* *radiance-handlers*)
           (setf hunchentoot:*default-content-type* "application/xhtml+xml")
           (log:info "Triggering INIT...")
@@ -92,7 +91,7 @@
 
 (defun handler (&optional (request hunchentoot:*request*))
   "Propagates the call to the next handler registered in the implements."
-  (let* ((path (hunchentoot:script-name request))
+  (let* ((path (string-left-trim "/" (hunchentoot:script-name request)))
          (host (hunchentoot:host request))
          (port (if (find #\: host)
                    (parse-integer (subseq host (1+ (search ":" host))))
@@ -115,7 +114,5 @@
     (let ((result (dispatch (implementation 'dispatcher) request)))
       (cond ((stringp result) (setf (response request) result))
             ((listp result) (setf (response request) (concatenate-strings result)))))
-    ;;(setf (response *radiance-request*) (format nil "~a ~a ~a" domains subdomains domain))
     (setf *radiance-request-count* (1- *radiance-request-count*))
-    ;;(log:info "RESPONSE:  ~a" (response request))
     (lambda () (response request))))
