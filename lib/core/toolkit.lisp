@@ -36,6 +36,10 @@
   "Joins a list of strings into one string using format."
   (format nil (format nil "~~{~~A~~^~a~~}" delim) list))
 
+(defun plist->hash-table (&rest plist)
+  "Turns the keyword arguments into a hash table."
+  (alexandria:plist-hash-table plist))
+
 (defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
 
 (defun package-symbol (&optional (package *package*))
