@@ -7,13 +7,19 @@
 (defpackage org.tymoonnext.radiance
   (:nicknames :org.tymoonnext.radiance :tynet-5 :tynet :radiance)
   (:use :cl :log4cl :cl-fad)
-  (:export ;; conditions.lisp
+  (:export ;; api.lisp
+           :defapi
+           :api-return
+           :api-format
+           :define-api-format
+           ;; conditions.lisp
            :radiance-error
            :module-already-initialized
            :auth-error
            :api-error
            :api-args-error
            ;; globals.lisp
+           :*radiance-startup-time*
            :*radiance-config-file*
            :*radiance-config*
            :*radiance-acceptors*
@@ -21,6 +27,7 @@
            :*radiance-request*
            :*radiance-request-count*
            :*radiance-request-total*
+           :*radiance-reply*
            :*radiance-implements*
            :*radiance-modules*
            :*radiance-hooks*
@@ -118,6 +125,7 @@
            :shutdown
            :get-module
            :module-package
+           :module-symbol
            :discover-modules
            :load-module
            :compile-module
@@ -158,8 +166,6 @@
            :uri->url
            :make-uri
            :defpage
-           :defapi
-           :api-return
            :define-file-link
            :link
            ;; toolkit.lisp
@@ -167,6 +173,7 @@
            :config
            :config-tree
            :concatenate-strings
+           :plist->hash-table
            :make-keyword
            :package-symbol
            :nappend
