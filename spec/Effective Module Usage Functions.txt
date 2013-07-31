@@ -2,12 +2,17 @@
  == EFFECTIVE MODULE USAGE FUNCTIONS ==
 
 
-MACRO (implemented):
+MACRO (!DEPRECATED!):
 (in-module :bla)
   => module and package set
 
 Sets *module* to the current module, much like in-package.
 Side effect: Also executes in-package to set it to the module's package.
+
+DEPRECATION NOTE: Functionality is not easily or well implementable due
+to lacking SLIME integration. Instead, each module will be tied to a
+package symbol, so that (in-package :x) has the double effect of switching
+the package as well as the module.
 
 
 FUNCTION (implemented):
@@ -54,13 +59,12 @@ requested output type or a page redirect in the case of an URI.
 
 
 FUNCTION (implemented):
-(api-return code text 
-  &rest plist-data) => alist
+(api-return code text data) => alist
 
-Generates an API response in the proper format:
-((:CODE . code) (:TEXT . text) (:DATA . data))
-Additional data is changed from a plist into an alist automatically.
-
+Generates an API response in the proper hash-table format.
+code should be an integer denoting the response code (usually like HTTP codes).
+text should be a short string explanation of the return.
+data should be a hash-table that contains all necessary data.
 
 FUNCTION:
 (define-file-link name uri pathspec &key access-branch) 
@@ -103,7 +107,7 @@ in the actual request and are therefore purely temporary.
 
  = Example 1: Voting Application = 
 
-(in-module :vote)
+(in-package :vote)
 
 (define-file-link favicon #u"vote./favicon.ico" (static "vote/favicon.ico"))
 
@@ -125,7 +129,7 @@ in the actual request and are therefore purely temporary.
 
  = Example 2: User-Bound ToDo List = 
 
-(in-module :todo)
+(in-package :todo)
 
 (define-file-link favicon #u"todo./favicon.ico" (static "todo/favicon.ico"))
 
@@ -141,23 +145,23 @@ in the actual request and are therefore purely temporary.
             textf text
             time (get-unix-time))
       (model-save model))
-      (api-return 200 "Todo added." :id id :text text :time time)))
+      (api-return 200 "Todo added." (plist->hash-table :id id :text text :time time))))
 
 (defapi del-todo (uuid) (:access-branch "todo.del")
   (let ((model (model-get-one T "todo" (:and (:= "id" uuid) (:= "user" (username (session-user *radiance-session*)))))))
     (if model
         (with-fields (id) model
           (model-delete model)
-          (api-return 200 "Todo deleted." :id id)
+          (api-return 200 "Todo deleted." (plist->hash-table :id id)))
 
         (error 'api-invalid-argument-error :text (format nil "Todo with ID ~a does not exist!" uuid)))))
 
 (defapi edit-todo (uuid text) (:access-branch "todo.edit")
   (let ((model (model-get-one T "todo" (:and (:= "id" uuid) (:= "user" (username (session-user *radiance-session*)))))))
     (if model
-        (with-fileds (textf time) 
+        (with-fields (textf time) 
           (setf textf text)
           (model-save model)
-          (api-return 200 "Todo edited." :id id :text text :time time))
+          (api-return 200 "Todo edited." (plist->hash-table :id id :text text :time time)))
 
         (error 'api-invalid-argument-error :text (format nil "Todo with ID ~a does not exist!" uuid)))))
