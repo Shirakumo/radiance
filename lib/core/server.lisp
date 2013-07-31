@@ -34,6 +34,7 @@
   (if (server-running-p)
       (log:fatal "Server already running!")
       (progn
+        (setf *radiance-startup-time* (get-unix-time))
         (log:info "Loading Config...")
         (load-config)
         (if (string-equal (config :root) "autodetect") 
@@ -73,6 +74,7 @@
         (setf *radiance-request-count* 0)
         (setf *radiance-request-total* 0)
         (setf *radiance-acceptors* NIL)
+        (setf *radiance-startup-time* 0)
         (log:info "SHUTDOWN finished."))
       (log:fatal "Server isn't running!")))
 
@@ -102,6 +104,7 @@
          (subdomains (reverse (if (> (length domains) 2) (subseq domains 0 (- (length domains) 2)))))
          (domain (concatenate-strings (subseq domains (length subdomains)) "."))
          (*radiance-request* request)
+         (*radiance-reply* hunchentoot:*reply*)
          (*radiance-session* NIL))
 
     (setf (subdomains request) subdomains

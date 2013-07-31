@@ -6,6 +6,7 @@
 
 (in-package :radiance)
 
+(defvar *radiance-startup-time* 0  "Startup time for uptime and such.")
 (defvar *radiance-config-file* NIL "Radiance's main JSON configuration file.")
 (defvar *radiance-config*      NIL "Radiance's main static configuration.")
 (defvar *radiance-acceptors*   NIL "List of all Hunchentoot acceptors that run this server.")
@@ -13,9 +14,10 @@
 (defvar *radiance-request*     NIL "Current request object.")
 (defvar *radiance-request-count* 0 "Counter for the current amount of requests being handled.")
 (defvar *radiance-request-total* 0 "Counter for the total amount of requests handled.")
-(defvar *radiance-implements* (make-hash-table) "Radiance implements table.")
-(defvar *radiance-modules* (make-hash-table) "Map of all loaded modules.")
-(defvar *radiance-hooks* (make-hash-table) "Map of all registered triggers.")
+(defvar *radiance-reply*       NIL "Current reply object.")
+(defvar *radiance-implements*  (make-hash-table) "Radiance implements table.")
+(defvar *radiance-modules*     (make-hash-table) "Map of all loaded modules.")
+(defvar *radiance-hooks*       (make-hash-table) "Map of all registered triggers.")
 (defvar *radiance-session*     NIL "Current session object, if any,")
 
 (defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789" "Default random characters appearing in make-random-string.")
