@@ -183,14 +183,22 @@ in the actual request and are therefore purely temporary."
 
 (defmethod uri-matches ((uri uri) (uri2 uri))
   "Checks if the given URI is compatible with the other URI."
-  (and (equal (domain uri) (domain uri2))
-       (equal (port uri) (port uri))
-       (loop for sda in (reverse (subdomains uri))
-          for sdb in (reverse (subdomains uri2))
-          unless (string= sda sdb)
-          return NIL
-          finally (return T))
-       (cl-ppcre:scan (regex uri) (path uri2))))
+  (and (or (not (domain uri))
+           (not (domain uri2))
+           (equal (domain uri) (domain uri2)))
+       (or (not (port uri))
+           (not (port uri2))
+           (equal (port uri) (port uri))
+       (or (not (subdomains uri))
+           (not (subdomains uri2))
+           (loop for sda in (reverse (subdomains uri))
+              for sdb in (reverse (subdomains uri2))
+              unless (string= sda sdb)
+              return NIL
+              finally (return T)))
+       (or (not (path uri))
+           (not (path uri2))
+           (cl-ppcre:scan (regex uri) (path uri2))))))
 
 (defgeneric uri->url (uri &optional absolute)
   (:documentation "Turns the URI into a string URL."))
