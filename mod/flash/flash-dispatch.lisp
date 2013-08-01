@@ -17,7 +17,13 @@
    (dispatch-default dispatch request)))
 
 (defmethod register ((dispatch flash-dispatch) trigger uri &key)
-  (setf (hooks dispatch) 
+  (let ((found (find uri (hooks dispatch) :key #'cdr :test #'uri-same)))
+    (when found
+      (if (not (eql trigger (car found)))
+          (log:warn "Overriding existing trigger ~a on ~a" (car found) uri))
+      (setf (hooks dispatch) (remove uri (hooks dispatch) :key #'cdr :test #'uri-same))))
+  
+  (setf (hooks dispatch)
         (sort (append (hooks dispatch) `((,trigger . ,uri)))
               #'sort-dispatcher-hooks))
   trigger)
@@ -27,5 +33,7 @@
 
 (defun sort-dispatcher-hooks (a b)
   (flet ((path (hook) (path (cdr hook))))
-    (> (count #\/ (path a))
-       (count #\/ (path b)))))
+    (or (> (count #\/ (path a))
+           (count #\/ (path b)))
+        (> (length (path a))
+           (length (path b))))))
