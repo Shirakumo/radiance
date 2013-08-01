@@ -26,8 +26,7 @@
                (:file "implement")
                (:file "interfaces")
                (:file "site")
-               (:file "server")
-               (:file "api"))
+               (:file "server"))
   :depends-on (:alexandria
                :cl-json
                :hunchentoot

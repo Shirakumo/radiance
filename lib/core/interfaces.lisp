@@ -6,15 +6,18 @@
 
 (in-package :radiance)
 
+(defimpl core
+  "Core module to provide API interface.")
+
 (defimpl dispatcher
-    "Primary dispatcher module that propagates page calls to triggers."
+  "Primary dispatcher module that propagates page calls to triggers."
   (dispatch (request) "Dispatch a new webserver call.")
   (register (trigger uri) "Register a trigger to dispatch to on the given URI.")
   (unregister (uri) "Free a given URI.")
   (dispatch-default (request) "The standard method to invoke when no specific handler has been found."))
 
 (defimpl (user)
-    "Defines a very basic user class that allows tying arbitrary data to a user."
+  "Defines a very basic user class that allows tying arbitrary data to a user."
   (user-get (username) "Returns the user object of an existing user or creates a new hull instance.")
   (user-field ((field string) &key value) "Set or get a user data field.")
   (user-save () "Save the user to the database.")

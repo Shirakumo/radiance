@@ -1,4 +1,4 @@
-#|
+ #|
   This file is a part of TyNETv5/Radiance
   (c) 2013 TymoonNET/NexT http://tymoon.eu (shinmera@tymoon.eu)
   Author: Nicolas Hafner <shinmera@tymoon.eu>
@@ -282,3 +282,58 @@ be one of the following values: :URI :function :hook."
                 (:function (hook-function hook))
                 (:hook hook)))))
 
+(defmacro defapi (name (&rest args) (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch) &body body)
+  "Defines a new API function for the given module. The arguments specify
+REST values that are expected (or not according to definition) on the
+API call. Any variable can have a default value specified. If 
+access-branch is given, an authorization check on the current session
+at page load will be performed. The return value of the body should be
+a plist or an URI. This will automatically be transformed into the
+requested output type or a page redirect in the case of an URI."
+  (assert (not (eql module NIL)) () "Module cannot be NIL! (Are you in-module context?)")
+  (let ((fullname (intern (format nil "API-~a" name)))
+        (name (make-keyword name))
+        (funcbody `(progn ,@body))
+        (modgens (gensym "MODULE")))
+    `(let ((,modgens (get-module ,(module-symbol module))))
+       (defmethod ,fullname ((,modulevar (eql ,modgens)))
+         (declare (ignorable ,modulevar))
+         (let (,@(loop for arg in args 
+                    for argname = (if (listp arg) (car arg) arg) 
+                    for lit = (string-downcase (format NIL "~a" argname))
+                    collect `(,argname (or (post-var ,lit) (get-var ,lit) ,(if (listp arg) (second arg))))))
+           ,@(loop for arg in args
+                if (not (listp arg))
+                collect `(if (not ,arg) (error 'api-args-error :module ,modulevar :apicall ',name :text (format NIL "Argument ~a required." ',arg)))) 
+           ,(if access-branch
+                `(if (authorized-p ,access-branch)
+                     ,funcbody
+                     (error-page 403))
+                funcbody)))
+       (defhook :api ',name ,modgens #',fullname
+                :description ,(format nil "API call for ~a" module)))))
+
+(defun api-return (code text &optional data)
+  "Generates an API response in the proper format:
+  (:CODE code :TEXT text :DATA data)"
+  (plist->hash-table :CODE code :TEXT text :DATA data))
+
+(defun api-format (format data)
+  "Turn a plist into the requested format."
+  (let ((format (gethash format *radiance-api-formats*)))
+    (if format
+        (progn
+          (setf (hunchentoot:content-type* *radiance-reply*) (second format))
+          (funcall (third format) data))
+        (plist->format :none NIL))))
+
+(defmacro define-api-format (name content-type datavar &body body)
+  "Define a new API output format function."
+  (let ((name (make-keyword name)))
+    `(setf (gethash ,name *radiance-api-formats*)
+           (list ,name ,content-type
+                 (lambda (,datavar) ,@body)))))
+             
+(define-api-format none "text/plain; charset=utf-8" data
+  (declare (ignore data))
+  "Unknown format.")

@@ -19,6 +19,7 @@
 (defvar *radiance-modules*     (make-hash-table) "Map of all loaded modules.")
 (defvar *radiance-hooks*       (make-hash-table) "Map of all registered triggers.")
 (defvar *radiance-session*     NIL "Current session object, if any,")
+(defvar *radiance-api-formats* (make-hash-table) "Map of all API output formats.")
 
 (defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789" "Default random characters appearing in make-random-string.")
 (defvar *default-cookie-expire* (* 60 60 24 356) "Default expiration time in seconds.")

@@ -7,12 +7,7 @@
 (defpackage org.tymoonnext.radiance
   (:nicknames :org.tymoonnext.radiance :tynet-5 :tynet :radiance)
   (:use :cl :log4cl :cl-fad)
-  (:export ;; api.lisp
-           :defapi
-           :api-return
-           :api-format
-           :define-api-format
-           ;; conditions.lisp
+  (:export ;; conditions.lisp
            :radiance-error
            :module-already-initialized
            :auth-error
@@ -32,6 +27,7 @@
            :*radiance-modules*
            :*radiance-hooks*
            :*radiance-session*
+           :*radiance-api-formats*
            :*random-string-characters*
            :*default-cookie-expire*
            :*unix-epoch-difference*
@@ -43,6 +39,8 @@
            :implementation
            :load-implementations
            ;; interfaces.lisp
+           :core
+
            :dispatcher
            :dispatch
            :register
@@ -168,6 +166,10 @@
            :defpage
            :define-file-link
            :link
+           :defapi
+           :api-return
+           :api-format
+           :define-api-format
            ;; toolkit.lisp
            :load-config
            :config
