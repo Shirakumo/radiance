@@ -17,4 +17,4 @@
    :implements '(core)
    :dependencies '(dispatcher))
 
-  (:components ((:file "api"))))
+  (:components ((:file "api") (:file "core"))))
