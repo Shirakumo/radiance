@@ -17,5 +17,5 @@
    :license "Artistic" 
    :url "http://tymoon.eu")
    
-  (:components ((:file "site") (:file "debug"))
+  (:components ((:file "sysinfo") (:file "debug"))
    :depends-on (:closer-mop)))

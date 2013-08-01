@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-sysinfo)
 
-(defmethod site ((sysinfo sysinfo) &key &allow-other-keys)
+(defmethod site-info ((sysinfo sysinfo) &key &allow-other-keys)
   "Displays system informations."
   ($ (initialize (template "sysinfo/index.html")))
   

@@ -20,6 +20,6 @@
    :dependencies '(uibox)
    :implements '(admin))
   
-  (:components ((:file "site")))
+  (:components ((:file "admin")))
 
   (categories :initarg :categories :initform (make-hash-table :test 'equal) :accessor categories))

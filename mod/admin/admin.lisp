@@ -8,7 +8,7 @@
 
 (implement 'admin (get-module 'radiance-admin))
 
-(defpage site ()
+(defun site ()
   (authenticate (implementation 'auth))
   (if (authorized-p "admin.*")
       (multiple-value-bind (menu active) (build-menu admin)
