@@ -188,7 +188,7 @@ in the actual request and are therefore purely temporary."
            (equal (domain uri) (domain uri2)))
        (or (not (port uri))
            (not (port uri2))
-           (equal (port uri) (port uri))
+           (equal (port uri) (port uri)))
        (or (not (subdomains uri))
            (not (subdomains uri2))
            (loop for sda in (reverse (subdomains uri))
@@ -198,7 +198,11 @@ in the actual request and are therefore purely temporary."
               finally (return T)))
        (or (not (path uri))
            (not (path uri2))
-           (cl-ppcre:scan (regex uri) (path uri2))))))
+           (cl-ppcre:scan (regex uri) (path uri2)))))
+
+(defun uri-same (uri uri2)
+  "Checks if the given URIs are identical."
+  (string-equal (format NIL "~a" uri) (format NIL "~a" uri2)))
 
 (defgeneric uri->url (uri &optional absolute)
   (:documentation "Turns the URI into a string URL."))
@@ -218,7 +222,7 @@ matches to anything. make-uri has a read-macro for easier use: #u
 Note that the PATH part is always a regex, excluding the start slash."
   (cl-ppcre:register-groups-bind (subdomains NIL domain NIL port path) (*uri-matcher* uristring)
     (setf path (if (= (length path) 0) ".*" path))
-    (setf subdomains (if (= (length subdomains) 0) NIL (split-sequence:split-sequence #\. subdomains)))
+    (setf subdomains (if (= (length subdomains) 0) NIL (split-sequence:split-sequence #\. (string-trim "." subdomains))))
     (make-instance 'uri 
                    :path path
                    :subdomains subdomains
@@ -248,8 +252,8 @@ value of the request is automatically chosen."
                       `(progn 
                          (lquery:$ (initialize ,lquery))
                          ,@body
-                         `(unless (response *radiance-request*) 
-                            (concatenate-strings (lquery:$ (serialize)))))
+                         (unless (response *radiance-request*)
+                           (concatenate-strings (lquery:$ (serialize)))))
                       `(progn ,@body))))
     `(let ((,urigens ,uri)
            (,modgens (get-module ,(module-symbol module))))
