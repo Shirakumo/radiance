@@ -9,6 +9,7 @@
 
 (defun authenticated-p (&optional (session *radiance-session*))
   "Returns T if the current user is using an authenticated session."
+  (ignore-errors (authenticate T))
   (and session (session-user session) (user-saved-p (session-user session)) (session-active-p session)))
 
 (defun authorized-p (access-branch &optional (session *radiance-session*))
