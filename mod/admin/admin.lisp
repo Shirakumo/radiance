@@ -8,16 +8,11 @@
 
 (implement 'admin (get-module 'radiance-admin))
 
-(defun site ()
-  (authenticate (implementation 'auth))
-  (if (authorized-p "admin.*")
-      (multiple-value-bind (menu active) (build-menu admin)
-        ($ (initialize (template "admin/index.html")))
-        (uibox:fill-foreach menu "#panel ul")
-        (let ((*lquery-master-document* (first ($ "#content"))))
-          (apply (car active) (cdr active)))
-        (first ($ (serialize))))
-      (error-page 403)))
+(defpage admin #u"admin./" (:modulevar admin :access-branch "admin.*" :lquery (template "admin/index.html"))
+  (multiple-value-bind (menu active) (build-menu admin)
+    (uibox:fill-foreach menu "#panel ul")
+    (let ((*lquery-master-document* (first ($ "#content"))))
+      (apply (car active) (cdr active)))))
 
 (defun build-menu (admin)
   (loop with path = (path *radiance-request*)
@@ -54,7 +49,7 @@
 (defun admin-triggers ()
   ())
 
-(admin-category (get-module 'radiance-admin) "Core" :icon "icon-gears")
-(admin-panel (get-module 'radiance-admin) "Index" "Core" #'admin-index)
-(admin-panel (get-module 'radiance-admin) "Modules" "Core" #'admin-modules)
-(admin-panel (get-module 'radiance-admin) "Triggers" "Core" #'admin-triggers)
+(admin-category T "Core" :icon "icon-gears")
+(admin-panel T "Index" "Core" #'admin-index)
+(admin-panel T "Modules" "Core" #'admin-modules)
+(admin-panel T "Triggers" "Core" #'admin-triggers)
