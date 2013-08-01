@@ -95,9 +95,8 @@
       (T (error 'auth-login-error :text "Nothing to do!" :code 10))))
 
   (show-register ()
-    (let ((element (lquery:parse-html (read-data-file "template/verify/register-oauth.html")))
-          (post-data (session-field *radiance-session* "post-data")))
-      (when (and *radiance-session* post-data)
+    (let ((element (lquery:parse-html (read-data-file "template/verify/register-oauth.html"))))
+      (when *radiance-session*
         (loop for link in (session-field *radiance-session* "oauth-links")
            do ($ element (find (format nil "li.~a" (car link))) (add-class "linked")))
         )

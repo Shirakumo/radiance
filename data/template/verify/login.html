@@ -9,14 +9,22 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"> </script>
     <script src="/static/js/jquery.openid.js"> </script>
     <script src="/static/js/jquery.oauth.js"> </script>
-    
   </head>
   <body>
-    <div id="content">
+    <div id="panel">
       <h1>Log In</h1>
-      <ul id="mechanisms">
-        
+      <ul>
+        <li>
+          <a>Password</a>
+        </li><li>
+          <a>OpenID</a>
+        </li><li>
+          <a>OAuth</a>
+        </li>
       </ul>
     </div>
+    <div id="content">
+    </div>
+    <script src="/static/js/verify/login.js"></script>
   </body>
 </html>

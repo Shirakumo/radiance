@@ -10,7 +10,7 @@
   ((username :initarg :name :initform (error "Username required.") :reader username)
    (model :initarg :model :initform () :reader model)))
 
-(implement 'user (make-instance 'verify-user :name "SYS" :model (model-hull (implementation 'data-model) "verify-users")))
+(implement 'user (make-instance 'verify-user :name "SYS" :model (model-hull T "verify-users")))
 
 (defmethod print-object ((user verify-user) out)
   (print-unreadable-object (user out :type T)
@@ -23,10 +23,9 @@
 (defmethod user-get ((user verify-user) (username string) &key)
   "Retrieve a user from the db or create it if it is inexistent."
   (setf username (string-downcase username))
-  (let ((model (model-get-one (implementation 'data-model) 
-                              "verify-users" (:= "username" username))))
+  (let ((model (model-get-one T "verify-users" (:= "username" username))))
     (when (not model)
-      (setf model (model-hull (implementation 'data-model) "verify-users"))
+      (setf model (model-hull T "verify-users"))
       (setf (model-field model "username") username))
     (make-instance 'verify-user :name username :model model)))
 

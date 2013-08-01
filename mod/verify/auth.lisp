@@ -19,14 +19,8 @@
 (defgeneric show-register (mechanism)
   (:documentation "Inserts all required register HTML data into the target node."))
 
-(defgeneric handle-login (mechanism)
-  (:documentation "Handles the login process and redirects to the requested page."))
-
 (defgeneric handle-register (mechanism user)
   (:documentation "Handles the registration process.."))
-
-(defgeneric handle-link (mechanism)
-  (:documentation "Handles the linking of logins during the registration process."))
 
 (defmacro defmechanism (name &optional description &rest bodies)
   "Defines a new authentication mechanism. Required bodies: show-login show-register handle-login handle-register"
@@ -53,13 +47,13 @@
 
 (defmethod authenticate ((verify verify) &key &allow-other-keys)
   (let ((token (hunchentoot:cookie-in "token" *radiance-request*)))
-    (if (and token (> (length token) 0))
+    (if (and token (> (length token) 0) (not *radiance-session*))
         (progn 
           ;; Decrypt token with global key to get user and session data
           (setf token (decrypt token (config-tree :verify :session :secret))) 
           (if (and token (find #\- token))
               (let* ((username (subseq token 0 (position #\- token)))
-                     (user (user-get (implementation 'user) username))
+                     (user (user-get T username))
                      (token (subseq token (1+ (position #\- token)))))
                 (if (user-saved-p user)
                     (authenticate-user user token)
@@ -75,7 +69,7 @@
     (if (= (length data) 3)
         (destructuring-bind (timestamp random session-id) data
           (declare (ignore random))
-          (let ((session (session-get (implementation 'session) session-id)))
+          (let ((session (session-get T session-id)))
             (if session
                 (if (= (parse-integer timestamp) (session-time session))
                     (progn (log:info "User ~a successfully authenticated session ~a (initiated on ~a)" user session-id timestamp)

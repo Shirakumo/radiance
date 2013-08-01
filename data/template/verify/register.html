@@ -4,7 +4,6 @@
     <meta charset="utf-8"/>
     <title>Register</title>
     <link rel="stylesheet" href="/static/css/verify/register.css" />
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css' />
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -13,27 +12,37 @@
     <script src="/static/js/jquery.oauth.js"></script>
   </head>
   <body>
-    <div id="content">
+    <div id="panel">
       <h1>Register</h1>
-      <i id="registrationok"></i>
-      <form id="register" method="post" action="/regauth">
-        <h2>Logins</h2>
-        <i id="loginsok" data-bind="attr: {class: loginsok}, text: loginsokexpl"></i>
-        <fieldset>
-          <ul id="mechanisms">
-            
+      <ul>
+        <li><a><i class="icon-key"></i>Logins</a>
+          <ul>
+            <li>
+              <a>Password</a>
+            </li><li>
+              <a>OpenID</a>
+            </li><li>
+              <a>OAuth</a>
+            </li>
           </ul>
-        </fieldset>
-        <h2>Profile</h2>
+        </li>
+        <li><a><i class="icon-user"></i>Profile</a></li>
+      </ul>
+    </div>
+    <div id="content">
+      <form id="profile">
+        <h2>Profile Information</h2>
         <fieldset>
-          <label>Username: </label>
-            <input id="username" type="text" name="username" data-bind="value: username, valueUpdate: 'keyup'" />
-            <i id="usernameok" data-bind="attr: {class: usernameok}, text: usernameokexpl"></i><br />
-          <label>Displayname: </label>
-            <input id="displayname" type="text" name="displayname" data-bind="value: displayname, attr: {placeholder: username}" /><br />
+          <label>Username:</label>
+          <input type="text" name="username" placeholder="Username" />
+          <label>Display Name:</label>
+          <input type="text" name="displayname" placeholder="Display Name" />
         </fieldset>
-        <input type="text" name="nil" value="" class="hidden" />
-        <input type="submit" value="Register" name="action" data-bind="enable: registerbutton" />
+        <fieldset>
+          <label>Birthdate:</label>
+          <input type="date" name="birthdate" placeholder="dd/mm/yyyy" />
+        </fieldset>
+        <input type="submit" value="Submit" id="submit" />
       </form>
     </div>
     <script src="/static/js/verify/register.js"></script>

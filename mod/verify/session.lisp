@@ -34,7 +34,7 @@
 
 (defmethod session-start ((session verify-session) (username string) &key &allow-other-keys)
   "Starts a new session for the given user, enters it in the registry and returns the session object."
-  (session-start session (user-get (implementation 'user) username)))
+  (session-start session (user-get T username)))
 
 (defmethod session-start-temp ((session verify-session) &key &allow-other-keys)
   "Starts a new temporary session, enters it in the registry and returns the session object."

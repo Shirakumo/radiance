@@ -76,14 +76,12 @@
       (T (error 'auth-login-error :text "No ID given!" :code 10))))
 
   (show-register ()
-    (let ((element (lquery:parse-html (read-data-file "template/verify/register-openid.html")))
-          (post-data (session-field *radiance-session* "post-data")))
-      (when (and *radiance-session* post-data)
+    (let ((element (lquery:parse-html (read-data-file "template/verify/register-openid.html"))))
+      (when *radiance-session*
         (loop for provider in ($ element (find "li"))
            do (loop for link in (session-field *radiance-session* "openid-links")
                  do (if (search (first ($ provider (attr :title))) link :test #'string-equal)
-                        ($ provider (add-class "linked")))))
-        )
+                        ($ provider (add-class "linked"))))))
       element))
   
   (handle-link ()

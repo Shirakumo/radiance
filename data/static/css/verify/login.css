@@ -1,12 +1,23 @@
-html, body{
-    font-family: 'Open Sans', sans-serif;
-    background: #152233;
+html,body{
+	background: #000;
+	font-family: Arial, sans-serif;
+	padding:0;
+	margin:0;
+}
+
+body{
+	width: 512px;
+	min-height: 200px;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	background: #DDD;
 }
 
 label{min-width:100px;display:inline-block;}
 h1,h2{margin:0;padding:0;text-indent: 5px;}
 img {border-style:none;}
-input{border:1px solid #CCC;background:#DDD;color: #000;}
+input{border:1px solid #CCC;background:#FFF;color: #000;}
 input[type="submit"]{font-weight:bold;}
 input::-webkit-input-placeholder{color:#AAA;}
 input:-moz-placeholder{color:#AAA;}
@@ -16,33 +27,94 @@ input:-ms-input-placeholder{color:#AAA;}
 .error{color: #AA0000;font-weight: bold;}
 .clear{clear: both;}
 
-#content{
-    background: #FFF;
-    width: 512px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 10px;
-    box-shadow: 0 0 10px #000;
+#panel{
+	position: absolute;
+	left:0;top:0;bottom:0;
+	width:200px;
+	background: #000;
+	color: #FFF;
+	padding-top: 10px;
 }
 
-#mechanisms, #oauth-providers, #openid-providers{list-style:none;margin:0;padding:0;}
-#mechanisms{padding:15px 0 0 10px;}
-#mechanisms>li{padding: 0 10px 0 10px; margin-bottom: 10px;}
+#panel h1{
+	text-align: center;
+	margin:0;
+	padding:0;
+}
+#panel h1 i{
+	font-size: 47pt;
+	display: block;
+}
+
+#panel a{
+	color: #FFF;
+	text-decoration:none;
+	display: block;
+}
+
+#panel ul{
+	list-style:none;
+	margin:0;padding:0;
+}
+
+#panel ul a:hover{background: #00EEFF !important;}
+
+#panel i{padding-right: 5px;}
+
+#panel>ul{
+	background: #151515;
+	position: absolute;
+	bottom:0;left:0;right:0;top:60px;
+}
+
+#panel>ul>li{
+	width:100%;
+	border-top: 1px solid #0088AA;
+	position: relative;
+}
+
+#panel>ul>li:last-child{
+	border-bottom: 1px solid #0088AA;
+}
+
+#panel>ul>li>a{
+	position: relative;
+	padding: 10px;
+	font-weight: bold;
+}
+
+#panel>ul>li.active>a{background: #0088AA;}
+#panel>ul>li.active>a:hover::after{border-left-color: #00EEFF;}
+#panel>ul>li.active>a::after{
+	content: "";
+	position: absolute;
+	top:0;bottom:0;right:-10px;
+	width: 0;height: 0; 
+	border-top: 20px solid transparent;
+	border-bottom: 20px solid transparent;
+	border-left: 10px solid #0088AA;
+}
+
+#content{
+	margin-left: 200px;
+	padding: 50px 5px 20px 20px;
+}
+
+#content form h2{ margin-bottom: 5px;}
 
 #password fieldset{border:none;padding:3px;margin:0;}
-#password fieldset div{float:right;}
+#password input[type="text"],#password input[type="password"]{width:270px;}
 
-#openid ul {height:20px;}
 #openid div+fieldset {display:none}
+#openid ul{ margin:0; padding:0;}
 #openid ul li {display: inline-block;margin:0;padding:2px;border-radius: 3px;}
 #openid ul li:nth-child(1) {border-radius: 7px;}
 #openid ul li:nth-child(2) {border-radius: 7px;}
-#openid ul li:nth-child(3) {border-radius: 7px;}
 #openid ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFFF00;}
 #openid fieldset {border: none;padding:3px;margin:0;border-radius:0 0 5px 5px;}
-#openid fieldset div{float:right;}
+#openid input[type="text"],#openid input[type="url"]{width: 220px;}
 
-#oauth input[type="submit"]{float:right;}
-#oauth ul li{display:inline-block;padding:2px;font-size:10pt;}
+#oauth ul{display: inline-block; padding:5px; margin:0;}
+#oauth ul li{display:inline-block;padding:2px;font-size:10pt;background: #FFF;color: #000;border: 2px solid #FFF;}
 #oauth ul li.twitter span{ background: url("/static/img/oauth/twitter.png") no-repeat no-repeat center left; padding-left: 20px;}
-#oauth ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFFF00;border-radius: 3px;}
+#oauth ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFF;border-radius: 3px;border-color: #FFFF00;}
