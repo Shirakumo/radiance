@@ -7,7 +7,7 @@
 (in-package :radiance)
 
 (defclass request (hunchentoot:request radiance:uri)
-  ((response :initform hunchentoot:*reply* :initarg :response :accessor response))
+  ((response :initform NIL :initarg :response :accessor response))
   (:documentation "Radiance request class."))
 
 (defmethod print-object ((request request) out)
