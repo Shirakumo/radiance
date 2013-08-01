@@ -161,6 +161,7 @@
            :path
            :pathregex
            :uri-matches
+           :uri-same
            :uri->url
            :make-uri
            :defpage
