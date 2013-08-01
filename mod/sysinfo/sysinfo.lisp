@@ -6,10 +6,7 @@
 
 (in-package :radiance-mod-sysinfo)
 
-(defmethod site-info ((sysinfo sysinfo) &key &allow-other-keys)
-  "Displays system informations."
-  ($ (initialize (template "sysinfo/index.html")))
-  
+(defpage site-info #u"inf./" (:lquery (template "sysinfo/index.html"))  
   ;Simple fields
   ($ "#acceptors" (text (concatenate-strings (config :ports) " ")))
   ($ "#cur-requests" (text (format nil "~a" *radiance-request-count*)))
@@ -30,9 +27,7 @@
   ;Implementations
   (let ((nodes (loop for impl being the hash-keys of *radiance-implements*
                     collect (create-implementation-node impl))))
-    ($ "#implementations" (append nodes)))
-
-  (first ($ (serialize))))
+    ($ "#implementations" (append nodes))))
 
 (defun create-module-node (module template)
   ($ template "h3" (text (slot-value module 'radiance::name)))

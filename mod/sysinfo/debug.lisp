@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-sysinfo)
 
-(defmethod site-debug ((sysinfo sysinfo))
-  
-  (if (hunchentoot:get-parameter "eval")
-      (eval (read-from-string (hunchentoot:get-parameter "eval")))))
+(defpage debug #u"inf./debug" ()
+   (when (hunchentoot:get-parameter "eval")
+     (setf (hunchentoot:content-type* *radiance-reply*) "text/plain; format=utf-8")
+     (eval (read-from-string (hunchentoot:get-parameter "eval")))))
