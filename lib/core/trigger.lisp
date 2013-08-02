@@ -25,11 +25,16 @@
        (eq (module a) (module b))
        (eq (namespace a) (namespace b))))
 
+(defmethod hook-equalp ((a hook) (b hook))
+  "Checks if two hooks designate the same (match in space and name)."
+  (and (equal (name a) (name b))
+       (eq (namespace a) (namespace b))))
+
 (defmethod hook-field ((hook hook) field)
   "Returns the value of a field defined on the hook or NIL."
   (gethash field (fields hook)))
 
-(defun defhook (space name module function &key description fields)
+(defun defhook (space name module function &key description fields replace-all)
   "Defines a new hook of name, for a certain function of a module. Fields should be an alist of additional fields on the hook."
   (let ((instance (make-instance 'hook :name name :space space :module module :function function :description description)))
     (log:info "Defining hook ~a" instance)
@@ -37,6 +42,8 @@
        do (setf (gethash key (fields instance)) val))
     (let ((namespace (gethash space *radiance-hooks*)))
       (unless namespace (add-namespace space))
+      (when replace-all 
+          (setf (gethash name namespace) (remove instance (gethash name namespace) :test #'hook-equalp)))
       (let ((pos (position instance (gethash name namespace) :test #'hook-equal)))
         (if pos 
             (setf (nth pos (gethash name namespace)) instance)
