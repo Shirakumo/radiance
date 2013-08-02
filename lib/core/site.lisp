@@ -267,7 +267,8 @@ value of the request is automatically chosen."
               funcbody))
        (defhook :page ',name ,modgens #',name 
                 :description ,(format nil "Page call for ~a" module)
-                :fields `((:uri ,,urigens)))
+                :fields `((:uri ,,urigens))
+                :replace-all T)
        (register ,dispatcher ',name ,urigens))))
 
 (defun define-file-link (name uri pathspec &key access-branch)
@@ -316,7 +317,8 @@ requested output type or a page redirect in the case of an URI."
                      (error-page 403))
                 funcbody)))
        (defhook :api ',name ,modgens #',fullname
-                :description ,(format nil "API call for ~a" module)))))
+                :description ,(format nil "API call for ~a" module)
+                :replace-all T))))
 
 (defun api-return (code text &optional data)
   "Generates an API response in the proper format:
