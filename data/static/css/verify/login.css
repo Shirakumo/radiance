@@ -24,8 +24,17 @@ input:-moz-placeholder{color:#AAA;}
 input::-moz-placeholder{color:#AAA;}
 input:-ms-input-placeholder{color:#AAA;}
 .hidden{display:none;}
-.error{color: #AA0000;font-weight: bold;}
 .clear{clear: both;}
+#error{
+	color: #AA0000;
+	font-weight: bold;
+	position: absolute;
+	top: 10px;
+	font-size: 14pt;
+}
+
+.icon-ok-sign{color:green;}
+.icon-remove-sign{color:red;}
 
 #panel{
 	position: absolute;

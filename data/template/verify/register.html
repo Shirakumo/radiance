@@ -15,22 +15,16 @@
     <div id="panel">
       <h1>Register</h1>
       <ul>
-        <li><a><i class="icon-key"></i>Logins</a>
+        <li class="logins"><a><i class="icon-key"></i>Logins</a>
           <ul>
-            <li>
-              <a>Password</a>
-            </li><li>
-              <a>OpenID</a>
-            </li><li>
-              <a>OAuth</a>
-            </li>
           </ul>
         </li>
-        <li><a><i class="icon-user"></i>Profile</a></li>
+        <li class="profile"><a><i class="icon-user"></i>Profile</a></li>
       </ul>
     </div>
     <div id="content">
-      <form id="profile">
+      <h2 id="error"></h2>
+      <form id="profile" method="post" action="/register/finish">
         <h2>Profile Information</h2>
         <fieldset>
           <label>Username:</label>
@@ -42,7 +36,7 @@
           <label>Birthdate:</label>
           <input type="date" name="birthdate" placeholder="dd/mm/yyyy" />
         </fieldset>
-        <input type="submit" value="Submit" id="submit" />
+        <input type="submit" value="Register" id="submit" name="action" />
       </form>
     </div>
     <script src="/static/js/verify/register.js"></script>

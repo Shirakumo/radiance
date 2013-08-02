@@ -16,25 +16,47 @@
 (define-condition auth-login-error (auth-error) ())
 (define-condition auth-register-error (auth-error) ())
 
-(defpage login #u"auth./login" (:lquery (template "verify/login.html"))
+(defpage main-login #u"auth./login" (:lquery (template "verify/login.html"))
   (ignore-errors (authenticate T))
+  (if (get-var "errortext") ($ "#error" (html (concatenate 'string "<i class=\"icon-remove-sign\"></i> " (get-var "errortext")))))
   (if (or (not *radiance-session*) (session-temp-p *radiance-session*))
       (loop with target = ($ "#content")
+           with panel = ($ "#panel ul")
          for mechanism being the hash-values of *verify-mechanisms*
-         do ($ target (append (show-login mechanism))))
-      ($ "#mechanisms" (append (parse-html "<li id=\"loggedin\"><h2>You are already logged in.</h2></li>")))))
+         for name being the hash-keys of *verify-mechanisms*
+         do ($ target (append (show-login mechanism)))
+           ($ panel (append (lquery:parse-html (format NIL "<li class=\"~a\"><a>~:*~a</a></li>" name)))))
+      ($ "#error" (html "<i class=\"icon-remove-sign\"></i> You are already logged in."))))
         
-(defpage logout #u"auth./logout" ()
+(defpage main-logout #u"auth./logout" ()
   (ignore-errors (authenticate T))
   (if *radiance-session*
       (session-end *radiance-session*))
   (hunchentoot:redirect (get-redirect)))
 
-(defpage register #u"auth./register" (:lquery (template "verify/register.html"))
+(defpage main-register #u"auth./register" (:lquery (template "verify/register.html"))
   (ignore-errors (authenticate T))
+  (if (get-var "errortext") ($ "#error" (html (concatenate 'string "<i class=\"icon-remove-sign\"></i> " (get-var "errortext")))))
   (loop with target = ($ "#content")
+       with panel = ($ "#panel .logins ul")
+     for name being the hash-keys of *verify-mechanisms*
      for mechanism being the hash-values of *verify-mechanisms*
-     do ($ target (append (show-register mechanism)))))
+     do ($ target (append (show-register mechanism)))
+        ($ panel (append (lquery:parse-html (format NIL "<li class=\"~a\"><a>~:*~a</a></li>" name))))))
+
+(defmethod page-login :around ((module module))
+  (handler-case
+      (call-next-method)
+    (radiance-error (c)
+      (redirect (format NIL "/login?errortext=~a&errorcode=~a" (slot-value c 'radiance::text) (slot-value c 'radiance::code)))))
+  (redirect "/login"))
+
+(defmethod page-register :around ((module module))
+  (handler-case
+      (call-next-method)
+    (radiance-error (c)
+      (redirect (format NIL "/register?errortext=~a&errorcode=~a&panel=logins" (slot-value c 'radiance::text) (slot-value c 'radiance::code)))))
+  (redirect "/register"))
 
 (defpage register/finish #u"auth./register/finish"  ()
   (ignore-errors (authenticate T))
@@ -55,10 +77,13 @@
                         (user-field user "secret" :value (make-random-string))
                         (loop for mechanism being the hash-values of *verify-mechanisms*
                            do (handle-register mechanism user))
-                        (user-save user))
+                        (log:debug "Creating new user ~a" username)
+                        (model-insert (model user))
+                        (session-end *radiance-session*)
+                        (session-start T username))
                       (error 'auth-register-error :text "Username already taken!" :code 17)))
                 (error 'auth-register-error :text "Username required!" :code 16)))
           (error 'auth-register-error :text "Nothing to do!" :code 15))
-    (auth-error (err)
-      (hunchentoot:redirect (format nil "/register?errorcode=~a&errortext=~a" (slot-value err 'radiance::code) (slot-value err 'radiance::text)))))
-  (hunchentoot:redirect "/register"))
+    (radiance-error (err)
+      (hunchentoot:redirect (format nil "/register?errorcode=~a&errortext=~a&panel=profile" (slot-value err 'radiance::code) (slot-value err 'radiance::text)))))
+  (hunchentoot:redirect "/login"))

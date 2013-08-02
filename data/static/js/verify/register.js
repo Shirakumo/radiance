@@ -1,4 +1,11 @@
 $(function() {
+    function qs(key) {
+        key = key.replace(/[*+?^$.\[\]{}()|\\\/]/g, "\\$&"); // escape RegEx meta chars
+        var match = location.search.match(new RegExp("[?&]"+key+"=([^&]+)(&|$)"));
+        return match && decodeURIComponent(match[1].replace(/\+/g, " "));
+    }
+
+
     // Basic Panel UI
     $("#panel>ul>li>ul").hide();
 
@@ -22,8 +29,13 @@ $(function() {
         }
     });
 
+    if(qs("panel"))
+        $("#panel li."+qs("panel")+" a").click();
+
     if($("#panel .active").length == 0)
         $("#panel>ul>li>ul>li>a").eq(0).click();
 
     $("#panel>ul>li>ul>li.active").parent().show();
+
+
 });

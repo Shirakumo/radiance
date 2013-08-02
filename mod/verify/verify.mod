@@ -16,7 +16,8 @@
            :handle-login 
            :handle-register 
            :handle-link
-           :auth-login-error))
+           :auth-login-error
+           :auth-register-error))
 (in-package :radiance-mod-verify)
 
 (let ((user-collection (make-collection 'user :access-mode "755" :description "Public user data"
