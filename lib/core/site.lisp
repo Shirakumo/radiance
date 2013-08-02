@@ -16,10 +16,10 @@
   "Returns T if the current user is authorized to the given access branch."
   (and (authenticated-p session) (user-check (session-user session) access-branch)))
 
-(defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (response (response *radiance-request*)))
+(defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (reply *radiance-reply*))
   "Sets a cookie with defaults and ensures proper return object utilization. If domain is NIL, it sets it for multi-subdomain compatibility."
-  (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :reply response)))
-    (log:debug "Setting cookie ~a on ~a/~a exp ~a (H~a;S~a) to ~a" name domain path expires http-only secure value)
+  (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :reply reply)))
+    (log:debug "Setting cookie '~a' on ~a ~a exp ~a (HTTP ~a;SECURE ~a) to ~a" name domain path expires http-only secure value)
     (if domain
         (setc domain)
         (setc (format NIL ".~a" (domain *radiance-request*))))))
@@ -267,8 +267,7 @@ value of the request is automatically chosen."
               funcbody))
        (defhook :page ',name ,modgens #',name 
                 :description ,(format nil "Page call for ~a" module)
-                :fields `((:uri ,,urigens))
-                :replace-all T)
+                :fields `((:uri ,,urigens)))
        (register ,dispatcher ',name ,urigens))))
 
 (defun define-file-link (name uri pathspec &key access-branch)
@@ -317,8 +316,7 @@ requested output type or a page redirect in the case of an URI."
                      (error-page 403))
                 funcbody)))
        (defhook :api ',name ,modgens #',fullname
-                :description ,(format nil "API call for ~a" module)
-                :replace-all T))))
+                :description ,(format nil "API call for ~a" module)))))
 
 (defun api-return (code text &optional data)
   "Generates an API response in the proper format:
