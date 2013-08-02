@@ -22,7 +22,7 @@
 (defmethod hook-equal ((a hook) (b hook))
   "Checks if two hooks designate the same (match in space, module and name)."
   (and (equal (name a) (name b))
-       (eq (module a) (module b))
+       (equal (name (module a)) (name (module b)))
        (eq (namespace a) (namespace b))))
 
 (defmethod hook-equalp ((a hook) (b hook))
