@@ -38,6 +38,7 @@
     "Session instances track whether a given user is still logged in or not."
   (session-get ((uuid string)) "Returns the session for the given UUID or NIL if no session is found.")
   (session-start ((username string)) "Creates a new session object for the given user.")
+  (session-start ((user user)) "Creates a new session object for the given user.")
   (session-start-temp () "Creates a temporary session without a bound user.")
   (session-uuid () "Returns the uuid for this session.")
   (session-user () "Returns the user associated with this session.")
