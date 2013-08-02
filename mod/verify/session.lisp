@@ -29,7 +29,9 @@
   "Starts a new session for the given user, enters it in the registry and returns the session object."
   (let ((session (make-instance 'verify-session :user user)))
     (log:debug "Starting new session for ~a with UUID ~a" user (uuid session))
-    (if *radiance-request* (set-cookie "token" :value (make-session-cookie session)))
+    (if *radiance-request* 
+        (set-cookie "token" :value (make-session-cookie session))
+        (setf *radiance-session* session))
     (setf (gethash (uuid session) *verify-sessions*) session)))
 
 (defmethod session-start ((session verify-session) (username string) &key &allow-other-keys)
