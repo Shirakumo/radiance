@@ -12,8 +12,9 @@
 (defimpl dispatcher
   "Primary dispatcher module that propagates page calls to triggers."
   (dispatch (request) "Dispatch a new webserver call.")
-  (register (trigger uri) "Register a trigger to dispatch to on the given URI.")
+  (register (hook module uri) "Register a hook to dispatch to on the given URI.")
   (unregister (uri) "Free a given URI.")
+  (effective-trigger (uri) "Return the trigger and URI that would be called on the given request URI.")
   (dispatch-default (request) "The standard method to invoke when no specific handler has been found."))
 
 (defimpl (user)
