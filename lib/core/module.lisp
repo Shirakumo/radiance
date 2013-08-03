@@ -31,6 +31,9 @@
                      (&body defsystem)
                      &body extra-slots)
   "Define a new Radiance module."
+  (if (getf defsystem :depends-on)
+      (nappend (getf defsystem :depends-on) (list :radiance-lib-core))
+      (setf (getf defsystem :depends-on) (list :radiance-lib-core)))
   (let ((superclasses (if (not superclasses) '(module) superclasses))
         (classdef (gensym "CLASSDEF"))
         (initializer (gensym "INITIALIZER"))
