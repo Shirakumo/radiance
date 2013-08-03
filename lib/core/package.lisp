@@ -45,6 +45,7 @@
            :dispatch
            :register
            :unregister
+           :effective-trigger
            :dispatch-default
            
            :user
@@ -195,6 +196,7 @@
            :description
            :hook-equal
            :defhook
+           :hook-field
            :add-namespace
            :get-namespace-map
            :get-namespace
