@@ -5,6 +5,13 @@ Date
   ^ New today but finished on another day
   - Completed today
 
+2013.08.01, 2013.08.02, 2013.08.03
+  v Adapt all modules to trigger, dispatcher and site changes.
+  * Add nice register end pages.
+  * Add error handling page.
+  * Make nice error pages.
+  * Advance work on the admin page.
+
 2013.07.31
   v Add API dispatch.
   - Fixed API return.
@@ -23,4 +30,4 @@ Date
   * Add static resource dispatcher with link registry.
   ^ Implement module persistence.
   ^ Change *radiance-triggers* variable to *radiance-hooks*.
-  * Adapt all modules to trigger, dispatcher and site changes.
+  ^ Adapt all modules to trigger, dispatcher and site changes.
