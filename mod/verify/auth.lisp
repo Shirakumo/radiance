@@ -22,7 +22,7 @@
 (defgeneric handle-register (mechanism user)
   (:documentation "Handles the registration process.."))
 
-(defmacro defmechanism (name &optional description &rest bodies)
+(defmacro defmechanism (name &optional description &body bodies)
   "Defines a new authentication mechanism. Required bodies: show-login show-register handle-login handle-register"
   (if (not (stringp description)) (setf description NIL bodies (cons description bodies)))
   (let ((classname (make-symbol (format NIL "MECHANISM-~a" (string-upcase name)))))
