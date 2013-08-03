@@ -1,4 +1,4 @@
- #|
+#|
   This file is a part of TyNETv5/Radiance
   (c) 2013 TymoonNET/NexT http://tymoon.eu (shinmera@tymoon.eu)
   Author: Nicolas Hafner <shinmera@tymoon.eu>
@@ -46,6 +46,7 @@
 
 (defun redirect (uri-or-string)
   "Redirects to the requested URI."
+  (log:debug "Redirecting to ~a" uri-or-string)
   (hunchentoot:redirect 
    (if (stringp uri-or-string)
        uri-or-string
@@ -210,9 +211,9 @@ in the actual request and are therefore purely temporary."
 
 (defmethod uri->url ((uri uri) &optional (absolute T))
   (if absolute 
-      (path uri)
-      (format NIL "http://~{~a.~}~a~:[~;~:*~a~]/~a"
-              (subdomains uri) (domain uri) (port uri) (path uri))))
+      (format NIL "http://~{~a.~}~a~:[~;:~:*~a~]/~a"
+              (subdomains uri) (domain uri) (port uri) (path uri))
+      (path uri)))
 
 (defun make-uri (uristring)
   "Creates a URI object matching the urispec. Urispec has the following
@@ -238,7 +239,7 @@ Note that the PATH part is always a regex, excluding the start slash."
 (set-dispatch-macro-character #\# #\u #'make-uri-helper)
 
 
-(defmacro defpage (name uri (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch lquery (dispatcher T)) &body body)
+(defmacro defpage (name uri (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch lquery) &body body)
   "Defines a new page for the given module that will be available on the
 specified URI. If access-branch is given, an authorization check on the
 current session at page load will be performed. If lquery is non-NIL,
@@ -267,8 +268,8 @@ value of the request is automatically chosen."
               funcbody))
        (defhook :page ',name ,modgens #',name 
                 :description ,(format nil "Page call for ~a" module)
-                :fields `((:uri ,,urigens)))
-       (register ,dispatcher ',name ,urigens))))
+                :fields (acons :uri ,urigens ()))
+       (register T ',name ,(module-symbol module) ,urigens))))
 
 (defun define-file-link (name uri pathspec &key access-branch)
   "Defines a link of a given URI to a file. Useful for things like
