@@ -157,6 +157,7 @@ fieldset{border:none;}
 #openid ul li:nth-child(1) {border-radius: 7px;}
 #openid ul li:nth-child(2) {border-radius: 7px;}
 #openid ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFFF00;}
+#openid ul li.linked {box-shadow: 0 0 5px #33FF33;background:#33FF33;}
 #openid fieldset {border: none;padding:3px;margin:0;border-radius:0 0 5px 5px;}
 #openid input[type="text"],#openid input[type="url"]{width: 220px;}
 
@@ -164,5 +165,6 @@ fieldset{border:none;}
 #oauth ul li{display:inline-block;padding:2px;font-size:10pt;background: #FFF;color: #000;border: 2px solid #FFF;}
 #oauth ul li.twitter span{ background: url("/static/img/oauth/twitter.png") no-repeat no-repeat center left; padding-left: 20px;}
 #oauth ul li.highlight {box-shadow: 0 0 5px #FFFF00;background:#FFF;border-radius: 3px;border-color: #FFFF00;}
+#oauth ul li.linked {box-shadow: 0 0 5px #33FF33;background:#FFF;border-radius: 3px;border-color: #33FF33;}
 
 #submit {width:260px;}

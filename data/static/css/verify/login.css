@@ -90,6 +90,10 @@ input:-ms-input-placeholder{color:#AAA;}
 	position: relative;
 	padding: 10px;
 	font-weight: bold;
+	text-transform: lowercase;
+}
+#panel>ul>li>a:first-letter{
+	text-transform: uppercase;
 }
 
 #panel>ul>li.active>a{background: #0088AA;}
