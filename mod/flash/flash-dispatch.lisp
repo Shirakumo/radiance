@@ -9,30 +9,37 @@
 (implement 'dispatcher (get-module 'flash-dispatch))
 
 (defmethod dispatch ((dispatch flash-dispatch) (request radiance:request) &key)
-  (or 
-   (loop for (trigger . uri) in (hooks dispatch)
-      if (uri-matches uri request)
-      do (return (trigger :page trigger)))
-   (trigger :server :dispatch-default request)
+  (or
+   (let ((hook (effective-trigger dispatch request)))
+     (if hook (funcall (hook-function hook) (module hook))))
+   (trigger :server :dispatch-default :args (list request))
    (dispatch-default dispatch request)))
 
-(defmethod register ((dispatch flash-dispatch) trigger uri &key)
-  (let ((found (find uri (hooks dispatch) :key #'cdr :test #'uri-same)))
+(defmethod effective-trigger ((dispatch flash-dispatch) (request uri) &key)
+  "Returns the trigger that would be called and the URI it registered that matches to it."
+  (loop for (hook module uri) in (hooks dispatch)
+     if (uri-matches uri request)
+     do (return (loop for hook in (get-hooks :page hook)
+                   if (eql module (module-symbol (module hook)))
+                   return hook))))
+
+(defmethod register ((dispatch flash-dispatch) (hook symbol) (module symbol) (uri uri) &key)
+  (let ((found (find uri (hooks dispatch) :key #'third :test #'uri-same)))
     (when found
-      (if (not (eql trigger (car found)))
+      (if (not (eql hook (first found)))
           (log:warn "Overriding existing trigger ~a on ~a" (car found) uri))
-      (setf (hooks dispatch) (remove uri (hooks dispatch) :key #'cdr :test #'uri-same))))
-  
+      (setf (hooks dispatch) (remove uri (hooks dispatch) :key #'third :test #'uri-same))))
+  (log:info "Registering ~a for ~a/~a" uri module hook)
   (setf (hooks dispatch)
-        (sort (append (hooks dispatch) `((,trigger . ,uri)))
+        (sort (append (hooks dispatch) `((,hook ,module ,uri)))
               #'sort-dispatcher-hooks))
-  trigger)
+  hook)
 
 (defmethod dispatch-default ((dispatch flash-dispatch) (request radiance:request) &key &allow-other-keys)
   (read-data-file "static/html/hello.html"))
 
 (defun sort-dispatcher-hooks (a b)
-  (flet ((path (hook) (path (cdr hook))))
+  (flet ((path (hook) (path (third hook))))
     (or (> (count #\/ (path a))
            (count #\/ (path b)))
         (> (length (path a))
