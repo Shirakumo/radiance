@@ -4,7 +4,9 @@
   Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package :radiance-mod-verify)
+(in-package :radiance-mod-verify-password)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (use-package :radiance-mod-verify :radiance-mod-verify-openid))
 
 (defun make-password-hash (password &optional (salt (config-tree :verify :password :salt)) (algorithm (config-tree :verify :password :algorithm)))
   ""
@@ -15,35 +17,35 @@
           (error 'radiance-error :text (format nil "Unknown hashing algorithm configured: ~a" algorithm) :code 21))))
 
 (defpage login #u"auth./login/password" ()
-  (let ((user (user-get T (hunchentoot:post-parameter "username"))))
+  (let ((user (user-get T (post-var "username"))))
     (if (user-saved-p user)
         (let ((model (model-get-one T "linked-passwords" (:= "username" (username user)))))
           (if model
-              (let ((hash (make-password-hash (hunchentoot:post-parameter "password") (model-field model "salt") (model-field model "hash-type"))))
+              (let ((hash (make-password-hash (post-var "password") (model-field model "salt") (model-field model "hash-type"))))
                 (if (string= hash (model-field model "hash"))
                     (progn (session-start T user)
                            (redirect (get-redirect)))
-                    (error 'radiance-mod-verify:auth-login-error :text "Invalid username or password." :code 22)))
-              (error 'radiance-mod-verify:auth-login-error :text "Invalid username or password." :code 21)))
-        (error 'radiance-mod-verify:auth-login-error :text "Invalid username or password." :code 20))))
+                    (error 'auth-login-error :text "Invalid username or password." :code 22)))
+              (error 'auth-login-error :text "Invalid username or password." :code 21)))
+        (error 'auth-login-error :text "Invalid username or password." :code 20))))
 
 (defpage register #u"auth./register/password" ()
   (ignore-errors (authenticate T))
   (if (not *radiance-session*) (setf *radiance-session* (session-start-temp T)))
-  (let ((password (hunchentoot:post-parameter "password" *radiance-request*))
-        (pwconfirm (hunchentoot:post-parameter "pwconfirm" *radiance-request*)))
+  (let ((password (post-var "password" *radiance-request*))
+        (pwconfirm (post-var "pwconfirm" *radiance-request*)))
     (if (and password pwconfirm (> (length password) 0))
         (if (string= password pwconfirm)
             (session-field *radiance-session* "password" :value password)
-            (error 'radiance-mod-verify:auth-register-error :text "Passwords do not match." :code 22))
-        (error 'radiance-mod-verify:auth-register-error :text "Password not given." :code 23))))
+            (error 'auth-register-error :text "Passwords do not match." :code 22))
+        (error 'auth-register-error :text "Password not given." :code 23))))
 
 (defmechanism password
     ""
   (show-login ()
     (let ((element (lquery:parse-html (read-data-file "template/verify/login-password.html"))))
-      (if (string= (hunchentoot:get-parameter "mechanism") "password")
-          ($ element "#passworderror" (text (hunchentoot:get-parameter "errortext"))))
+      (if (string= (get-var "mechanism") "password")
+          ($ element "#passworderror" (text (get-var "errortext"))))
       element))
   
   (show-register ()

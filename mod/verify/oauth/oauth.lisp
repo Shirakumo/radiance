@@ -9,11 +9,7 @@
   (use-package :radiance-mod-verify :radiance-mod-verify-oauth))
 
 (defun get-callback ()
-  (format NIL "http://~{~a.~}~a:~a~a"
-          (subdomains *radiance-request*)
-          (domain *radiance-request*)
-          (port *radiance-request*)
-          (path *radiance-request*)))
+  (uri->url *radiance-request*))
 
 (defun get-request-token (provider)
   (cl-oauth:obtain-request-token
@@ -28,16 +24,13 @@
    request-token))
 
 (defun handle-initiate (provider)
-  (let ((rt (get-request-token provider)))
-    (if *radiance-session*
-        (session-field *radiance-session* "nodelete" :value T)
-        (setf *radiance-session* (session-start-temp (implementation 'session))))
-    (session-field *radiance-session* "redirect" :value (radiance-mod-verify::get-redirect))
-    (session-field *radiance-session* "link-in-progress" :value :oauth)
+  (let* ((rt (get-request-token provider))
+         (link (cl-oauth:make-authorization-uri (config-tree :verify :oauth provider :auth-endpoint) rt :callback-uri (get-callback))))
+    (session-field *radiance-session* "redirect" :value (get-redirect))
     (session-field *radiance-session* "request-token" :value rt)
     (session-field *radiance-session* "provider" :value provider)
-    (hunchentoot:redirect
-     (format nil "~a" (cl-oauth:make-authorization-uri (config-tree :verify :oauth provider :auth-endpoint) rt :callback-uri ())))))
+    (log:debug "Initiating OAuth handle: ~a" link)
+    (redirect (format nil "~a" link))))
 
 (defun handle-response ()
   (if (or (not *radiance-session*) (not (session-temp-p *radiance-session*)))
@@ -45,8 +38,6 @@
   (let ((rt (session-field *radiance-session* "request-token"))
         (provider (session-field *radiance-session* "provider")))
     (session-field *radiance-session* "link-in-progress" :value NIL)
-    (unless (session-field *radiance-session* "nodelete")
-        (session-end *radiance-session*))
     (assert rt)
     (handler-case
         (cl-oauth:authorize-request-token-from-request
@@ -64,50 +55,62 @@
   (let* ((data (babel:octets-to-string (cl-oauth:access-protected-resource "http://api.twitter.com/1.1/account/verify_credentials.json" access-token)))
          (credentials (json:decode-json-from-string data)))
     (log:debug "Claimed ID: ~a" (cdr (assoc :id credentials)))
-    (funcall *response-processor* (format nil "~a" (cdr (assoc :id credentials))) "twitter")))
+    (values (format nil "~a" (cdr (assoc :id credentials))) "twitter")))
 
 (defun get-linked-user (id provider)
-  (let ((model (model-get-one (implementation 'data-model) "linked-oauths" 
-                              (:and (:= "claimed-id" id) (:= "provider" provider)))))
-      (if model
-          (user-get (implementation 'user) (model-field model "username"))
-          (error 'auth-login-error :text "Account not linked!" :code 15))))
+  (let ((model (model-get-one T "linked-oauths" (:and (:= "claimed-id" id) (:= "provider" provider)))))
+    (if model
+        (user-get T (model-field model "username"))
+        (error 'auth-login-error :text "Account not linked!" :code 15))))
 
-(defparameter *response-processor* #'get-linked-user)
+(defpage login #u"auth./login/oauth" ()
+  (ignore-errors (authenticate T))
+  (if (not *radiance-session*) (setf *radiance-session* (session-start-temp T)))
+  (cond
+    ((post-var "provider")
+     (let ((provider (make-keyword (post-var "provider"))))
+       (if (config-tree :verify :oauth provider)
+           (handle-initiate provider)
+           (error 'auth-login-error :text "Unknown provider!" :code 11))))
+    
+    ((and *radiance-session* (session-field *radiance-session* "request-token"))
+     (multiple-value-bind (id provider) (handle-response)
+       (session-end *radiance-session*)
+       (session-start T (get-linked-user id provider))))
+    
+    (T (error 'auth-login-error :text "Nothing to do!" :code 10))))
+
+(defpage register #u"auth./register/oauth" ()
+  (ignore-errors (authenticate T))
+  (if (not *radiance-session*) (setf *radiance-session* (session-start-temp T)))
+  (cond
+    ((post-var "provider")
+     (let ((provider (make-keyword (post-var "provider"))))
+       (if (config-tree :verify :oauth provider)
+           (handle-initiate provider)
+           (error 'auth-register-error :text "Unknown provider!" :code 11))))
+    
+    ((and *radiance-session* (session-field *radiance-session* "request-token"))
+     (multiple-value-bind (id provider) (handle-response)
+       (log:debug "Linking: ~a/~a" id provider)
+       (nappend (session-field *radiance-session* "oauth-links") (list (cons provider id)))))
+
+    (T (error 'auth-register-error :text "Nothing to do!" :code 10))))
+    
 
 (defmechanism oauth
     "Mechanism for OpenID-Supporting sites."
   (show-login ()
-    (let ((element (lquery:parse-html (read-data-file "template/verify/login-oauth.html"))))
-      (if (string= (hunchentoot:get-parameter "mechanism") "oauth")
-          ($ element "#oautherror" (text (hunchentoot:get-parameter "errortext"))))
-      element))
-
-  (handle-login ()
-    (cond
-      ((hunchentoot:post-parameter "provider" *radiance-request*)
-       (let ((provider (make-keyword (hunchentoot:post-parameter "provider" *radiance-request*))))
-         (if (config-tree :verify :oauth provider)
-             (handle-initiate provider)
-             (error 'auth-login-error :text "Unknown provider!" :code 11))))
-      ((and *radiance-session* (session-field *radiance-session* "request-token"))
-       (handle-response))
-      (T (error 'auth-login-error :text "Nothing to do!" :code 10))))
+    (lquery:parse-html (read-data-file "template/verify/login-oauth.html")))
 
   (show-register ()
     (let ((element (lquery:parse-html (read-data-file "template/verify/register-oauth.html"))))
       (when *radiance-session*
         (loop for link in (session-field *radiance-session* "oauth-links")
            do ($ element (find (format nil "li.~a" (car link))) (add-class "linked")))
-        )
+        (if (> (length (session-field *radiance-session* "oauth-links")) 0)
+            ($ element (find "h2") (html "<i class=\"icon-ok-sign\"></i> Account linked."))))
       element))
-  
-  (handle-link ()
-    (let ((*response-processor* (lambda (id provider)
-                                  (log:debug "Linking: ~a/~a" id provider)
-                                  (nappend (session-field *radiance-session* "oauth-links") (list (cons provider id))))))
-      (when (or (string= (hunchentoot:post-parameter "oauth") "Link") (eq (session-field *radiance-session* "link-in-progress") :oauth))
-        (handle-login (radiance-mod-verify::get-mechanism :oauth)))))
   
   (handle-register (user)
     (let ((links (session-field *radiance-session* "oauth-links")))

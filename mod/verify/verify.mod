@@ -9,15 +9,21 @@
   (:use :cl :radiance :lquery)
   (:export :verify-auth 
            :verify-user 
-           :verify-session 
+           :verify-session
+           :encrypt
+           :decrypt
+           :make-salt
+           :pbkdf2-hash
+           :simple-hash
            :defmechanism 
            :show-login 
-           :show-register 
-           :handle-login 
-           :handle-register 
-           :handle-link
+           :show-register
+           :handle-register
+           :page-login
+           :page-register
            :auth-login-error
-           :auth-register-error))
+           :auth-register-error
+           :get-redirect))
 (in-package :radiance-mod-verify)
 
 (let ((user-collection (make-collection 'user :access-mode "755" :description "Public user data"
