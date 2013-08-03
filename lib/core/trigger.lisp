@@ -37,7 +37,7 @@
 (defun defhook (space name module function &key description fields replace-all)
   "Defines a new hook of name, for a certain function of a module. Fields should be an alist of additional fields on the hook."
   (let ((instance (make-instance 'hook :name name :space space :module module :function function :description description)))
-    (log:info "Defining hook ~a" instance)
+    (log:info "Defining hook ~a for ~a:~a ( ~s )" name module function fields)
     (loop for (key . val) in fields
        do (setf (gethash key (fields instance)) val))
     (let ((namespace (gethash space *radiance-hooks*)))
@@ -88,10 +88,11 @@
 (defun trigger (space trigger &rest args)
   "Trigger a certain hook and collect all return values."
   (loop for hook in (gethash trigger (get-namespace space))
-     collect (let* ((module (module hook)))
-               (unless (persistent module)
-                 (setf module (make-instance (class-of module))))
-               (apply (hook-function hook) module args))))
+     if (let ((module (module hook)))
+          (unless (persistent module)
+            (setf module (make-instance (class-of module))))
+          (apply (hook-function hook) module args))
+     collect it))
 
 (add-namespace :server)
 (add-namespace :api)
