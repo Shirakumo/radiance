@@ -7,3 +7,6 @@
 (in-package :radiance)
 
 (implement 'core (get-module 'core))
+
+(define-file-link favicon #u"/favicon.ico" (static "img/favicon.ico") :content-type "image/x-icon")
+(define-file-link robots #u"/robots.txt" (static "txt/robots.txt") :content-type "text/plain")
