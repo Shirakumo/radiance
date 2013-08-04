@@ -239,7 +239,7 @@ Note that the PATH part is always a regex, excluding the start slash."
 (set-dispatch-macro-character #\# #\u #'make-uri-helper)
 
 
-(defmacro defpage (name uri (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch lquery) &body body)
+(defmacro defpage (name uri (&key module (modulevar (gensym "MODULE")) access-branch lquery) &body body)
   "Defines a new page for the given module that will be available on the
 specified URI. If access-branch is given, an authorization check on the
 current session at page load will be performed. If lquery is non-NIL,
@@ -247,7 +247,6 @@ lQuery will be initialized with the given pathspec and the page output
 will be set to the lQuery serialization, unless the response field of
 the *radiance-request* is already set. If lQuery is unset, the return
 value of the request is automatically chosen."
-  (assert (not (eql module NIL)) () "Module cannot be NIL! (Are you in-module context?)")
   (let ((name (intern (format nil "PAGE-~a" name)))
         (urigens (gensym "URI")) (modgens (gensym "MODULE"))
         (funcbody (if lquery 
@@ -258,7 +257,7 @@ value of the request is automatically chosen."
                            (concatenate-strings (lquery:$ (serialize)))))
                       `(progn ,@body))))
     `(let ((,urigens ,uri)
-           (,modgens (get-module ,(module-symbol module))))
+           (,modgens ,(if module module `(get-module T))))
        (defmethod ,name ((,modulevar (eql ,modgens)))
          (declare (ignorable ,modulevar))
          ,(if access-branch 
@@ -269,13 +268,14 @@ value of the request is automatically chosen."
        (defhook :page ',name ,modgens #',name 
                 :description ,(format nil "Page call for ~a" module)
                 :fields (acons :uri ,urigens ()))
-       (register T ',name ,(module-symbol module) ,urigens))))
+       (register T ',name (module-symbol ,modgens) ,urigens))))
 
-(defun define-file-link (name uri pathspec &key access-branch)
+(defmacro define-file-link (name uri pathspec &key access-branch module content-type)
   "Defines a link of a given URI to a file. Useful for things like
 favicon.ico, robots.txt, humans.txt or other files that cannot be in
 the static/ directory."
-  )
+  `(defpage ,name ,uri (:module ,module :access-branch ,access-branch)
+    (hunchentoot:handle-static-file ,pathspec ,content-type)))
 
 (defun link (name &key (module (get-module T)) (type :URI))
   "Returns the link to the requested page or API function. Type can
