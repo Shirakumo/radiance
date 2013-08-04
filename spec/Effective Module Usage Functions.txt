@@ -66,7 +66,7 @@ code should be an integer denoting the response code (usually like HTTP codes).
 text should be a short string explanation of the return.
 data should be a hash-table that contains all necessary data.
 
-FUNCTION:
+MACRO:
 (define-file-link name uri pathspec &key access-branch) 
   => link definition
 
