@@ -17,7 +17,7 @@
         ($ "#error" (text "No options available!"))))
 
   (if (not (authenticated-p)) 
-      ($ "input[type=\"submit\"]" (remove)))
+      ($ "input" (remove)))
   ($ "#error" (text (get-var "error")))
   ($ "#ok" (text (get-var "ok"))))
 
