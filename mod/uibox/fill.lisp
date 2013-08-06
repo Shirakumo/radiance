@@ -36,8 +36,9 @@ If it is NIL, it is expected that lQuery has already been initialized with a doc
     (let* ((template ($ selector (children) (node)))
            (nodes (loop for model in models
                      for clone = ($ template (clone) (node))
-                     do (loop for node in ($ clone "*[data-uibox]")
-                           do (fill-node node model))
+                     do (fill-node clone model)
+                       (loop for node in ($ clone "*[data-uibox]")
+                          do (fill-node node model))
                      collect clone)))
       ($ selector (empty) (append nodes)))
     lquery:*lquery-master-document*))
@@ -45,7 +46,7 @@ If it is NIL, it is expected that lQuery has already been initialized with a doc
 (defun fill-node (node model)
   "Fills data into the node according to uibox constants. Syntax:
 DATA-UIBOX : TARGET:field*
-TARGET     : text | html | value | class | style | ATTRIBUTE | FOREACH
+TARGET     : text | html | value | class | style | id | ATTRIBUTE | FOREACH
 ATTRIBUTE  : attr-NAME
 FOREACH    : foreach-SELECTOR"
   (let ((targets (split-sequence:split-sequence #\space (first ($ node (attr :data-uibox))))))
@@ -60,6 +61,7 @@ FOREACH    : foreach-SELECTOR"
                 ("html" ($ node (html data)))
                 ("value" ($ node (val data)))
                 ("class" ($ node (add-class data)))
+                ("id" ($ node (attr :id data)))
                 ("style" (let ((css ($ node (attr :style))))
                            ($ node (attr :style (concatenate 'string css data)))))
                 (T (cond 
@@ -71,6 +73,6 @@ FOREACH    : foreach-SELECTOR"
                            (string= target "foreach-" :end1 8))
                       (fill-foreach data (subseq target 8) :template node))
                      
-                     (T (error "Unknown data target directive: ~a" target)))))
-              ($ node (attr :data-uibox NIL))))))
+                     (T (error "Unknown data target directive: ~a" target)))))))))
+  ($ node (remove-attr :data-uibox))
   node)
