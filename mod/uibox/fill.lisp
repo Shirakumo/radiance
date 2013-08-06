@@ -53,7 +53,7 @@ FOREACH    : foreach-SELECTOR"
        if (> (length temp) 0)
        do (let* ((temp (split-sequence:split-sequence #\: temp))
                  (target (first temp))
-                 (data (format NIL "~a" (getdf model (second temp)))))
+                 (data (getdf model (second temp))))
             (when data
               (string-case:string-case (target)
                 ("text" ($ node (text data)))
