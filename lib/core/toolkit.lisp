@@ -6,6 +6,18 @@
 
 (in-package :radiance)
 
+(defmacro time-spent (&body body)
+  "Returns three values: the return of the last body form, the real time passed and the run time passed."
+  (let ((real1 (gensym)) (real2 (gensym)) (run1 (gensym)) (run2 (gensym)) (result (gensym)))
+    `(let* ((,real1 (get-internal-real-time))
+            (,run1 (get-internal-run-time))
+            (,result (progn ,@body))
+            (,real2 (get-internal-real-time))
+            (,run2 (get-internal-run-time)))
+       (values ,result 
+               (/ (- ,real2 ,real1) internal-time-units-per-second)
+               (/ (- ,run2 ,run1) internal-time-units-per-second)))))
+
 (defun load-config (&optional (config-file *radiance-config-file*))
   "(Re)load the static configuration."
   (when (not config-file)
@@ -74,6 +86,13 @@
       (if (listp (first model))
           (assoc field model)
           (error "Model is of type LIST, but is neither an ALIST or PLIST."))))
+
+(defmethod getdf ((model hash-table) field)
+  (gethash field model))
+
+(defmethod getdf ((model standard-object) field)
+  (let ((slot (find-symbol (string-upcase field))))
+    (if slot (slot-value model slot))))
 
 (defun file-size (pathspec)
   "Retrieves the file size in bytes."
