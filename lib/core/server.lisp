@@ -93,29 +93,33 @@
 
 (defun handler (&optional (request hunchentoot:*request*))
   "Propagates the call to the next handler registered in the implements."
-  (let* ((path (string-left-trim "/" (hunchentoot:script-name request)))
-         (host (hunchentoot:host request))
-         (port (if (find #\: host)
-                   (parse-integer (subseq host (1+ (search ":" host))))
-                   80))
-         (domains (split-sequence:split-sequence #\. (if (find #\: host)
-                                                         (subseq host 0 (search ":" host))
-                                                         host)))
-         (subdomains (reverse (if (> (length domains) 2) (subseq domains 0 (- (length domains) 2)))))
-         (domain (concatenate-strings (subseq domains (length subdomains)) "."))
-         (*radiance-request* request)
-         (*radiance-reply* hunchentoot:*reply*)
-         (*radiance-session* NIL))
-
-    (setf (subdomains request) subdomains
-          (domain request) domain
-          (path request) path
-          (port request) port)
-    (log:debug "REQUEST: ~a" request)
-    (setf *radiance-request-total* (1+ *radiance-request-total*))
-    (setf *radiance-request-count* (1+ *radiance-request-count*))
-    (let ((result (dispatch (implementation 'dispatcher) request)))
-      (cond ((stringp result) (setf (response request) result))
-            ((listp result) (setf (response request) (concatenate-strings result)))))
-    (setf *radiance-request-count* (1- *radiance-request-count*))
-    (lambda () (response request))))
+  (multiple-value-bind (result realtime runtime)
+      (time-spent
+        (let* ((path (string-left-trim "/" (hunchentoot:script-name request)))
+               (host (hunchentoot:host request))
+               (port (if (find #\: host)
+                         (parse-integer (subseq host (1+ (search ":" host))))
+                         80))
+               (domains (split-sequence:split-sequence #\. (if (find #\: host)
+                                                               (subseq host 0 (search ":" host))
+                                                               host)))
+               (subdomains (reverse (if (> (length domains) 2) (subseq domains 0 (- (length domains) 2)))))
+               (domain (concatenate-strings (subseq domains (length subdomains)) "."))
+               (*radiance-request* request)
+               (*radiance-reply* hunchentoot:*reply*)
+               (*radiance-session* NIL))
+          
+          (setf (subdomains request) subdomains
+                (domain request) domain
+                (path request) path
+                (port request) port)
+          (log:debug "REQUEST: ~a" request)
+          (setf *radiance-request-total* (1+ *radiance-request-total*))
+          (setf *radiance-request-count* (1+ *radiance-request-count*))
+          (let ((result (dispatch (implementation 'dispatcher) request)))
+        (cond ((stringp result) (setf (response request) result))
+              ((listp result) (setf (response request) (concatenate-strings result)))))
+          (setf *radiance-request-count* (1- *radiance-request-count*))
+          (lambda () (response request))))
+    (log:trace "TIME SPENT: ~fs real ~fs run" realtime runtime)
+    result))
