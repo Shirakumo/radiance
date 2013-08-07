@@ -24,7 +24,7 @@
 (defun fill-foreach (models selector &key template)
   "Fills the node with data using the provided list of alists, plists, data-models or a list in order of the fields.
 
-Selector is a CSS selector that matches the root node to fill with data.
+Selector is a CSS selector that matches the node to be repeated and filled with data.
 Data is filled into any node with the data-uibox attribute.
 See uibox:fill-node for more information on how the data is filled into the nodes.
 
@@ -33,14 +33,16 @@ If it is a dom-node, all actions will be performed on this dom-node.
 If it is a pathname or a string, lQuery will be initialized with the new document.
 If it is NIL, it is expected that lQuery has already been initialized with a document."
   (with-initialized-lquery template
-    (let* ((template ($ selector (children) (node)))
+    (if (typep models 'hash-table) (setf models (alexandria:hash-table-values models)))
+    (let* ((template ($ selector (node)))
            (nodes (loop for model in models
                      for clone = ($ template (clone) (node))
                      do (fill-node clone model)
                        (loop for node in ($ clone "*[data-uibox]")
                           do (fill-node node model))
                      collect clone)))
-      ($ selector (empty) (append nodes)))
+      ($ selector (parent) (append nodes))
+      ($ template (remove)))
     lquery:*lquery-master-document*))
 
 (defun fill-node (node model)
