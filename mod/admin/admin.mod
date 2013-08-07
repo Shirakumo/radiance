@@ -22,4 +22,5 @@
   
   (:components ((:file "admin")))
 
-  (categories :initarg :categories :initform (make-hash-table :test 'equal) :accessor categories))
+  (categories :initarg :categories :initform (make-hash-table) :accessor categories)
+  (menu :initarg :menu :initform () :accessor menu))

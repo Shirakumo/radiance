@@ -65,22 +65,18 @@ body,html{
 #panel>ul>li.active>a::after{
 	content: "";
 	position: absolute;
-	bottom:-10px;left:0;
+	bottom:-9px;left:0;
 	width: 0;height: 0; 
 	border-bottom: 10px solid transparent;
 	border-left: 10px solid #0088AA;
 }
 
-#panel>ul>li>ul{padding: 0 0 5px 9px;display:none;}
+#panel>ul>li>ul{padding: 2px 0 5px 9px;display:none;}
 
 #panel>ul>li>ul>li>a{
 	padding: 2px 2px 2px 5px;
 	position: relative;
 	height: 16px;
-	text-transform: lowercase;
-}
-#panel>ul>li>ul>li>a:first-letter{
-	text-transform: uppercase;
 }
 
 #panel>ul>li>ul>li.active>a{background: #0088AA;}
