@@ -9,7 +9,6 @@
 
 (defun authenticated-p (&optional (session *radiance-session*))
   "Returns T if the current user is using an authenticated session."
-  (ignore-errors (authenticate T))
   (and session (session-user session) (user-saved-p (session-user session)) (session-active-p session)))
 
 (defun authorized-p (access-branch &optional (session *radiance-session*))
@@ -260,10 +259,12 @@ value of the request is automatically chosen."
            (,modgens ,(if module module `(get-module T))))
        (defmethod ,name ((,modulevar (eql ,modgens)))
          (declare (ignorable ,modulevar))
-         ,(if access-branch 
-              `(if (authorized-p ,access-branch)
-                   ,funcbody
-                   (error-page 403))
+         ,(if access-branch
+              `(progn
+                 (authenticate T)
+                 (if (authorized-p ,access-branch)
+                     ,funcbody
+                     (error-page 403)))
               funcbody))
        (defhook :page ',name ,modgens #',name 
                 :description ,(format nil "Page call for ~a" module)
