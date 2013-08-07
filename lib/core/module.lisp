@@ -13,6 +13,7 @@
       (version :initarg :version :reader version :type string :allocation :class)
       (license :initarg :license :reader license :type string :allocation :class)
       (url :initarg :url :reader url :type string :allocation :class)
+      (description :initarg :description :reader description :type string :allocation :class)
       
       (collections :initarg :collections :reader collections :type list :allocation :class)
       (persistent :initform T :initarg :persistent :reader persistent :type boolean :allocation :class)
@@ -52,7 +53,7 @@
        (flet ((,classdef () (log:info "Defining module ~a" ',name) (make-module-class ,name ,superclasses ,docstring ,extra-slots))
               (,initializer () (log:info "Initializing module ~a" ',name)
                             (let ((instance (make-instance ',name 
-                                                       :name ,fullname :author ,author :version ,version :license ,license :url ,url
+                                                       :name ,fullname :author ,author :version ,version :license ,license :url ,url :description ,docstring
                                                        :collections ,collections :persistent ,persistent
                                                        :implements ,implements :asdf-system ,asdf-system :dependencies ,dependencies
                                                        :compiled ,compiled)))
