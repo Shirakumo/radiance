@@ -69,6 +69,7 @@
 
 (defun error-page (errorcode)
   "Returns the contents of the requested error page."
+  (setf (hunchentoot:return-code* *radiance-reply*) errorcode)
   (read-data-file (format nil "static/html/error/~a.html" errorcode)))
 
 (defun upload-file (post-parameter 
