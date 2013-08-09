@@ -9,6 +9,7 @@
 (implement 'dispatcher (get-module 'flash-dispatch))
 
 (defmethod dispatch ((dispatch flash-dispatch) (request radiance:request) &key)
+  (declare (optimize (speed 3)))
   (or
    (let ((hook (effective-trigger dispatch request)))
      (if hook (funcall (hook-function hook) (module hook))))
@@ -17,10 +18,12 @@
 
 (defmethod effective-trigger ((dispatch flash-dispatch) (request uri) &key)
   "Returns the trigger that would be called and the URI it registered that matches to it."
+  (declare (optimize (speed 3)))
   (loop for (hook module uri) in (hooks dispatch)
      if (uri-matches uri request)
      do (return (loop for hook in (get-hooks :page hook)
-                   if (eql module (module-symbol (module hook)))
+                   for modsymb symbol = (module-symbol (module hook))
+                   if (eql module modsymb)
                    return hook))))
 
 (defmethod register ((dispatch flash-dispatch) (hook symbol) (module symbol) (uri uri) &key)

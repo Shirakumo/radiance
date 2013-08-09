@@ -102,11 +102,13 @@
 
 (defmethod get-module ((module symbol))
   "Retrieves the requested module from the instance list."
-  (get-module (symbol-name module)))
+  (if (eq (symbol-package module) (find-package :keyword))
+      (gethash module *radiance-modules*)
+      (get-module (symbol-name module))))
 
 (defmethod get-module ((module string))
   "Retrieves the requested module from the instance list."
-  (gethash (make-keyword module) *radiance-modules*))
+  (get-module (make-keyword module)))
 
 (defmethod get-module ((module (eql T)))
   "Retrieves the module of the current package, if any."
@@ -120,13 +122,15 @@
   (:documentation "Gets the symbol to access the given module."))
 
 (defmethod module-symbol ((module string))
-  (make-keyword module))
+  (find-symbol (string-upcase module) :keyword))
 
 (defmethod module-symbol ((module module))
   (module-symbol (class-name (class-of module))))
 
 (defmethod module-symbol ((module symbol))
-  (module-symbol (symbol-name module)))
+  (if (eq (symbol-package module) (find-package :keyword))
+      module
+      (module-symbol (symbol-name module))))
 
 (defun discover-modules (&key redefine reinitialize)
   (cl-fad:walk-directory (merge-pathnames "mod/" (pathname (config :root)))

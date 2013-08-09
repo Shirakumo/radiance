@@ -14,6 +14,7 @@
             (,result (progn ,@body))
             (,real2 (get-internal-real-time))
             (,run2 (get-internal-run-time)))
+       (declare (fixnum ,real1 ,run1 ,real2 ,run2))
        (values ,result 
                (/ (- ,real2 ,real1) internal-time-units-per-second)
                (/ (- ,run2 ,run1) internal-time-units-per-second)))))

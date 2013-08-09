@@ -6,7 +6,6 @@
 
 (in-package :radiance)
 
-
 (defun authenticated-p (&optional (session *radiance-session*))
   "Returns T if the current user is using an authenticated session."
   (and session (session-user session) (user-saved-p (session-user session)) (session-active-p session)))
@@ -25,6 +24,7 @@
 
 (defun get-var (name &optional (request *radiance-request*))
   "Returns a GET variable. If the name ends with [], it assumed to be an array and a list of all values is returned."
+  (declare (optimize (speed 3)) (string name))
   (if (and (> (length name) 2) (string= name "[]" :start1 (- (length name) 2)))
       (assoc-all name (get-vars) :val #'cdr :test #'string=)
       (hunchentoot:get-parameter name request)))
@@ -35,6 +35,7 @@
 
 (defun post-var (name &optional (request *radiance-request*))
   "Returns a POST variable. If the name ends with [], it assumed to be an array and a list of all values is returned."
+  (declare (optimize (speed 3)) (string name))
   (if (and (> (length name) 2) (string= name "[]" :start1 (- (length name) 2)))
       (assoc-all name (post-vars) :val #'cdr :test #'string=)
       (hunchentoot:post-parameter name request)))
@@ -184,6 +185,7 @@ in the actual request and are therefore purely temporary."
 
 (defmethod uri-matches ((uri uri) (uri2 uri))
   "Checks if the given URI is compatible with the other URI."
+  (declare (optimize (speed 3)))
   (and (or (not (domain uri))
            (not (domain uri2))
            (equal (domain uri) (domain uri2)))
@@ -203,6 +205,7 @@ in the actual request and are therefore purely temporary."
 
 (defun uri-same (uri uri2)
   "Checks if the given URIs are identical."
+  (declare (optimize (speed 3)))
   (string-equal (format NIL "~a" uri) (format NIL "~a" uri2)))
 
 (defgeneric uri->url (uri &optional absolute)
