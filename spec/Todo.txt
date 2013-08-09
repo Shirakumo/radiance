@@ -5,6 +5,17 @@ Date
   ^ New today but finished on another day
   - Completed today
 
+2013.08.09
+  * Optimize lQuery.
+  * Optimize UIBox fill-foreach.
+  v Make nice error pages.
+
+2013.08.08
+  - Rewrite lQuery core macros/functions.
+
+2013.08.5-7
+  v Advance work on admin page.
+
 2013.08.04
   v Add static resource dispatcher with link registry.
 
@@ -12,8 +23,8 @@ Date
   v Adapt all modules to trigger, dispatcher and site changes.
   * Add nice register end pages.
   * Add error handling page.
-  * Make nice error pages.
-  * Advance work on the admin page.
+  ^ Make nice error pages.
+  ^ Advance work on the admin page.
 
 2013.07.31
   v Add API dispatch.
