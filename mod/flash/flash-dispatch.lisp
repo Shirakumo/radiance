@@ -39,7 +39,7 @@
   hook)
 
 (defmethod dispatch-default ((dispatch flash-dispatch) (request radiance:request) &key &allow-other-keys)
-  (read-data-file "static/html/hello.html"))
+  (error-page 404))
 
 (defun sort-dispatcher-hooks (a b)
   (flet ((path (hook) (path (third hook))))
