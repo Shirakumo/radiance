@@ -90,6 +90,12 @@
 (defapi error () ()
   (error 'api-error :text "Api error as requested" :code -42))
 
+(defapi internal-error () ()
+  (error 'radiance-error :text "Internal error as requested" :code -42))
+
+(defapi unexpected-error () ()
+  (error "Unexpected error as requested"))
+
 (defapi coffee () ()
   (api-return 418 "I'm a teapot"
               (plist->hash-table
