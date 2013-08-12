@@ -21,6 +21,7 @@
                (:file "globals")
                (:file "conditions")
                (:file "toolkit")
+               (:file "uri")
                (:file "module")
                (:file "trigger")
                (:file "implement")
