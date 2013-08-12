@@ -35,4 +35,5 @@
                :uuid
                :cl-fad
                :lquery
-               :cl-ppcre))
+               :cl-ppcre
+               :trivial-backtrace))
