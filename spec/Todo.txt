@@ -5,6 +5,13 @@ Date
   ^ New today but finished on another day
   - Completed today
 
+2013.08.12
+  * Add gravatar and general user field convenience functions.
+  * Find validation library and secure verify register form.
+  - Improve defapi.
+  - Add request functions.
+  v Add error handling page.
+
 2013.08.09
   * Optimize lQuery.
   * Optimize UIBox fill-foreach.
@@ -22,7 +29,7 @@ Date
 2013.08.01, 2013.08.02, 2013.08.03
   v Adapt all modules to trigger, dispatcher and site changes.
   * Add nice register end pages.
-  * Add error handling page.
+  ^ Add error handling page.
   ^ Make nice error pages.
   ^ Advance work on the admin page.
 
