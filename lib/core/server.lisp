@@ -104,14 +104,14 @@
       (declare (list domains subdomains))
       (setf path (hunchentoot:script-name request)
             path (string-left-trim "/" path)
-            host (hunchentoot:host request)
-            port (if (find #\: host)
-                     (parse-integer (subseq host (1+ (search ":" host))))
-                     80)
-            domains (split-sequence:split-sequence #\. (if (find #\: host)
-                                                           (subseq host 0 (search ":" host))
-                                                           host))
-            subdomains (reverse (if (> (length domains) 2) (subseq domains 0 (- (length domains) 2))))
+            host (hunchentoot:host request))
+      (let ((colonpos (search ":" host)))
+        (if colonpos
+            (setf port (parse-integer (subseq host (1+ colonpos)))
+                  domains (split-sequence:split-sequence #\. (subseq host 0 colonpos)))
+            (setf port 80
+                  domains (split-sequence:split-sequence #\. host))))
+      (setf subdomains (reverse (if (cddr domains) (subseq domains 0 (- (length domains) 2))))
             domain (concatenate-strings (subseq domains (length subdomains)) ".")
             (subdomains request) subdomains
             (domain request) domain
