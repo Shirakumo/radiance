@@ -26,6 +26,6 @@
 (defconstant *unix-epoch-difference* (encode-universal-time 0 0 0 1 1 1970 0) "Time difference between unix epoch and Lisp time.")
 (defvar *uri-matcher* (cl-ppcre:create-scanner "((\\w+\\.)*?)(\\w+(\\.[a-z]+)?)?(:\\d+)?/(.*)"))
 
-(declaim (integer *radiance-request-count* *radiance-request-total* *default-cookie-expire* *unix-epoch-difference* *radiance-startup-time*))
+(declaim (fixnum *radiance-request-count* *radiance-request-total* *default-cookie-expire* *unix-epoch-difference* *radiance-startup-time*))
 (declaim (hash-table *radiance-implements* *radiance-modules* *radiance-hooks* *radiance-api-formats*))
 (declaim (string *random-string-characters*))
