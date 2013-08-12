@@ -5,8 +5,6 @@
 |#
 
 (in-package :radiance-mod-verify-openid)
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (use-package :radiance-mod-verify :radiance-mod-verify-openid))
 
 (defun get-relying-party ()
   (let* ((subdomains (subdomains *radiance-request*))

@@ -5,8 +5,6 @@
 |#
 
 (in-package :radiance-mod-verify-password)
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (use-package :radiance-mod-verify :radiance-mod-verify-password))
 
 (defun make-password-hash (password &optional (salt (config-tree :verify :password :salt)) (algorithm (config-tree :verify :password :algorithm)))
   ""

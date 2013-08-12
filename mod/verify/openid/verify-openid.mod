@@ -6,7 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.verify.openid
   (:nicknames :radiance-mod-verify-openid)
-  (:use :cl :radiance :lquery)
+  (:use :cl :radiance :lquery :radiance-mod-verify)
   (:export))
 (in-package :radiance-mod-verify-openid)
 

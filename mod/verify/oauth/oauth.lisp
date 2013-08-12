@@ -5,8 +5,6 @@
 |#
 
 (in-package :radiance-mod-verify-oauth)
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (use-package :radiance-mod-verify :radiance-mod-verify-oauth))
 
 (defun get-callback ()
   (uri->url *radiance-request*))

@@ -6,7 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.verify.password
   (:nicknames :radiance-mod-verify-password)
-  (:use :cl :radiance :lquery)
+  (:use :cl :radiance :lquery :radiance-mod-verify)
   (:export))
 (in-package :radiance-mod-verify-password)
 
