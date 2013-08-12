@@ -46,15 +46,18 @@ value of the request is automatically chosen.
 
 
 MACRO (implemented):
-(defapi name (&rest args) (&key (module *module*) access-branch)
+(defapi name (&rest args) (&key method (module *module*) access-branch)
   &rest body) => api definition
 
 Defines a new API function for the given module. The arguments specify
 REST values that are expected (or not according to definition) on the
 API call. Any variable can have a default value specified. If 
 access-branch is given, an authorization check on the current session
-at page load will be performed. The return value of the body should be
-an alist or an URI. This will automatically be transformed into the
+at page load will be performed. Method can be one of T :GET :POST
+:PUT :PATCH :DELETE. The API call will only be performed if the
+http-method of the request matches, or always if the requested method
+type is set to be T. The return value of the body should be an
+alist or an URI. This will automatically be transformed into the
 requested output type or a page redirect in the case of an URI.
 
 
