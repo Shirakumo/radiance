@@ -107,3 +107,39 @@ By default, the values are the cons cells themselves and the car of each cons is
      for keyval = (funcall key cons)
      if (and (funcall test item keyval) (not (funcall test-not item keyval)))
      collect (funcall val cons)))
+
+(defun walk-directory (dir fn &key directories (files T) (recursive T) (test (constantly T)) (rec-test (constantly T)) (follow-symlinks T) (first NIL) (if-does-not-exist :error))
+  "Iterates over files and directories in dir and applies fn.
+
+If directories is T, directories are tested and eventually passed to fn.
+If files is T, files are tested and eventually passed to fn.
+If recursive is T, each directory that passes rec-test is also scanned.
+If follow-symlinks is T, symlinks are resolved and may follow outside of the original directory.
+First can be one of NIL, :FILES or :DIRECTORIES and decides which type is tested/passed first, this also affects recursion order.
+If if-does-not-exist is :error, an error is thrown in case the directory cannot be found."
+  (labels ((consider (file)
+             (if (cl-fad:directory-pathname-p file)
+                 (progn 
+                   (if (and directories (funcall test file))
+                       (funcall fn file))
+                   (if (and recursive (funcall rec-test file))
+                       (walk file)))
+                 (if (and files (funcall test file))
+                     (funcall fn file))))
+           (walk (directory)
+             (loop with delegated = ()
+                for file in (cl-fad:list-directory directory :follow-symlinks follow-symlinks)
+                if (cl-fad:directory-pathname-p file)
+                  do (if (eq first :FILES)
+                         (push file delegated)
+                         (consider file))
+                else 
+                  do (if (eq first :DIRECTORIES)
+                         (push file delegated)
+                         (consider file))
+                finally (mapc #'consider delegated))))
+    (let ((dir (cl-fad:pathname-as-directory dir)))
+      (cond ((cl-fad:directory-exists-p dir)
+             (walk dir))
+            ((eq if-does-not-exist :error)
+             (error "File ~S does not exist." dir))))))
