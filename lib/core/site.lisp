@@ -228,6 +228,7 @@ the *radiance-request* is already set. If lQuery is unset, the return
 value of the request is automatically chosen."
   (let ((name (intern (format nil "PAGE-~a" name)))
         (urigens (gensym "URI")) (modgens (gensym "MODULE"))
+        (description (format nil "Page call for ~a" module))
         (funcbody (if lquery 
                       `(progn 
                          (lquery:$ (initialize ,lquery))
@@ -247,7 +248,7 @@ value of the request is automatically chosen."
                      (error-page 403)))
               funcbody))
        (defhook :page ',name ,modgens #',name 
-                :description ,(format nil "Page call for ~a" module)
+                :description ,description
                 :fields (acons :uri ,urigens ()))
        (register T ',name (module-symbol ,modgens) ,urigens))))
 
