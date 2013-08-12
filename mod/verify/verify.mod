@@ -7,7 +7,8 @@
 (defpackage org.tymoonnext.radiance.mod.verify
   (:nicknames :radiance-mod-verify)
   (:use :cl :radiance :lquery)
-  (:export :verify-auth 
+  (:export :username
+           :verify-auth 
            :verify-user 
            :verify-session
            :encrypt
