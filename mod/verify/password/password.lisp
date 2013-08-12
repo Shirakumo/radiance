@@ -66,4 +66,4 @@
             (model-field model "hash" :value (make-password-hash password salt))
             (model-field model "username" :value (username user))
             (model-insert model)
-            )))))
+            T)))))

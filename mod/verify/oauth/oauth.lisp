@@ -120,4 +120,5 @@
                        (acons "provider" (car link)
                        (acons "claimed-id" (cdr link)
                        (acons "username" (user-field user "username") 
-                       ()))))))))
+                       ())))))
+      (if links T))))

@@ -100,4 +100,5 @@
          do (db-insert db "linked-openids" 
                        (acons "claimed-id" link
                        (acons "username" (user-field user "username") 
-                       ())))))))
+                       ()))))
+      (if links T))))
