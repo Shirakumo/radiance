@@ -97,3 +97,4 @@
 (add-namespace :server)
 (add-namespace :api)
 (add-namespace :page)
+(add-namespace :user)
