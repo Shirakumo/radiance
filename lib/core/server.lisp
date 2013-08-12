@@ -120,8 +120,20 @@
       (log:debug "REQUEST: ~a" request)
       (incf *radiance-request-total*)
       (incf *radiance-request-count*)
-      (let ((result (dispatch (implementation 'dispatcher) request)))
+      (let ((result (error-handler request)))
         (cond ((stringp result) (setf (response request) result))
-              ((listp result) (setf (response request) (concatenate-strings result)))))
+              ((and result (listp result)) (setf (response request) (concatenate-strings result)))))
       (decf *radiance-request-count*)
       (lambda () (response request)))))
+
+(defun error-handler (request)
+  (handler-bind
+      ((radiance-error #'(lambda (err)
+                           ($ (initialize (static "html/error/501.html")))
+                           ($ "#error h2" (text (format NIL "Error of type ~a" (class-name (class-of err)))))
+                           ($ "#error pre" (text (trivial-backtrace:print-backtrace err :output NIL)))
+                           (setf (response *radiance-request*) ($ (serialize) (node)))
+                           (invoke-restart 'skip-request))))
+    (with-simple-restart (skip-request "Skip the request and show the response stored in *radiance-request*.")
+      (dispatch T request))))
+      
