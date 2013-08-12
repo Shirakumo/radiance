@@ -133,11 +133,12 @@
       (module-symbol (symbol-name module))))
 
 (defun discover-modules (&key redefine reinitialize)
-  (cl-fad:walk-directory (merge-pathnames "mod/" (pathname (config :root)))
+  (walk-directory (merge-pathnames "mod/" (pathname (config :root)))
                          (lambda (file) (load-module file :redefine redefine :reinitialize reinitialize))
                          :test (lambda (file) 
                                  (let ((name (file-namestring file)))
-                                   (equal ".mod" (subseq name (- (length name) 4)))))))
+                                   (equal ".mod" (subseq name (- (length name) 4)))))
+                         :first :FILES))
 
 (defun load-module (file &key redefine reinitialize &allow-other-keys)
   (log:info "Discovered mod file: ~a (~a)" file (file-namestring file))
