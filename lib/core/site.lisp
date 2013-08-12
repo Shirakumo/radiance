@@ -44,6 +44,80 @@
   "Returns an alist of all POST variables."
   (hunchentoot:post-parameters* request))
 
+(defun post-or-get-var (name &optional (request *radiance-request*))
+  "Returns a POST variable or, if not provided, the GET variable of the same name."
+  (or (post-var name request) (get-var name request)))
+
+(defun cookie-var (name &optional (request *radiance-request*))
+  "Returns a COOKIE variable."
+  (hunchentoot:cookie-in name request))
+
+(defsetf cookie-var (cookie) (value)
+  `(set-cookie ,cookie :value ,value))
+
+(defun cookie-vars (&optional (request *radiance-request*))
+  "Returns an alist of all COOKIE variables."
+  (hunchentoot:cookies-in* request))
+
+(defun header-var (name &optional (request *radiance-request*))
+  "Returns a HEADER variable."
+  (hunchentoot:header-in name request))
+
+(defun header-vars (&optional (request *radiance-request*))
+  "Returns an alist of all HEADER variables."
+  (hunchentoot:headers-in* request))
+
+(defmacro with-var-func (fun (&rest vars) &body body)
+  "Constructs a basic with-X let."
+  `(let (,@(loop for var in vars
+              for varname = (if (listp var) (first var) var)
+              for funcname = (if (listp var) (second var) (string-downcase (symbol-name var)))
+              collect `(,varname (funcall ,fun ,funcname))))
+     ,@body))
+
+(defmacro with-get ((&rest vars) &body body)
+  "Same as with-slots, but for GET variables.
+Uses *radiance-request* to retrieve variables.
+Note that changes to the variables will not be saved
+in the actual request and are therefore purely temporary."
+  `(with-var-func #'get-var (,@vars) ,@body))
+
+(defmacro with-post ((&rest vars) &body body)
+  "Same as with-slots, but for POST variables.
+Uses *radiance-request* to retrieve variables.
+Note that changes to the variables will not be saved
+in the actual request and are therefore purely temporary."
+  `(with-var-func #'post-var (,@vars) ,@body))
+
+(defmacro with-post-or-get ((&rest vars) &body body)
+  "Same as with-slots, but for POST and GET variables.
+Uses *radiance-request* to retrieve variables.
+Note that changes to the variables will not be saved
+in the actual request and are therefore purely temporary."
+  `(with-var-func #'post-or-get-var (,@vars) ,@body))
+
+(defmacro with-header ((&rest vars) &body body)
+  "Same as with-slots, but for HEADER variables.
+Uses *radiance-request* to retrieve variables.
+Note that changes to the variables will not be saved
+in the actual request and are therefore purely temporary."
+  `(with-var-func #'header-var (,@vars) ,@body))
+
+(defmacro with-cookie ((&rest cookies) &body body)
+  "Same as with-slots, but for COOKIE variables.
+Uses *radiance-request* to retrieve variables.
+Changes to these cookies will be sent along to the browser with default cookie settings."
+  `(symbol-macrolet
+       ,(loop for cookie in cookies 
+           for varname = (if (listp cookie) (first cookie) cookie)
+           for fieldname = (if (listp cookie) (second cookie) (string-downcase (symbol-name cookie)))
+           collect `(,varname (cookie-var ,fieldname)))
+     ,@body))
+
+(defun request-method (&optional (request *radiance-request*))
+  "Returns the http-request method."
+  (hunchentoot:request-method request))
+
 (defun redirect (uri-or-string)
   "Redirects to the requested URI."
   (log:debug "Redirecting to ~a" uri-or-string)
@@ -144,104 +218,6 @@ See upload-file for more information."
        
        ,(if open-file `(close ,filepathvar)))))
 
-(defmacro with-var-func (fun (&rest vars) &body body)
-  "Constructs a basic with-X let."
-  `(let (,@(loop for var in vars
-              for varname = (if (listp var) (first var) var)
-              for funcname = (if (listp var) (second var) (string-downcase (symbol-name var)))
-              collect `(,varname (funcall ,fun ,funcname))))
-     ,@body))
-
-(defmacro with-get ((&rest vars) &body body)
-  "Same as with-slots, but for GET variables.
-Uses *radiance-request* to retrieve variables.
-Note that changes to the variables will not be saved
-in the actual request and are therefore purely temporary."
-  `(with-var-func #'get-var (,@vars) ,@body))
-
-(defmacro with-post ((&rest vars) &body body)
-  "Same as with-slots, but for POST variables.
-Uses *radiance-request* to retrieve variables.
-Note that changes to the variables will not be saved
-in the actual request and are therefore purely temporary."
-  `(with-var-func #'post-var (,@vars) ,@body))
-
-(defclass uri ()
-  ((subdomains :initarg :subdomains :initform NIL :accessor subdomains)
-   (domain :initarg :domain :initform NIL :accessor domain)
-   (port :initarg :port :initform NIL :accessor port)
-   (path :initarg :path :initform ".*" :accessor path)
-   (pathregex :initarg :regex :initform NIL :accessor regex))
-  (:documentation "URI class used in Radiance to build links and such."))
-
-(defmethod print-object ((uri uri) stream)
-  (with-slots (subdomains domain port path) uri
-    (format stream "~:[*~;~:*~{~a~^.~}~].~:[*~;~:*~a~]:~:[*~;~:*~a~]/~a" subdomains domain port path)))
-
-(defgeneric uri-matches (uri b) (:documentation "Checks if a URI matches."))
-
-(defmethod uri-matches ((uri uri) (string string))
-  "Checks if the given URI is compatible with the string representation of a URI."
-  (uri-matches uri (make-uri string)))
-
-(defmethod uri-matches ((uri uri) (uri2 uri))
-  "Checks if the given URI is compatible with the other URI."
-  (declare (optimize (speed 3)))
-  (and (or (not (domain uri))
-           (not (domain uri2))
-           (equal (domain uri) (domain uri2)))
-       (or (not (port uri))
-           (not (port uri2))
-           (equal (port uri) (port uri)))
-       (or (not (subdomains uri))
-           (not (subdomains uri2))
-           (loop for sda in (reverse (subdomains uri))
-              for sdb in (reverse (subdomains uri2))
-              unless (string= sda sdb)
-              return NIL
-              finally (return T)))
-       (or (not (path uri))
-           (not (path uri2))
-           (cl-ppcre:scan (regex uri) (path uri2)))))
-
-(defun uri-same (uri uri2)
-  "Checks if the given URIs are identical."
-  (declare (optimize (speed 3)))
-  (string-equal (format NIL "~a" uri) (format NIL "~a" uri2)))
-
-(defgeneric uri->url (uri &optional absolute)
-  (:documentation "Turns the URI into a string URL."))
-
-(defmethod uri->url ((uri uri) &optional (absolute T))
-  (if absolute 
-      (format NIL "http://~{~a.~}~a~:[~;:~:*~a~]/~a"
-              (subdomains uri) (domain uri) (port uri) (path uri))
-      (path uri)))
-
-(defun make-uri (uristring)
-  "Creates a URI object matching the urispec. Urispec has the following
-syntax:  (subdomain.)*domain?:port?/path?
-
-If a part of the URI is not given, it is defaulted to \"*\", which
-matches to anything. make-uri has a read-macro for easier use: #u
-Note that the PATH part is always a regex, excluding the start slash."
-  (cl-ppcre:register-groups-bind (subdomains NIL domain NIL port path) (*uri-matcher* uristring)
-    (setf path (if (= (length path) 0) ".*" path))
-    (setf subdomains (if (= (length subdomains) 0) NIL (split-sequence:split-sequence #\. (string-trim "." subdomains))))
-    (make-instance 'uri 
-                   :path path
-                   :subdomains subdomains
-                   :port port :domain domain
-                   :regex (cl-ppcre:create-scanner path))))
-
-(defun make-uri-helper (stream subchar arg)
-  (declare (ignore subchar arg))
-  (let ((string (read stream T)))
-    `(make-uri ,string)))
-
-(set-dispatch-macro-character #\# #\u #'make-uri-helper)
-
-
 (defmacro defpage (name uri (&key module (modulevar (gensym "MODULE")) access-branch lquery) &body body)
   "Defines a new page for the given module that will be available on the
 specified URI. If access-branch is given, an authorization check on the
@@ -293,34 +269,44 @@ be one of the following values: :URI :function :hook."
                 (:function (hook-function hook))
                 (:hook hook)))))
 
-(defmacro defapi (name (&rest args) (&key (module (get-module T)) (modulevar (gensym "MODULE")) access-branch) &body body)
+(defmacro defapi (name (&rest args) (&key (method T) (module (get-module T)) (modulevar (gensym "MODULE")) access-branch) &body body)
   "Defines a new API function for the given module. The arguments specify
 REST values that are expected (or not according to definition) on the
 API call. Any variable can have a default value specified. If 
 access-branch is given, an authorization check on the current session
-at page load will be performed. The return value of the body should be
-a plist or an URI. This will automatically be transformed into the
+at page load will be performed. Method can be one of T :GET :POST
+:PUT :PATCH :DELETE. The API call will only be performed if the
+http-method of the request matches, or always if the requested method
+type is set to be T. The return value of the body should be an
+alist or an URI. This will automatically be transformed into the
 requested output type or a page redirect in the case of an URI."
   (assert (not (eql module NIL)) () "Module cannot be NIL! (Are you in-module context?)")
+  (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
   (let ((fullname (intern (format nil "API-~a" name)))
         (name (make-keyword name))
         (funcbody `(progn ,@body))
-        (modgens (gensym "MODULE")))
+        (modgens (gensym "MODULE-"))
+        (methodgens (gensym "METHOD-")))
     `(let ((,modgens (get-module ,(module-symbol module))))
-       (defmethod ,fullname ((,modulevar (eql ,modgens)))
-         (declare (ignorable ,modulevar))
-         (let (,@(loop for arg in args 
-                    for argname = (if (listp arg) (car arg) arg) 
-                    for lit = (string-downcase (format NIL "~a" argname))
-                    collect `(,argname (or (post-var ,lit) (get-var ,lit) ,(if (listp arg) (second arg))))))
+       (defmethod ,fullname ((,modulevar (eql ,modgens)) ,methodgens)
+         (declare (ignorable ,modulevar ,methodgens))
+         ,(unless (eq method T)
+            `(unless (eq ,methodgens ,method)
+               (call-next-method)
+               (return-from ,fullname)))
+         (,(case method
+             (:POST 'with-post)
+             (:GET 'with-get)
+             (otherwise 'with-post-or-get))
+                (,@(mapcar #'(lambda (x) (if (listp x) (car x) x)) args))
            ,@(loop for arg in args
                 if (not (listp arg))
-                collect `(if (not ,arg) (error 'api-args-error :module ,modulevar :apicall ',name :text (format NIL "Argument ~a required." ',arg)))) 
+                collect `(assert (not (null ,arg)) () 'api-args-error :module ,modulevar :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
            ,(if access-branch
                 `(if (authorized-p ,access-branch)
                      ,funcbody
                      (error-page 403))
-                funcbody)))
+                (progn funcbody))))
        (defhook :api ',name ,modgens #',fullname
                 :description ,(format nil "API call for ~a" module)))))
 

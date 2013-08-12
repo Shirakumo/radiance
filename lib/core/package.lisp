@@ -146,6 +146,17 @@
            :get-vars
            :post-var
            :post-vars
+           :post-or-get-var
+           :cookie-var
+           :cookie-vars
+           :header-var
+           :header-vars
+           :with-get
+           :with-post
+           :with-post-or-get
+           :with-header
+           :with-cookie
+           :request-method
            :redirect
            :static
            :template
@@ -153,18 +164,6 @@
            :error-page
            :upload-file
            :with-uploaded-file
-           :with-get
-           :with-post
-           :uri
-           :subdomains
-           :domain
-           :port
-           :path
-           :pathregex
-           :uri-matches
-           :uri-same
-           :uri->url
-           :make-uri
            :defpage
            :define-file-link
            :link
@@ -203,6 +202,17 @@
            :get-triggers
            :get-hooks
            :trigger
+           ;; uri.lisp
+           :uri
+           :subdomains
+           :domain
+           :port
+           :path
+           :pathregex
+           :uri-matches
+           :uri-same
+           :uri->url
+           :make-uri
            )
   (:shadow :restart))
 
