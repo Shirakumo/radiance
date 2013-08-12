@@ -37,7 +37,7 @@
      for hook in hooks
      if (string-equal (class-name (class-of (module hook))) module)
      do (setf accepted T)
-       (nappend return (funcall (hook-function hook) (module hook)))
+       (nappend return (funcall (hook-function hook) (module hook) (request-method)))
      finally (return (if accepted
                          return
                          (api-return 404 "Call not found")))))
@@ -98,3 +98,20 @@
                :capacity 1
                :content (/ (+ (random 20) 80) 100)
                :flavour (alexandria:random-elt '("rose hip" "peppermint" "english breakfast")))))
+
+(defapi request () ()
+  (with-slots (subdomains domain port path) *radiance-request*
+    (api-return 200 "Request data"
+                (plist->hash-table
+                 :subdomains subdomains
+                 :domain domain
+                 :port port
+                 :path path
+                 :remote-addr (hunchentoot:remote-addr *radiance-request*)
+                 :remote-port (hunchentoot:remote-port *radiance-request*)
+                 :referer (hunchentoot:referer *radiance-request*)
+                 :method (hunchentoot:request-method *radiance-request*)
+                 :post (post-vars)
+                 :get (get-vars)
+                 :cookie (cookie-vars)
+                 :header (header-vars)))))
