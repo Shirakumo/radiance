@@ -5,9 +5,14 @@ Date
   ^ New today but finished on another day
   - Completed today
 
+2013.08.14
+  v Add gravatar and general user field convenience functions.
+  v Make validation library and secure verify register form.
+  * Implement base-profile profile and settings pages.
+
 2013.08.12
-  * Add gravatar and general user field convenience functions.
-  * Find validation library and secure verify register form.
+  ^ Add gravatar and general user field convenience functions.
+  ^ Find validation library and secure verify register form.
   - Improve defapi.
   - Add request functions.
   v Add error handling page.
