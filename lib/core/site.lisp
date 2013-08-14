@@ -14,6 +14,12 @@
   "Returns T if the current user is authorized to the given access branch."
   (and (authenticated-p session) (user-check (session-user session) access-branch)))
 
+(defun user (&key default authenticate)
+  "Returns the currently logged in user or default."
+  (when authenticate
+    (setf *radiance-session* (authenticate T)))
+  (or (and *radiance-session* (session-user *radiance-session*)) default))
+
 (defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (reply *radiance-reply*))
   "Sets a cookie with defaults and ensures proper return object utilization. If domain is NIL, it sets it for multi-subdomain compatibility."
   (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :reply reply)))
