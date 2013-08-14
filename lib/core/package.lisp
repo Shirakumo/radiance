@@ -75,6 +75,13 @@
            :session-active-p
            :session-temp-p
 
+           :profile
+           :profile-field
+           :profile-avatar
+           :profile-name
+           :profile-page-settings
+           :profile-page-user
+
            :database
            :db-connect
            :db-disconnect
@@ -172,6 +179,7 @@
            :api-format
            :define-api-format
            ;; toolkit.lisp
+           :time-spent
            :load-config
            :config
            :config-tree
@@ -213,6 +221,10 @@
            :uri-same
            :uri->url
            :make-uri
+           ;; validate.lisp
+           :url-p
+           :email-p
+           :date-p
            )
   (:shadow :restart))
 
