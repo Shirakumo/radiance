@@ -69,7 +69,7 @@
                   hidden firstname address)
         (if (string= action "Register")
             (if (and username (> (length username) 0)
-                     email (> (length email) 0))
+                     email (> (length email) 0) (email-p email))
                 (let ((user (user-get (implementation 'user) username)))
                   (if (not (user-saved-p user))
                       (if (and (string= hidden "hidden")
