@@ -1,60 +1,107 @@
+   === Radiance Database Interface Specification ===
 
-== Query Information ==
+  == Terminology ===
 
-The structure of a query is in basic as follows:
+Even though the terminology between specific databases may vary,
+in this document the following words are used:
+  field        A cell or single atom containing a value
+  record       A set of fields
+  collection   A set of records
+  database     A set of collections or
+               The mechanism providing data
+  query        A construct used to interface with the database
 
-((function args*)*)
+  == Usage ==
 
-So in other words: A query is a list of functions.
-Each function has its own set of possible arguments.
+ = Database = 
 
-Logical:     and or not
-Comparators: = != > >= < <= in !in matches
+A module should be shielded from any direct database interaction.
+Any kind of querying or modifying should only happen through the
+defined functions on the database interface. The module should
+not have to worry about database connectivity.
 
-Logical functions expect one or more additional
-functions as the body. Comparators expect two
-arguments, the first being the field to compare
-and the second being another field or a value to
-compare against.
+If a module intends to read data from a collection, it can do so
+without having to assure that the requested collection exists. If
+it does not exist, the querying functions should merely return an
+empty set.
 
-It is up to the implementation to offer additional
-comparators or functions, although using them is
-discouraged as it creates dependencies on a specific
-implementation. How the standard comparators work for
-different variable types is also left open to the
-database implementation.
+However, a module that intends to insert or modify data has to
+issue a db-create statement first and specify the standard
+structure of the collection. Whether this structure is flexible
+or fixed is up to the implementation, but the using module
+should assume that it is not flexible.
 
-= Details =
+When requesting data, the db-iterate function should be used
+wherever possible, as it may be significantly more performant at
+best and only slightly less performant than db-select at worst.
 
-- = -
-Checks for equality between the two. This should
-work between any of the same type, but the specifics
-are up to the implementation.
+Queries can be constructed using the := :< :> :>= :<= :in :!in
+:or :and :not :matches functions, which all implementations have
+to provide. Instead of a query, the :all keyword is also available
+which should simply match any record. 
 
-- != -
-Checks for inequality. Is basically the same as
-(not (=))
+When defining a collection with db-create, each field has to be
+defined with a name, type and optional length. Certain database
+implementations may choose to ignore these types, but they are a
+necessity for others and as such should always be explicitly
+stated. Optionally, a list of indexed fields may be specified.
 
-- > - < - >= - <= -
-Only really useful for number comparison.
+Example:
 
-- in -
-Checks if the value of the field can be found in the
-provided list.
+(unless (db-exists T "example")
+  (db-create T "example"
+    '(("ID" :int) ("title" :char 16) ("text" :text))
+    '("ID")))
 
-- !in -
-Basically the same as (not (in))
+(db-select T "example" :all)
+(db-insert T "example" '(("ID" . 1) ("title" . "test") ("text" . "Foo Bar Baz")))
+(db-select T "example" (:= "ID" 1))
+(db-update T "example" (:= "ID" 1) '(("title" "test^2")))
+(db-iterate T "example" #'(lambda (record) (print record)))
+(db-remove T "example" :all)
+(db-select T "example" :all)
 
-- matches -
-Performs a regex match. What version of regex is
-supported is up to the implementation.
+ = Data-Model =
 
-== Constructing Queries ==
+Data models provide a more intuitive way to interact with the
+database by putting a thin layer of abstraction above database
+functions. 
 
-Queries can be constructed with the query macro.
-Sample usage:
+Data-Models are retrieved with model-get and model-get-one. The
+query used is the same as with a standard db-select, but instead
+the data gets returned in form of data-model instances. All fields
+are available through model-field and should be setf-able.
 
-(query (and (= lastname "Müller") (> points 10)))
+In order to update records, simply perform a model-save on the
+instance. Removing a record happens with model-delete. If you do
+not already have a hold of the model, executing a db-remove would
+be recommended, as it avoids unnecessary data transfer and querying.
 
-The definition of the query macro is up to the
-database implementation.
+Any model can be inserted into the database as a new record by
+using model-insert. In order to create completely new records, a
+hull may be created instead with model-hull. If :clone T is
+supplied to model-insert, the model is cloned first and the old
+model is returned from the function. Otherwise, the model will
+refer to the newly created record.
+
+Easy access to model fields is provided through the with-fields
+macro, which is similar in functionality to the with-accessors
+CLOS macro. The model is not saved to the database at any point
+though, so if changes are made through a with-fields block, an
+additional model-save has to be executed.
+
+Easy access to a single model is provided through the with-model
+macro. It also integrates the functionality of with-fields, so
+it is very convenient for single-model adaptations. The return
+value of with-model and with-fields is always the value of the
+last statement in their body.
+
+Example:
+
+(with-model (model title (content "text")) ("example" (:= "ID" 1) :save T)
+  (setf title "Testing stuff")
+  content)
+
+(with-model model ("example" (:= "ID" 1))
+  (db-remove model))
+  
