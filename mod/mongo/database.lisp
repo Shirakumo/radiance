@@ -53,6 +53,7 @@
   "Select data from the collection. Using the iterate function is generally faster."
   (db-iterate db collection query #'document->alist :skip skip :limit limit :sort sort))
 
+;@todo
 (defmethod db-iterate ((db mongodb) (collection string) query function &key (skip 0) (limit 0) sort)
   "Iterate over a set of data. The collected return values are returned."
   (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
