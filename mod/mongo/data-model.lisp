@@ -83,6 +83,17 @@
                collect `(,varname (model-field ,vargens ,fieldname)))
          ,@body))))
 
+(defmacro with-model (model-spec (collection query &key (skip 0) sort save) &body body)
+  ""
+  (let* ((returngens (gensym "RETURN"))
+         (modelname (if (listp model-spec) (car model-spec) model-spec))
+         (modelfields (if (listp model-spec) (cdr model-spec) NIL))
+         (body (if save `(let ((,returngens (progn ,@body))) (model-save ,modelname) ,returngens)))
+         (body (if modelfields `(with-fields ,modelfields ,modelname ,@body))))
+    `(let ((,modelname (model-get-one T ,collection ,query :skip skip :sort sort)))
+       (when ,modelname
+         ,@body))))
+
 (defgeneric clone-document (var))
 
 (defmethod clone-document (var) var)
