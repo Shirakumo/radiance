@@ -22,25 +22,32 @@
   (not (null (dbinstance db))))
 
 (defmethod db-collections ((db sqlite) &key)
-  )
+  (db-iterate db "sqlite_master" (:= "type" "table")
+              #'(lambda (row) (car (assoc :test row)))))
 
 (defmethod db-create ((db sqlite) (collection string) fields &key indices)
+  "CREATE TABLE ,collection (,@fields);"
   )
   
-(defmethod db-select ((db sqlite) (collection string) query &key (skip 0) (limit 0) sort) 
+(defmethod db-select ((db sqlite) (collection string) query &key fields (skip 0) (limit 0) sort)
+  "SELECT ,@fields FROM ,collection WHERE ,query;"
   )
 
-(defmethod db-iterate ((db sqlite) (collection string) query function &key (skip 0) (limit 0) sort)
+(defmethod db-iterate ((db sqlite) (collection string) query function &key fields (skip 0) (limit 0) sort)
   )
 
-(defmethod db-insert ((db sqlite) (collection string) data) 
+(defmethod db-insert ((db sqlite) (collection string) data)
+  "INSERT INTO ,collection SET ,@fields;"
   )
 
-(defmethod db-remove ((db sqlite) (collection string) query &key (skip 0) (limit 0)) 
+(defmethod db-remove ((db sqlite) (collection string) query &key (skip 0) (limit 0))
+  "REMOVE FROM ,collection WHERE ,query LIMIT ,limit OFFSET ,skip;"
   )
 
-(defmethod db-update ((db sqlite) (collection string) query data &key (skip 0) (limit 0) replace) 
+(defmethod db-update ((db sqlite) (collection string) query data &key (skip 0) (limit 0) replace)
+  "UPDATE ,collection SET ,@fields WHERE ,query LIMIT ,limit OFFSET ,skip;"
   )
 
 (defmethod db-apropos ((db sqlite) (collection string))
+  "PRAGMA table_info( ,collection ); " ;; name type
   )
