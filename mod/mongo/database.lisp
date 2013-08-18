@@ -50,23 +50,25 @@
      do (destructuring-bind (keys &key drop-duplicates unique) index
           (db.ensure-index collection keys :drop-duplicates drop-duplicates :unique unique))))
 
-(defmethod db-select ((db mongodb) (collection string) query &key (skip 0) (limit 0) sort)
+(defmethod db-select ((db mongodb) (collection string) query &key fields (skip 0) (limit 0) sort)
   "Select data from the collection. Using the iterate function is generally faster."
-  (db-iterate db collection query #'document->alist :skip skip :limit limit :sort sort))
+  (db-iterate db collection query #'identity :fields fields :skip skip :limit limit :sort sort))
 
-;@todo
-(defmethod db-iterate ((db mongodb) (collection string) query function &key (skip 0) (limit 0) sort)
+(defmethod db-iterate ((db mongodb) (collection string) query function &key fields (skip 0) (limit 0) sort)
   "Iterate over a set of data. The collected return values are returned."
+  (declare (ignore fields))
   (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
   (let ((result (db.find collection query :limit limit :skip skip)))
     (multiple-value-bind (iterator collection docs) (cl-mongo::db.iterator result)
-      (loop 
+      (loop ; Collect all sets of records.
          for next = '(NIL (0 1)) then (db.next collection iter)
          for iter = iterator then (nth-value 0 (cl-mongo::db.iterator next))
          for idocs = docs then (append idocs (second next))
          until (zerop (length (second next)))
          finally (setf docs idocs))
-      (loop for doc in docs collect (funcall function doc)))))
+      (loop ; Loop over all records.
+         for doc in docs 
+         collect (funcall function (document->alist doc))))))
 
 (defmethod db-insert ((db mongodb) (collection string) (data list) &key)
   "Insert data into the collection using the rows/fields provided in data."
