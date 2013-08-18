@@ -4,7 +4,7 @@
   Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package :radiance-mod-base-profile)
+(in-package :radiance-mod-trivial-profile)
 
 (defclass base-profile (profile) ())
 

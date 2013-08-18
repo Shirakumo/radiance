@@ -4,7 +4,4 @@
   Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package :radiance-mod-base-profile)
-
-(defpage profile #u"user./" (:lquery (template "profile/profile.html"))
-  ())
+(in-package :radiance-mod-trivial-profile)

@@ -4,14 +4,14 @@
   Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(defpackage org.tymoonnext.radiance.mod.base-profile
-  (:nicknames :radiance-mod-base-profile)
+(defpackage org.tymoonnext.radiance.mod.trivial-profile
+  (:nicknames :radiance-mod-trivial-profile)
   (:use :cl :radiance :lquery))
-(in-package :radiance-mod-base-profile)
+(in-package :radiance-mod-trivial-profile)
 
-(defmodule base-profile ()
+(defmodule trivial-profile ()
   "Provides standard user profile functions and panels."
-  (:fullname "Base-Profile"
+  (:fullname "Trivial-Profile"
    :author "Nicolas Hafner"
    :version "0.0.1"
    :license "Artistic"
