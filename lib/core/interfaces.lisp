@@ -96,10 +96,32 @@ Manipulating data directly through this is discouraged and the data-model class 
   (model-delete () "Deletes the model from the database.")
   (model-insert () "Inserts the model into the database."))
 
-(defmacro with-fields ((&rest fields) model &body body)
-  "Stub for the with-model-fields macro. Should be redefined by the database implementation."
-  (declare (ignore fields model) (ignore body))
-  (error "With-model-fields macro not implemented!"))
+(defmacro with-fields ((&rest field-spec) model &body body)
+  "Lets you access fields directly by name. This is similar to with-accessors.
+Each field-spec can either be a symbol depicting the variable and field to bind or a list of a symbol
+and a string, denoting variable name and field name respectively."
+  (let ((vargens (gensym "MODEL")))
+    `(let ((,vargens ,model))
+       (symbol-macrolet
+           ,(loop for field in field-spec 
+               for varname = (if (listp field) (first field) field)
+               for fieldname = (if (listp field) (second field) (string-downcase (symbol-name field)))
+               collect `(,varname (model-field ,vargens ,fieldname)))
+         ,@body))))
+
+(defmacro with-model (model-spec (collection query &key (skip 0) sort save) &body body)
+  "Allows easy access to a single model. Model-spec can be either just the model variable's name, or a list
+starting with the model's name, followed by field specifiers like in with-fields. If save is not-NIL, a
+model-save is executed after the body. The return value of this is always the last statement in the body,
+even if save is non-NIL."
+  (let* ((returngens (gensym "RETURN"))
+         (modelname (if (listp model-spec) (car model-spec) model-spec))
+         (modelfields (if (listp model-spec) (cdr model-spec) NIL)))
+    (if save (setf body `((let ((,returngens (progn ,@body))) (model-save ,modelname) ,returngens))))
+    (if modelfields (setf body `((with-fields ,modelfields ,modelname ,@body))))
+    `(let ((,modelname (model-get-one T ,collection ,query :skip ,skip :sort ,sort)))
+       (when ,modelname
+         ,@body))))
 
 (defmacro define-query-parts (&rest parts)
   `(progn ,@(loop for func in parts
