@@ -11,13 +11,13 @@
 (defclass verify-session (session)
   ((uuid :initarg :uuid :initform (format nil "~a" (uuid:make-v4-uuid)) :reader uuid)
    (time :initarg :time :initform (get-unix-time) :reader session-time)
-   (user :initarg :user :initform (error "User required") :reader user)
+   (user :initarg :user :initform (error "User required") :reader s-user)
    (fields :initarg :fields :initform (make-hash-table :test 'equal) :reader fields)
    (active :initarg :active :initform T :accessor active)))
 
 (defmethod print-object ((session verify-session) out)
   (print-unreadable-object (session out :type T)
-    (format out "~a" (user session))))
+    (format out "~a" (s-user session))))
 
 (implement 'session (make-instance 'verify-session :uuid NIL :time NIL :user NIL :fields NIL :active NIL))
 
@@ -44,7 +44,7 @@
 
 (defmethod session-end ((session verify-session) &key &allow-other-keys)
   "Ends the session and removes it from the registry."
-  (log:debug "Terminating session for ~a with UUID ~a" (user session) (uuid session))
+  (log:debug "Terminating session for ~a with UUID ~a" (s-user session) (uuid session))
   (remhash (uuid session) *verify-sessions*)
   (setf (active session) NIL)
   (if (eq *radiance-session* session) (set-cookie "token"))
@@ -67,7 +67,7 @@
 
 (defmethod session-user ((session verify-session) &key &allow-other-keys)
   "Retrieves a database instance of the corresponding user object."
-  (user session))
+  (s-user session))
 
 (defmethod session-active-p ((session verify-session) &key &allow-other-keys)
   "Returns T if the session is still active, otherwise NIL."
@@ -75,15 +75,15 @@
 
 (defmethod session-temp-p ((session verify-session) &key &allow-other-keys)
   "Returns T if the session is only temporary, otherwise NIL."
-  (equal (username (user session)) "temp"))
+  (equal (username (s-user session)) "temp"))
 
 (defun make-session-cookie (session)
   "Create the encrypted session cookie data. Does not actually set the cookie!"
-  (let* ((username (if (user session) (username (user session)) "temp"))
+  (let* ((username (if (s-user session) (username (s-user session)) "temp"))
          (timestamp (get-unix-time))
          (random (make-random-string))
          (uuid (uuid session))
          (data (format NIL "~a:~a:~a" timestamp random uuid)))
     (if (config-tree :verify :session :use-per-user-secret)
-        (setf data (encrypt data (user-field (user session) "secret"))))
+        (setf data (encrypt data (user-field (s-user session) "secret"))))
     (encrypt (format NIL "~a-~a" username data) (config-tree :verify :session :secret))))
