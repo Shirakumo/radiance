@@ -13,10 +13,10 @@
 
 (implement 'database (get-module 'mongodb))
 
-(defmethod db-connect ((db mongodb) dbname &key (host (config-tree :database :host))
-                                             (port (config-tree :database :port))
-                                             (user (config-tree :database :user))
-                                             (pass (config-tree :database :pass)))
+(defmethod db-connect ((db mongodb) dbname &key (host (config-tree :mongo :host))
+                                             (port (config-tree :mongo :port))
+                                             (user (config-tree :mongo :user))
+                                             (pass (config-tree :mongo :pass)))
   "Connects to the mongodb."
   (if (not host) (setf host *mongo-default-host*))
   (if (not port) (setf port *mongo-default-port*))
@@ -42,8 +42,9 @@
   "Returns a list of all collection names available in the database."
   (db.collections))
 
-(defmethod db-create ((db mongodb) (collection string) &key indices)
+(defmethod db-create ((db mongodb) (collection string) fields &key indices)
   "Creates a new collection on the database. Optionally a list of indexed fields can be supplied."
+  (declare (ignore fields))
   (db.create-collection collection)
   (loop for index in indices
      do (destructuring-bind (keys &key drop-duplicates unique) index
