@@ -67,7 +67,7 @@ Manipulating data directly through this is discouraged and the data-model class 
   (db-disconnect () "Disconnects the database")
   (db-connected-p () "Returns T if the database is connected, otherwise NIL.")
   (db-collections () "Returns a list of all existing collections.")
-  (db-create ((collection string) &key indices)
+  (db-create ((collection string) fields &key indices)
              "Create a new collection with an optional list of indexed fields.")
   (db-select ((collection string) query &key (skip 0) (limit 0) sort) 
              "Retrieve data from the collection. Query should be constructed with the query macro.")
