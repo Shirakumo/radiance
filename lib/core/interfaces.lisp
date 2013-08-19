@@ -75,9 +75,9 @@ Manipulating data directly through this is discouraged and the data-model class 
               "Iterate over data in the collection. Query should be constructed with the query macro. Might be faster than db-select.")
   (db-insert ((collection string) data) 
              "Insert the data into the collection. Data is a list of alists.")
-  (db-remove ((collection string) query &key (skip 0) (limit 0)) 
+  (db-remove ((collection string) query &key (skip 0) (limit 0) sort) 
              "Delete data from the collection. Query should be constructed with the query macro.")
-  (db-update ((collection string) query data &key (skip 0) (limit 0) replace) 
+  (db-update ((collection string) query data &key (skip 0) (limit 0) sort replace) 
              "Update data in the collection. Query should be constructed with the query macro and data is a list of alists.")
   (db-apropos ((collection string)) "Returns a list of all available fields and their type or NIL if any field is possible."))
 
