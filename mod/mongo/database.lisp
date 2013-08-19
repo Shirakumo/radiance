@@ -78,22 +78,24 @@
   "Insert data into the collection using the rows/fields provided in data."
   (db.insert collection data))
 
-(defmethod db-remove ((db mongodb) (collection string) query &key (skip 0) (limit 0))
+(defmethod db-remove ((db mongodb) (collection string) query &key (skip 0) (limit 0) sort)
   "Remove data from the collection that matches the query. Note that if skip or limit are supplied, the delete operation will be pretty slow due to having to use a select and a remove for each match."
+  (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
   (if (= 0 skip limit)
       (db.delete collection query)
       (cl-mongo:rm collection (iter (db.find collection query :limit limit :skip skip)))))
 
-(defmethod db-update ((db mongodb) (collection string) query (data list) &key (skip 0) (limit 0) (replace NIL) insert-inexistent)
+(defmethod db-update ((db mongodb) (collection string) query (data list) &key (skip 0) (limit 0) sort (replace NIL) insert-inexistent)
   "Update all rows that match the query with the new data. Note that if skip or limit are supplied, the update operation will be pretty slow due to having to use a select and an update for each match."
-  (db-update db collection query (alist->document data) :skip skip :limit limit :replace replace :insert-inexistent insert-inexistent)) 
+  (db-update db collection query (alist->document data) :skip skip :limit limit :replace replace :sort sort :insert-inexistent insert-inexistent)) 
 
-(defmethod db-update ((db mongodb) (collection string) query (data cl-mongo::document) &key (skip 0) (limit 0) (replace NIL) insert-inexistent)
+(defmethod db-update ((db mongodb) (collection string) query (data cl-mongo::document) &key (skip 0) (limit 0) sort (replace NIL) insert-inexistent)
   "Update all rows that match the query with the new data. Note that if skip or limit are supplied, the update operation will be pretty slow due to having to use a select and an update for each match."
-  (db-update db collection query (cl-mongo::elements data) :limit limit :skip skip :replace replace :insert-inexistent insert-inexistent))
+  (db-update db collection query (cl-mongo::elements data) :limit limit :skip skip :replace replace :sort sort :insert-inexistent insert-inexistent))
 
-(defmethod db-update ((db mongodb) (collection string) query (data hash-table) &key (skip 0) (limit 0) (replace NIL) insert-inexistent)
+(defmethod db-update ((db mongodb) (collection string) query (data hash-table) &key (skip 0) (limit 0) (replace NIL) sort insert-inexistent)
   "Update all rows that match the query with the new data. Note that if skip or limit are supplied, the update operation will be pretty slow due to having to use a select and an update for each match."
+  (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
   (if (not replace) (setf data (kv "$set" data)))
   (if (and (= 0 skip limit) (not replace))
       (db.update collection query data :multi T :upsert insert-inexistent)
