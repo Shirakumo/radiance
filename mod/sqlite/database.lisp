@@ -40,36 +40,32 @@
       (sqlite:execute-non-query (dbinstance db) (format NIL "CREATE INDEX ~a_idx ON ~:*~a (~{~a~^, ~})" collection indices)))) 
   
 (defmethod db-select ((db sqlite) (collection string) query &key fields (skip 0) (limit -1) sort)
-  (multiple-value-bind (where-part values) (query-to-where-part query)
-    (get-data db (format NIL "SELECT ~a FROM ~a ~a ~a LIMIT ~a OFFSET ~a;" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values)))
+  (multiple-value-bind (where-part values) query
+    (get-data db (format NIL "SELECT ~a FROM ~a WHERE ~a ~a LIMIT ~a OFFSET ~a;" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values)))
 
 (defmethod db-iterate ((db sqlite) (collection string) query function &key fields (skip 0) (limit -1) sort)
-  (multiple-value-bind (where-part values) (query-to-where-part query)
-    (get-data db (format NIL "SELECT ~a FROM ~a ~a ~a LIMIT ~a OFFSET ~a;" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values function)))
+  (multiple-value-bind (where-part values) query
+    (get-data db (format NIL "SELECT ~a FROM ~a WHERE ~a ~a LIMIT ~a OFFSET ~a;" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values function)))
 
 (defmethod db-insert ((db sqlite) (collection string) data &key)
   (multiple-value-bind (set-part values) (data-to-set-part data)
-    (query db (format NIL "INSERT INTO ~a ~a;" collection set-part) values)))
+    (db-query db (format NIL "INSERT INTO ~a ~a;" collection set-part) values)))
 
 (defmethod db-remove ((db sqlite) (collection string) query &key (skip 0) (limit -1) sort)
-  (multiple-value-bind (where-part values) (query-to-where-part query)
-    (query db (format NIL "REMOVE FROM ~a ~a ~a LIMIT ~a OFFSET ~a;" collection where-part (sort-to-order-part sort) limit skip) values)))
+  (multiple-value-bind (where-part values) query
+    (db-query db (format NIL "REMOVE FROM ~a WHERE ~a ~a LIMIT ~a OFFSET ~a;" collection where-part (sort-to-order-part sort) limit skip) values)))
 
 (defmethod db-update ((db sqlite) (collection string) query data &key (skip 0) (limit -1) sort replace)
   (multiple-value-bind (set-part values1) (data-to-set-part data)
-    (multiple-value-bind (where-part values2) (query-to-where-part query)
+    (multiple-value-bind (where-part values2) query
       (if replace
           (progn
-            (query db (format NIL "REMOVE FROM ~a ~a ~a LIMIT ~a OFFSET ~a;" collection where-part (sort-to-order-part sort) limit skip) values2)
-            (query db (format NIL "INSERT INTO ~a ~a;" collection set-part) values1))
-          (query db (format NIL "UPDATE ~a ~a ~a ~a LIMIT ~a OFFSET ~a;" collection set-part where-part (sort-to-order-part sort) limit skip) (append values1 values2))))))
+            (db-query db (format NIL "REMOVE FROM ~a WHERE ~a ~a LIMIT ~a OFFSET ~a;" collection where-part (sort-to-order-part sort) limit skip) values2)
+            (db-query db (format NIL "INSERT INTO ~a ~a;" collection set-part) values1))
+          (db-query db (format NIL "UPDATE ~a ~a WHERE ~a ~a LIMIT ~a OFFSET ~a;" collection set-part where-part (sort-to-order-part sort) limit skip) (append values1 values2))))))
 
 (defmethod db-apropos ((db sqlite) (collection string) &key)
   (mapcar #'second (sqlite:execute-to-list (dbinstance db) (format NIL "PRAGMA table_info(~a);" collection))))
-    
-
-(defun query-to-where-part (query)
-  )
 
 (defun data-to-set-part (data)
   (loop for (key . val) in data
@@ -77,25 +73,66 @@
      collect val into vals
      finally (return (values (format NIL "SET ~{~a = ?~^, ~}" keys) vals))))
 
+(defun data-to-insert-part (data)
+  (loop for (key . val) in data
+     collect key into keys
+     collect val into vals
+     finally (return (values (format NIL "(~{~a~^, ~}) VALUES (~{?~^, ~})" keys vals) vals))))
+
+(defun format-order-by (s arg colonp atp)
+  (declare (ignore colonp atp))
+  (let ((sort (case (cdr arg)
+                ((-1 :DESC) "DESC")
+                ((1 :ASC) "ASC"))))
+    (format s "~a ~a" (car arg) sort)))
+
 (defun sort-to-order-part (sort)
-  )
+  (format NIL "ORDER BY ~{~/radiance-mod-sqlite::format-order-by/~^, ~}" sort))
 
 (defun fields-to-fields-part (fields)
   (etypecase fields
     (symbol (if (eq fields :all) "*" (symbol-name fields)))
     (list (format NIL "~{~a~^, ~}" fields))))
 
-(defun :and (&rest args) )
-(defun :or  (&rest args) )
-(defun :not (&rest args) )
-(defun := (a b) )
-(defun :< (a b) )
-(defun :> (a b) )
-(defun :>= (a b) )
-(defun :<= (a b) )
-(defun :in (a b) )
-(defun :!in (a b) )
-(defun :matches (a b &key options) )
+(defmacro query (&rest forms)
+  (let ((res (if (cdr forms)
+                 (%query :and forms)
+                 (%query (car (first forms)) (cdr (first forms))))))
+    (multiple-value-bind (query data) res
+      `(values ,query ,(alexandria:flatten data)))))
+
+(defgeneric %query (action args))
+
+(defmethod %query ((action (eql :and)) args)
+  (loop for arg in args
+     for (part data) = (multiple-value-list (%query (car arg) (cdr arg)))
+     collect data into datas
+     collect part into query
+     finally (return (values (format NIL "(~{~a~^ AND ~})" query) datas))))
+
+(defmethod %query ((action (eql :or)) args)
+  (loop for arg in args
+     for (part data) = (multiple-value-list (%query (car arg) (cdr arg)))
+     collect data into datas
+     collect part into query
+     finally (return (values (format NIL "(~{~a~^ OR ~})" query) datas))))
+
+(defmethod %query ((action (eql :not)) args)
+  (let ((res (if (cdr args)
+                 (%query :and args)
+                 (%query (car (first args)) (cdr (first args))))))
+    (multiple-value-bind (query data) res
+      (values (format NIL "(NOT ~a)" query) data))))
+
+(defmethod %query ((action (eql :in)) args)
+  (values (format NIL "~a IN (~{?~*~^, ~})" (car args) (cdr args)) (cdr args)))
+
+(defvar ops '(:= :>= :<= :> :<))
+(defmacro def-ops ()
+  `(progn ,@(loop for op in ops
+               collect `(defmethod %query ((action (eql ,op)) args)
+                          (values (concatenate 'string (first args) ,(format NIL " ~a ?" op)) (second args))))))
+(def-ops)
 
 (defun get-data (db querystring queryargs &optional (function #'identity))
   (let* ((db (dbinstance db))
@@ -110,7 +147,7 @@
                            collect (cons name (sqlite:statement-column-value stmt i))))
        finally (sqlite:finalize-statement stmt))))
 
-(defun query (db querystring queryargs)
+(defun db-query (db querystring queryargs)
   (let* ((db (dbinstance db))
          (stmt (sqlite:prepare-statement db querystring)))
     (loop for arg in queryargs
