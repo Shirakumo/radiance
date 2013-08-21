@@ -40,7 +40,7 @@
 
 (defmethod db-collections ((db mongodb) &key)
   "Returns a list of all collection names available in the database."
-  (db.collections))
+  (db.collections :mongo (dbinstance db)))
 
 (defmethod db-create ((db mongodb) (collection string) fields &key indices)
   "Creates a new collection on the database. Optionally a list of indexed fields can be supplied."
@@ -48,7 +48,13 @@
   (db.create-collection collection)
   (loop for index in indices
      do (destructuring-bind (keys &key drop-duplicates unique) index
-          (db.ensure-index collection keys :drop-duplicates drop-duplicates :unique unique))))
+          (db.ensure-index collection keys :drop-duplicates drop-duplicates :unique unique :mongo (dbinstance db)))))
+
+(defmethod db-empty ((db mongodb) (collection string) &key)
+  (db.find "$cmd" (cl-mongo::kv->ht (kv "empty" collection)) :mongo mongo))
+
+(defmethod db-drop ((db mongodb) (collection string) &key)
+  (db.run-command :drop :collection collection))
 
 (defmethod db-select ((db mongodb) (collection string) query &key fields (skip 0) (limit 0) sort)
   "Select data from the collection. Using the iterate function is generally faster."
@@ -58,7 +64,7 @@
   "Iterate over a set of data. The collected return values are returned."
   (declare (ignore fields))
   (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
-  (let ((result (db.find collection query :limit limit :skip skip)))
+  (let ((result (db.find collection query :limit limit :skip skip :mongo (dbinstance db))))
     (multiple-value-bind (iterator collection docs) (cl-mongo::db.iterator result)
       (loop ; Collect all sets of records.
          for next = '(NIL (0 1)) then (db.next collection iter)
@@ -76,14 +82,14 @@
 
 (defmethod db-insert ((db mongodb) (collection string) (data cl-mongo::document) &key)
   "Insert data into the collection using the rows/fields provided in data."
-  (db.insert collection data))
+  (db.insert collection data :mongo (dbinstance db)))
 
 (defmethod db-remove ((db mongodb) (collection string) query &key (skip 0) (limit 0) sort)
   "Remove data from the collection that matches the query. Note that if skip or limit are supplied, the delete operation will be pretty slow due to having to use a select and a remove for each match."
   (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
   (if (= 0 skip limit)
       (db.delete collection query)
-      (cl-mongo:rm collection (iter (db.find collection query :limit limit :skip skip)))))
+      (cl-mongo:rm collection (iter (db.find collection query :limit limit :skip skip :mongo (dbinstance db))) :mongo (dbinstance db))))
 
 (defmethod db-update ((db mongodb) (collection string) query (data list) &key (skip 0) (limit 0) sort (replace NIL) insert-inexistent)
   "Update all rows that match the query with the new data. Note that if skip or limit are supplied, the update operation will be pretty slow due to having to use a select and an update for each match."
@@ -98,7 +104,7 @@
   (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
   (if (not replace) (setf data (kv "$set" data)))
   (if (and (= 0 skip limit) (not replace))
-      (db.update collection query data :multi T :upsert insert-inexistent)
+      (db.update collection query data :multi T :upsert insert-inexistent :mongo (dbinstance db))
       (let ((docs (docs (db.find collection query :limit limit :skip skip))))
         (if (= 0 (length docs))
             (if insert-inexistent (db.insert collection data))
@@ -136,6 +142,11 @@
       (loop for val in value collect (%alist->document val))
       (add-element (car value) (%alist->document (cdr value)) (make-document))))
 
+(defmacro query (&rest forms)
+  (if (cdr forms)
+      `(:and ,@forms)
+      (first forms)))
+
 (defun :and (&rest args) (kv "$and" args))
 (defun :or  (&rest args) (kv "$or" args))
 (defun :not (&rest args) `($not ,@args))
@@ -145,5 +156,4 @@
 (defun :>= (a b) ($>= a b))
 (defun :<= (a b) ($<= a b))
 (defun :in (a b) ($in a b))
-(defun :!in (a b) ($!in a b))
 (defun :matches (a b &key options) (:= a ($/ b options)))
