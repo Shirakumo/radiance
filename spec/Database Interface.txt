@@ -35,21 +35,25 @@ When requesting data, the db-iterate function should be used
 wherever possible, as it may be significantly more performant at
 best and only slightly less performant than db-select at worst.
 
-Queries can be constructed using the := :< :> :>= :<= :in :or :and
-:not :matches functions, which all implementations have to provide.
-Instead of a query, the :all keyword is also available which
-should simply match any record. 
+Queries are constructed by the query macro, which should
+recognize the :and :or :not := :< :> :>= :<= :in :matches
+instructions. Alternatively the keyword :all can also be used
+to simply retrieve any record.
+
+The querying functions also allow the specification of requested
+fields. This might speed up data transfer on some databases, but
+the implementation is not required to acknowledge this parameter.
+
+The sort parameter in query functions has to be a list of cons
+cells, the car of which is the field and the cdr the order of
+sorting. The order can be either :ASC or :DESC or 1 and -1
+respectively.
 
 When defining a collection with db-create, each field has to be
 defined with a name, type and optional length. Certain database
 implementations may choose to ignore these types, but they are a
 necessity for others and as such should always be explicitly
 stated. Optionally, a list of indexed fields may be specified.
-
-The sort parameter in query functions has to be a list of cons
-cells, the car of which is the field and the cdr the order of
-sorting. The order can be either :ASC or :DESC or 1 and -1
-respectively.
 
 Example:
 
