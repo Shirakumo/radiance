@@ -96,7 +96,7 @@ Manipulating data directly through this is discouraged and the data-model class 
   (model-hull-p () "Returns T if the model is a hull, otherwise NIL.")
   (model-save () "Updates the model in the database or throws an error if it does not exist.")
   (model-delete () "Deletes the model from the database.")
-  (model-insert () "Inserts the model into the database."))
+  (model-insert (&key clone) "Inserts the model into the database."))
 
 (defmacro with-fields ((&rest field-spec) model &body body)
   "Lets you access fields directly by name. This is similar to with-accessors.
