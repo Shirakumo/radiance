@@ -88,12 +88,17 @@
            :db-connected-p
            :db-collections
            :db-create
+           :db-empty
+           :db-drop
            :db-select
            :db-iterate
            :db-insert
            :db-remove
            :db-update
            :db-apropos
+           :query
+           ::> ::< ::= ::>= ::<= ::in
+           ::matches ::and ::or ::not
 
            :data-model
            :model-field
@@ -105,10 +110,8 @@
            :model-delete
            :model-insert
            :with-fields
+           :with-model
 
-           ::and ::or ::not ::in ::!in ::matches
-           ::= ::< ::> ::<= ::>=
-           
            :admin
            :site
            :admin-category
