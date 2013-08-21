@@ -69,15 +69,17 @@ Manipulating data directly through this is discouraged and the data-model class 
   (db-collections () "Returns a list of all existing collections.")
   (db-create ((collection string) fields &key indices)
              "Create a new collection with an optional list of indexed fields.")
-  (db-select ((collection string) query &key fields (skip 0) (limit 0) sort) 
+  (db-empty ((collection string)) "Remove all records from this collection.")
+  (db-drop ((collection string)) "Delete this collection entirely.")
+  (db-select ((collection string) query &key fields skip limit sort) 
              "Retrieve data from the collection. Query should be constructed with the query macro.")
-  (db-iterate ((collection string) query function &key fields (skip 0) (limit 0) sort) 
+  (db-iterate ((collection string) query function &key fields skip limit sort) 
               "Iterate over data in the collection. Query should be constructed with the query macro. Might be faster than db-select.")
   (db-insert ((collection string) data) 
              "Insert the data into the collection. Data is a list of alists.")
   (db-remove ((collection string) query &key (skip 0) (limit 0) sort) 
              "Delete data from the collection. Query should be constructed with the query macro.")
-  (db-update ((collection string) query data &key (skip 0) (limit 0) sort replace) 
+  (db-update ((collection string) query data &key skip limit sort replace) 
              "Update data in the collection. Query should be constructed with the query macro and data is a list of alists.")
   (db-apropos ((collection string)) "Returns a list of all available fields and their type or NIL if any field is possible."))
 
@@ -110,18 +112,26 @@ and a string, denoting variable name and field name respectively."
          ,@body))))
 
 (defmacro with-model (model-spec (collection query &key (skip 0) sort save) &body body)
-  "Allows easy access to a single model. Model-spec can be either just the model variable's name, or a list
-starting with the model's name, followed by field specifiers like in with-fields. If save is not-NIL, a
-model-save is executed after the body. The return value of this is always the last statement in the body,
-even if save is non-NIL."
+  "Allows easy access to a single model.
+Model-spec can be either just the model variable's name, or a list starting with the model's name,
+followed by field specifiers like in with-fields. Query should either be a database query or NIL if
+a hull is required. If save is non-NIL, a model-save is executed after the body. The return value
+of this is always the last statement in the body, even if save is non-NIL."
   (let* ((returngens (gensym "RETURN"))
          (modelname (if (listp model-spec) (car model-spec) model-spec))
          (modelfields (if (listp model-spec) (cdr model-spec) NIL)))
     (if save (setf body `((let ((,returngens (progn ,@body))) (model-save ,modelname) ,returngens))))
     (if modelfields (setf body `((with-fields ,modelfields ,modelname ,@body))))
-    `(let ((,modelname (model-get-one T ,collection ,query :skip ,skip :sort ,sort)))
+    `(let ((,modelname ,(if query
+                            `(model-get-one T ,collection ,query :skip ,skip :sort ,sort)
+                            `(model-hull T ,collection))))
        (when ,modelname
          ,@body))))
+
+(defmacro query (&rest statements)
+  "Query macro to construct database queries. Usable functions include: := :<= :>= :< :> :in :matches :and :or :not"
+  (declare (ignore statements))
+  (error "Query macro not implemented!"))
 
 (defmacro define-query-parts (&rest parts)
   `(progn ,@(loop for func in parts
