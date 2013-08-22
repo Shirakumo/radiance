@@ -59,11 +59,7 @@
 (defimpl database
   "Base database interface. Tries to be as abstract as possible while still providing all essential functionality.
 Manipulating data directly through this is discouraged and the data-model class should be used instead."
-  (db-connect (dbname &key (host (config-tree :database :host))
-                      (port (config-tree :database :port))
-                      (user (config-tree :database :user))
-                      (pass (config-tree :database :pass)))
-              "Connects to the database given the information in the arguments.")
+  (db-connect (dbname) "Connects to the database given the information in the arguments.")
   (db-disconnect () "Disconnects the database")
   (db-connected-p () "Returns T if the database is connected, otherwise NIL.")
   (db-collections () "Returns a list of all existing collections.")
@@ -144,7 +140,7 @@ of this is always the last statement in the body, even if save is non-NIL."
 
 (define-query-parts (:and &rest args) (:or &rest args) (:not &rest args)
                     (:> a b) (:< a b) (:= a b) (:<= a b) (:>= a b)
-                    (:in a b) (:!in a b) (:matches a b))
+                    (:in a b) (:matches a b))
 
 
 (defmethod getdf ((model data-model) field)
