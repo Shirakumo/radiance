@@ -54,6 +54,8 @@
                       (function handler)))
           (setf hunchentoot:*dispatch-table* *radiance-handlers*)
           (setf hunchentoot:*default-content-type* "application/xhtml+xml")
+          (log:info "Connecting Database...")
+          (db-connect T (config :database))
           (log:info "Triggering INIT...")
           (trigger :server 'init)
           (loop for acceptor in acceptors
@@ -71,6 +73,8 @@
                        (hunchentoot:stop acceptor)))
         (log:info "Triggering SHUTDOWN...")
         (trigger :server 'shutdown)
+        (log:info "Disconnecting Database...")
+        (db-disconnect T)
         (setf *radiance-request-count* 0)
         (setf *radiance-request-total* 0)
         (setf *radiance-acceptors* NIL)
