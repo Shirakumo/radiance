@@ -22,7 +22,7 @@
   (not (null (dbinstance db))))
 
 (defmethod db-collections ((db sqlite) &key)
-  (db-iterate db "sqlite_master" (:= "type" "table")
+  (db-iterate db "sqlite_master" (query (:= "type" "table"))
               #'(lambda (row) (car (assoc :test row)))))
 
 (defun format-field-type (s arg colonp atp)
@@ -115,15 +115,16 @@
   (multiple-value-bind (query data) (if (cdr forms)
                                         (%query :and forms)
                                         (%query (car (first forms)) (cdr (first forms))))
-    `(cons ,query (list ,@(alexandria:flatten data)))))
+    `(cons ,query (list ,@data))))
 
 (defgeneric %query (action args))
 
 (defmethod %query ((action (eql :and)) args)
   (loop for arg in args
      for (part data) = (multiple-value-list (%query (car arg) (cdr arg)))
-     collect data into datas
      collect part into query
+     ;; TODO!
+     collect data into datas
      finally (return (values (format NIL "(~{~a~^ AND ~})" query) datas))))
 
 (defmethod %query ((action (eql :or)) args)

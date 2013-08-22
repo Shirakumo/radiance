@@ -42,7 +42,7 @@
      (handler-case
          (multiple-value-bind (id authproc) (handle-response)
            (if id
-               (let ((map (model-get-one T "linked-openids" (:= "claimed-id" (format nil "~a" (cl-openid:claimed-id authproc))))))
+               (let ((map (model-get-one T "linked-openids" (query (:= "claimed-id" (format nil "~a" (cl-openid:claimed-id authproc)))))))
                  (if map
                      (progn 
                        (session-end *radiance-session*)

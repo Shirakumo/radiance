@@ -23,7 +23,7 @@
 (defmethod user-get ((user verify-user) (username string) &key)
   "Retrieve a user from the db or create it if it is inexistent."
   (setf username (string-downcase username))
-  (let ((model (model-get-one T "verify-users" (:= "username" username))))
+  (let ((model (model-get-one T "verify-users" (query (:= "username" username)))))
     (when (not model)
       (setf model (model-hull T "verify-users"))
       (setf (model-field model "username") username))

@@ -56,7 +56,7 @@
     (values (format nil "~a" (cdr (assoc :id credentials))) "twitter")))
 
 (defun get-linked-user (id provider)
-  (let ((model (model-get-one T "linked-oauths" (:and (:= "claimed-id" id) (:= "provider" provider)))))
+  (let ((model (model-get-one T "linked-oauths" (query (:and (:= "claimed-id" id) (:= "provider" provider))))))
     (if model
         (user-get T (model-field model "username"))
         (error 'auth-login-error :text "Account not linked!" :code 15))))

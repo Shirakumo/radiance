@@ -17,7 +17,7 @@
 (defpage login #u"auth./login/password" ()
   (let ((user (user-get T (post-var "username"))))
     (if (user-saved-p user)
-        (let ((model (model-get-one T "linked-passwords" (:= "username" (username user)))))
+        (let ((model (model-get-one T "linked-passwords" (query (:= "username" (username user))))))
           (if model
               (let ((hash (make-password-hash (post-var "password") (model-field model "salt") (model-field model "hash-type"))))
                 (if (string= hash (model-field model "hash"))
