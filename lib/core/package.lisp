@@ -101,6 +101,7 @@
            ::matches ::and ::or ::not
 
            :data-model
+           :model-id
            :model-field
            :model-get
            :model-get-one

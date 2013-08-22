@@ -85,6 +85,7 @@ Manipulating data directly through this is discouraged and the data-model class 
 
 (defimpl (data-model)
   "Abstract data object for easier database interaction."
+  (model-id () "Returns the UID of the model.")
   (model-field ((field string) &key value)
                "Returns the value of a field. Is setf-able.") 
   (model-get ((collection string) query &key (skip 0) (limit 0) sort)
