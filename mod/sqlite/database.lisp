@@ -77,27 +77,27 @@
 (defun query-to-where-part (query)
   (if (eq query :all) 
       (values "" ())
-      (multiple-value-bind (query data) query
+      (destructuring-bind (query . data) query
         (values (concatenate 'string "WHERE " query) data))))
 
 (defun data-to-set-part (data)
   (loop for (key . val) in data
      collect key into keys
      collect val into vals
-     finally (return (values (format NIL "SET ~{~a = ?~^, ~}" keys) vals))))
+     finally (return (values (format NIL "SET ~{`~a` = ?~^, ~}" keys) vals))))
 
 (defun data-to-insert-part (data)
   (loop for (key . val) in data
      collect key into keys
      collect val into vals
-     finally (return (values (format NIL "(~{~a~^, ~}) VALUES (~{?~*~^, ~})" keys vals) vals))))
+     finally (return (values (format NIL "(~{`~a`~^, ~}) VALUES (~{?~*~^, ~})" keys vals) vals))))
 
 (defun format-order-by (s arg colonp atp)
   (declare (ignore colonp atp))
   (let ((sort (case (cdr arg)
                 ((-1 :DESC) "DESC")
                 ((1 :ASC) "ASC"))))
-    (format s "~a ~a" (car arg) sort)))
+    (format s "`~a` ~a" (car arg) sort)))
 
 (defun sort-to-order-part (sort)
   (if sort
@@ -108,14 +108,14 @@
   (if fields 
       (etypecase fields
         (symbol (if (eq fields :all) "*" (symbol-name fields)))
-        (list (format NIL "~{~a~^, ~}" fields)))
+        (list (format NIL "~{`~a`~^, ~}" fields)))
       "*"))
 
 (defmacro query (&rest forms)
   (multiple-value-bind (query data) (if (cdr forms)
                                         (%query :and forms)
                                         (%query (car (first forms)) (cdr (first forms))))
-    `(values ,query (list ,@(alexandria:flatten data)))))
+    `(cons ,query (list ,@(alexandria:flatten data)))))
 
 (defgeneric %query (action args))
 
@@ -141,15 +141,15 @@
       (values (format NIL "(NOT ~a)" query) data))))
 
 (defmethod %query ((action (eql :in)) args)
-  (values (format NIL "~a IN (~{?~*~^, ~})" (first args) (second args)) (second args)))
+  (values (format NIL "`~a` IN (~{?~*~^, ~})" (first args) (second args)) (second args)))
 
 (defmethod %query ((action (eql :matches)) args)
-  (values (concatenate 'string (first args) " REGEXP ?") (second args)))
+  (values (format NIL "`~a` REGEXP ?" (first args)) (second args)))
 
 (defmacro def-ops ()
   `(progn ,@(loop for op in '(:= :>= :<= :> :<)
                collect `(defmethod %query ((action (eql ,op)) args)
-                          (values (concatenate 'string (first args) ,(format NIL " ~a ?" op)) (second args))))))
+                          (values (format NIL ,(format NIL "`~~a` ~a ?" op) (first args)) (second args))))))
 (def-ops)
 
 (defun get-data (db querystring queryargs &optional (function #'identity))
