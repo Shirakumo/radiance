@@ -35,7 +35,8 @@
       (format s "~a" arg)))
 
 (defmethod db-create ((db sqlite) (collection string) fields &key indices)
-  (sqlite:execute-non-query (dbinstance db) (format NIL "CREATE TABLE ~a (~{~/radiance-mod-sqlite::format-field-type/~^, ~});" collection fields))
+  (assert (not (null fields)) () "Fields cannot be an empty list!")
+  (sqlite:execute-non-query (dbinstance db) (format NIL "CREATE TABLE ~a (_id INTEGER PRIMARY KEY AUTOINCREMENT, ~{~/radiance-mod-sqlite::format-field-type/~^, ~});" collection fields))
   (if indices
       (sqlite:execute-non-query (dbinstance db) (format NIL "CREATE INDEX ~a_idx ON ~:*~a (~{~a~^, ~})" collection indices)))) 
   
@@ -145,9 +146,8 @@
 (defmethod %query ((action (eql :matches)) args)
   (values (concatenate 'string (first args) " REGEXP ?") (second args)))
 
-(defvar ops '(:= :>= :<= :> :<))
 (defmacro def-ops ()
-  `(progn ,@(loop for op in ops
+  `(progn ,@(loop for op in '(:= :>= :<= :> :<)
                collect `(defmethod %query ((action (eql ,op)) args)
                           (values (concatenate 'string (first args) ,(format NIL " ~a ?" op)) (second args))))))
 (def-ops)
