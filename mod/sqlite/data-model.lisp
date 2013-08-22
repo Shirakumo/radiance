@@ -49,8 +49,7 @@
                            finally (return model))
          collect (make-instance 'sqlite-data-model
                                 :collection collection
-                                :document document
-                                :hull-p NIL)
+                                :document document)
          finally (sqlite:finalize-statement stmt)))))
 
 (defmethod model-get-one ((model sqlite-data-model) (collection string) query &key (skip 0) sort)
@@ -70,8 +69,7 @@
             (sqlite:finalize-statement stmt)
             (make-instance 'sqlite-data-model
                            :collection collection
-                           :document document
-                           :hull-p NIL))
+                           :document document))
           NIL))))
           
 (defmethod model-hull ((model sqlite-data-model) (collection string) &key)
@@ -83,12 +81,11 @@
 (defmethod model-save ((model sqlite-data-model) &key)
   (assert (not (model-hull-p model)) () "Model has not been inserted before.")
   (multiple-value-bind (set-part values) (model-set-part (document model))
-    (db-query (get-module :sqlite) (format NIL "UPDATE ~a ~a WHERE _id = ? LIMIT 1;" (collection model) set-part) (append values (list (model-id model))))
-    (setf (hull-p model) NIL)))
+    (db-query (get-module :sqlite) (format NIL "UPDATE ~a ~a WHERE `_id` = ?;" (collection model) set-part) (append values (list (model-id model))))))
 
 (defmethod model-delete ((model sqlite-data-model) &key)
   (assert (not (model-hull-p model)) () "Model has not been inserted before.")
-  (db-query (get-module :sqlite) (format NIL "DELETE FROM ~a WHERE _id = ? LIMIT 1;" (collection model)) (list (model-id model))))
+  (db-query (get-module :sqlite) (format NIL "DELETE FROM ~a WHERE `_id` = ?;" (collection model)) (list (model-id model))))
 
 (defmethod model-insert ((model sqlite-data-model) &key clone)
   (let ((mod (get-module :sqlite)))
@@ -96,7 +93,7 @@
        for val being the hash-values of (document model)
        collect key into keys
        collect val into vals
-       finally (db-query mod (format NIL "INSERT INTO ~a (~{~a~^, ~}) VALUES (~{?~*~^, ~})" (collection model) keys vals) vals))
+       finally (db-query mod (format NIL "INSERT INTO ~a (~{`~a`~^, ~}) VALUES (~{?~*~^, ~});" (collection model) keys vals) vals))
     (let ((id (sqlite:last-insert-rowid (dbinstance mod))))
       (if clone
           (setf model (make-instance 'sqlite-data-model 
@@ -108,15 +105,15 @@
 (defun model-where-part (document)
   (loop for where-key being the hash-keys of document
      for where-val being the hash-values of document
-     for query = (concatenate 'string "WHERE " where-key " = ? ")
-       then (concatenate 'string query "AND " where-key " = ? ")
+     for query = (concatenate 'string "WHERE `" where-key "` = ? ")
+       then (concatenate 'string query "AND `" where-key "` = ? ")
      collect where-val into vals
      finally (return (values query vals))))
 
 (defun model-set-part (document)
   (loop for set-key being the hash-keys of document
      for set-val being the hash-values of document
-     for query = (concatenate 'string "SET " set-key " = ? ")
-       then (concatenate 'string ", " set-key " = ? ")
+     for query = (concatenate 'string "SET `" set-key "` = ? ")
+       then (concatenate 'string query ", `" set-key "` = ? ")
      collect set-val into vals
      finally (return (values query vals))))
