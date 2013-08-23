@@ -6,6 +6,8 @@
 
 (in-package :radiance-mod-verify-password)
 
+(db-create T "linked-passwords" '(("salt" :varchar 32) ("hash-type" :varchar 16) ("hash-date" :integer) ("hash" :varchar 128) ("username" :varchar 32)))
+
 (defun make-password-hash (password &optional (salt (config-tree :verify :password :salt)) (algorithm (config-tree :verify :password :algorithm)))
   ""
   (if (string-equal algorithm "pbkdf2")

@@ -28,7 +28,7 @@
 (in-package :radiance-mod-verify)
 
 (let ((user-collection (make-collection 'user :access-mode "755" :description "Public user data"
-                                        :columns '((id "555") (username "555") (displayname "755") (secret "700")))))
+                                        :columns '((_id "555") (username "555") (displayname "755") (secret "700")))))
   
   (defmodule verify (auth)
     "Verification Module to provide user, session and authentication parts."

@@ -6,6 +6,8 @@
 
 (in-package :radiance-mod-verify)
 
+(db-create T "verify-users" '(("username" :varchar 32) ("displayname" :varchar 32) ("secret" :varchar 16) ("email" :varchar 64) ("register-date" :integer)))
+
 (defclass verify-user (user)
   ((username :initarg :name :initform (error "Username required.") :reader username)
    (model :initarg :model :initform () :reader model)))

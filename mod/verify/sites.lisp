@@ -82,7 +82,6 @@
                             (user-field user "displayname" :value displayname)
                             (user-field user "register-date" :value (get-unix-time))
                             (user-field user "email" :value email)
-                            (user-field user "birthdate" :value birthdate)
                             (user-field user "secret" :value (make-random-string))
                             (unless (loop for mechanism being the hash-values of *verify-mechanisms*
                                        if (handle-register mechanism user)
