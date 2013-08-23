@@ -65,7 +65,7 @@
   (if (hunchentoot:post-parameters *radiance-request*)
       (session-field *radiance-session* "post-data" :value (hunchentoot:post-parameters *radiance-request*)))
   (handler-case
-      (with-post (action username displayname email birthdate
+      (with-post (action username displayname email
                   hidden firstname address)
         (if (string= action "Register")
             (if (and username (> (length username) 0)
