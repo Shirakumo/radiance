@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-verify-oauth)
 
-(db-create T "oauth-links" '(("provider" :varchar 32) ("claimed-id" :varchar 128) ("username" :varchar 32)))
+(db-create T "linked-oauths" '(("provider" :varchar 32) ("claimed-id" :varchar 128) ("username" :varchar 32)))
 
 (defun get-callback ()
   (uri->url *radiance-request*))
