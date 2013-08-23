@@ -6,6 +6,21 @@
 
 (in-package :radiance)
 
+;; very crude... should see about optimizing it.
+(defun username-p (string)
+  (and string
+       (user-get T string)))
+
+(defun domain-p (string)
+  (and string
+       (let ((len (length string)))
+         (> len 4)
+         (let ((pos (search "." string :from-end T)))
+           (and pos
+                (> pos 1)
+                (< pos (- len 2)))))))
+              
+
 (defun url-p (string &key (fqdn-p T))
   (and string
        (> (length string) 7)
