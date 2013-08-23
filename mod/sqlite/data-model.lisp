@@ -93,7 +93,7 @@
        for val being the hash-values of (document model)
        collect key into keys
        collect val into vals
-       finally (db-query mod (format NIL "INSERT INTO ~a (~{`~a`~^, ~}) VALUES (~{?~*~^, ~});" (collection model) keys vals) vals))
+       finally (db-query mod (format NIL "INSERT INTO `~a` (~{`~a`~^, ~}) VALUES (~{?~*~^, ~});" (collection model) keys vals) vals))
     (let ((id (sqlite:last-insert-rowid (dbinstance mod))))
       (if clone
           (setf model (make-instance 'sqlite-data-model 
