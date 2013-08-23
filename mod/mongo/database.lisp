@@ -42,7 +42,7 @@
   "Returns a list of all collection names available in the database."
   (db.collections :mongo (dbinstance db)))
 
-(defmethod db-create ((db mongodb) (collection string) fields &key indices)
+(defmethod db-create ((db mongodb) (collection string) fields &key indices (if-exists :ignore))
   "Creates a new collection on the database. Optionally a list of indexed fields can be supplied."
   (declare (ignore fields))
   (db.create-collection collection)
