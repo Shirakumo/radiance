@@ -5,6 +5,14 @@ Date
   ^ New today but finished on another day
   - Completed today
 
+2013.08.23
+  - SQLite is mostly done.
+  - Retest stuff.
+  * Figure out a solution for the default implementation.
+  * Database introspection admin page.
+  * Add validation functions.
+  * Add methods for simple submission handling.
+
 2013.08.14
   v Add gravatar and general user field convenience functions.
   v Make validation library and secure verify register form.
