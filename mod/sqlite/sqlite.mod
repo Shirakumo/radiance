@@ -21,8 +21,10 @@
 
    :implements '(database data-model))
    
-  (:components ((:file "database")
-                (:file "data-model" :depends-on ("database")))
+  (:serial T
+   :components ((:file "query")
+                (:file "database")
+                (:file "data-model"))
    :depends-on (:sqlite))
 
   (dbinstance :initform NIL :initarg dbinstance :accessor dbinstance))

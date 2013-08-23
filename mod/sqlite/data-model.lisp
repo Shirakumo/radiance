@@ -36,7 +36,7 @@
 (defmethod model-get ((model sqlite-data-model) (collection string) query &key (skip 0) (limit -1) sort)
   (multiple-value-bind (where-part queryargs) (query-to-where-part query)
     (let* ((db (dbinstance (get-module :sqlite)))
-           (querystring (format NIL "SELECT * FROM ~a ~a ~a LIMIT ~D OFFSET ~D;" collection where-part (sort-to-order-part sort) limit skip))
+           (querystring (format NIL "SELECT * FROM `~a` ~a ~a LIMIT ~D OFFSET ~D;" collection where-part (sort-to-order-part sort) limit skip))
            (stmt (sqlite:prepare-statement db querystring)))
       (loop for arg in queryargs
          for i from 1
@@ -55,7 +55,7 @@
 (defmethod model-get-one ((model sqlite-data-model) (collection string) query &key (skip 0) sort)
   (multiple-value-bind (where-part queryargs) (query-to-where-part query)
     (let* ((db (dbinstance (get-module :sqlite)))
-           (querystring (format NIL "SELECT * FROM ~a ~a ~a LIMIT 1 OFFSET ~D;" collection where-part (sort-to-order-part sort) skip))
+           (querystring (format NIL "SELECT * FROM `~a` ~a ~a LIMIT 1 OFFSET ~D;" collection where-part (sort-to-order-part sort) skip))
            (stmt (sqlite:prepare-statement db querystring)))
       (loop for arg in queryargs
          for i from 1
@@ -81,11 +81,11 @@
 (defmethod model-save ((model sqlite-data-model) &key)
   (assert (not (model-hull-p model)) () "Model has not been inserted before.")
   (multiple-value-bind (set-part values) (model-set-part (document model))
-    (db-query (get-module :sqlite) (format NIL "UPDATE ~a ~a WHERE `_id` = ?;" (collection model) set-part) (append values (list (model-id model))))))
+    (db-query (get-module :sqlite) (format NIL "UPDATE `~a` ~a WHERE `_id` = ?;" (collection model) set-part) (append values (list (model-id model))))))
 
 (defmethod model-delete ((model sqlite-data-model) &key)
   (assert (not (model-hull-p model)) () "Model has not been inserted before.")
-  (db-query (get-module :sqlite) (format NIL "DELETE FROM ~a WHERE `_id` = ?;" (collection model)) (list (model-id model))))
+  (db-query (get-module :sqlite) (format NIL "DELETE FROM `~a` WHERE `_id` = ?;" (collection model)) (list (model-id model))))
 
 (defmethod model-insert ((model sqlite-data-model) &key clone)
   (let ((mod (get-module :sqlite)))
