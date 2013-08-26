@@ -6,7 +6,10 @@
 
 (in-package :radiance-mod-verify)
 
-(db-create T "verify-users" '(("username" :varchar 32) ("displayname" :varchar 32) ("secret" :varchar 16) ("email" :varchar 64) ("register-date" :integer)))
+(defmethod init-user-db ((module verify))
+  (db-create T "verify-users" '(("username" :varchar 32) ("displayname" :varchar 32) ("secret" :varchar 16) ("email" :varchar 64) ("register-date" :integer) ("perms" :text)))
+  (db-create T "verify-actions" '(("username" :varchar 32) ("action" :text) ("public" :varchar 3) ("time" :integer))))
+(defhook :server :init (get-module :verify) #'init-user-db)
 
 (defclass verify-user (user)
   ((username :initarg :name :initform (error "Username required.") :reader username)
@@ -19,11 +22,9 @@
     (format out "~a~:[ UNSAVED~;~]" (username user) (user-saved-p user))))
 
 (defmethod user-get ((user verify-user) (username symbol) &key)
-  "Retrieve a user from the db or create it if it is inexistent."
   (user-get user (string-downcase (symbol-name username))))
 
 (defmethod user-get ((user verify-user) (username string) &key)
-  "Retrieve a user from the db or create it if it is inexistent."
   (setf username (string-downcase username))
   (let ((model (model-get-one T "verify-users" (query (:= "username" username)))))
     (when (not model)
@@ -32,28 +33,36 @@
     (make-instance 'verify-user :name username :model model)))
 
 (defmethod user-field ((user verify-user) (field string) &key (value NIL v-p))
-  "Set or get a field of the user. Note that this will not save it to the database!"
   (if v-p
       (setf (model-field (model user) field) value)
       (model-field (model user) field)))
+
+(defmethod user-action ((user verify-user) action &key public)
+  (db-insert T "verify-actions" `(("username" . ,(username user)) ("action" . ,action) ("public" . ,public) ("time" . ,(get-unix-time)))))
+
+(defmethod user-get-actions ((user verify-user) n &key public oldest-first)
+  (let ((query (if public 
+                   (query (:= "username" (username user)) (:= "public" "T"))
+                   (query (:= "username" (username user))))))
+    (db-iterate T "verify-actions" query
+                #'(lambda (column) (cons (assoc "action" column :test #'string=)
+                                         (assoc "time" column :test #'string=)))
+                :sort `(("time" . ,(if oldest-first :ASC :DESC))) :limit n :skip 0)))
 
 (defun set-user-field (user field value)
   (user-field user field :value value))
 (defsetf user-field set-user-field)
 
 (defmethod user-save ((user verify-user) &key)
-  "Saves the user to the database."
   (if (user-saved-p user)
       (model-save (model user))
       (model-insert (model user)))
   user)
 
 (defmethod user-saved-p ((user verify-user) &key)
-  "Returns T if the user is backed against the database."
   (not (model-hull-p (model user))))
 
 (defmethod user-check ((user verify-user) branch &key &allow-other-keys)
-  "Check if the user has access to this permission branch. Returns the branch if permitted, otherwise NIL."
   (let ((perms (user-field user "perms"))
         (branch (split-sequence:split-sequence #\. branch)))
     (when perms
@@ -68,14 +77,10 @@
   NIL)
 
 (defmethod user-grant ((user verify-user) branch &key &allow-other-keys)
-  "Grants a new permission branch to the users permissions."
   (setf (user-field user "perms")
-        (concatenate 'string 
-                     (user-field user "perms")
-                     (format nil "~%") branch)))
+        (format nil "~:[~;~:*~a~%~]~a" (user-field user "perms") branch)))
 
 (defmethod user-prohibit ((user verify-user) branch &key &allow-other-keys)
-  "Remove permission from the user's permissions matching this branch."
   (let ((perms (user-field user "perms"))
         (branch (split-sequence:split-sequence #\. branch))
         (to-remove ()))
