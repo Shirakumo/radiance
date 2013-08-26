@@ -56,6 +56,8 @@
            :user-check
            :user-grant
            :user-prohibit
+           :user-action
+           :user-get-actions
 
            :auth
            :authenticate
@@ -114,9 +116,7 @@
            :with-model
 
            :admin
-           :site
-           :admin-category
-           :admin-panel
+           :define-admin-panel
            ;; module.lisp
            :module
            :name

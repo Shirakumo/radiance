@@ -25,7 +25,9 @@
   (user-saved-p () "Returns T if the user is not a hull instance, otherwise NIL.")
   (user-check (branch) "Checks if the user has access to that permissions branch")
   (user-grant (branch) "Give permission to a certain branch.")
-  (user-prohibit (branch) "Reclaim/Prohibit permission to a certain branch."))
+  (user-prohibit (branch) "Reclaim/Prohibit permission to a certain branch.")
+  (user-action (action &key public) "Record an action for the user. If public is NIL, the action should not be visible to anyone else..")
+  (user-get-actions (n &key public oldest-first) "Returns a list of n cons cells, with the car being the action and the cdr being the time of the action."))
 
 (defimpl auth
   "Handles one or more methods for authentication of a user."
@@ -153,7 +155,7 @@ of this is always the last statement in the body, even if save is non-NIL."
   (session-field model field))
 
 (defimpl admin
-  "Administration panel."
-  (site () "Handles the admin page rendering.")
-  (admin-category (name) "Defines a new menu category.")
-  (admin-panel (name category function &key funcargs) "Defines a new function that will create the panel."))
+  "Administration panel.")
+
+(defmacro defadmin (name category (&key module (modulevar (gensym "MODULE-")) lquery access-branch menu-icon menu-tooltip) &body body)
+  (error "Defadmin not implemented!"))
