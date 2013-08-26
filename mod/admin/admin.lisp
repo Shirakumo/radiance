@@ -34,7 +34,7 @@
      for link = (string-downcase (format NIL "/~a/~a" module panel))
      collect (list :panel (string-upcase (string-downcase panel) :end 1) :link link :icon (or icon "") :title (or tooltip ""))))
 
-(defmacro defadmin (name category (&key module (modulevar (gensym "MODULE-")) lquery access-branch menu-icon menu-tooltip) &body body)
+(defmacro define-admin-panel (name category (&key module (modulevar (gensym "MODULE-")) lquery access-branch menu-icon menu-tooltip) &body body)
   ""
   (let* ((name (make-keyword name))
          (category (make-keyword category))
@@ -65,13 +65,13 @@
               ,menu-tooltip))
        (build-menu))))
 
-(defadmin index core (:menu-icon "icon-home" :menu-tooltip "Index" :lquery (template "admin/panel-index.html"))
+(define-admin-panel index core (:menu-icon "icon-home" :menu-tooltip "Index" :lquery (template "admin/panel-index.html"))
   )
 
-(defadmin modules core (:menu-icon "icon-tasks" :menu-tooltip "Manage radiance modules" :lquery (template "admin/panel-modules.html"))
+(define-admin-panel modules core (:menu-icon "icon-tasks" :menu-tooltip "Manage radiance modules" :lquery (template "admin/panel-modules.html"))
   (uibox:fill-foreach (alexandria:hash-table-values *radiance-modules*) "tbody tr"))
 
-(defadmin hooks core (:menu-icon "icon-random" :menu-tooltip "Manage triggers and hooks" :lquery (template "admin/panel-hooks.html"))
+(define-admin-panel hooks core (:menu-icon "icon-random" :menu-tooltip "Manage triggers and hooks" :lquery (template "admin/panel-hooks.html"))
   (uibox:fill-foreach
    (loop for space being the hash-keys of *radiance-hooks*
       for hooks being the hash-values of *radiance-hooks*
