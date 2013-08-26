@@ -6,7 +6,9 @@
 
 (in-package :radiance-mod-verify-oauth)
 
-(db-create T "linked-oauths" '(("provider" :varchar 32) ("claimed-id" :varchar 128) ("username" :varchar 32)))
+(defmethod init-oauth-db ((module verify-oauth))
+  (db-create T "linked-oauths" '(("provider" :varchar 32) ("claimed-id" :varchar 128) ("username" :varchar 32))))
+(defhook :server :init (get-module :verify-oauth) #'init-oauth-db)
 
 (defun get-callback ()
   (uri->url *radiance-request*))

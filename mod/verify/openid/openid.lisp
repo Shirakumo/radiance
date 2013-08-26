@@ -6,7 +6,9 @@
 
 (in-package :radiance-mod-verify-openid)
 
-(db-create T "linked-openids" '(("claimed-id" :varchar 128) ("username" :varchar 32)))
+(defmethod init-openid-db ((module verify-openid))
+  (db-create T "linked-openids" '(("claimed-id" :varchar 128) ("username" :varchar 32))))
+(defhook :server :init (get-module :verify-openid) #'init-openid-db)
 
 (defun get-relying-party ()
   (let* ((subdomains (subdomains *radiance-request*))

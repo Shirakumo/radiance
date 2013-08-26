@@ -6,7 +6,9 @@
 
 (in-package :radiance-mod-verify-password)
 
-(db-create T "linked-passwords" '(("salt" :varchar 32) ("hash-type" :varchar 16) ("hash-date" :integer) ("hash" :varchar 128) ("username" :varchar 32)))
+(defmethod init-pass-db ((module verify-password))
+  (db-create T "linked-passwords" '(("salt" :varchar 32) ("hash-type" :varchar 16) ("hash-date" :integer) ("hash" :varchar 128) ("username" :varchar 32))))
+(defhook :server :init (get-module :verify-password) #'init-pass-db)
 
 (defun make-password-hash (password &optional (salt (config-tree :verify :password :salt)) (algorithm (config-tree :verify :password :algorithm)))
   ""
