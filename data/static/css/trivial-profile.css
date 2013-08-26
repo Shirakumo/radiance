@@ -1,0 +1,215 @@
+html,body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    font-size: 12pt;
+}
+
+span.label{ min-width: 100px; display: inline-block;}
+span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
+
+.tworow-container{
+    display: table;
+    table-layout: fixed;
+    width:100%;
+}
+
+.tworow-container>div{
+    display: table-cell;
+}
+
+header#topmenu{
+    color: #0088EE;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    box-shadow: 0 0 5px;
+    z-index: 1000;
+}
+
+header#topmenu a{
+    cursor: pointer;
+}
+
+header#topmenu ul{
+    color: #FFF;
+    background: #151515;
+    border-bottom: 1px solid #0088EE;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+header#topmenu ul li{
+    display: inline-block;
+    position: relative;
+    margin-top: 2px;
+}
+
+header#topmenu>ul>li:first-child{
+    color: #0088EE;
+    font-weight: bold;
+}
+
+header#topmenu ul li a{
+    display: inline-block;
+    padding: 0 10px 0 10px;
+    vertical-align: middle;
+    height: 30px;
+    line-height: 30px;
+}
+
+header#topmenu ul li ul{
+    display: none;
+}
+
+header#topmenu>ul>li>ul{
+    position: absolute;
+    top: 30px;
+}
+
+header#topmenu>ul>li>ul>li>ul{
+    position: absolute;
+    top: 0; left:100%;
+    margin-left: 8px;
+}
+header#topmenu ul li ul li ul li:first-child:after{
+    content: "";
+    position: absolute;
+    top: -2px; bottom: 0; left: -2px;
+    background: #000;
+    width: 2px;
+}
+
+#profile{
+    padding: 50px 0 50px 0;
+    min-height: 700px;
+}
+
+#profile>header{
+    background: #151515;
+    clear: left;
+    color: #FFF;
+    border-bottom: 3px solid #0088EE;
+    padding: 5px 100px 5px 100px;
+}
+
+#profile>header img{
+    vertical-align: middle;
+    float: left;
+    margin: 0 10px 0 10px;
+    border: 10px solid #0088EE;
+    background: #151515;
+    width: 128px;
+    height: 128px;
+}
+
+#profile>header h1{
+    display: block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+}
+
+#profile>header .tagline{
+    font-style: italic;
+}
+
+#profile-content{
+    margin: 0 200px 0 200px;
+    padding: 10px 0 10px 70px;
+    min-width: 710px;
+    background: #EEE;
+    border: 1px solid #0088EE;
+    border-top: none;
+}
+
+#profile-content .tworow-container{
+    margin-top: 10px;
+}
+
+#profile-content h2{
+    margin: 0; padding: 0;
+    text-indent: 10px;
+}
+
+#profile-details ul, #profile-actions ul, #profile-comments ul{
+    list-style: none;
+    margin: 0; padding: 0;
+}
+
+#profile-details span.label{
+    min-width: 120px;
+}
+
+#profile-comments h2{
+    margin-bottom: 5px;
+}
+
+#profile-comments ul li{
+    clear: both;
+    margin-bottom: 10px;
+}
+
+#profile-comments header{
+    background: #151515;
+    border-bottom: 1px solid #0088EE;
+    position: relative;
+    color: #FFF;
+}
+
+#profile-comments header img{
+    float: left;
+    vertical-align: middle;
+    border: 5px solid #0088EE;
+    width: 42px;
+    height: 42px;
+    background: #151515;
+}
+
+#profile-comments header a{
+    color: #FFF;
+    display: inline-block;
+    padding: 5px;
+    vertical-align: middle;
+}
+
+#profile-comments header .date{
+    float: right;
+    padding: 5px;
+}
+
+#profile-comments .text{
+    margin: 5px 5px 5px 57px;
+}
+
+#profile-comments p:first-child{margin-top: 0;}
+#profile-comments p:last-child{margin-bottom: 0;}
+
+#profile-comments-submit textarea{
+    min-width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 100px;
+    border: 1px solid #CCC;
+}
+
+#profile-comments-submit input[type="submit"]{
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    margin: 0;
+    border: none;
+    background: #0088EE;
+    color: #FFF;
+    cursor: pointer;
+}
+
+footer{
+    border-top: 1px solid #CCC;
+    padding: 10px;
+    font-size: 8pt;
+    text-align: center;
+    background: #FFF;
+    color: #CCC;
+    height: 30px;
+}

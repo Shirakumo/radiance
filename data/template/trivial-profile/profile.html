@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Shinmera - Profile</title>
+    <link rel="stylesheet" href="/static/css/trivial-profile.css" />
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header id="topmenu">
+      <ul>
+        <li><a>TyNET</a></li>
+        <li>
+          <a>Foo</a>
+          <ul></ul>
+        </li>
+        <li>
+          <a>Bar</a>
+          <ul></ul>
+        </li>
+        <li>
+          <a>Baz</a>
+          <ul>
+            <li><a>Bazzing</a>
+              <ul>
+                <li><a>Bazzingading</a></li>
+                <li><a>Bazzingaboom</a></li>
+              </ul>
+            </li>
+            <li><a>Bazzoop</a></li>
+          </ul>
+        </li>
+      </ul>
+    </header>
+    <article id="profile">
+      <header>
+        <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=128" alt="" />
+        <h1>Monika Kalan</h1>
+        <span class="tagline">Shinmera, member since 2013.99.99 .</span>
+      </header>
+      <div id="profile-content">
+        <div class="tworow-container">
+          <div id="profile-details" class="profile-box">
+            <h2>Details</h2>
+            <ul>
+              <li><span class="label">Username</span> Shinmera</li>
+              <li><span class="label">Register Date</span> 2013.99.99</li>
+              <li><span class="label">Website</span> <a href="http://tymoon.eu">http://tymoon.eu</a></li>
+              <li><span class="label">Birth Date</span> 1993.11.18</li>
+              <li><span class="label">Sex</span> Female</li>
+            </ul>
+          </div>
+          <div id="profile-actions" class="profile-box">
+            <h2>Recent Actions</h2>
+            <ul>
+              <li><span class="label date">2013.99.99</span> Updated project <a href="#">Radiance</a>.</li>
+              <li><span class="label date">2013.99.99</span> Wrote comment on <a href="#">Mithent</a>'s profile.</li>
+              <li><span class="label date">2013.99.99</span> Updated project <a href="#">Radiance</a>.</li>
+              <li><span class="label date">2013.99.99</span> Changed profile.</li>
+              <li><span class="label date">2013.99.99</span> Registered.</li>
+            </ul>
+          </div>
+        </div>
+        <div id="profile-comments">
+          <h2>Comments</h2>
+          <form id="profile-comments-submit">
+            <header>
+              <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=42" alt="" />
+              <a href="#">Monika Kalan</a>
+              <input type="submit" value="Submit" />
+            </header>
+            <div class="text">
+              <textarea name="text" placeholder="Comment..."></textarea>
+            </div>
+          </form>
+          <ul>
+            <li>
+              <header>
+                <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=42" alt="" />
+                <a href="#">Monika Kalan</a>
+                <span class="label date">2013.99.99</span>
+              </header>
+              <div class="text">
+                <p>
+                  Testing comments on my own profile, yay.<br />
+                  Arglblargl<br />
+                  awdad
+                </p>
+              </div>
+            </li>       
+            <li>
+              <header>
+                <img src="https://secure.gravatar.com/avatar/2e41e8032ea7a43bf7ff9204d9734a8c?s=42&amp;d=mm" alt="" />
+                <a href="#">Gingerale</a>
+                <span class="label date">2013.99.99</span>
+              </header>
+              <div class="text">
+                <p>
+                  Testing comments.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </article>
+    <footer>
+      © 2013 TymoonNET/NexT, all rights reserved. <br />
+      Running TyNET-5.0.0-SBCL/Linux-α
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
+    <script src="/static/js/trivial-profile.js"></script>
+    <script type="text/javascript">$(function(){customizeProfile(null, "http://i205.photobucket.com/albums/bb164/ZephramStark/DarkEaster.png");});</script>
+  </body>
+</html>
