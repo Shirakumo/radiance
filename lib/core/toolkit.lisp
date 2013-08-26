@@ -92,7 +92,7 @@
   (gethash field model))
 
 (defmethod getdf ((model standard-object) field)
-  (let ((slot (find-symbol (string-upcase field))))
+  (let ((slot (find-symbol (string-upcase field) (symbol-package (class-name (class-of model))))))
     (if slot (slot-value model slot))))
 
 (defun file-size (pathspec)
