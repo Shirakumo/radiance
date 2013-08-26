@@ -7,6 +7,10 @@
 (in-package :radiance-mod-sysinfo)
 
 (defpage debug #u"inf./debug" ()
-   (when (hunchentoot:get-parameter "eval")
-     (setf (hunchentoot:content-type* *radiance-reply*) "text/plain; format=utf-8")
-     (eval (read-from-string (hunchentoot:get-parameter "eval")))))
+  (when (hunchentoot:get-parameter "eval")
+    (setf (hunchentoot:content-type* *radiance-reply*) "text/plain; format=utf-8")
+    (eval (read-from-string (hunchentoot:get-parameter "eval")))))
+
+(defpage data-file #u"inf./data-file" ()
+  (when (get-var "path")
+    (read-data-file (get-var "path"))))
