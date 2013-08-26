@@ -73,6 +73,7 @@
             (if session
                 (if (= (parse-integer timestamp) (session-time session))
                     (progn (log:info "User ~a successfully authenticated session ~a (initiated on ~a)" user session-id timestamp)
+                           (setf (s-user session) user)
                            (setf *radiance-session* session)
                            session)
                     (error 'auth-session-error :text (format nil "Timestamp mismatch: ~a ~a" timestamp (session-time session)) :code 6))
