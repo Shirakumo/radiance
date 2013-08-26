@@ -148,12 +148,6 @@ of this is always the last statement in the body, even if save is non-NIL."
 (defmethod getdf ((model data-model) field)
   (model-field model field))
 
-(defmethod getdf ((model user) field)
-  (user-field model field))
-
-(defmethod getdf ((model session) field)
-  (session-field model field))
-
 (defimpl admin
   "Administration panel.")
 
