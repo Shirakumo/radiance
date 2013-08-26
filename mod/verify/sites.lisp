@@ -30,8 +30,9 @@
         
 (defpage main-logout #u"auth./logout" ()
   (ignore-errors (authenticate T))
-  (if *radiance-session*
-      (session-end *radiance-session*))
+  (when *radiance-session*
+    (user-action (session-user *radiance-session*) "Logout")
+    (session-end *radiance-session*))
   (hunchentoot:redirect (get-redirect)))
 
 (defpage main-register #u"auth./register" (:lquery (template "verify/register.html"))
@@ -50,6 +51,8 @@
       (call-next-method)
     (radiance-error (c)
       (redirect (format NIL "/login?errortext=~a&errorcode=~a" (slot-value c 'radiance::text) (slot-value c 'radiance::code)))))
+  (if (authenticated-p)
+      (user-action (session-user *radiance-session*) "Login"))
   (redirect "/login"))
 
 (defmethod page-register :around ((module module))
@@ -89,6 +92,7 @@
                               (error 'auth-register-error :text "At least one login required!" :code 19))
                             (log:debug "Creating new user ~a" username)
                             (model-insert (model user))
+                            (user-action user "Register" :public T)
                             (session-end *radiance-session*)
                             (session-start T username))
                           (error 'auth-register-error :text "Hidden fields modified!" :code 18))
