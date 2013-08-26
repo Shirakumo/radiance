@@ -57,7 +57,7 @@
           (log:info "Connecting Database...")
           (db-connect T (config :database))
           (log:info "Triggering INIT...")
-          (trigger :server 'init)
+          (trigger :server :init)
           (loop for acceptor in acceptors
                do (progn (log:info "Starting acceptor ~a" acceptor)
                          (hunchentoot:start acceptor)))
@@ -72,7 +72,7 @@
              do (progn (log:info "Stopping acceptor ~a" acceptor)
                        (hunchentoot:stop acceptor)))
         (log:info "Triggering SHUTDOWN...")
-        (trigger :server 'shutdown)
+        (trigger :server :shutdown)
         (log:info "Disconnecting Database...")
         (db-disconnect T)
         (setf *radiance-request-count* 0)
