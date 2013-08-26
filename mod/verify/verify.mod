@@ -39,7 +39,7 @@
      :url "http://tymoon.eu"
                
      :collections (list user-collection)
-     :dependencies '(data-model dispatcher)
+     :dependencies '(data-model dispatcher admin)
      :implements '(user session auth)
      :asdf-system "radiance-mod-verify")
   
@@ -47,7 +47,8 @@
                   (:file "user")
                   (:file "auth" :depends-on ("user" "crypto"))
                   (:file "session" :depends-on ("user"))
-                  (:file "sites" :depends-on ("auth" "session")))
+                  (:file "sites" :depends-on ("auth" "session"))
+                  (:file "admin" :depends-on ("user" "session")))
      :depends-on (:split-sequence
                   :ironclad
                   :uuid))))
