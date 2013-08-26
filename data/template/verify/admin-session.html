@@ -1,0 +1,33 @@
+<div>
+<h2>Verify Session Management</h2>
+<div class="tablebox">
+  <table class="selectable actions tablesorter">
+    <thead>
+      <tr>
+	<th><input type="checkbox" class="select-all" /></th>
+	<th>UUID</th>
+	<th>User</th>
+	<th>Time</th>
+	<th>Active</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:UUID" /></td>
+	<td data-uibox="text:UUID"></td>
+	<td data-uibox="text:user"></td>
+	<td data-uibox="text:time"></td>
+        <td data-uibox="text:active"></td>
+	<td><form>
+	    <input type="hidden" name="username" data-uibox="value:UUID" />
+	    <input type="submit" name="action" value="Deactivate" />
+	</form></td>
+      </tr>
+    </tbody>
+  </table>
+  <form class="table-actions" id="massEditForm">
+    <input type="submit" name="action" value="Deactivate" />
+  </form>
+</div>
+</div>
