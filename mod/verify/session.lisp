@@ -11,7 +11,7 @@
 (defclass verify-session (session)
   ((uuid :initarg :uuid :initform (format nil "~a" (uuid:make-v4-uuid)) :reader uuid)
    (time :initarg :time :initform (get-unix-time) :reader session-time)
-   (user :initarg :user :initform (error "User required") :reader s-user)
+   (user :initarg :user :initform (error "User required") :accessor s-user)
    (fields :initarg :fields :initform (make-hash-table :test 'equal) :reader fields)
    (active :initarg :active :initform T :accessor active)))
 
