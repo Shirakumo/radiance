@@ -17,8 +17,8 @@
     (let ((inf (gethash (make-keyword (second pathparts))
                         (gethash (make-keyword (first pathparts))
                                  (categories admin)))))
-      ($ "#content" (append (funcall (first inf))))))
-  )
+      (if (and inf (first inf))
+          ($ "#content" (append (funcall (first inf))))))))
 
 (defun build-menu ()
   (let ((admin (implementation 'admin)))
