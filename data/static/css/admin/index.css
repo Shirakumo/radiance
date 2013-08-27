@@ -325,10 +325,16 @@ body,html{
 
 #content form.box input[type='submit']{
     margin: 0;
+    border: none;
     background: #0088EE;
     color: #FFF;
     font-weight: bold;
     position: absolute;
     bottom: 0;
     left: 0;
+    cursor: pointer;
+}
+
+#content form.box input[type='submit']:hover{
+    background: #00EEFF;
 }
