@@ -4,6 +4,30 @@ body,html{
 	background: #DDD;
 }
 
+.notice{
+    padding: 5px;
+    margin: 10px;
+    border: 2px solid #0088EE;
+    box-shadow: 0 0 5px #0088EE;
+    background: #FFF;
+    font-weight: bold;
+}
+
+.notice.ok{
+    box-shadow: 0 0 5px #33FF33;
+    border-color: #33FF33;
+}
+
+.notice.fail, .notice.err, .notice.error{
+    box-shadow: 0 0 5px #EE3355;
+    border-color: #EE3355;
+}
+
+.code{
+    font-family: Consolas, Inconsolata, monospace;
+    text-align: justify;
+}
+
 #panel{
 	position: fixed;
 	left:0;top:0;bottom:0;
