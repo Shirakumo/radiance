@@ -48,28 +48,32 @@
 
 (defmethod db-select ((db sqlite) (collection string) query &key fields (skip 0) (limit -1) sort)
   (multiple-value-bind (where-part values) (query-to-where-part query)
-    (get-data db (format NIL "SELECT ~a FROM `~a` ~a ~a LIMIT ~D OFFSET ~D;" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values)))
+    (get-data db (format NIL "SELECT ~a FROM `~a` ~a ~a ~:[~;~:*LIMIT ~D~] ~:[~;~:*OFFSET ~D~];" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values)))
 
 (defmethod db-iterate ((db sqlite) (collection string) query function &key fields (skip 0) (limit -1) sort)
   (multiple-value-bind (where-part values) (query-to-where-part query)
-    (get-data db (format NIL "SELECT ~a FROM `~a` ~a ~a LIMIT ~D OFFSET ~D;" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values function)))
+    (get-data db (format NIL "SELECT ~a FROM `~a` ~a ~a ~:[~;~:*LIMIT ~D~] ~:[~;~:*OFFSET ~D~];" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values function)))
 
 (defmethod db-insert ((db sqlite) (collection string) data &key)
   (multiple-value-bind (set-part values) (data-to-insert-part data)
     (db-query db (format NIL "INSERT INTO `~a` ~a;" collection set-part) values)))
 
-(defmethod db-remove ((db sqlite) (collection string) query &key (skip 0) (limit -1) sort)
+(defmethod db-remove ((db sqlite) (collection string) query &key skip limit sort)
   (multiple-value-bind (where-part values) (query-to-where-part query)
-    (db-query db (format NIL "REMOVE FROM `~a` ~a ~a LIMIT ~D OFFSET ~D;" collection where-part (sort-to-order-part sort) limit skip) values)))
+    (if (or limit sort)
+        (db-query db (format NIL "DELETE FROM `~a` WHERE `_id` = (SELECT `_id` FROM `~a`~a ~a ~:[~;~:*LIMIT ~D~] ~:[~;~:*OFFSET ~D~]);" collection collection where-part (sort-to-order-part sort) limit skip) values)
+        (db-query db (format NIL "DELETE FROM `~a`~a ~a;" collection where-part (sort-to-order-part sort)) values))))
 
 (defmethod db-update ((db sqlite) (collection string) query data &key (skip 0) (limit -1) sort replace)
   (multiple-value-bind (set-part values1) (data-to-set-part data)
     (multiple-value-bind (where-part values2) (query-to-where-part query)
       (if replace
           (progn
-            (db-query db (format NIL "REMOVE FROM `~a` ~a ~a LIMIT ~D OFFSET ~D;" collection where-part (sort-to-order-part sort) limit skip) values2)
+            (db-query db (format NIL "DELETE FROM `~a` WHERE `_id` = (SELECT `_id` FROM `~a`~a ~a ~:[~;~:*LIMIT ~D~] ~:[~;~:*OFFSET ~D~]);" collection collection where-part (sort-to-order-part sort) limit skip) values2)
             (db-query db (format NIL "INSERT INTO `~a` ~a;" collection set-part) values1))
-          (db-query db (format NIL "UPDATE `~a` ~a ~a ~a LIMIT ~D OFFSET ~D;" collection set-part where-part (sort-to-order-part sort) limit skip) (append values1 values2))))))
+          (if (or limit sort)
+              (db-query db (format NIL "UPDATE `~a` ~a WHERE `_id` = (SELECT `_id` FROM `~a`~a ~a ~:[~;~:*LIMIT ~D~] ~:[~;~:*OFFSET ~D~]);" collection set-part collection where-part (sort-to-order-part sort) limit skip) (append values1 values2))
+              (db-query db (format NIL "UPDATE `~a` ~a ~a ~a" collection set-part where-part (sort-to-order-part sort)) (append values1 values2)))))))
 
 (defmethod db-apropos ((db sqlite) (collection string) &key)
   (mapcar #'second (sqlite:execute-to-list (dbinstance db) (format NIL "PRAGMA table_info(`~a`);" collection))))
