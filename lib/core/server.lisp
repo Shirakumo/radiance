@@ -139,5 +139,10 @@
                            (setf (response *radiance-request*) ($ (serialize) (node)))
                            (invoke-restart 'skip-request))))
     (with-simple-restart (skip-request "Skip the request and show the response stored in *radiance-request*.")
-      (dispatch T request))))
+      (let* ((result (dispatch T request))
+             (post-result (trigger :server :post-processing result)))
+        (cond ((stringp post-result) post-result)
+              ((and post-result (listp post-result)) (concatenate-strings post-result))
+              (T result))))))
+
       
