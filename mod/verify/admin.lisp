@@ -9,8 +9,8 @@
 (define-admin-panel users verify (:access-branch "admin.verify.users.*" :menu-icon "icon-user" :menu-tooltip "View and manage user accounts" :lquery (template "verify/admin-users-overview.html"))
   (uibox:fill-foreach (model-get T "verify-users" :all :limit -1) "tbody tr"))
 
-(define-admin-panel permissions verify (:access-branch "admin.verify.permissions.*" :menu-icon "icon-shield" :menu-tooltip "Change user permissions" :lquery (template "verify/admin-perms.html"))
-  )
+(define-admin-panel permissions verify (:access-branch "admin.verify.permissions.*" :menu-icon "icon-shield" :menu-tooltip "Change user permissions" :lquery (template "verify/admin-perms-overview.html"))
+  (uibox:fill-foreach (model-get T "verify-users" :all :limit -1) "tbody tr"))
 
 (define-admin-panel actions verify (:access-branch "admin.verify.actions.*" :menu-icon "icon-list-ul" :menu-tooltip "View a list of user actions" :lquery (template "verify/admin-actions.html"))
   (when (string= (post-var "action") "Delete")

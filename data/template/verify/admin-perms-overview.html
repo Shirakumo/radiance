@@ -1,0 +1,32 @@
+<div>
+<h2>Verify Permissions Management</h2>
+<div class="tablebox">
+  <table class="selectable actions tablesorter">
+    <thead>
+      <tr>
+	<th><input type="checkbox" class="select-all" /></th>
+	<th>Name</th>
+	<th>Displayname</th>
+	<th>Permissions</th>
+	<th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:username" /></td>
+	<td data-uibox="text:username"></td>
+	<td data-uibox="text:displayname"></td>
+	<td data-uibox="text:perms" class="code"></td>
+	<td><form>
+	    <input type="hidden" name="username" data-uibox="value:username" />
+	    <input type="submit" name="action" value="Edit" />
+	    <input type="submit" name="action" value="Delete" />
+	</form></td>
+      </tr>
+    </tbody>
+  </table>
+  <form class="table-actions" id="massEditForm">
+    <input type="submit" name="action" value="Delete" />
+  </form>
+</div>
+</div>
