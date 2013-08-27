@@ -168,6 +168,7 @@
            :with-header
            :with-cookie
            :request-method
+           :remote-address
            :redirect
            :static
            :template

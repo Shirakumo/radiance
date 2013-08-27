@@ -124,6 +124,10 @@ Changes to these cookies will be sent along to the browser with default cookie s
   "Returns the http-request method."
   (hunchentoot:request-method request))
 
+(defun remote-address (&optional (request *radiance-request*))
+  "Returns the remote address of the request."
+  (hunchentoot:remote-addr* request))
+
 (defun redirect (uri-or-string)
   "Redirects to the requested URI."
   (log:debug "Redirecting to ~a" uri-or-string)
