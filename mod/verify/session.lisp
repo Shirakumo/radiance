@@ -20,7 +20,7 @@
   (print-unreadable-object (session out :type T)
     (format out "~a" (s-user session))))
 
-(implement 'session (make-instance 'verify-session :uuid NIL :time NIL :user NIL :fields NIL :active NIL))
+(implement 'session (make-instance 'verify-session :uuid NIL :time NIL :user NIL :fields NIL :active NIL :remote NIL))
 
 (defmethod session-get ((session verify-session) (uuid string) &key &allow-other-keys)
   "Returns the requested session instance if applicable."
