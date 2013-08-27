@@ -19,6 +19,9 @@
 (defpage main-login #u"auth./login" (:lquery (template "verify/login.html"))
   (ignore-errors (authenticate T))
   (if (get-var "errortext") ($ "#error" (html (concatenate 'string "<i class=\"icon-remove-sign\"></i> " (get-var "errortext")))))
+  (when (and *radiance-session* (not (authenticated-p)))
+    (session-end *radiance-session*)
+    (setf *radiance-session* NIL))
   (if (or (not *radiance-session*) (session-temp-p *radiance-session*))
       (loop with target = ($ "#content")
            with panel = ($ "#panel ul")
@@ -51,8 +54,6 @@
       (call-next-method)
     (radiance-error (c)
       (redirect (format NIL "/login?errortext=~a&errorcode=~a" (slot-value c 'radiance::text) (slot-value c 'radiance::code)))))
-  (if (authenticated-p)
-      (user-action (session-user *radiance-session*) "Login"))
   (redirect "/login"))
 
 (defmethod page-register :around ((module module))
