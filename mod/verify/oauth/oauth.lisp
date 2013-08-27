@@ -78,7 +78,9 @@
     ((and *radiance-session* (session-field *radiance-session* "request-token"))
      (multiple-value-bind (id provider) (handle-response)
        (session-end *radiance-session*)
-       (session-start T (get-linked-user id provider))))
+       (let ((user (get-linked-user id provider)))
+         (session-start T user)
+         (user-action user "Login (OAuth)"))))
     
     (T (error 'auth-login-error :text "Nothing to do!" :code 10))))
 

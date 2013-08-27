@@ -26,6 +26,7 @@
               (let ((hash (make-password-hash (post-var "password") (model-field model "salt") (model-field model "hash-type"))))
                 (if (string= hash (model-field model "hash"))
                     (progn (session-start T user)
+                           (user-action user "Login (Password)")
                            (redirect (get-redirect)))
                     (error 'auth-login-error :text "Invalid username or password." :code 22)))
               (error 'auth-login-error :text "Invalid username or password." :code 21)))

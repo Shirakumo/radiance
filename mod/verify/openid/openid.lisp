@@ -48,9 +48,10 @@
            (if id
                (let ((map (model-get-one T "linked-openids" (query (:= "claimed-id" (format nil "~a" (cl-openid:claimed-id authproc)))))))
                  (if map
-                     (progn 
+                     (let ((user (user-get (implementation 'user) (model-field map "username"))))
                        (session-end *radiance-session*)
-                       (session-start T (user-get (implementation 'user) (model-field map "username"))))
+                       (session-start T user)
+                       (user-action user "Login (OpenID)"))
                      (error 'auth-login-error :text "Account not linked!" :code 13)))
                (error 'auth-login-error :text "Authentication failed!" :code 11)))
        (cl-openid:openid-assertion-error (err)
