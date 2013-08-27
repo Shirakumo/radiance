@@ -13,6 +13,7 @@
    (time :initarg :time :initform (get-unix-time) :reader session-time)
    (user :initarg :user :initform (error "User required") :accessor s-user)
    (fields :initarg :fields :initform (make-hash-table :test 'equal) :reader fields)
+   (remote :initarg :remote :initform (remote-address) :reader remote)
    (active :initarg :active :initform T :accessor active)))
 
 (defmethod print-object ((session verify-session) out)
