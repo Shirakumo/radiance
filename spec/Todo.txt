@@ -5,6 +5,11 @@ Date
   ^ New today but finished on another day
   - Completed today
 
+2013.08.27
+  - Added post-processing hook.
+  - Continued work on admin panels.
+  * Add sys and temp as interned users to verify.
+
 2013.08.23
   - SQLite is mostly done.
   - Retest stuff.
