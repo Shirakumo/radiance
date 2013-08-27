@@ -38,7 +38,7 @@
       (model-field (model user) field)))
 
 (defmethod user-action ((user verify-user) action &key public)
-  (db-insert T "verify-actions" `(("username" . ,(username user)) ("action" . ,action) ("public" . ,public) ("time" . ,(get-unix-time)))))
+  (db-insert T "verify-actions" `(("username" . ,(username user)) ("action" . ,action) ("public" . ,(format NIL "~a" public)) ("time" . ,(get-unix-time)))))
 
 (defmethod user-get-actions ((user verify-user) n &key public oldest-first)
   (let ((query (if public 
