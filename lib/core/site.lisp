@@ -248,7 +248,7 @@ value of the request is automatically chosen."
          (declare (ignorable ,modulevar))
          ,(if access-branch
               `(progn
-                 (authenticate T)
+                 (ignore-errors (authenticate T))
                  (if (authorized-p ,access-branch)
                      ,funcbody
                      (error-page 403)))
