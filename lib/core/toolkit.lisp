@@ -36,12 +36,13 @@
     (setf (cdr (assoc setting *radiance-config*)) new-value))
   (cdr (assoc setting *radiance-config*)))
 
-(defun config-tree (&rest branches)
+(defmacro config-tree (&rest branches)
   "Retrieve a configuration value based on a branch."
-  (let ((value *radiance-config*))
-    (loop for branch in branches
-       do (setf value (cdr (assoc branch value))))
-    value))
+  (labels ((rec (branches)
+             (if branches
+                 `(cdr (assoc ,(car branches) ,(rec (cdr branches))))
+                 `*radiance-config*)))
+    (rec (reverse branches))))
 
 (defsetf config config)
 
