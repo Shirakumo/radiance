@@ -6,10 +6,11 @@
 
 (in-package :radiance-mod-uibox)
 
-(defun input-select (name choices &key selected id classes)
+(defun input-select (name choices &key selected id classes (test #'string=))
   "Builds a select input form element.
 Each item in the choices list can be either an atom or a cons cell.
-If a cons cell is used, the car represents the name and the cdr the value of the option."
+If a cons cell is used, the car represents the name and the cdr the value of the option.
+Test is the test function to compare choice values against the selected argument."
   (let ((node (lquery:parse-html "<select></select>")))
     ($ node (attr :name name))
     (if id ($ node (attr :id id)))
@@ -21,7 +22,7 @@ If a cons cell is used, the car represents the name and the cdr the value of the
          do ($ option (attr :value (cdr choice)) (text (car choice)))
        else
          do ($ option (attr :value choice) (text choice))
-       do (if (or (and (listp choice) (equal selected (cdr choice))) (equal selected choice))
+       do (if (or (and (listp choice) (funcall test selected (cdr choice))) (funcall test selected choice))
               ($ option (attr :selected "selected")))
          ($ node (append option)))
     node))
