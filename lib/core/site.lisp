@@ -241,7 +241,8 @@ value of the request is automatically chosen."
         (description (format nil "Page call for ~a" module))
         (funcbody (if lquery 
                       `(progn 
-                         (lquery:$ (initialize ,lquery))
+                         ,(if (and lquery (not (eq lquery T)))
+                              `(lquery:$ (initialize ,lquery)))
                          ,@body
                          (unless (response *radiance-request*)
                            (concatenate-strings (lquery:$ (serialize)))))
