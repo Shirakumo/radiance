@@ -42,7 +42,8 @@
          (getcategory `(gethash ,category ,categorygens))
          (funcbody (if lquery 
                        `(let ((lquery:*lquery-master-document* NIL))
-                          (lquery:$ (initialize ,lquery))
+                          ,(if (and lquery (not (eq lquery T)))
+                               `(lquery:$ (initialize ,lquery)))
                           ,@body
                           (concatenate-strings (lquery:$ (serialize :doctype NIL))))
                        `(progn ,@body))))
@@ -56,7 +57,6 @@
               (lambda ()
                 ,(if access-branch
                      `(progn
-                        (authenticate T)
                         (if (authorized-p ,access-branch)
                             ,funcbody
                             (error-page 403)))
