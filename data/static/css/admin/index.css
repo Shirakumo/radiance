@@ -294,7 +294,7 @@ body,html{
     margin-bottom: 30px;
 }
 
-#content form.box input, #content form.box input[type='checkbox']{
+#content form.box input, #content form.box textarea, #content form.box input[type='checkbox']{
     border: 1px solid #0088EE;
     background: #EEF;
     margin: 2px;
@@ -334,6 +334,16 @@ body,html{
 
 #content form.box input[type='submit']:hover{
     background: #00EEFF;
+}
+
+#content form.box input[readonly]{
+    background: #EFEFFF;
+    border: 1px solid #BBDDEE;
+    color: #AAA;
+}
+
+#content form.box textarea{
+    vertical-align: text-top;
 }
 
 #content form.box .actionbar{

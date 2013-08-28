@@ -17,7 +17,7 @@
 	<td data-uibox="text:username"></td>
 	<td data-uibox="text:displayname"></td>
 	<td data-uibox="text:register-date" class="unixtime"></td>
-	<td><form>
+	<td><form action="#" method="post">
 	    <input type="hidden" name="username" data-uibox="value:username" />
 	    <input type="submit" name="action" value="Edit" />
 	    <input type="submit" name="action" value="Delete" />
@@ -25,7 +25,7 @@
       </tr>
     </tbody>
   </table>
-  <form class="table-actions" id="massEditForm">
+  <form class="table-actions" id="massEditForm" action="#" method="post">
     <input type="submit" name="action" value="Delete" />
   </form>
 </div>

@@ -6,11 +6,17 @@
 
 (in-package :radiance-mod-verify)
 
-(define-admin-panel users verify (:access-branch "admin.verify.users.*" :menu-icon "icon-user" :menu-tooltip "View and manage user accounts" :lquery (template "verify/admin-users-overview.html"))
-  (uibox:fill-foreach (model-get T "verify-users" :all :limit -1) "tbody tr"))
-
-(define-admin-panel permissions verify (:access-branch "admin.verify.permissions.*" :menu-icon "icon-shield" :menu-tooltip "Change user permissions" :lquery (template "verify/admin-perms-overview.html"))
-  (uibox:fill-foreach (model-get T "verify-users" :all :limit -1) "tbody tr"))
+(define-admin-panel users verify (:access-branch "admin.verify.users.*" :menu-icon "icon-user" :menu-tooltip "View and manage user accounts" :lquery T)
+  (if (string= (post-var "action") "Edit")
+      (progn
+        ($ (initialize (template "verify/admin-users-edit.html")))
+        (with-model (model _id username displayname register-date secret email) ("verify-users" (query (:= "username" (post-var "username"))))
+          ($ "h2" (text (concatenate 'string "Edit User " username)))
+          ($ "*[data-uibox]" (each #'(lambda (node) (uibox:fill-node node model)))))
+        )
+      (progn 
+        ($ (initialize (template "verify/admin-users-overview.html")))
+        (uibox:fill-foreach (model-get T "verify-users" :all :limit -1) "tbody tr"))))
 
 (define-admin-panel actions verify (:access-branch "admin.verify.actions.*" :menu-icon "icon-list-ul" :menu-tooltip "View a list of user actions" :lquery (template "verify/admin-actions.html"))
   (when (string= (post-var "action") "Delete")
