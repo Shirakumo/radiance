@@ -9,7 +9,8 @@
   (:use :cl :radiance :lquery)
   (:export :fill-node
            :fill-foreach
-           :input-select))
+           :input-select
+           :notice))
 (in-package :radiance-mod-uibox)
 
 (defmodule uibox ()
