@@ -116,6 +116,36 @@
             ($ element (find "h2") (html "<i class=\"icon-ok-sign\"></i> Account linked."))))
       element))
   
+  (show-options (target)
+    (when (string= (post-var "form") "oauth")
+      (loop for name in (post-var "name[]")
+         for key in (post-var "key[]")
+         for secret in (post-var "secret[]")
+         for request in (post-var "request[]")
+         for auth in (post-var "auth[]")
+         for access in (post-var "access[]")
+         do (setf (config-tree :verify :oauth (make-keyword name))
+                  `((:key . ,key) (:secret . ,secret)
+                    (:request-endpoint . ,request) (:auth-endpoint . ,auth) (:access-endpoint . ,access))))
+      (uibox:notice "OAuth providers updated."))
+
+    (let ((form (lquery:parse-html (read-data-file "template/verify/admin-auth-oauth.html"))))
+      (loop with template = ($ form "#providers li" (node))
+         for node = (dom:clone-node template T)
+         for (name . vals) in (config-tree :verify :oauth)
+         do
+           ($ node "h4" (text name))
+           ($ node "input[name=\"name[]\"]" (val name))
+           ($ node "input[name=\"key[]\"]" (val (cdr (assoc :key vals))))
+           ($ node "input[name=\"secret[]\"]" (val (cdr (assoc :secret vals))))
+           ($ node "input[name=\"request[]\"]" (val (cdr (assoc :request-endpoint vals))))
+           ($ node "input[name=\"auth[]\"]" (val (cdr (assoc :auth-endpoint vals))))
+           ($ node "input[name=\"access[]\"]" (val (cdr (assoc :access-endpoint vals))))
+         collect node into nodes
+         finally ($ form "#providers" (empty) (append nodes)))
+      ($ target 
+         (append form))))
+  
   (handle-register (user)
     (let ((links (session-field *radiance-session* "oauth-links")))
       (loop with db = (implementation 'database)

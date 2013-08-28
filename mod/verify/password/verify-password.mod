@@ -23,7 +23,7 @@
      :url "http://tymoon.eu"
      
      :collections (list passwords)
-     :dependencies '(verify)
+     :dependencies '(verify uibox)
      :implements '())
   
     (:components ((:file "password")))))

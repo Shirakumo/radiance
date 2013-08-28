@@ -57,6 +57,23 @@
         ($ element "h2" (html "<i class=\"icon-ok-sign\"></i> Password linked."))
         ($ element "input" (remove)))
       element))
+  
+  (show-options (target)
+    (when (string= (post-var "form") "password")
+      (setf (config-tree :verify :password :salt) (post-var "salt")
+            (config-tree :verify :password :algorithm) (string-upcase (post-var "algorithm")))
+      (uibox:notice "Password settings updated."))
+
+    (let ((form (lquery:parse-html (read-data-file "template/verify/admin-auth-password.html"))))
+      ($ form "input[name=\"algorithm\"]" 
+         (replace-with (uibox:input-select "algorithm" (append (ironclad:list-all-digests) '("PBKDF2")) :selected (config-tree :verify :password :algorithm))))
+      ($ form "input[name=\"salt\"]" 
+         (val (config-tree :verify :password :salt)))
+      (if (config-tree :verify :password :use-per-user-salt)
+          ($ form "input[name=\"per-user\"]" 
+             (attr :checked "checked")))
+      ($ target 
+         (append form))))
 
   (handle-register (user)
     (let ((password (session-field *radiance-session* "password")))

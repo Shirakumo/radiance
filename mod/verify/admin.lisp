@@ -37,4 +37,15 @@
   (uibox:fill-foreach (alexandria:hash-table-values *verify-sessions*) "tbody tr"))
 
 (define-admin-panel authentication verify (:access-branch "admin.verify.authentication.*" :menu-icon "icon-key" :menu-tooltip "Manage authentication mechanisms" :lquery (template "verify/admin-auth.html"))
-  )
+  (when (string= (post-var "form") "session")
+    (setf (config-tree :verify :session :secret) (post-var "secret")
+          (config-tree :verify :session :use-per-user-secret) (string= (post-var "per-user") "yes"))
+    (uibox:notice "Session settings updated."))
+
+  ($ "input[name=\"secret\"]" (val (config-tree :verify :session :secret)))
+  (if (config-tree :verify :session :use-per-user-secret)
+      ($ "input[name=\"per-user\"]" (attr :checked "checked")))
+
+  (loop with target = ($ "#mechanisms") 
+     for mechanism being the hash-values of *verify-mechanisms*
+     do (show-options mechanism target)))

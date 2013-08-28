@@ -19,6 +19,7 @@
            :defmechanism 
            :show-login 
            :show-register
+           :show-options
            :handle-register
            :page-login
            :page-register
@@ -39,7 +40,7 @@
      :url "http://tymoon.eu"
                
      :collections (list user-collection)
-     :dependencies '(data-model dispatcher admin)
+     :dependencies '(data-model dispatcher admin uibox)
      :implements '(user session auth)
      :asdf-system "radiance-mod-verify")
   

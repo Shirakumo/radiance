@@ -96,6 +96,9 @@
             ($ element (find "h2") (html "<i class=\"icon-ok-sign\"></i> Account linked."))))
       element))
   
+  (show-options (target)
+    )
+  
   (handle-register (user)
     (let ((links (session-field *radiance-session* "openid-links")))
       (loop with db = (implementation 'database)

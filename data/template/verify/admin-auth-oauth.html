@@ -1,0 +1,18 @@
+<form action="#" method="post" class="box" id="password">
+  <h3>OAuth Providers:</h3>
+  <ul id="providers" style="list-style:none; padding: 0; margin: 0;">
+    <li style="display: inline-block;margin: 10px;">
+      <h4>Name</h4>
+      <input type="hidden" name="name[]" required="required" />
+      <label>Key</label><input type="text" name="key[]" required="required" /><br />
+      <label>Secret</label><input type="text" name="secret[]" required="required" /><br />
+      <label>Request Endpoint</label><input type="url" name="request[]" required="required" /><br />
+      <label>Auth Endpoint</label><input type="url" name="auth[]" required="required" /><br />
+      <label>Access Endpoint</label><input type="url" name="access[]" required="required" /><br />
+    </li>
+  </ul>
+  <input type="hidden" name="form" value="oauth" />
+  <div class="actionbar">
+    <input type="submit" name="action" value="Submit" />
+  </div>
+</form>

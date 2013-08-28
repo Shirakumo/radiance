@@ -20,7 +20,10 @@
   (:documentation "Inserts all required register HTML data into the target node."))
 
 (defgeneric handle-register (mechanism user)
-  (:documentation "Handles the registration process.."))
+  (:documentation "Handles the registration process."))
+
+(defgeneric show-options (mechanism target)
+  (:documentation "Show and handle the options page."))
 
 (defmacro defmechanism (name &optional description &body bodies)
   "Defines a new authentication mechanism. Required bodies: show-login show-register handle-login handle-register"

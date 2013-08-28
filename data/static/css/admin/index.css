@@ -278,21 +278,20 @@ body,html{
 }
 
 #content .box{
-    border: 5px solid #0088EE;
-    border-left: none;
-    border-right: none;
+    border-top: 5px solid #0088EE;
     padding: 5px;
     background: #FFF;
     position: relative;
+    margin-bottom: 10px;
 }
 
-#content .box h3{
+#content .box h3, #content .box h4{
     margin-top: 0;
     margin-bottom: 5px;
 }
 
 #content form.box{
-    padding-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 #content form.box input, #content form.box input[type='checkbox']{
@@ -328,13 +327,37 @@ body,html{
     border: none;
     background: #0088EE;
     color: #FFF;
-    font-weight: bold;
     position: absolute;
-    bottom: 0;
-    left: 0;
+    bottom: 0; left: 0;
     cursor: pointer;
 }
 
 #content form.box input[type='submit']:hover{
     background: #00EEFF;
+}
+
+#content form.box .actionbar{
+    position: absolute;
+    bottom: -20px; left: 20px; right: 0;
+    background: #0088EE;
+    height: 20px;
+}
+
+#content form.box .actionbar:before{
+    content: "";
+    position: absolute;
+    left:-20px;top:0;
+    width: 0;height: 0; 
+    border-top: 20px solid #0088EE;
+    border-left: 20px solid transparent;
+}
+
+#content form.box .actionbar input{
+    position: static;
+    border-left: 1px solid #FFF;
+    height: 100%;
+}
+
+#content form.box .actionbar input:first-child{
+    border: none;
 }

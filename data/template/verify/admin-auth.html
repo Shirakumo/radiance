@@ -2,9 +2,12 @@
 <h2>Verify Authentication Management</h2>
 <form action="#" method="post" class="box">
   <h3>Session Settings:</h3>
-  <label>Secret:</label><input type="text" name="secret" /><br />
-  <label>Per-User:</label><input type="checkbox" name="per-user" /><br />
-  <input type="submit" name="action" value="Submit" />
+  <label>Secret:</label><input type="text" name="secret" style="width:260px;font-family:monospace;" /><br />
+  <label>Per-User:</label><input type="checkbox" name="per-user" value="yes" /><br />
+  <input type="hidden" name="form" value="session" />
+  <div class="actionbar">
+    <input type="submit" name="action" value="Submit" />
+  </div>
 </form>
 <div id="mechanisms">
 
