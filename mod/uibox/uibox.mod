@@ -7,7 +7,9 @@
 (defpackage org.tymoonnext.radiance.mod.uibox
   (:nicknames :radiance-mod-uibox :uibox)
   (:use :cl :radiance :lquery)
-  (:export :fill-node :fill-foreach))
+  (:export :fill-node
+           :fill-foreach
+           :input-select))
 (in-package :radiance-mod-uibox)
 
 (defmodule uibox ()
@@ -19,5 +21,6 @@
    :url "http://tymoon.eu"
    :implements '(admin))
   
-  (:components ((:file "fill"))
+  (:components ((:file "fill")
+                (:file "build"))
    :depends-on (:string-case)))
