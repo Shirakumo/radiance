@@ -20,6 +20,7 @@
    :implements '())
   
   (:components ((:file "menu")
-                (:file "admin")))
+                (:file "admin"))
+   :depends-on (:string-case))
 
   (menu-node :initarg :menu-node :initform NIL :accessor menu-node))

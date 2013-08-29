@@ -1,3 +1,7 @@
+html{
+    margin-top: 30px;
+}
+
 header#topmenu{
     color: #0088EE;
     position: fixed;
@@ -8,6 +12,8 @@ header#topmenu{
 
 header#topmenu a{
     cursor: pointer;
+    color: inherit;
+    text-decoration: none;
 }
 
 header#topmenu ul{

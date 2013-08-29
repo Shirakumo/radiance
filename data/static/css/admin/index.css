@@ -34,7 +34,7 @@ body,html{
     width:200px;
     background: #000;
     color: #FFF;
-    padding-top: 10px;
+    padding-top:40px;
 }
 
 #panel h1{
@@ -65,7 +65,7 @@ body,html{
 #panel>ul{
     background: #151515;
     position: absolute;
-    bottom:0;left:0;right:0;top:120px;
+    bottom:0;left:0;right:0;top:150px;
 }
 
 #panel>ul>li{
@@ -204,6 +204,10 @@ body,html{
     box-sizing: border-box;
     border: 1px solid #0088EE;
     background: #EEF;
+}
+
+#content .tablebox table form{
+    display: inline;
 }
 
 #content .tablebox table input[type="submit"]{
