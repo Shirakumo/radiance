@@ -31,5 +31,6 @@
                                  (slot-value c 'text)))))
 
 (define-condition api-args-error (api-error) ())
+(define-condition api-auth-error (api-error) ())
 
 (define-condition namespace-conflict (radiance-error) ())

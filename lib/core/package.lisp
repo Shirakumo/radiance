@@ -13,6 +13,7 @@
            :auth-error
            :api-error
            :api-args-error
+           :api-auth-error
            ;; globals.lisp
            :*radiance-startup-time*
            :*radiance-config-file*
