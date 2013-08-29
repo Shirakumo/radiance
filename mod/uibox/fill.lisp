@@ -41,7 +41,7 @@ If it is NIL, it is expected that lQuery has already been initialized with a doc
                        (loop for node in ($ clone "*[data-uibox]")
                           do (fill-node node model))
                      collect clone)))
-      ($ selector (parent) (append nodes))
+      ($ selector (parent) (prepend nodes))
       ($ template (remove)))
     lquery:*lquery-master-document*))
 
@@ -60,7 +60,10 @@ fields."
        if (> (length temp) 0)
        do (let* ((temp (split-sequence:split-sequence #\: temp))
                  (target (first temp))
-                 (data (getdf model (second temp))))
+                 (data (second temp))
+                 (data (if (find #\+ data)
+                           (format NIL "~{~a~}" (mapcar #'(lambda (field) (getdf model field)) (split-sequence:split-sequence #\+ data)))
+                           (getdf model data))))
             (when data
               (if (and translate-for-input-elements (string= (dom:node-name node) "input") (dom:get-attribute node "type"))
                   (setf data (cond ((string= (dom:get-attribute node "type") "date") (timestamp-to-date data))
