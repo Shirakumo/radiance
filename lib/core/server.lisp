@@ -104,35 +104,51 @@
   (declare (optimize (speed 3) (safety 0)))
   (setf *last-ht-request* request)
   (setf *last-ht-reply* reply)
-  (time-spent
-    (let ((path "") (host "") (port 0) domains subdomains (domain "")
-          (*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
-      (declare (simple-string path host domain))
-      (declare (fixnum port))
-      (declare (list domains subdomains))
-      (setf path (hunchentoot:script-name request)
-            path (string-left-trim "/" path)
-            host (hunchentoot:host request))
-      (let ((colonpos (search ":" host)))
-        (if colonpos
-            (setf port (parse-integer (subseq host (1+ colonpos)))
-                  domains (split-sequence:split-sequence #\. (subseq host 0 colonpos)))
-            (setf port 80
-                  domains (split-sequence:split-sequence #\. host))))
-      (setf subdomains (reverse (if (cddr domains) (subseq domains 0 (- (length domains) 2))))
-            domain (concatenate-strings (subseq domains (length subdomains)) ".")
-            (subdomains request) subdomains
-            (domain request) domain
-            (path request) path
-            (port request) port)
-      (log:debug "REQUEST: ~a" request)
-      (incf *radiance-request-total*)
-      (incf *radiance-request-count*)
-      (let ((result (error-handler request)))
-        (cond ((stringp result) (setf (response request) result))
-              ((and result (listp result)) (setf (response request) (concatenate-strings result)))))
-      (decf *radiance-request-count*)
-      (lambda () (response request)))))
+  (let ((path "") (host "") (port 0) subdomains (domain (config-tree :domain))
+        (*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
+    (declare (simple-string path host domain))
+    (declare (fixnum port))
+    (declare (list subdomains))
+    (setf path (hunchentoot:script-name request)
+          path (string-left-trim "/" path)
+          host (hunchentoot:host request))
+    (let ((searchpos (search ":" host)))
+      (declare (type (or fixnum null) searchpos))
+      (if searchpos
+          (setf port (parse-integer (subseq host (1+ searchpos)))
+                host (subseq host 0 searchpos))
+          (setf port 80)))
+    (if (string= domain "autodetect")
+        (let ((searchpos (search "." host :from-end T)))
+          (declare (type (or fixnum null) searchpos))
+          (if searchpos
+              (let ((searchpos (search "." host :from-end T :end2 searchpos)))
+                (declare (type (or fixnum null) searchpos))
+                (if searchpos
+                    (setf subdomains (split-sequence:split-sequence #\. (subseq host 0 searchpos))
+                          domain (subseq host (1+ searchpos)))
+                    (setf subdomains NIL
+                          domain host)))
+              (setf subdomains NIL
+                    domain host)))
+        (let ((searchpos (- (length host) (length domain))))
+          (if (> searchpos 0)
+              (setf subdomains (split-sequence:split-sequence #\. (subseq host 0 (1- searchpos))))
+              (setf subdomains NIL))))
+
+    (setf (subdomains request) subdomains
+          (domain request) domain
+          (port request) port
+          (path request) path)
+    
+    (log:debug "REQUEST: ~a" request)
+    (incf *radiance-request-total*)
+    (incf *radiance-request-count*)
+    (let ((result (error-handler request)))
+      (cond ((stringp result) (setf (response request) result))
+            ((and result (listp result)) (setf (response request) (concatenate-strings result)))))
+    (decf *radiance-request-count*)
+    (lambda () (response request))))
 
 (defun error-handler (request)
   (handler-bind
