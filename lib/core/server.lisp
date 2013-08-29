@@ -99,6 +99,7 @@
 (defun server-running-p ()
   (if *radiance-acceptors* T NIL))
 
+(declaim (inline parse-request))
 (defun parse-request (request)
   (declare (optimize (speed 3) (safety 0)))
   (let ((path (hunchentoot:script-name request))
