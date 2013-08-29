@@ -13,12 +13,12 @@
   (let ((pathparts (split-sequence:split-sequence #\/ (string-downcase (path *radiance-request*)))))
     (if (< (length pathparts) 2) (setf pathparts (list "core" "index")))
     ($ (find (format NIL "a[href=\"/~a/~a\"]" (first pathparts) (second pathparts))) (parent) (add-class "active"))
-      
-    (let ((inf (gethash (make-keyword (second pathparts))
-                        (gethash (make-keyword (first pathparts))
-                                 (categories admin)))))
-      (if (and inf (first inf))
-          ($ "#content" (append (funcall (first inf))))))))
+    
+    (let ((category (gethash (make-keyword (first pathparts)) (categories admin))))
+      (if category 
+          (let ((inf (gethash (make-keyword (second pathparts)) category)))
+            (if (and inf (first inf))
+                ($ "#content" (append (funcall (first inf))))))))))
 
 (defun build-menu ()
   (let ((admin (implementation 'admin)))
