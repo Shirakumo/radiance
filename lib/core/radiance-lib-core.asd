@@ -37,4 +37,5 @@
                :cl-fad
                :lquery
                :cl-ppcre
-               :trivial-backtrace))
+               :trivial-backtrace
+               :local-time))

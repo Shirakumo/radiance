@@ -6,6 +6,12 @@
 
 (in-package :radiance)
 
+(defmacro verify-multiple (&rest checks)
+  ""
+  `(loop for (function variable &rest arg) in checks
+      unless (apply (function function) variable arg)
+      collect variable))
+
 ;; very crude... should see about optimizing it.
 (defun username-p (string)
   (and string
@@ -57,3 +63,9 @@
            (#\D (and (<= num 31) (= (length string) 2)))
            (#\d (and (<= num 31) (<= (length string) 2)))
            (otherwise T)))))
+
+(defun date-to-timestamp (date)
+  (local-time:timestamp-to-unix (local-time:parse-timestring date)))
+
+(defun timestamp-to-date (timestamp)
+  (local-time:format-timestring NIL (local-time:unix-to-timestamp timestamp) :format '((:year 4) #\- (:month 2) #\- (:day 2))))

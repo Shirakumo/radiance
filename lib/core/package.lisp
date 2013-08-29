@@ -230,6 +230,8 @@
            :url-p
            :email-p
            :date-p
+           :date-to-timestamp
+           :timestamp-to-date
            )
   (:shadow :restart))
 
