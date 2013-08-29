@@ -99,25 +99,24 @@
 (defun server-running-p ()
   (if *radiance-acceptors* T NIL))
 
-(defun handler (&optional (request hunchentoot:*request*) (reply hunchentoot:*reply*))
-  "Propagates the call to the next handler registered in the implements."
+(defun parse-request (request)
   (declare (optimize (speed 3) (safety 0)))
-  (setf *last-ht-request* request)
-  (setf *last-ht-reply* reply)
-  (let ((path "") (host "") (port 0) subdomains (domain (config-tree :domain))
-        (*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
+  (let ((path (hunchentoot:script-name request))
+        (host (hunchentoot:host request))
+        (domain (config-tree :domain))
+        (port 0) subdomains)
     (declare (simple-string path host domain))
     (declare (fixnum port))
     (declare (list subdomains))
-    (setf path (hunchentoot:script-name request)
-          path (string-left-trim "/" path)
-          host (hunchentoot:host request))
+    
+    (setf path (string-left-trim "/" path))
     (let ((searchpos (search ":" host)))
       (declare (type (or fixnum null) searchpos))
       (if searchpos
           (setf port (parse-integer (subseq host (1+ searchpos)))
                 host (subseq host 0 searchpos))
           (setf port 80)))
+
     (if (string= domain "autodetect")
         (let ((searchpos (search "." host :from-end T)))
           (declare (type (or fixnum null) searchpos))
@@ -136,11 +135,21 @@
               (setf subdomains (split-sequence:split-sequence #\. (subseq host 0 (1- searchpos))))
               (setf subdomains NIL))))
 
+    (when (not (config-tree :use-subdomains))
+      )
+
     (setf (subdomains request) subdomains
           (domain request) domain
           (port request) port
-          (path request) path)
-    
+          (path request) path)))
+
+(defun handler (&optional (request hunchentoot:*request*) (reply hunchentoot:*reply*))
+  "Propagates the call to the next handler registered in the implements."
+  (declare (optimize (speed 3) (safety 0)))
+  (setf *last-ht-request* request)
+  (setf *last-ht-reply* reply)
+  (let ((*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
+    (parse-request request)
     (log:debug "REQUEST: ~a" request)
     (incf *radiance-request-total*)
     (incf *radiance-request-count*)
@@ -164,5 +173,3 @@
         (cond ((stringp post-result) post-result)
               ((and post-result (listp post-result)) (concatenate-strings post-result))
               (T result))))))
-
-      
