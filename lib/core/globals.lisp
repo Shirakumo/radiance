@@ -6,6 +6,9 @@
 
 (in-package :radiance)
 
+(defvar *last-ht-request* NIL)
+(defvar *last-ht-reply* NIL)
+
 (defvar *radiance-startup-time* 0  "Startup time for uptime and such.")
 (defvar *radiance-config-file* NIL "Radiance's main JSON configuration file.")
 (defvar *radiance-config*      NIL "Radiance's main static configuration.")
