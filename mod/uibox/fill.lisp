@@ -45,12 +45,16 @@ If it is NIL, it is expected that lQuery has already been initialized with a doc
       ($ template (remove)))
     lquery:*lquery-master-document*))
 
-(defun fill-node (node model)
+(defun fill-node (node model &key translate-for-input-elements)
   "Fills data into the node according to uibox constants. Syntax:
 DATA-UIBOX : TARGET:field*
 TARGET     : text | html | value | class | style | id | ATTRIBUTE | FOREACH
 ATTRIBUTE  : attr-NAME
-FOREACH    : foreach-SELECTOR"
+FOREACH    : foreach-SELECTOR
+
+If translate-for-input-elements is T, fill-node will attempt to automatically
+convert the values into the appropriate format for input elements, namely date
+fields."
   (let ((targets (split-sequence:split-sequence #\space (first ($ node (attr :data-uibox))))))
     (loop for temp in targets
        if (> (length temp) 0)
@@ -58,6 +62,9 @@ FOREACH    : foreach-SELECTOR"
                  (target (first temp))
                  (data (getdf model (second temp))))
             (when data
+              (if (and translate-for-input-elements (string= (dom:node-name node) "input") (dom:get-attribute node "type"))
+                  (setf data (cond ((string= (dom:get-attribute node "type") "date") (timestamp-to-date data))
+                                   (T data))))
               (string-case:string-case (target)
                 ("text" ($ node (text data)))
                 ("html" ($ node (html data)))
