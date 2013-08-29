@@ -7,10 +7,10 @@
 (in-package :radiance)
 
 (defclass uri ()
-  ((subdomains :initarg :subdomains :initform NIL :accessor subdomains)
-   (domain :initarg :domain :initform NIL :accessor domain)
-   (port :initarg :port :initform NIL :accessor port)
-   (path :initarg :path :initform ".*" :accessor path)
+  ((subdomains :initarg :subdomains :initform NIL :accessor subdomains :type list)
+   (domain :initarg :domain :initform NIL :accessor domain :type (or string null))
+   (port :initarg :port :initform NIL :accessor port :type (or fixnum null))
+   (path :initarg :path :initform ".*" :accessor path :type string)
    (pathregex :initarg :regex :initform NIL :accessor regex))
   (:documentation "URI class used in Radiance to build links and such."))
 
