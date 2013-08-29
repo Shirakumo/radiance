@@ -316,9 +316,11 @@ requested output type or a page redirect in the case of an URI."
                 if (not (listp arg))
                 collect `(assert (not (null ,arg)) () 'api-args-error :module ,modulevar :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
            ,(if access-branch
-                `(if (authorized-p ,access-branch)
-                     ,funcbody
-                     (error-page 403))
+                `(progn 
+                   (ignore-errors (authenticate T)) 
+                   (if (authorized-p ,access-branch)
+                       ,funcbody
+                       (error 'api-auth-error :module ,modulevar :apicall ',name :text "Not authorized.")))
                 (progn funcbody))))
        (defhook :api ',name ,modgens #',fullname
                 :description ,(format nil "API call for ~a" module)))))
