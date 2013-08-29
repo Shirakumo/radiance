@@ -28,5 +28,9 @@ $(function(){
         $this.text(getDateAsDateTimeString(new Date(parseInt($this.text())*1000)));
     });
 
-
+    $("header#topmenu li").hover(function(){
+        $(this).children("ul").stop(true, true).fadeIn(200);
+    }, function (){
+        $(this).children("ul").stop(true, true).fadeOut(200);
+    });
 });

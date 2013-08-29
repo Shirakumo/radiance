@@ -1,0 +1,40 @@
+<div>
+<h2>Trivial-Menu</h2>
+<div class="tablebox">
+  <table class="selectable extendable actions tablesorter">
+    <thead>
+      <tr>
+	<th data-field-type="null"><input type="checkbox" class="select-all" /></th>
+	<th data-field-type="number" data-field-name="_id" data-field-width="50px">ID</th>
+	<th data-field-type="number" data-field-name="pid" data-field-width="50px">PID</th>
+	<th data-field-type="text" data-field-name="title" data-field-width="100%">Title</th>
+	<th data-field-type="text" data-field-name="tooltip" data-field-width="100%">Tooltip</th>
+        <th data-field-type="text" data-field-name="link" data-field-width="100%">Link</th>
+        <th data-field-type="number" data-field-name="order" data-field-width="50px">Order</th>
+        <th data-field-type="actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:_id" /></td>
+	<td data-uibox="text:_id"></td>
+	<td data-uibox="text:pid"></td>
+	<td data-uibox="text:title"></td>
+	<td data-uibox="text:tooltip"></td>
+	<td data-uibox="text:link"></td>
+	<td data-uibox="text:order"></td>
+	<td><form action="#" method="post">
+            <input type="hidden" name="form" value="menu" />
+	    <input type="hidden" name="id" data-uibox="value:_id" />
+	    <input type="submit" name="action" value="Edit" />
+	    <input type="submit" name="action" value="Delete" />
+	</form></td>
+      </tr>
+    </tbody>
+  </table>
+  <form class="table-actions" id="massEditForm" action="#" method="post">
+    <input type="hidden" name="form" value="menu" />
+    <input type="submit" name="action" value="Delete" />
+  </form>
+</div>
+</div>

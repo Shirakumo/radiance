@@ -19,68 +19,6 @@ span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
     display: table-cell;
 }
 
-header#topmenu{
-    color: #0088EE;
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    box-shadow: 0 0 5px;
-    z-index: 1000;
-}
-
-header#topmenu a{
-    cursor: pointer;
-}
-
-header#topmenu ul{
-    color: #FFF;
-    background: #151515;
-    border-bottom: 1px solid #0088EE;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-header#topmenu ul li{
-    display: inline-block;
-    position: relative;
-    margin-top: 2px;
-}
-
-header#topmenu>ul>li:first-child{
-    color: #0088EE;
-    font-weight: bold;
-}
-
-header#topmenu ul li a{
-    display: inline-block;
-    padding: 0 10px 0 10px;
-    vertical-align: middle;
-    height: 30px;
-    line-height: 30px;
-}
-
-header#topmenu ul li ul{
-    display: none;
-}
-
-header#topmenu>ul>li>ul{
-    position: absolute;
-    top: 30px;
-}
-
-header#topmenu>ul>li>ul>li>ul{
-    position: absolute;
-    top: 0; left:100%;
-    margin-left: 8px;
-}
-header#topmenu ul li ul li ul li:first-child:after{
-    content: "";
-    position: absolute;
-    top: -2px; bottom: 0; left: -2px;
-    background: #000;
-    width: 2px;
-}
-
 #profile{
     padding: 50px 0 50px 0;
     min-height: 700px;
@@ -98,7 +36,7 @@ header#topmenu ul li ul li ul li:first-child:after{
     vertical-align: middle;
     float: left;
     margin: 0 10px 0 10px;
-    border: 10px solid #0088EE;
+    border: 5px solid #0088EE;
     background: #151515;
     width: 128px;
     height: 128px;
@@ -161,7 +99,7 @@ header#topmenu ul li ul li ul li:first-child:after{
 #profile-comments header img{
     float: left;
     vertical-align: middle;
-    border: 5px solid #0088EE;
+    border: 3px solid #0088EE;
     width: 42px;
     height: 42px;
     background: #151515;

@@ -95,7 +95,7 @@ body,html{
     border-left: 10px solid #0088EE;
 }
 
-#panel>ul>li>ul{padding: 2px 0 5px 9px;display:none;}
+#panel>ul>li>ul{padding: 2px 0 5px 9px;}
 
 #panel>ul>li>ul>li>a{
     padding: 2px 2px 2px 5px;
@@ -200,17 +200,23 @@ body,html{
     white-space: nowrap;
 }
 
-#content .tablebox table form input{
+#content .tablebox table input{
+    box-sizing: border-box;
+    border: 1px solid #0088EE;
+    background: #EEF;
+}
+
+#content .tablebox table input[type="submit"]{
     border: none;
     background: #0088EE;
     color: #FFF;
 }
 
-#content .tablebox table form input:hover{
+#content .tablebox table input[type="submit"]:hover{
     background: #00EEFF;
 }
 
-#content .tablebox table form input:active{
+#content .tablebox table input[type="submit"]:active{
     background: #00EEFF;
 }
 

@@ -36,12 +36,6 @@ function customizeProfile(color, image){
 }
 
 $(function(){
-    $("header#topmenu li").hover(function(){
-        $(this).children("ul").stop(true, true).fadeIn(200);
-    }, function (){
-        $(this).children("ul").stop(true, true).fadeOut(200);
-    });
-
     $("#profile-comments-submit textarea").css("min-height", "10px").click(function(){
         $(this).css("height", "100px");
     });

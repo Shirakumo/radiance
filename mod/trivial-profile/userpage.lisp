@@ -6,5 +6,5 @@
 
 (in-package :radiance-mod-trivial-profile)
 
-;(defpage profile #u"user./" (:lquery (template "profile/profile.html"))
-;  ())
+(defpage profile #u"user./" (:lquery (template "trivial-profile/profile.html"))
+  )
