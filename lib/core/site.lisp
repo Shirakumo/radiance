@@ -245,6 +245,7 @@ value of the request is automatically chosen."
                               `(lquery:$ (initialize ,lquery)))
                          ,@body
                          (unless (response *radiance-request*)
+                           (trigger :user :lquery-post-processing)
                            (concatenate-strings (lquery:$ (serialize)))))
                       `(progn ,@body))))
     `(let ((,urigens ,uri)
