@@ -18,6 +18,12 @@
 (defmethod getdf ((model request) field)
   (gethash field (fields model)))
 
+(defun request-field (field &optional (request *radiance-request*))
+  (gethash field (fields request)))
+
+(defsetf request-field (field &optional (request '*radiance-request*)) (value)
+  `(setf (gethash ,field (fields ,request)) ,value))
+
 (defun parse-request (request)
   (declare (optimize (speed 3) (safety 0)))
   (let ((path (hunchentoot:script-name request))

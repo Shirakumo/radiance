@@ -149,8 +149,10 @@
            :collection
            :make-column
            :make-collection
-           ;; server.lisp
+           ;; request.lisp
            :request
+           :request-field
+           ;; server.lisp
            :response
            :manage
            :server-running-p
