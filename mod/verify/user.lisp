@@ -7,8 +7,8 @@
 (in-package :radiance-mod-verify)
 
 (defmethod init-user-db ((module verify))
-  (db-create T "verify-users" '(("username" :varchar 32) ("displayname" :varchar 32) ("secret" :varchar 16) ("email" :varchar 64) ("register-date" :integer) ("perms" :text)))
-  (db-create T "verify-actions" '(("username" :varchar 32) ("action" :text) ("public" :varchar 3) ("time" :integer))))
+  (db-create T "verify-users" '(("username" :varchar 32) ("displayname" :varchar 32) ("secret" :varchar 16) ("email" :varchar 64) ("register-date" :integer) ("perms" :text)) :indices '("username"))
+  (db-create T "verify-actions" '(("username" :varchar 32) ("action" :text) ("public" :varchar 3) ("time" :integer)) :indices '("username")))
 (defhook :server :init (get-module :verify) #'init-user-db)
 
 (defclass verify-user (user)
