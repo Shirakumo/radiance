@@ -40,7 +40,7 @@ $(function(){
         $(this).css("height", "100px");
     });
 
-    $("#profile-comments-submit input[type=\"submit\"]").click(function(){
+    /*$("#profile-comments-submit input[type=\"submit\"]").click(function(){
         $form = $("#profile-comments-submit");
         $textarea = $("#profile-comments-submit textarea");
         $clone = $("#profile-comments ul li").first().clone();
@@ -51,5 +51,5 @@ $(function(){
         $clone.prependTo("#profile-comments ul").hide().fadeIn();
         $("#profile-comments-submit textarea").val("");
         return false;
-    });
+    });*/
 });
