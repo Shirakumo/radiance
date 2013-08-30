@@ -45,29 +45,73 @@ If it is NIL, it is expected that lQuery has already been initialized with a doc
       ($ template (remove)))
     lquery:*lquery-master-document*))
 
-(defun fill-node (node model &key translate-for-input-elements)
+(defun parse-targets (string node)
+  (let ((length (length string)))
+    (when (> length 0)
+      (loop 
+         for previous = 0 then (1+ pointer)
+         for pointer = (or (search " " string) length) then (if (< pointer length) (search " " string :start2 (1+ pointer)) length)
+         while (< previous length)
+         for colonpos = (search ":" string :start2 previous :end2 pointer)
+         if colonpos
+         collect (multiple-value-bind (read length) (read-from-string (subseq string (1+ colonpos)))
+                   (setf pointer (+ colonpos length))
+                   (cons (subseq string previous colonpos) read)) into tokens
+         else
+         collect (cons (subseq string previous pointer)
+                       (read-from-string
+                        (string-case:string-case (string)
+                          ("text" ($ node (text) (node)))
+                          ("html" ($ node (html) (node)))
+                          ("value" ($ node (attr :value) (node)))
+                          ("class" ($ node (attr :class) (node)))
+                          ("id" ($ node (attr :id) (node)))
+                          ("style" ($ node (attr :style) (node)))
+                          (T (if (and (> (length string) 5)
+                                      (string= string "attr-" :end1 5))
+                                 ($ node (attr (make-keyword (subseq string 5))) (node))))))) into tokens
+         finally (return tokens)))))
+
+(defun parse-data (read model)
+  (etypecase read
+    (symbol (getdf model (string-downcase read)))
+    (string read)
+    (list (parse-data-function (make-keyword (car read)) (cdr read) model))
+    (uri (uri->url read))))
+
+(defgeneric parse-data-function (function args model))
+
+(defmethod parse-data-function ((func (eql :concat)) args model)
+  (format NIL "~{~a~}" (mapcar #'(lambda (arg) (parse-data arg model)) args)))
+
+(defmethod parse-data-function ((func (eql :make-uri)) args model)
+  (uri->url (make-uri (concatenate 'string "/" (parse-data (first args) model))) (if (cdr args) (second args))))
+
+(defmethod parse-data-function ((func (eql :avatar)) args model)
+  (profile-avatar T model (first args)))
+
+(defmethod parse-data-function ((func (eql :date)) args model)
+  (if (cdr args)
+      (timestamp-to-date (parse-data (first args) model) (cdr args))
+      (timestamp-to-date (parse-data (first args) model))))
+
+(defmethod parse-data-function ((func (eql :datetime)) args model)
+  (timestamp-to-datetime (parse-data (first args) model)))
+
+(defmethod parse-data-function ((func (eql :parse)) args model)
+  (parse T (parse-data (first args) model)))
+
+(defun fill-node (node model)
   "Fills data into the node according to uibox constants. Syntax:
 DATA-UIBOX : TARGET:field*
 TARGET     : text | html | value | class | style | id | ATTRIBUTE | FOREACH
 ATTRIBUTE  : attr-NAME
-FOREACH    : foreach-SELECTOR
-
-If translate-for-input-elements is T, fill-node will attempt to automatically
-convert the values into the appropriate format for input elements, namely date
-fields."
-  (let ((targets (split-sequence:split-sequence #\space (first ($ node (attr :data-uibox))))))
+FOREACH    : foreach-SELECTOR"
+  (let ((targets (parse-targets (first ($ node (attr :data-uibox))) node)))
     (loop for temp in targets
-       if (> (length temp) 0)
-       do (let* ((temp (split-sequence:split-sequence #\: temp))
-                 (target (first temp))
-                 (data (second temp))
-                 (data (if (find #\+ data)
-                           (format NIL "~{~a~}" (mapcar #'(lambda (field) (getdf model field)) (split-sequence:split-sequence #\+ data)))
-                           (getdf model data))))
+       do (let ((target (car temp))
+                (data (parse-data (cdr temp) model)))
             (when data
-              (if (and translate-for-input-elements (string= (dom:node-name node) "input") (dom:get-attribute node "type"))
-                  (setf data (cond ((string= (dom:get-attribute node "type") "date") (timestamp-to-date data))
-                                   (T data))))
               (string-case:string-case (target)
                 ("text" ($ node (text data)))
                 ("html" ($ node (html data)))
