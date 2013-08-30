@@ -18,7 +18,9 @@
    :url "http://tymoon.eu"
    :implements '(profile))
   
-  (:components ((:file "profile")
+  (:serial T
+   :components ((:file "gravatar")
+                (:file "profile")
                 (:file "settings")
                 (:file "userpage"))
    :depends-on (:ironclad :drakma)))

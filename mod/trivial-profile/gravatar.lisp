@@ -16,7 +16,7 @@
   (format s "~a=~a" (car arg) (drakma:url-encode (cdr arg) :utf-8)))
 
 (defun gravatar-image (email &key size default force-default-p rating)
-  (format nil "https://secure.gravatar.com/avatar/~a~@[?~{~/radiance-mod-base-profile::encode/~^&~}~]"
+  (format nil "https://secure.gravatar.com/avatar/~a~@[?~{~/radiance-mod-trivial-profile::encode/~^&~}~]"
    (hash email)
    (append 
     (if size            `(("s" . ,(format nil "~d" size))))
