@@ -230,6 +230,8 @@
            :uri-matches
            :uri-same
            :uri->url
+           :uri->server-url
+           :uri->context-url
            :make-uri
            ;; validate.lisp
            :url-p

@@ -58,6 +58,14 @@
               (subdomains uri) (domain uri) (port uri) (path uri))
       (concatenate 'string "/" (path uri))))
 
+(defmethod uri->server-url ((uri uri))
+  (format NIL "http://~{~a.~}~:[~a~;~:*~a~*~]~:[:~a~;:~:*~a~*~]/~a"
+          (subdomains uri) (domain uri) (config-tree :domain) (port uri) (first (config-tree :ports)) (path uri)))
+
+(defmethod uri->context-url ((uri uri))
+  (format NIL "http://~:[~{~a.~}~;~:*~{~a.~}~*~]~:[~a~;~:*~a~*~]~:[:~a~;:~:*~a~*~]/~a"
+          (subdomains uri) (subdomains *radiance-request*) (domain uri) (domain *radiance-request*) (port uri) (port *radiance-request*) (path uri)))
+
 (defun make-uri (uristring)
   "Creates a URI object matching the urispec. Urispec has the following
 syntax:  (subdomain.)*domain?:port?/path?
