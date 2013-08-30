@@ -17,13 +17,13 @@
     <tbody>
       <tr id="template">
 	<td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:_id" /></td>
-	<td><input type="number" name="id" placeholder="Parent" value="-1" required="required" style="width:50px" readonly="readonly" data-uibox="attr-form:title+_id value:_id" /></td>
-	<td><input type="number" name="pid" placeholder="Parent" value="-1" required="required" style="width:50px" data-uibox="attr-form:title+_id value:pid" /></td>
-	<td><input type="text" name="title" placeholder="Title" required="required" style="width:100%" data-uibox="attr-form:title+_id value:title" /></td>
-	<td><input type="text" name="tooltip" placeholder="Tooltip..." style="width:100%" data-uibox="attr-form:title+_id value:tooltip" /></td>
-	<td><input type="text" name="link" placeholder="Link" style="width:100%" data-uibox="attr-form:title+_id value:link" /></td>
-	<td><input type="number" name="sort" placeholder="0" required="required" style="width:50px" data-uibox="attr-form:title+_id value:sort" /></td>
-	<td><form action="/api/trivial-menu/admin" method="post" data-uibox="attr-id:title+_id">
+	<td><input type="number" name="id" placeholder="Parent" value="-1" required="required" style="width:50px" readonly="readonly" data-uibox="attr-form:(concat title _id) value:_id" /></td>
+	<td><input type="number" name="pid" placeholder="Parent" value="-1" required="required" style="width:50px" data-uibox="attr-form:(concat title _id) value:pid" /></td>
+	<td><input type="text" name="title" placeholder="Title" required="required" style="width:100%" data-uibox="attr-form:(concat title _id) value:title" /></td>
+	<td><input type="text" name="tooltip" placeholder="Tooltip..." style="width:100%" data-uibox="attr-form:(concat title _id) value:tooltip" /></td>
+	<td><input type="text" name="link" placeholder="Link" style="width:100%" data-uibox="attr-form:(concat title _id) value:link" /></td>
+	<td><input type="number" name="sort" placeholder="0" required="required" style="width:50px" data-uibox="attr-form:(concat title _id) value:sort" /></td>
+	<td><form action="/api/trivial-menu/admin" method="post" data-uibox="attr-id:(concat title _id)">
             <input type="hidden" name="form" value="menu" />
 	    <input type="submit" name="action" value="Edit" />
 	</form><form action="/api/trivial-menu/admin" method="post">
