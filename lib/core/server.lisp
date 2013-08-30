@@ -162,7 +162,11 @@
 
 (defun error-handler (request)
   (handler-bind
-      ((radiance-error #'(lambda (err)
+      ((error-page #'(lambda (err)
+                       (setf (hunchentoot:return-code* *radiance-reply*) (slot-value err 'code)
+                             (response *radiance-request*) (read-data-file (format nil "static/html/error/~a.html" (slot-value err 'code))))
+                       (invoke-restart 'skip-request)))
+       (radiance-error #'(lambda (err)
                            ($ (initialize (static "html/error/501.html")))
                            ($ "#error h2" (text (format NIL "Error of type ~a" (class-name (class-of err)))))
                            ($ "#error pre" (text (trivial-backtrace:print-backtrace err :output NIL)))

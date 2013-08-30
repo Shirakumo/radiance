@@ -152,9 +152,8 @@ Changes to these cookies will be sent along to the browser with default cookie s
       seq)))
 
 (defun error-page (errorcode)
-  "Returns the contents of the requested error page."
-  (setf (hunchentoot:return-code* *radiance-reply*) errorcode)
-  (read-data-file (format nil "static/html/error/~a.html" errorcode)))
+  "Signals a condition that provokes the requested error page."
+  (error 'error-page :code errorcode :text "Requested error page."))
 
 (defun upload-file (post-parameter 
                     &key (directory (merge-pathnames "data/static/upload/" (pathname (config :root))))
