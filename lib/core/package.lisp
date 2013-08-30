@@ -118,6 +118,9 @@
 
            :admin
            :define-admin-panel
+           
+           :parser
+           :parse
            ;; module.lisp
            :module
            :name

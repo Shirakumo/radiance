@@ -153,3 +153,7 @@ of this is always the last statement in the body, even if save is non-NIL."
 
 (defmacro defadmin (name category (&key module (modulevar (gensym "MODULE-")) lquery access-branch menu-icon menu-tooltip) &body body)
   (error "Defadmin not implemented!"))
+
+(defimpl parser
+  "Handles raw text to HTML parsing."
+  (parse (text) "Parses the given text into HTML format, ready to be outputted."))
