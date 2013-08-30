@@ -10,4 +10,4 @@
 
 (defmethod parse ((module markdown) (text string) &key)
   (with-output-to-string (stream)
-    (cl-markdown:markdown text :stream stream)))
+    (3bmd:parse-string-and-print-to-stream text stream)))

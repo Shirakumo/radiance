@@ -24,4 +24,4 @@
    :dependencies ())
    
   (:components ((:file "parser"))
-   :depends-on (:cl-markdown)))
+   :depends-on (:3bmd)))
