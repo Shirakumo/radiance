@@ -70,7 +70,7 @@
                                   (setf (get (package-symbol *package*) :module) instance)
                                   (setf (gethash (make-keyword ',name) *radiance-modules*) instance))))))
          
-         (restart-case (if (gethash ',name *radiance-modules*)
+         (restart-case (if (gethash (make-keyword ',name) *radiance-modules*)
                            (error 'module-already-initialized :module ',name)
                            (progn (,classdef) (,initializer)))
            (override-both () 
