@@ -56,7 +56,7 @@
   (if absolute 
       (format NIL "http://~{~a.~}~a~:[~;:~:*~a~]/~a"
               (subdomains uri) (domain uri) (port uri) (path uri))
-      (path uri)))
+      (concatenate 'string "/" (path uri))))
 
 (defun make-uri (uristring)
   "Creates a URI object matching the urispec. Urispec has the following
