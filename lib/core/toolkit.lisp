@@ -86,7 +86,7 @@
   (if (keywordp (first model))
       (getf model (if (stringp field) (make-keyword field) field))
       (if (listp (first model))
-          (assoc field model)
+          (cdr (assoc field model :test #'equalp))
           (error "Model is of type LIST, but is neither an ALIST or PLIST."))))
 
 (defmethod getdf ((model hash-table) field)
