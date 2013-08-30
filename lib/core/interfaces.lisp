@@ -29,6 +29,9 @@
   (user-action (action &key public) "Record an action for the user. If public is NIL, the action should not be visible to anyone else..")
   (user-get-actions (n &key public oldest-first) "Returns a list of n cons cells, with the car being the action and the cdr being the time of the action."))
 
+(defmethod getdf ((user user) field)
+  (user-field user field))
+
 (defimpl auth
   "Handles one or more methods for authentication of a user."
   (authenticate () "Authenticate the current user using whatever method applicable. Returns the user object.")
