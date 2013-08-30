@@ -22,6 +22,7 @@
                (:file "conditions")
                (:file "toolkit")
                (:file "uri")
+               (:file "request")
                (:file "validate")
                (:file "module")
                (:file "trigger")
