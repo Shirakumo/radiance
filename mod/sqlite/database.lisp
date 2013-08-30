@@ -38,7 +38,7 @@
   (assert (not (null fields)) () "Fields cannot be an empty list!")
   (sqlite:execute-non-query (dbinstance db) (format NIL "CREATE TABLE ~:[~;IF NOT EXISTS ~]`~a` (_id INTEGER PRIMARY KEY AUTOINCREMENT, ~{~/radiance-mod-sqlite::format-field-type/~^, ~});" (eq if-exists :ignore) collection fields))
   (if indices
-      (sqlite:execute-non-query (dbinstance db) (format NIL "CREATE INDEX ~:[~;IF NOT EXISTS ~]`~a_idx` ON ~:*~a (~{~a~^, ~})" (eq if-exists :ignore) collection indices)))) 
+      (sqlite:execute-non-query (dbinstance db) (format NIL "CREATE INDEX ~:[~;IF NOT EXISTS ~]`~a_idx` ON `~:*~a` (~{~a~^, ~})" (eq if-exists :ignore) collection indices)))) 
   
 (defmethod db-empty ((db sqlite) (collection string) &key)
   (sqlite:execute-non-query (dbinstance db) (format NIL "DELETE FROM `~a`" collection)))
