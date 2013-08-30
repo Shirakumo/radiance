@@ -24,8 +24,10 @@ function getDateAsDateTimeString(date){
 
 $(function(){
     $(".unixtime").each(function(){
-        $this = $(this);
-        $this.text(getDateAsDateTimeString(new Date(parseInt($this.text())*1000)));
+        var $this = $(this);
+        var timestamp = parseInt($this.text());
+        if (!isNaN(timestamp))
+            $this.text(getDateAsDateTimeString(new Date(timestamp*1000)));
     });
 
     $("header#topmenu li").hover(function(){
