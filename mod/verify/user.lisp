@@ -45,7 +45,7 @@
                    (query (:= "username" (username user)) (:= "public" "T"))
                    (query (:= "username" (username user))))))
     (db-iterate T "verify-actions" query
-                #'(lambda (column) (cons (assoc "action" column :test #'string=)
+                #'(lambda (column) (list (assoc "action" column :test #'string=)
                                          (assoc "time" column :test #'string=)))
                 :sort `(("time" . ,(if oldest-first :ASC :DESC))) :limit n :skip 0)))
 
