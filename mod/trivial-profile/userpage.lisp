@@ -11,6 +11,11 @@
     (if (user-saved-p user)
         (progn
           ($ (initialize (template "trivial-profile/profile.html")))
+          (ignore-errors (authenticate T))
+          (if (authorized-p "user.comment")
+              ($ "#profile-comments-submit *[data-uibox]" (each #'(lambda (node) (uibox:fill-node node (user)))))
+              ($ "#profile-comments-submit" (remove)))
+          
           (uibox:fill-foreach (user-get-actions user 10 :public T) "#profile-actions ul li")
           (uibox:fill-foreach (model-get T "trivial-profile-comments" (query (:= "user" (path *radiance-request*))) :limit -1 :sort '(("time" . :DESC))) "#profile-comments ul li")
           ($ "*[data-uibox]" (each #'(lambda (node) (uibox:fill-node node user)))))
