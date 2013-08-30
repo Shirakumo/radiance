@@ -12,4 +12,5 @@
 
 (defapi comment (text user) (:method :POST :access-branch "user.comment")
   (db-insert T "trivial-profile-comments" `(("user" . ,user) ("author" . ,(user-field (user) "username")) ("time" . ,(get-unix-time)) ("text" . ,text)))
+  (user-action (user) (format NIL "Commented on ~a's profile." user) :public T)
   (redirect (concatenate 'string "/" user)))
