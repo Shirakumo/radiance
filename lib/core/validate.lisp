@@ -65,7 +65,13 @@
            (otherwise T)))))
 
 (defun date-to-timestamp (date)
+  "Turns a string date into a unix timestamp."
   (local-time:timestamp-to-unix (local-time:parse-timestring date)))
 
-(defun timestamp-to-date (timestamp)
-  (local-time:format-timestring NIL (local-time:unix-to-timestamp timestamp) :format '((:year 4) #\- (:month 2) #\- (:day 2))))
+(defun timestamp-to-date (timestamp &optional (format '((:year 4) #\- (:month 2) #\- (:day 2))))
+  "Turns a unix timestamp into a datestring. Default format is as required by the input type date in HTML5."
+  (local-time:format-timestring NIL (local-time:unix-to-timestamp timestamp) :format format))
+
+(defun timestamp-to-datetime (timestamp)
+  "Turns a unix timestamp into a human readable datestring."
+  (timestamp-to-date timestamp '(:year #\. :month #\. :day #\space :hour #\: :min #\: :sec)))

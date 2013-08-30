@@ -237,6 +237,7 @@
            :date-p
            :date-to-timestamp
            :timestamp-to-date
+           :timestamp-to-datetime
            )
   (:shadow :restart))
 
