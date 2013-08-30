@@ -20,6 +20,7 @@ span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
 }
 
 #profile{
+    background: #000 url("/static/img/TyNET-logo-david-dark-256.png") no-repeat no-repeat bottom right;
     padding: 50px 0 50px 0;
     min-height: 700px;
 }
