@@ -21,6 +21,7 @@
   (:serial T
    :components ((:file "gravatar")
                 (:file "profile")
+                (:file "comments")
                 (:file "settings")
                 (:file "userpage"))
    :depends-on (:ironclad :drakma)))
