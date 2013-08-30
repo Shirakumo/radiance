@@ -10,6 +10,7 @@
   (:export ;; conditions.lisp
            :radiance-error
            :module-already-initialized
+           :error-page
            :auth-error
            :api-error
            :api-args-error

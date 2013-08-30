@@ -19,6 +19,7 @@
   (:report (lambda (c s) (format s "Module ~a already initialized!"
                                  (slot-value c 'module)))))
 
+(define-condition error-page (radiance-error) ())
 (define-condition auth-error (radiance-error) ())
 
 (define-condition api-error (radiance-error)
