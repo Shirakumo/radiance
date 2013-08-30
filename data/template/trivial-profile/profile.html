@@ -2,37 +2,30 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8"/>
-    <title>Shinmera - Profile</title>
+    <title data-uibox="text">(concat username " - Profile")</title>
     <link rel="stylesheet" href="/static/css/trivial-profile.css" />
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
   </head>
   <body>
     <article id="profile">
       <header>
-        <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=128" alt="" />
-        <h1>Monika Kalan</h1>
-        <span class="tagline">Shinmera, member since 2013.99.99 .</span>
+        <img src="https://secure.gravatar.com/avatar/e9b630c092c0686c1cfb485cdf9949a5?s=128" alt="" data-uibox="attr-src:(avatar 128)" />
+        <h1 data-uibox="text:displayname">DISPLAYNAME</h1>
+        <span class="tagline" data-uibox="text">(concat username ", member since " (date register-date))</span>
       </header>
       <div id="profile-content">
         <div class="tworow-container">
           <div id="profile-details" class="profile-box">
             <h2>Details</h2>
             <ul>
-              <li><span class="label">Username</span> Shinmera</li>
-              <li><span class="label">Register Date</span> 2013.99.99</li>
-              <li><span class="label">Website</span> <a href="http://tymoon.eu">http://tymoon.eu</a></li>
-              <li><span class="label">Birth Date</span> 1993.11.18</li>
-              <li><span class="label">Sex</span> Female</li>
+              <li><span class="label">Username</span> <span data-uibox="text:username"></span></li>
+              <li><span class="label">Register Date</span> <span data-uibox="text:register-date" class="unixtime"></span></li>
             </ul>
           </div>
           <div id="profile-actions" class="profile-box">
             <h2>Recent Actions</h2>
             <ul>
-              <li><span class="label date">2013.99.99</span> Updated project <a href="#">Radiance</a>.</li>
-              <li><span class="label date">2013.99.99</span> Wrote comment on <a href="#">Mithent</a>'s profile.</li>
-              <li><span class="label date">2013.99.99</span> Updated project <a href="#">Radiance</a>.</li>
-              <li><span class="label date">2013.99.99</span> Changed profile.</li>
-              <li><span class="label date">2013.99.99</span> Registered.</li>
+              <li><span class="label date unixtime" data-uibox="text:time">DATE-ACTION</span> <span data-uibox="text:action">ACTION</span></li>
             </ul>
           </div>
         </div>
@@ -40,8 +33,8 @@
           <h2>Comments</h2>
           <form id="profile-comments-submit">
             <header>
-              <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=42" alt="" />
-              <a href="#">Monika Kalan</a>
+              <img src="https://secure.gravatar.com/avatar/e9b630c092c0686c1cfb485cdf9949a5?s=42" alt="" data-uibox="attr-src:(avatar 128)" />
+              <a href="/USERNAME" data-uibox="text:displayname attr-href:(make-uri username)">DISPLAYNAME</a>
               <input type="submit" value="Submit" />
             </header>
             <div class="text">
@@ -51,30 +44,13 @@
           <ul>
             <li>
               <header>
-                <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=42" alt="" />
-                <a href="#">Monika Kalan</a>
-                <span class="label date">2013.99.99</span>
+                <img src="https://secure.gravatar.com/avatar/e9b630c092c0686c1cfb485cdf9949a5?s=42" alt="" data-uibox="attr-src:(avatar 128)"/>
+                <a href="/USERNAME" data-uibox="text:displayname attr-href:(make-uri username)">DISPLAYNAME</a>
+                <span class="label date unixtime" data-uibox="text:(datetime time)">DATE-POST</span>
               </header>
-              <div class="text">
-                <p>
-                  Testing comments on my own profile, yay.<br />
-                  Arglblargl<br />
-                  awdad
-                </p>
+              <div class="text" data-uibox="html:(parse text)">
               </div>
             </li>       
-            <li>
-              <header>
-                <img src="https://secure.gravatar.com/avatar/2e41e8032ea7a43bf7ff9204d9734a8c?s=42&amp;d=mm" alt="" />
-                <a href="#">Gingerale</a>
-                <span class="label date">2013.99.99</span>
-              </header>
-              <div class="text">
-                <p>
-                  Testing comments.
-                </p>
-              </div>
-            </li>
           </ul>
         </div>
       </div>
@@ -86,6 +62,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
     <script src="/static/js/trivial-profile.js"></script>
-    <script type="text/javascript">$(function(){customizeProfile(null, "http://i205.photobucket.com/albums/bb164/ZephramStark/DarkEaster.png");});</script>
+    <script src="/static/js/radiance.js"></script>
   </body>
 </html>
