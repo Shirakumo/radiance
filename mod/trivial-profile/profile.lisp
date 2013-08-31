@@ -7,8 +7,12 @@
 (in-package :radiance-mod-trivial-profile)
 
 (defclass base-profile (profile) ())
-
 (implement 'profile (make-instance 'base-profile))
+
+(defmethod init-profile-db ((module trivial-profile))
+  (db-create T "trivial-profile-fields" '(("field" :varchar 32) ("value" :text) ("type" :varchar 16) ("public" :varchar 3)) :indices '("field"))
+  (db-create T "trivial-profile" '(("user" :varchar 32) ("field" :varchar 32) ("value" :text)) :indices '("user")))
+(defhook :server :init (get-module :trivial-profile) #'init-profile-db)
 
 (defmethod profile-field ((profile base-profile) (user user) (name string) &key value default)
   (if value

@@ -16,6 +16,7 @@
    :version "0.0.1"
    :license "Artistic"
    :url "http://tymoon.eu"
+   :dependencies '(admin uibox)
    :implements '(profile))
   
   (:serial T

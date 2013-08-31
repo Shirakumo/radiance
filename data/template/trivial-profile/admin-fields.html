@@ -1,0 +1,50 @@
+<div>
+<h2>Profile Fields</h2>
+<div class="tablebox">
+  <table class="selectable extendable actions tablesorter">
+    <thead>
+      <tr>
+	<th><input type="checkbox" class="select-all" /></th>
+	<th>Field</th>
+	<th>Type</th>
+	<th>Value</th>
+        <th>Public</th>
+	<th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="#template">
+	<td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:field" /></td>
+	<td><input type="text" name="field" placeholder="Field..." required="required" data-uibox="value:field attr-form:field" style="width:100%" /></td>
+	<td><input type="text" name="type" placeholder="Text" required="required" data-uibox="value:type attr-form:field" style="width:100%" /></td>
+	<td><input type="text" name="value" placeholder="Values..." data-uibox="value:value attr-form:field" style="width:100%" /></td>
+	<td><input type="text" name="public" placeholder="T" data-uibox="value:public attr-form:field" style="width:50px" /></td>
+	<td><form method="post" action="/api/trivial-profile/fields/edit" data-uibox="id:field">
+            <input type="hidden" name="form" value="profile" />
+	    <input type="hidden" name="orig-field" data-uibox="value:field" />
+	    <input type="submit" name="action" value="Edit" />
+          </form><form method="post" action="/api/trivial-profile/fields/delete">
+            <input type="hidden" name="form" value="profile" />
+	    <input type="hidden" name="field" data-uibox="value:field" />
+	    <input type="submit" name="action" value="Delete" />
+	</form></td>
+      </tr>
+      <tr class="tableExtensionRow">
+        <td></td>
+        <td><input type="text" name="field" form="tableExtensionForm" placeholder="Field..." required="required" style="width:100%" /></td>
+	<td><input type="text" name="type" form="tableExtensionForm" placeholder="Text" required="required" style="width:100%" /></td>
+	<td><input type="text" name="value" form="tableExtensionForm" placeholder="Values..." style="width:100%" /></td>
+	<td><input type="text" name="public" form="tableExtensionForm" placeholder="T" style="width:50px" /></td>
+	<td><form action="/api/trivial-profile/fields/add" method="post" id="tableExtensionForm">
+            <input type="hidden" name="form" value="menu" />
+	    <input type="submit" name="action" value="Add" />
+	</form></td>
+      </tr>
+    </tbody>
+  </table>
+  <form class="table-actions" id="massEditForm" action="/api/trivial-profile/fields/delete" method="post">
+    <input type="hidden" name="form" value="profile" />
+    <input type="submit" name="action" value="Delete" />
+  </form>
+</div>
+</div>

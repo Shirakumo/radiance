@@ -1,0 +1,35 @@
+<div>
+<h2>Profile Comments</h2>
+<div class="tablebox">
+  <table class="selectable actions tablesorter">
+    <thead>
+      <tr>
+	<th><input type="checkbox" class="select-all" /></th>
+	<th>User</th>
+	<th>Author</th>
+        <th>Text</th>
+	<th>Date</th>
+	<th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:_id" /></td>
+	<td data-uibox="text:user"></td>
+	<td data-uibox="text:author"></td>
+	<td data-uibox="text:text"></td>
+	<td data-uibox="text:time" class="unixtime"></td>
+	<td><form action="/api/trivial-profile/comment/delete" method="post">
+            <input type="hidden" name="form" value="comment" />
+	    <input type="hidden" name="id" data-uibox="value:_id" />
+	    <input type="submit" name="action" value="Delete" />
+	</form></td>
+      </tr>
+    </tbody>
+  </table>
+  <form class="table-actions" id="massEditForm" action="/api/trivial-profile/comment/delete" method="post">
+    <input type="hidden" name="form" value="comment" />
+    <input type="submit" name="action" value="Delete" />
+  </form>
+</div>
+</div>
