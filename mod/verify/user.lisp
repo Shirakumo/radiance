@@ -26,14 +26,20 @@
 
 (defmethod user-get ((user verify-user) (username string) &key)
   (setf username (string-downcase username))
-  (if (null (request-field :users)) (setf (request-field :users) (make-hash-table :test 'equal)))
-  (or (gethash username (request-field :users))
-      (let ((model (model-get-one T "verify-users" (query (:= "username" username)))))
-        (when (not model)
-          (setf model (model-hull T "verify-users"))
-          (setf (model-field model "username") username))
-        (setf (gethash username (request-field :users))
-              (make-instance 'verify-user :name username :model model)))))
+  (if *radiance-request*
+      (progn
+        (if (null (request-field :users)) (setf (request-field :users) (make-hash-table :test 'equal)))
+        (or (gethash username (request-field :users))
+            (setf (gethash username (request-field :users))
+                  (%user-get username))))
+      (%user-get username)))  
+
+(defun %user-get (username)
+  (let ((model (model-get-one T "verify-users" (query (:= "username" username)))))
+    (when (not model)
+      (setf model (model-hull T "verify-users"))
+      (setf (model-field model "username") username))
+    (make-instance 'verify-user :name username :model model)))
 
 (defmethod user-field ((user verify-user) (field string) &key (value NIL v-p))
   (if v-p
