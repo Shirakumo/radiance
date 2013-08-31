@@ -5,6 +5,14 @@ Date
   ^ New today but finished on another day
   - Completed today
 
+2013.08.31
+  - Fixed UIBox fill-foreach
+  - Continued work on trivial-profile.
+
+2013.08.30
+  - Changed UIBox fill syntax to be more powerful.
+  - Finished basic profile view.
+
 2013.08.29
   - Finished verify admin panels.
   - Added static domain resolving in handler.
