@@ -34,15 +34,15 @@ If it is a pathname or a string, lQuery will be initialized with the new documen
 If it is NIL, it is expected that lQuery has already been initialized with a document."
   (with-initialized-lquery template
     (if (typep models 'hash-table) (setf models (alexandria:hash-table-values models)))
-    (let* ((template ($ selector (node)))
-           (nodes (loop for model in models
+    (let* ((parent ($ selector (node) (parent) (node)))
+           (nodes (loop with template = ($ selector (node) (remove) (node)) 
+                     for model in models
                      for clone = ($ template (clone) (node))
                      do (fill-node clone model)
                        (loop for node in ($ clone "*[data-uibox]")
                           do (fill-node node model))
                      collect clone)))
-      ($ selector (parent) (prepend nodes))
-      ($ template (remove)))
+      ($ parent (prepend nodes)))
     lquery:*lquery-master-document*))
 
 (defun parse-targets (string node)
