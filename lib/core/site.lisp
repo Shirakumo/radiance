@@ -128,13 +128,20 @@ Changes to these cookies will be sent along to the browser with default cookie s
   "Returns the remote address of the request."
   (hunchentoot:remote-addr* request))
 
-(defun redirect (uri-or-string)
+(defun redirect (&optional (uri-or-string (get-redirect)))
   "Redirects to the requested URI."
   (log:debug "Redirecting to ~a" uri-or-string)
   (hunchentoot:redirect 
    (if (stringp uri-or-string)
        uri-or-string
        (uri->url uri-or-string))))
+
+(defun get-redirect (&optional (default "/") (request *radiance-request*))
+  (or (hunchentoot:get-parameter "redirect" request)
+      (hunchentoot:post-parameter "redirect" request)
+      (if *radiance-session* (session-field *radiance-session* "redirect"))
+      (hunchentoot:referer request)
+      default))
 
 (defun static (path)
   "Create pathname to static resource."

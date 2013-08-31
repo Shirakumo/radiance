@@ -177,6 +177,7 @@
            :request-method
            :remote-address
            :redirect
+           :get-redirect
            :static
            :template
            :read-data-file
