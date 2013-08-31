@@ -24,8 +24,7 @@
            :page-login
            :page-register
            :auth-login-error
-           :auth-register-error
-           :get-redirect))
+           :auth-register-error))
 (in-package :radiance-mod-verify)
 
 (let ((user-collection (make-collection 'user :access-mode "755" :description "Public user data"

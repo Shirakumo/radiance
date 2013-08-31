@@ -6,13 +6,6 @@
 
 (in-package :radiance-mod-verify)
 
-(defun get-redirect (&optional (default "/") (request *radiance-request*))
-  (or (hunchentoot:get-parameter "redirect" request)
-      (hunchentoot:post-parameter "redirect" request)
-      (if *radiance-session* (session-field *radiance-session* "redirect"))
-      (hunchentoot:referer request)
-      default))
-
 (define-condition auth-login-error (auth-error) ())
 (define-condition auth-register-error (auth-error) ())
 
