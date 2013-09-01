@@ -85,6 +85,7 @@
            :profile-name
            :profile-page-settings
            :profile-page-user
+           :define-user-panel
 
            :database
            :db-connect

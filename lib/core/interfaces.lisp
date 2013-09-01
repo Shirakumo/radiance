@@ -61,6 +61,10 @@
   (profile-page-settings ((user user)) "Returns the URL to the settings page for the user.")
   (profile-page-user (user) "Returns the URL to the user's profile page."))
 
+(defmacro define-user-panel (name category (&key module (modulevar (gensym "MODULE-")) lquery access-branch menu-icon menu-tooltip) &body body)
+  (declare (ignore name category module modulevar lquery access-branch menu-icon menu-tooltip body))
+  (error "Define-user-panel not implemented!"))
+
 (defimpl database
   "Base database interface. Tries to be as abstract as possible while still providing all essential functionality.
 Manipulating data directly through this is discouraged and the data-model class should be used instead."
@@ -154,8 +158,9 @@ of this is always the last statement in the body, even if save is non-NIL."
 (defimpl admin
   "Administration panel.")
 
-(defmacro defadmin (name category (&key module (modulevar (gensym "MODULE-")) lquery access-branch menu-icon menu-tooltip) &body body)
-  (error "Defadmin not implemented!"))
+(defmacro define-admin-panel (name category (&key module (modulevar (gensym "MODULE-")) lquery access-branch menu-icon menu-tooltip) &body body)
+  (declare (ignore name category module modulevar lquery access-branch menu-icon menu-tooltip body))
+  (error "Define-admin-panel not implemented!"))
 
 (defimpl parser
   "Handles raw text to HTML parsing."
