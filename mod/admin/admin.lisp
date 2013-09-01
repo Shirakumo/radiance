@@ -35,7 +35,7 @@
      collect (list :panel (string-upcase (string-downcase panel) :end 1) :link link :icon (or icon "") :title (or tooltip ""))))
 
 (defmacro define-admin-panel (name category (&key module (modulevar (gensym "MODULE-")) lquery access-branch menu-icon menu-tooltip) &body body)
-  ""
+  "Define a new administration panel."
   (let* ((name (make-keyword name))
          (category (make-keyword category))
          (categorygens (gensym "ADMINCAT-"))
