@@ -81,28 +81,38 @@ If it is NIL, it is expected that lQuery has already been initialized with a doc
 
 (defgeneric parse-data-function (function args model))
 
-(defmethod parse-data-function ((func (eql :concat)) args model)
+(defmacro define-fill-function (name (modelname &rest args) &body body)
+  (let ((argsgen (gensym "ARGS")))
+    `(defmethod parse-data-function ((func (eql ,(make-keyword name))) ,argsgen ,modelname)
+       (destructuring-bind (,@args) ,argsgen
+         ,@body))))
+
+(define-fill-function concat (model &rest args)
   (format NIL "~{~a~}" (mapcar #'(lambda (arg) (parse-data arg model)) args)))
 
-(defmethod parse-data-function ((func (eql :make-uri)) args model)
-  (uri->context-url (make-uri (concatenate 'string "/" (parse-data (first args) model)))))
+(define-fill-function make-uri (model urldesc)
+  (uri->context-url (make-uri (concatenate 'string "/" (parse-data urldesc model)))))
 
-(defmethod parse-data-function ((func (eql :avatar)) args model)
-  (destructuring-bind (&optional (size 128) (user model)) args
-    (if (not (eq model user)) (setf user (parse-data user model)))
-    (if (stringp user) (setf user (user-get T user)))
-    (profile-avatar T user size)))
+(define-fill-function avatar (model &optional (size 128) (user model))
+  (if (not (eq model user)) (setf user (parse-data user model)))
+  (if (stringp user) (setf user (user-get T user)))
+  (profile-avatar T user size))
 
-(defmethod parse-data-function ((func (eql :date)) args model)
-  (if (cdr args)
-      (timestamp-to-date (parse-data (first args) model) (cdr args))
-      (timestamp-to-date (parse-data (first args) model))))
+(define-fill-function name (model &optional (user model))
+  (if (not (eq model user)) (setf user (parse-data user model)))
+  (if (stringp user) (setf user (user-get T user)))
+  (user-field user "displayname"))
 
-(defmethod parse-data-function ((func (eql :datetime)) args model)
-  (timestamp-to-datetime (parse-data (first args) model)))
+(define-fill-function date (model field &rest format)
+  (if format
+      (timestamp-to-date (parse-data field model) format)
+      (timestamp-to-date (parse-data field model))))
 
-(defmethod parse-data-function ((func (eql :parse)) args model)
-  (parse T (parse-data (first args) model)))
+(define-fill-function datetime (model field)
+  (timestamp-to-datetime (parse-data field model)))
+
+(define-fill-function parse (model field)
+  (parse T (parse-data field model)))
 
 (defun fill-node (node model)
   "Fills data into the node according to uibox constants. Syntax:
