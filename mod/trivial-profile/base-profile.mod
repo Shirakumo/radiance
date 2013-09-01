@@ -24,5 +24,9 @@
                 (:file "profile")
                 (:file "comments")
                 (:file "settings")
-                (:file "userpage"))
-   :depends-on (:ironclad :drakma)))
+                (:file "userpage")
+                (:file "admin"))
+   :depends-on (:ironclad :drakma))
+  
+  (categories :initarg :categories :initform (make-hash-table) :accessor categories)
+  (menu :initarg :menu :initform () :accessor menu))

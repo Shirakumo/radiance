@@ -304,6 +304,12 @@ body,html{
     margin-bottom: 30px;
 }
 
+#content form.box ul{
+    list-style: none;
+    margin: 5px 0 5px 0;
+    padding: 0;
+}
+
 #content form.box input, #content form.box textarea, #content form.box input[type='checkbox']{
     border: 1px solid #0088EE;
     background: #EEF;

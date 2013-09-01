@@ -1,0 +1,14 @@
+<div>
+<h2>Profile Settings</h2>
+<form action="/api/trivial-profile/profile/edit" method="post" class="box">
+  <label>Username:</label><input type="text" name="username" readonly="readonly" data-uibox="value:username" /><br />
+  <label>Display Name:</label><input type="text" name="displayname" required="required" maxlength="32" data-uibox="value:displayname" /><br />
+  <label>E-Mail Address:</label><input type="email" name="email" required="required" data-uibox="value:email" /><br />
+  <ul id="fields">
+    <li><label class="key">Field</label><input class="value"/></li>
+  </ul>
+  <div class="actionbar">
+    <input type="submit" name="action" value="Submit" />
+  </div>
+</form>
+</div>

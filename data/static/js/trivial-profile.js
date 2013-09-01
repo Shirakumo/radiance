@@ -16,11 +16,11 @@ function customizeProfile(color, image){
         }
     }
 
-    if(image){
+    if(image && image != "null"){
         $("#profile").css("background", "url('" + image + "')");
     }
     
-    if(color){
+    if(color && color != "null"){
         targetColor = color;
         $("*").each(function(){
             $this = $(this);
