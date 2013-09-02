@@ -46,9 +46,9 @@
                       (function handler)))
           (setf hunchentoot:*dispatch-table* *radiance-handlers*)
           (setf hunchentoot:*default-content-type* "application/xhtml+xml")
-          (log:info "Connecting Database...")
+          (log:info :radiance.server.status "Connecting Database...")
           (db-connect T (config :database))
-          (log:info "Triggering INIT...")
+          (log:info :radiance.server.status "Triggering INIT...")
           (trigger :server :init)
           (user-action (user-get T "sys") "INIT" :public T)
           
@@ -56,7 +56,7 @@
                do (progn (log:info "Starting acceptor ~a" acceptor)
                          (hunchentoot:start acceptor)))
           (setf *radiance-acceptors* acceptors)
-          (log:info "INIT finished.")))))  
+          (log:info :radiance.server.status "INIT finished.")))))  
 
 (defun stop ()
   "Shuts down the TyNETv5 server."
@@ -67,16 +67,16 @@
                        (hunchentoot:stop acceptor)))
         (setf *radiance-acceptors* NIL)
         
-        (log:info "Triggering SHUTDOWN...")
+        (log:info :radiance.server.status "Triggering SHUTDOWN...")
         (trigger :server :shutdown)
         (user-action (user-get T "sys") "SHUTDOWN" :public T)
-        (log:info "Disconnecting Database...")
+        (log:info :radiance.server.status "Disconnecting Database...")
         (db-disconnect T)
         (setf *radiance-request-count* 0)
         (setf *radiance-request-total* 0)
         (setf *radiance-startup-time* 0)
-        (log:info "SHUTDOWN finished."))
-      (log:fatal "Server isn't running!")))
+        (log:info :radiance.server.status "SHUTDOWN finished."))
+      (log:fatal :radiance.server.status "Server isn't running!")))
 
 (defun restart ()
   "Performs a stop, followed by a start."
@@ -98,7 +98,7 @@
   (setf *last-ht-reply* reply)
   (let ((*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
     (parse-request request)
-    (log:debug "REQUEST: ~a" request)
+    (log:info :radiance.server.request "~a ~a" (remote-address) request)
     (incf *radiance-request-total*)
     (incf *radiance-request-count*)
     (let ((result (error-handler request)))
@@ -114,6 +114,7 @@
                              (response *radiance-request*) (read-data-file (format nil "static/html/error/~a.html" (slot-value err 'code))))
                        (invoke-restart 'skip-request)))
        (radiance-error #'(lambda (err)
+                           (log:error :radiance.server.request "Encountered error: ~a" err)
                            ($ (initialize (static "html/error/501.html")))
                            ($ "#error h2" (text (format NIL "Error of type ~a" (class-name (class-of err)))))
                            ($ "#error pre" (text (trivial-backtrace:print-backtrace err :output NIL)))
