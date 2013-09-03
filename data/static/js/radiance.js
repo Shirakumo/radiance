@@ -25,7 +25,7 @@ function getDateAsDateTimeString(date){
 $(function(){
     $(".unixtime").each(function(){
         var $this = $(this);
-        var timestamp = parseInt($this.text());
+        var timestamp = Number($this.text());
         if (!isNaN(timestamp))
             $this.text(getDateAsDateTimeString(new Date(timestamp*1000)));
     });

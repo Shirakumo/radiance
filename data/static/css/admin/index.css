@@ -214,6 +214,7 @@ body,html{
     border: none;
     background: #0088EE;
     color: #FFF;
+    font-weight: bold;
 }
 
 #content .tablebox table input[type="submit"]:hover{
@@ -250,6 +251,7 @@ body,html{
     color: #FFF;
     min-width: 50px;
     font-size: 10pt;
+    font-weight: bold;
 }
 
 #content .tablebox form.table-actions input:hover{
@@ -382,6 +384,7 @@ body,html{
     position: static;
     border-left: 1px solid #FFF;
     height: 100%;
+    font-weight: bold;
 }
 
 #content form.box .actionbar input:first-child{

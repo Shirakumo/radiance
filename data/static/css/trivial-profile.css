@@ -81,6 +81,10 @@ span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
     min-width: 120px;
 }
 
+#profile-actions .label.date{
+    min-width: 120px;
+}
+
 #profile-comments h2{
     margin-bottom: 5px;
 }
