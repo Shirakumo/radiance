@@ -1,6 +1,7 @@
 <div>
 <h2>Profile Settings</h2>
 <form action="/api/trivial-profile/profile/edit" method="post" class="box">
+  <label>Avatar:</label><div style="display: inline-block"><a href="https://en.gravatar.com/" target="_blank"><img src="" alt="" data-uibox="attr-src:(avatar 64)" /><br />Use Gravatar</a></div><br />
   <label>Username:</label><input type="text" name="username" readonly="readonly" data-uibox="value:username" /><br />
   <label>Display Name:</label><input type="text" name="displayname" required="required" maxlength="32" data-uibox="value:displayname" /><br />
   <label>E-Mail Address:</label><input type="email" name="email" required="required" data-uibox="value:email" /><br />

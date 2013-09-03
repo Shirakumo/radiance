@@ -17,7 +17,7 @@
 
 (defapi comment/delete () (:method :POST :access-branch "user.comment")
   (let ((selected (or (post-var "selected[]")
-                      (post-var "id"))))
+                      (list (post-var "id")))))
     (dolist (id selected)
       (with-model (model user author) ("trivial-profile-comments" (query (:= "_id" id)))
         (if (or (authorized-p "admin.profile.comments")

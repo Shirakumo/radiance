@@ -10,7 +10,7 @@
   (uibox:fill-foreach (menu trivial-profile) "#template")
   ($ "#my-profile" (attr :href (concatenate 'string "/" (user-field (user) "username"))))
   (let ((pathparts (cdr (split-sequence:split-sequence #\/ (string-downcase (path *radiance-request*))))))
-    (if (< (length pathparts) 2) (setf pathparts (list "profile" "index")))
+    (if (< (length pathparts) 2) (setf pathparts (list "user" "profile")))
     ($ (find (format NIL "a[href=\"/settings/~a/~a\"]" (first pathparts) (second pathparts))) (parent) (add-class "active"))
     
     (let ((category (gethash (make-keyword (first pathparts)) (categories trivial-profile))))

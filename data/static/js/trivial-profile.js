@@ -9,15 +9,15 @@ function getNowAsDateString(){
 var primaryColor = "rgb(0, 136, 238)";
 var targetColor = "rgb(0, 136, 238)";
 
-function customizeProfile(color, image){
+function customizeProfile(color, background){
     function change_color($this, style){
         if($this.css(style) == primaryColor){
             $this.css(style, targetColor);
         }
     }
 
-    if(image && image != "null"){
-        $("#profile").css("background", "url('" + image + "')");
+    if(background && background != "null"){
+        $("#profile").css("background", background);
     }
     
     if(color && color != "null"){

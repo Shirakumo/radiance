@@ -39,7 +39,7 @@
                                     ($ clone ".key" (text field))
                                     ($ clone ".value" (text value))
                                     ($ parent (append clone))))))
-            ($ "body" (append (lquery:parse-html (format NIL "<script type=\"text/javascript\">customizeProfile(\"~a\", \"~a\");</script>" color background)))))
+            ($ "body" (append (lquery:parse-html (format NIL "<script type=\"text/javascript\">customizeProfile(\"~a\", \"~a\");</script>" color (ppcre:regex-replace-all "\"" background "\\"))))))
           
           (uibox:fill-foreach (user-get-actions user 10 :public T) "#profile-actions ul li")
           (uibox:fill-foreach (model-get T "trivial-profile-comments" (query (:= "user" username)) :limit -1 :sort '(("time" . :DESC))) "#profile-comments ul li")

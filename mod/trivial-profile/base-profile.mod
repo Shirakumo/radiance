@@ -26,7 +26,7 @@
                 (:file "settings")
                 (:file "userpage")
                 (:file "admin"))
-   :depends-on (:ironclad :drakma))
+   :depends-on (:ironclad :drakma :cl-ppcre))
   
   (categories :initarg :categories :initform (make-hash-table) :accessor categories)
   (menu :initarg :menu :initform () :accessor menu))

@@ -32,6 +32,7 @@
         </div>
         <div id="profile-comments">
           <h2>Comments</h2>
+          <input type="hidden" name="user" form="profile-comments-submit" data-uibox="value:username" />
           <form id="profile-comments-submit" method="post" action="/api/trivial-profile/comment/add">
             <header>
               <img src="https://secure.gravatar.com/avatar/e9b630c092c0686c1cfb485cdf9949a5?s=42" alt="" data-uibox="attr-src:(avatar 128)" />
@@ -41,13 +42,12 @@
             <div class="text">
               <textarea name="text" placeholder="Comment..."></textarea>
             </div>
-            <input type="hidden" name="user" data-uibox="value:username" />
           </form>
           <ul>
             <li>
               <header>
                 <img src="https://secure.gravatar.com/avatar/e9b630c092c0686c1cfb485cdf9949a5?s=42" alt="" data-uibox="attr-src:(avatar 128 author)"/>
-                <a href="/USERNAME" data-uibox="text:author attr-href:(make-uri author)">DISPLAYNAME</a>
+                <a href="/USERNAME" data-uibox="text:(name author) attr-href:(make-uri author)">DISPLAYNAME</a>
                 <span class="label date unixtime" data-uibox="text:(datetime time)">DATE-POST</span>
               </header>
               <div class="text" data-uibox="html:(parse text)">
