@@ -88,4 +88,17 @@
   (uibox:fill-foreach (model-get T "trivial-profile-comments" (query (:= "user" (user-field (user) "username"))) :sort '(("time" . :DESC)) :limit -1) "tbody tr"))
 
 (defapi profile/edit (displayname email) (:access-branch "user.settings.profile")
-  )
+  (let ((username (user-field (user) "username")))
+    (db-remove T "trivial-profile" (query (:= "user" username)) :limit NIL)
+    (if (email-p email)
+        (setf (user-field (user) "email") email)
+        (error 'api-args-error :apicall 'profile/edit :text "Email-Address is invalid."))
+    (if (displayname-p displayname)
+        (setf (user-field (user) "displayname") displayname)
+        (error 'api-args-error :apicall 'profile/edit :text "Displayname is invalid."))
+    (user-save (user))
+    (db-iterate T "trivial-profile-fields" :all
+                #'(lambda (row)
+                    (let ((field (cdr (assoc "field" row :test #'string=))))
+                      (db-insert T "trivial-profile" `(("user" . ,username ) ("field" . ,field) ("value" . ,(post-var field))))))))
+  (redirect))
