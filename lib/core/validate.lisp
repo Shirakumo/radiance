@@ -17,6 +17,12 @@
   (and string
        (user-get T string)))
 
+(defun displayname-p (string)
+  (and string
+       (let ((length (length string)))
+         (and (> length 0)
+              (<= length 32)))))
+
 (defun domain-p (string)
   (and string
        (let ((len (length string)))

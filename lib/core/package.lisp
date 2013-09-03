@@ -238,6 +238,8 @@
            :uri->context-url
            :make-uri
            ;; validate.lisp
+           :username-p
+           :displayname-p
            :url-p
            :email-p
            :date-p
