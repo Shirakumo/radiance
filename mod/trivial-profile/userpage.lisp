@@ -31,8 +31,8 @@
                                for vrow in fields
                                for field = (cdr (assoc "field" vrow :test #'string=))
                                for value = (cdr (assoc "value" vrow :test #'string=))
-                               if (string= field "color") do (setf color value)
-                               if (string= field "background") do (setf background value)
+                               if (string-equal field "color") do (setf color value)
+                               if (string-equal field "background") do (setf background value)
                                if (and (string= field key)
                                        (> (length value) 0))
                                do (let ((clone ($ template (clone) (node))))
