@@ -22,10 +22,10 @@
 (defun load-config (&optional (config-file *radiance-config-file*))
   "(Re)load the static configuration."
   (when (not config-file)
-    (log:warn "Config-file or *radiance-config-file* are NIL, automatically choosing path through ASDF.")
+    (log:warn :radiance.server.status "Config-file or *radiance-config-file* are NIL, automatically choosing path through ASDF.")
     (setf config-file (merge-pathnames "radiance.json" (asdf:system-source-directory :radiance))))
 
-  (log:info "Reloading radiance config file from ~a" config-file)
+  (log:info :radiance.server.status "Reloading radiance config file from ~a" config-file)
   (with-open-file (file config-file :if-does-not-exist :ERROR)
     (setf *radiance-config* (json:decode-json file))
     (setf *radiance-config-file* config-file)))

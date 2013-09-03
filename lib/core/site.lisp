@@ -23,7 +23,7 @@
 (defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (reply *radiance-reply*))
   "Sets a cookie with defaults and ensures proper return object utilization. If domain is NIL, it sets it for multi-subdomain compatibility."
   (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :reply reply)))
-    (log:debug "Setting cookie '~a' on ~a ~a exp ~a (HTTP ~a;SECURE ~a) to ~a" name domain path expires http-only secure value)
+    (log:debug :radiance.server.request "Setting cookie '~a' on ~a ~a exp ~a (HTTP ~a;SECURE ~a) to ~a" name domain path expires http-only secure value)
     (if domain
         (setc domain)
         (setc (format NIL ".~a" (domain *radiance-request*))))))
@@ -130,7 +130,7 @@ Changes to these cookies will be sent along to the browser with default cookie s
 
 (defun redirect (&optional (uri-or-string (get-redirect)))
   "Redirects to the requested URI."
-  (log:debug "Redirecting to ~a" uri-or-string)
+  (log:debug :radiance.server.request "Redirecting to ~a" uri-or-string)
   (hunchentoot:redirect 
    (if (stringp uri-or-string)
        uri-or-string
@@ -210,7 +210,7 @@ If any of the predicates fail, an assertion error condition is signalled."
         (assert (or replace-file (not (file-exists-p target))) (target) "File already exists: ~a" target)
         (copy-file tempfile target :overwrite replace-file)
         (assert (file-exists-p target) (target) "File copy from ~a to ~a failed!" tempfile target)
-        (log:info "Copied file ~a from ~a to ~a" origname tempfile target)
+        (log:info :radiance.server.request "Copied file ~a from ~a to ~a" origname tempfile target)
         target))))
 
 (defmacro with-uploaded-file ((file post-parameter

@@ -24,17 +24,17 @@
 (defun start ()
   "Loads the configuration and starts the TyNETv5 server."
   (if (server-running-p)
-      (log:fatal "Server already running!")
+      (log:fatal :radiance.server.status "Server already running!")
       (progn
         (setf *radiance-startup-time* (get-unix-time))
-        (log:info "Loading Config...")
+        (log:info :radiance.server.status "Loading Config...")
         (load-config)
         (if (string-equal (config :root) "autodetect") 
             (config :root (format nil "~a" (asdf:system-source-directory :radiance))))
-        (log:info "Loading implementations...")
+        (log:info :radiance.server.status "Loading implementations...")
         (discover-modules)
         (load-implementations)
-        (log:info "Setting up Hunchentoot...")
+        (log:info :radiance.server.status "Setting up Hunchentoot...")
         (let ((acceptors (loop for port in (config :ports) 
                             collect (make-instance 'hunchentoot:easy-acceptor 
                                                    :port port
@@ -53,7 +53,7 @@
           (user-action (user-get T "sys") "INIT" :public T)
           
           (loop for acceptor in acceptors
-               do (progn (log:info "Starting acceptor ~a" acceptor)
+               do (progn (log:info :radiance.server.status "Starting acceptor ~a" acceptor)
                          (hunchentoot:start acceptor)))
           (setf *radiance-acceptors* acceptors)
           (log:info :radiance.server.status "INIT finished.")))))  
@@ -63,7 +63,7 @@
   (if (server-running-p)
       (progn
         (loop for acceptor in *radiance-acceptors*
-             do (progn (log:info "Stopping acceptor ~a" acceptor)
+             do (progn (log:info :radiance.server.status "Stopping acceptor ~a" acceptor)
                        (hunchentoot:stop acceptor)))
         (setf *radiance-acceptors* NIL)
         
