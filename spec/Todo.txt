@@ -4,6 +4,14 @@ Date
   v Done today but created on another day
   ^ New today but finished on another day
   - Completed today
+  x Marked off as not-necessary
+
+2013.09.03
+  - Finished basic trivial-profile.
+  v (Implement base-profile profile and settings pages.)
+
+2013.09.01
+  - Continued work on trivial-profile.
 
 2013.08.31
   - Fixed UIBox fill-foreach
@@ -26,7 +34,7 @@ Date
 2013.08.27
   - Added post-processing hook.
   - Continued work on admin panels.
-  * Add sys and temp as interned users to verify.
+  x Add sys and temp as interned users to verify.
 
 2013.08.23
   - SQLite is mostly done.
@@ -39,7 +47,7 @@ Date
 2013.08.14
   v Add gravatar and general user field convenience functions.
   v Make validation library and secure verify register form.
-  * Implement base-profile profile and settings pages.
+  ^ Implement base-profile profile and settings pages.
 
 2013.08.12
   ^ Add gravatar and general user field convenience functions.
