@@ -58,6 +58,7 @@ span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
     margin: 0 200px 0 200px;
     padding: 10px 0 10px 70px;
     min-width: 710px;
+    max-width: 1024px;
     background: #EEE;
     border: 1px solid #0088EE;
     border-top: none;
