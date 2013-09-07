@@ -108,15 +108,14 @@
     (lambda () (response request))))
 
 (defun present-error (err &optional unexpected)
-  (log:error :radiance.server.request "Encountered unexpected error: ~a" err)
+  (log:error :radiance.server.request "Encountered error: ~a" err)
   ($ (initialize (static "html/error/501.html")))
   ($ "#error h2" (text (format NIL "Error of type ~a" (class-name (class-of err)))))
   ($ "#error pre" (text (trivial-backtrace:print-backtrace err :output NIL)))
   (when unexpected
+    ($ "h1" (text "Unexpected Internal Error"))
     ($ "head title" (text "Unexpected Internal Eerror"))
-    ($ "html" (attr :style "background-color: #150000"))
-    ($ "body" (attr :style "background-color: #550000"))
-    ($ "h1" (text "Unexpected Internal Error")))
+    ($ "html" (add-class :unexpected)))
   (setf (response *radiance-request*) ($ (serialize) (node)))
   (invoke-restart 'skip-request))
 

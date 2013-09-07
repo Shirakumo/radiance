@@ -13,7 +13,7 @@ body{
 }
 
 h1{margin-top: 0;}
-a{color: #00EEFF;}
+a{color: #0088EE;}
 
 #error {
 	margin: 50px 20px 20px 20px;
@@ -23,4 +23,16 @@ a{color: #00EEFF;}
 #error pre{
 	overflow: hidden;
 	margin-right: -240px;
+}
+
+html.unexpected{
+    background-color: #150000;
+}
+
+.unexpected body{
+    background-color: #550000;
+}
+
+.unexpected a{
+    color: orange;
 }
