@@ -13,14 +13,15 @@
 
 (define-admin-panel collection database (:access-branch "admin.database.collection.*" :menu-icon "icon-table" :menu-tooltip "View collection contents" :lquery (template "db-introspect/collection.html"))
   (let ((selected (or (post-var "selected")
-                      (list (get-var "name")))))
+                      (get-var "name"))))
     (if selected
         (if (string= (post-or-get-var "action") "delete")
             NIL
-            (display-collection (first selected)))
+            (display-collection (if (listp selected) (first selected) selected)))
         (redirect))))
 
 (defun display-collection (name)
+  ($ "h2" (text (concatenate 'string "Manage Collection " name)))
   (let ((fields (db-apropos T name)))
     (loop with template = ($ "thead .template" (node))
        for name in fields
@@ -40,11 +41,13 @@
                                         (uibox:fill-node row record)
                                         (return row)))))))
       ($ rows (insert-before template))
-      ($ template (remove)))))
+      ($ template (remove))
+      ($ "input[name=\"name\"]" (val name)))))
 
 (define-admin-panel record database (:access-branch "admin.database.collection.record.*" :menu-icon "icon-list-alt" :menu-tooltip "View record contents" :lquery (template "db-introspect/record.html"))
   (let ((selected (or (post-var "selected")
-                      (list (get-var "_id")))))
-    (if selected
+                      (get-var "id")))
+        (name (post-or-get-var "name")))
+    (if (and selected name)
         NIL
         (redirect))))
