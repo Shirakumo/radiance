@@ -1,0 +1,30 @@
+<div>
+<h2>Database Collections</h2>
+<div class="tablebox">
+  <table class="selectable actions tablesorter">
+    <thead>
+      <tr>
+	<th><input type="checkbox" class="select-all" /></th>
+	<th>Name</th>
+	<th>Records</th>
+	<th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:name" /></td>
+	<td data-uibox="text:name"></td>
+	<td data-uibox="text:records"></td>
+	<td><form action="/database/collection" method="get">
+	    <input type="hidden" name="name" data-uibox="value:name" />
+	    <input type="submit" name="action" value="Edit" />
+	    <input type="submit" name="action" value="Delte" />
+	</form></td>
+      </tr>
+    </tbody>
+  </table>
+  <form class="table-actions" id="massEditForm" action="/database/collection" method="post">
+    <input type="submit" name="action" value="Delete" />
+  </form>
+</div>
+</div>
