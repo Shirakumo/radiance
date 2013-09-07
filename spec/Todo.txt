@@ -28,6 +28,10 @@ Date
   - Added multiple-value uibox fill.
   - Added trivial-menu.
 
+2013.09.07
+  v Database introspection admin page.
+  * Finish db-introspect pages.
+
 2013.08.28
   - Finished basic verify authentication admin panels.
   - Extended UIBox for some building functions.
@@ -41,7 +45,7 @@ Date
   - SQLite is mostly done.
   - Retest stuff.
   * Figure out a solution for the default implementation.
-  * Database introspection admin page.
+  ^ Database introspection admin page.
   * Add validation functions.
   * Add methods for simple submission handling.
 
