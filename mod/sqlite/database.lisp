@@ -23,7 +23,8 @@
 
 (defmethod db-collections ((db sqlite) &key)
   (db-iterate db "sqlite_master" (query (:= "type" "table"))
-              #'(lambda (row) (car (assoc :test row)))))
+              #'(lambda (row) (cdr (assoc "name" row :test #'string=)))
+              :sort '(("name" . :ASC))))
 
 (defun format-field-type (s arg colonp atp)
   (declare (ignore colonp atp))
