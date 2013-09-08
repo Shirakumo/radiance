@@ -38,7 +38,7 @@
                          collect ($ inner-template (clone) (node) (text (cdr (assoc name record :test #'string-equal)))) into nodes
                          finally (progn ($ nodes (insert-before inner-template))
                                         ($ inner-template (remove))
-                                        (uibox:fill-node row record)
+                                        (uibox:fill-all row record)
                                         (return row)))))))
       ($ rows (insert-before template))
       ($ template (remove))
@@ -49,5 +49,23 @@
                       (get-var "id")))
         (name (post-or-get-var "name")))
     (if (and selected name)
-        NIL
+        (string-case:string-case ((post-or-get-var "action"))
+          ("Delete" NIL)
+          ("Save" NIL)
+          ("Edit" (display-record name (if (listp selected) (first selected) selected)))
+          (T (redirect)))
         (redirect))))
+
+(defun display-record (collection id)
+  ($ "h2" (text (concatenate 'string "Edit record " id " of " collection)))
+  (let ((model (model-get-one T collection (query (:= "_id" id)))))
+    (if model
+        (loop with template = ($ ".template" (node))
+           for key in (db-apropos T collection)
+           for val = (model-field model key)
+           for node = ($ template (clone) (node))
+           do ($ node "label" (text key))
+             ($ node "input" (attr :value val :name key))
+             ($ node (insert-before template))
+           finally ($ template (remove)))
+        (uibox:notice "No such record found!" :type :error))))

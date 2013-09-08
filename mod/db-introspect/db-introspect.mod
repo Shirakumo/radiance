@@ -16,7 +16,8 @@
    :version "0.0.1"
    :license "Artistic"
    :url "http://tymoon.eu"
-   :dependencies '(admin)
+   :dependencies '(admin uibox)
    :implements '())
   
-  (:components ((:file "admin"))))
+  (:components ((:file "admin"))
+   :depends-on (:string-case)))
