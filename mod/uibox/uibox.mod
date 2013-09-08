@@ -8,6 +8,7 @@
   (:nicknames :radiance-mod-uibox :uibox)
   (:use :cl :radiance :lquery)
   (:export :fill-node
+           :fill-all
            :fill-foreach
            :input-select
            :notice))

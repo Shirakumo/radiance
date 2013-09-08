@@ -38,12 +38,16 @@ If it is NIL, it is expected that lQuery has already been initialized with a doc
            (nodes (loop with template = ($ selector (node) (remove) (node)) 
                      for model in models
                      for clone = ($ template (clone) (node))
-                     do (fill-node clone model)
-                       (loop for node in ($ clone "*[data-uibox]")
-                          do (fill-node node model))
+                     do (fill-all clone model)
                      collect clone)))
       ($ parent (prepend nodes)))
     lquery:*lquery-master-document*))
+
+(defun fill-all (root-node model)
+  "Fills all nodes within the root node with the data from the specified model.
+See fill-node for more information."
+  (loop for node in ($ root-node "*[data-uibox]")
+     do (fill-node node model)))
 
 (defun parse-targets (string node)
   (let ((length (length string)))
