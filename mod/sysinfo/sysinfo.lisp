@@ -8,7 +8,7 @@
 
 (defpage site-info #u"inf./" (:lquery (template "sysinfo/index.html"))  
   ;Simple fields
-  ($ "#acceptors" (text (concatenate-strings (config :ports) " ")))
+  ($ "#acceptors" (text (concatenate-strings (config :ports) ", ")))
   ($ "#cur-requests" (text (format nil "~a" *radiance-request-count*)))
   ($ "#tot-requests" (text (format nil "~a" *radiance-request-total*)))
 
