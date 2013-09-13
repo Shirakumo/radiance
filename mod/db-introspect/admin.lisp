@@ -15,8 +15,17 @@
   (let ((selected (or (post-var "selected")
                       (get-var "name"))))
     (if selected
-        (if (string= (post-or-get-var "action") "delete")
-            NIL
+        (if (string= (post-or-get-var "action") "Delete")
+            (cond ((string= (post-or-get-var "sure") "Yes")
+                   (db-drop T selected)
+                   (redirect "/database/database"))
+                  ((string= (post-or-get-var "sure") "No")
+                   (redirect "/database/database")) 
+                  (T
+                   ($ (children) (remove))
+                   ($ (append (uibox:confirm (format NIL "Really drop collection ~a? " selected) 
+                                             :extradata `(("action" . "Delete") ("name" . ,selected))
+                                             :prepend NIL :method "get")))))
             (display-collection (if (listp selected) (first selected) selected)))
         (redirect))))
 
