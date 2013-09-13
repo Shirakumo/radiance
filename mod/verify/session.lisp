@@ -13,7 +13,7 @@
    (time :initarg :time :initform (get-unix-time) :reader session-time)
    (user :initarg :user :initform (error "User required") :accessor s-user)
    (fields :initarg :fields :initform (make-hash-table :test 'equal) :reader fields)
-   (remote :initarg :remote :initform (remote-address) :reader remote)
+   (remote :initarg :remote :initform NIL :reader remote)
    (active :initarg :active :initform T :accessor active)))
 
 (defmethod print-object ((session verify-session) out)
@@ -30,7 +30,8 @@
   "Starts a new session for the given user, enters it in the registry and returns the session object."
   (let ((session (make-instance 'verify-session :user user)))
     (log:debug "Starting new session for ~a with UUID ~a" user (uuid session))
-    (if *radiance-request* 
+    (when *radiance-request*
+        (setf (slot-value session 'remote) (remote-address))
         (set-cookie "token" :value (make-session-cookie session))
         (setf *radiance-session* session))
     (setf (gethash (uuid session) *verify-sessions*) session)))
