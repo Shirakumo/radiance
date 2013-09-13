@@ -11,7 +11,8 @@
            :fill-all
            :fill-foreach
            :input-select
-           :notice))
+           :notice
+           :confirm))
 (in-package :radiance-mod-uibox)
 
 (defmodule uibox ()
