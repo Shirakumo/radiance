@@ -62,3 +62,12 @@
   (loop with target = ($ "#mechanisms") 
      for mechanism being the hash-values of *verify-mechanisms*
      do (show-options mechanism target)))
+
+(define-admin-panel registration verify (:access-branch "admin.verify.registration.*" :menu-icon "" :menu-tooltip "Manage registration settings" :lquery (template "verify/admin-register.html"))
+  (when (string= (post-var "form") "defaults")
+    (setf (config-tree :verify :register :endpoint) (post-var "endpoint")
+          (config-tree :verify :register :defaultperms) (split-sequence:split-sequence #\Newline (post-var "permissions")))
+    (uibox:notice "Registration defaults updated."))
+  
+  ($ "input[name=\"endpoint\"]" (val (config-tree :verify :register :endpoint)))
+  ($ "textarea[name=\"permissions\"]" (text  (concatenate-strings (config-tree :Verify :register :defaultperms) #\Newline))))

@@ -6,8 +6,11 @@ Date
   - Completed today
   x Marked off as not-necessary
 
+2013.09.13
+  v Fix registration and default permissions.
+
 2013.09.03
-  * Fix registration and default permissions.
+  ^ Fix registration and default permissions.
   - Finished basic trivial-profile.
   v (Implement base-profile profile and settings pages.)
 
