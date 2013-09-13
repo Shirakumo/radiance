@@ -36,7 +36,7 @@ wherever possible, as it may be significantly more performant at
 best and only slightly less performant than db-select at worst.
 
 Queries are constructed by the query macro, which should
-recognize the :and :or :not := :< :> :>= :<= :in :matches
+recognize the and or not = < > >= <= in matches
 instructions. Alternatively the keyword :all can also be used
 to simply retrieve any record.
 
@@ -64,8 +64,8 @@ Example:
 
 (db-select T "example" :all)
 (db-insert T "example" '(("ID" . 1) ("title" . "test") ("text" . "Foo Bar Baz")))
-(db-select T "example" (:= "ID" 1))
-(db-update T "example" (:= "ID" 1) '(("title" "test^2")))
+(db-select T "example" (query (= "ID" 1)))
+(db-update T "example" (query (= "ID" 1)) '(("title" "test^2")))
 (db-iterate T "example" #'(lambda (record) (print record)))
 (db-remove T "example" :all)
 (db-select T "example" :all)
@@ -107,10 +107,10 @@ last statement in their body.
 
 Example:
 
-(with-model (model title (content "text")) ("example" (:= "ID" 1) :save T)
+(with-model (model title (content "text")) ("example" (query (= "ID" 1)) :save T)
   (setf title "Testing stuff")
   content)
 
-(with-model model ("example" (:= "ID" 1))
+(with-model model ("example" (query (= "ID" 1)))
   (db-remove model))
   
