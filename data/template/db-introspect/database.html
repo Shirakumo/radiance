@@ -1,10 +1,9 @@
 <div>
 <h2>Database Collections</h2>
 <div class="tablebox">
-  <table class="selectable actions tablesorter">
+  <table class="actions tablesorter">
     <thead>
       <tr>
-	<th><input type="checkbox" class="select-all" /></th>
 	<th>Name</th>
 	<th>Records</th>
 	<th>Actions</th>
@@ -12,7 +11,6 @@
     </thead>
     <tbody>
       <tr>
-	<td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:name" /></td>
 	<td data-uibox="text:name"></td>
 	<td data-uibox="text:records"></td>
 	<td><form action="/database/collection" method="get">
@@ -23,8 +21,5 @@
       </tr>
     </tbody>
   </table>
-  <form class="table-actions" id="massEditForm" action="/database/collection" method="post">
-    <input type="submit" name="action" value="Delete" />
-  </form>
 </div>
 </div>
