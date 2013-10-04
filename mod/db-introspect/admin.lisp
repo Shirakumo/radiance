@@ -12,21 +12,15 @@
   )
 
 (define-admin-panel collection database (:access-branch "admin.database.collection.*" :menu-icon "icon-table" :menu-tooltip "View collection contents" :lquery (template "db-introspect/collection.html"))
-  (let ((selected (or (post-var "selected")
-                      (get-var "name"))))
+  (let ((selected (get-var "name")))
     (if selected
         (if (string= (post-or-get-var "action") "Delete")
-            (cond ((string= (post-or-get-var "sure") "Yes")
-                   (db-drop T selected)
-                   (redirect "/database/database"))
-                  ((string= (post-or-get-var "sure") "No")
-                   (redirect "/database/database")) 
-                  (T
-                   ($ (children) (remove))
-                   ($ (append (uibox:confirm (format NIL "Really drop collection ~a? " selected) 
-                                             :extradata `(("action" . "Delete") ("name" . ,selected))
-                                             :prepend NIL :method "get")))))
-            (display-collection (if (listp selected) (first selected) selected)))
+            (uibox:confirm ((format NIL "Really drop the collection ~a and all its data?" selected))
+               (progn
+                 (db-drop T selected)
+                 (redirect "/database/database"))
+               (redirect "/database/database"))
+            (display-collection selected))
         (redirect))))
 
 (defun display-collection (name)
@@ -60,7 +54,7 @@
     (if (and selected name)
         (string-case:string-case ((post-or-get-var "action"))
           ("Delete" NIL)
-          ("Save" NIL)
+          ("Save" (save-record name selected))
           ("Edit" (display-record name (if (listp selected) (first selected) selected)))
           (T (redirect)))
         (redirect))))
@@ -78,3 +72,9 @@
              ($ node (insert-before template))
            finally ($ template (remove)))
         (uibox:notice "No such record found!" :type :error))))
+
+(defun save-record (collection id)
+  (with-model model (collection (query (:= "_id" id)) :save T)
+    (dolist (field (db-apropos T collection))
+      (setf (model-field model field) (post-var field)))
+    (uibox:notice "Record updated.")))
