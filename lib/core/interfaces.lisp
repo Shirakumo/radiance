@@ -48,7 +48,7 @@
   (session-start-temp () "Creates a temporary session without a bound user.")
   (session-uuid () "Returns the uuid for this session.")
   (session-user () "Returns the user associated with this session.")
-  (session-field ((field string) &key value) "Set or get a session data field.")
+  (session-field (field &key value) "Set or get a session data field.")
   (session-end () "Finalizes the session object and in effect logs the user out.")
   (session-active-p () "Returns T if the session is still active, otherwise NIL.")
   (session-temp-p () "Returns T if the session is only temporary, otherwise NIL."))

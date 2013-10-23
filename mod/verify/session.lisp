@@ -52,7 +52,7 @@
   (if (eq *radiance-session* session) (set-cookie "token"))
   session)
 
-(defmethod session-field ((session verify-session) (field string) &key (value NIL v-p) &allow-other-keys)
+(defmethod session-field ((session verify-session) field &key (value NIL v-p) &allow-other-keys)
   "Set or get a field of the user. Note that this will not save it to the database!"
   (if v-p
       (setf (gethash field (fields session)) value)
