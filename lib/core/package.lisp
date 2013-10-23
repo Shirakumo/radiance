@@ -15,6 +15,10 @@
            :api-error
            :api-args-error
            :api-auth-error
+           ;; continuation.lisp
+           :request-continuation
+           :get-continuation
+           :with-request-continuation
            ;; globals.lisp
            :*radiance-startup-time*
            :*radiance-config-file*
