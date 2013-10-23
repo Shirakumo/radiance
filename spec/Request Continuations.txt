@@ -1,0 +1,62 @@
+---------------------------------------------------------
+ == REQUEST CONTINUATIONS ==
+
+Request continuations are a simple closure construct that
+simulate continuations between requests. This is useful
+mostly for utility functions that require to add 
+functionality that exists between page calls and thus
+needs to "halt" the program flow for at least a while.
+
+In specific, these continuations are created by
+encompassing the function block into a lambda-closure
+and containing the previous request object to simulate
+a previous request-state. The request-continuation then
+generates a unique ID that identifies this request for
+a specific session. Once a page call arrives with a GET
+parameter for the request-continuation ID and such an ID
+can be found in the session object, the
+request-continuation is executed in place of a normal page
+call.
+
+
+
+
+
+;; Sample usage case
+(let ((id (with-request-continuation ()
+            (if (string= (get-var "sure" *radiance-cont-request*) "Yes")
+                (yes-case)
+                (no-case)))))
+  (make-form-with-id-bla id))
+
+;; Excerpt from the modified handler function
+(let* ((cid (get-or-post-var "cID"))
+       (conts (session-field *radiance-session* 'CONTINUATIONS))
+       (cont (gethash cid conts)))
+  (if cont
+      (with-slots (request function) cont
+        (let ((*radiance-cont-request* *radiance-request*)
+              (*radiance-request* request))
+          (funcall function)
+          (remhash cid conts)))
+      (execute-normal-operations)))
+
+
+
+  Pseudo continuations through request objects and continuation IDs?
+  Implement through sessions to ensure security... Hrm.
+
+  Q: Multi-page requests?
+  Should be no problem, a new token gets generated each page call
+  request continuations get retrieved by session and token, so that
+  should be secure.
+
+  Q: Browser navigation?
+  Browser navigation back to request ID issuing pages poses no problem.
+  Browser navigation ahead to request ID landing pages is a problem due
+  to validity.
+
+  Q: Validity?
+  Request continuation could expire once it's requested for the first time
+  although that poses problems with F5-ing and resubmitting the data, as
+  the token would be invalidated.
