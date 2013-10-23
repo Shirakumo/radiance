@@ -31,70 +31,15 @@
                        :function function)))
 
 ;; Macro to build request continuations
-(defmacro with-request-continuation ((&key (request *radiance-request*) (name "CONT") (session *radiance-session*)) &body continuation)
+(defmacro with-request-continuation ((&key (request *radiance-request*) (new-request-var (gensym "NEW-REQUEST")) (name "CONT") (session *radiance-session*)) &body continuation)
   "Builds a request-continuation and returns the generated continuation ID."
   (let ((funcsym (gensym "FUNCTION"))
         (contsym (gensym "CONTINUATION"))
-        (cidsym (gensym "cID")))
-    `(let ((cont (make-continuation (lambda () ,@continuation) )))))
-
-;; Sample usage case
-(let ((id (with-request-continuation ()
-            (if (string= (get-var "sure" *radiance-cont-request*) "Yes")
-                (yes-case)
-                (no-case)))))
-  (make-form-with-id-bla id))
-
-;; Excerpt from the modified handler function
-(let* ((cid (get-or-post-var "cID"))
-       (conts (session-field *radiance-session* 'CONTINUATIONS))
-       (cont (gethash cid conts)))
-  (if cont
-      (with-slots (request function) cont
-        (let ((*radiance-cont-request* *radiance-request*)
-              (*radiance-request* request))
-          (funcall function)
-          (remhash cid conts)))
-      (execute-normal-operations)))
-
-
-#|
-  Request
-
-  Radiance Handler
-
-  Dispatcher
-
-  Module-Fun
-
-  (confirm) Macro-call <ID>
-
-  Page render
-
-  -> Submit
-
-  Request
-
-  Radiance Handler
- 
-  Goto <ID>
-
-
-  Pseudo continuations through request objects and continuation IDs?
-  Implement through sessions to ensure security... Hrm.
-
-  Q: Multi-page requests?
-  Should be no problem, a new token gets generated each page call
-  request continuations get retrieved by session and token, so that
-  should be secure.
-
-  Q: Browser navigation?
-  Browser navigation back to request ID issuing pages poses no problem.
-  Browser navigation ahead to request ID landing pages is a problem due
-  to validity.
-
-  Q: Validity?
-  Request continuation could expire once it's requested for the first time
-  although that poses problems with F5-ing and resubmitting the data, as
-  the token would be invalidated.
-|#
+        (reqsym (gensym "OLD-REQUEST")))
+    `(let* ((,reqsym request)
+            (,funcsym (lambda () 
+                        (let ((,new-request-var *radiance-request*)
+                              (*radiance-request* ,reqsym))
+                          ,@continuation)))
+            (,contsym (make-continuation ,funcsym :name ,name :request ,request :session ,session)))
+       (id ,contsym))))

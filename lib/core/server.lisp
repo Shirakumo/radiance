@@ -128,8 +128,19 @@
        (radiance-error #'present-error)
        (error #'(lambda (err) (present-error err T))))
     (with-simple-restart (skip-request "Skip the request and show the response stored in *radiance-request*.")
-      (let* ((result (dispatch T request))
+      (let* ((result (continuation-handler request))
              (post-result (trigger :server :post-processing result)))
         (cond ((stringp post-result) post-result)
               ((and post-result (listp post-result)) (concatenate-strings post-result))
               (T result))))))
+
+(defun continuation-handler (request)
+  (let* ((rcid (post-or-get-var "rcid"))
+         (cont (when rcid
+                 (ignore-errors (authenticate T))
+                 (get-continuation rcid))))
+    (if cont
+        (with-slots (id request function) cont
+          (funcall function)
+          (remhash id (session-field *radiance-session* 'CONTINUATIONS)))
+        (dispatch T request))))
