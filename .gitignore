@@ -1,4 +1,5 @@
 *.fasl
 /lib/lQuery
 /lib/lQuery-Doc
+/lib/verbose
 .directory
