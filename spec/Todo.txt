@@ -6,6 +6,14 @@ Date
   - Completed today
   x Marked off as not-necessary
 
+2013.10.24
+  v Test&Fix continuations.
+
+2013.10.23
+  - Added continuations to the system.
+  ^ Test&Fix continuations.
+  * Add own logging library.
+
 2013.09.13
   v Fix registration and default permissions.
   * Add caching mechanism.
