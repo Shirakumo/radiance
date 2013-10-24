@@ -140,7 +140,8 @@
                  (ignore-errors (authenticate T))
                  (get-continuation rcid))))
     (if cont
-        (with-slots (id request function) cont
-          (funcall function)
-          (remhash id (session-field *radiance-session* 'CONTINUATIONS)))
+        (with-accessors ((id id) (request request) (function continuation-function)) cont
+          (let ((result (funcall function)))
+            (remhash id (session-field *radiance-session* 'CONTINUATIONS))
+            result))
         (dispatch T request))))
