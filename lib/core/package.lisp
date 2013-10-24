@@ -181,6 +181,7 @@
            :with-cookie
            :request-method
            :remote-address
+           :set-content-type
            :redirect
            :get-redirect
            :static

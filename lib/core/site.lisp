@@ -128,6 +128,10 @@ Changes to these cookies will be sent along to the browser with default cookie s
   "Returns the remote address of the request."
   (hunchentoot:remote-addr* request))
 
+(defun set-content-type (content-type &optional (reply *radiance-reply*))
+  "Change the content-type of the current page."
+  (setf (hunchentoot:content-type* reply) content-type))
+
 (defun redirect (&optional (uri-or-string (get-redirect)))
   "Redirects to the requested URI."
   (log:debug :radiance.server.request "Redirecting to ~a" uri-or-string)
