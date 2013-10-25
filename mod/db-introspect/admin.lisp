@@ -8,8 +8,7 @@
 
 (define-admin-panel database database (:access-branch "admin.database.*" :menu-icon "icon-calendar" :menu-tooltip "Show all collections in the database" :lquery (template "db-introspect/database.html"))
   (uibox:fill-foreach (loop for collection in (db-collections T)
-                         collect `(:name ,collection :records ,(length (db-select T collection :all :limit -1)))) "tbody tr")
-  )
+                         collect `(:name ,collection :records ,(length (db-select T collection :all :limit -1)))) "tbody tr"))
 
 (define-admin-panel collection database (:access-branch "admin.database.collection.*" :menu-icon "icon-table" :menu-tooltip "View collection contents" :lquery (template "db-introspect/collection.html"))
   (let ((selected (get-var "name")))
@@ -48,12 +47,17 @@
       ($ "input[name=\"name\"]" (val name)))))
 
 (define-admin-panel record database (:access-branch "admin.database.collection.record.*" :menu-icon "icon-list-alt" :menu-tooltip "View record contents" :lquery (template "db-introspect/record.html"))
-  (let ((selected (or (post-var "selected")
+  (let ((selected (or (post-var "selected[]")
                       (get-var "id")))
         (name (post-or-get-var "name")))
     (if (and selected name)
-        (string-case:string-case ((post-or-get-var "action"))
-          ("Delete" NIL)
+        (string-case:string-case ((post-or-get-var) "action")
+          ("Delete" (uibox:confirm ("Are you sure you want to delete the selected record(s)?")
+                      (progn
+                        (dolist (id (if (listp selected) selected (list selected)))
+                          (db-remove T name (query (:= "_id" id))))
+                        (redirect (format NIL "/database/collection?name=~a" name)))
+                      (redirect (format NIL "/database/collection?name=~a" name))))
           ("Save" (save-record name selected))
           ("Edit" (display-record name (if (listp selected) (first selected) selected)))
           (T (redirect)))
