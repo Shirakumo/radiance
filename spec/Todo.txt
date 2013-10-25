@@ -8,11 +8,13 @@ Date
 
 2013.10.24
   v Test&Fix continuations.
+  x Switch to CL-LOG and log all the things.
+  * Develop Verbose logging library.
 
 2013.10.23
   - Added continuations to the system.
   ^ Test&Fix continuations.
-  * Add own logging library.
+  x Add own logging library.
 
 2013.09.13
   v Fix registration and default permissions.
