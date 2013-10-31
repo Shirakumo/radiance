@@ -34,7 +34,7 @@
   :depends-on (:alexandria
                :cl-json
                :hunchentoot
-	       :log4cl
+	       :verbose
                :uuid
                :cl-fad
                :lquery

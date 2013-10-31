@@ -75,7 +75,7 @@
           (let ((session (session-get T session-id)))
             (if session
                 (if (= (parse-integer timestamp) (session-time session))
-                    (progn (log:info :radiance.module.verify "User ~a successfully authenticated session ~a (initiated on ~a)" user session-id timestamp)
+                    (progn (v:info :verify.auth "User ~a successfully authenticated session ~a (initiated on ~a)" user session-id timestamp)
                            (setf (s-user session) user)
                            (setf *radiance-session* session)
                            session)

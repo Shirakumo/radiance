@@ -71,7 +71,7 @@
            (multiple-value-bind (id authproc) (handle-response)
              (if id
                  (let ((id (format nil "~a" (cl-openid:claimed-id authproc))))
-                   (log:debug "Linking: ~a" id)
+                   (v:debug :verify.mechanism.openid "Linking: ~a" id)
                    (nappend (session-field *radiance-session* "openid-links") (list id)))
                  (error 'auth-register-error :text "Authentication failed!" :code 11)))
          (cl-openid:openid-assertion-error (err)

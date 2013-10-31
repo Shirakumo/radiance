@@ -31,7 +31,7 @@
     (session-field *radiance-session* "redirect" :value (get-redirect))
     (session-field *radiance-session* "request-token" :value rt)
     (session-field *radiance-session* "provider" :value provider)
-    (log:debug "Initiating OAuth handle: ~a" link)
+    (v:debug :verify.mechanism.oauth "Initiating OAuth handle: ~a" link)
     (redirect (format nil "~a" link))))
 
 (defun handle-response ()
@@ -49,14 +49,14 @@
       (error (err)
         (error 'auth-login-error :text (format nil "Failed to verify: ~a" err) :code 13)))
     (when (cl-oauth:request-token-authorized-p rt)
-      (log:debug "Successfully authorized with token ~a" (cl-oauth:token-key rt))
+      (v:debug :verify.mechanism.oauth "Successfully authorized with token ~a" (cl-oauth:token-key rt))
       (process-response provider (get-access-token provider rt)))))
 
 (defgeneric process-response (provider access-token))
 (defmethod process-response ((provider (eql :twitter)) access-token)
   (let* ((data (babel:octets-to-string (cl-oauth:access-protected-resource "http://api.twitter.com/1.1/account/verify_credentials.json" access-token)))
          (credentials (json:decode-json-from-string data)))
-    (log:debug "Claimed ID: ~a" (cdr (assoc :id credentials)))
+    (v:debug :verify.mechanism.oauth "Claimed ID: ~a" (cdr (assoc :id credentials)))
     (values (format nil "~a" (cdr (assoc :id credentials))) "twitter")))
 
 (defun get-linked-user (id provider)
@@ -96,7 +96,7 @@
     
     ((and *radiance-session* (session-field *radiance-session* "request-token"))
      (multiple-value-bind (id provider) (handle-response)
-       (log:debug "Linking: ~a/~a" id provider)
+       (v:debug :verify.mechanism.oauth "Linking: ~a/~a" id provider)
        (nappend (session-field *radiance-session* "oauth-links") (list (cons provider id)))))
 
     (T (error 'auth-register-error :text "Nothing to do!" :code 10))))

@@ -6,7 +6,7 @@
 
 (defpackage org.tymoonnext.radiance
   (:nicknames :org.tymoonnext.radiance :tynet-5 :tynet :radiance)
-  (:use :cl :log4cl :cl-fad :lquery)
+  (:use :cl :cl-fad :lquery)
   (:export ;; conditions.lisp
            :radiance-error
            :module-already-initialized

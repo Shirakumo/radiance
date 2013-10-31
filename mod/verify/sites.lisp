@@ -85,7 +85,7 @@
                                        if (handle-register mechanism user)
                                        collect it)
                               (error 'auth-register-error :text "At least one login required!" :code 19))
-                            (log:debug "Creating new user ~a" username)
+                            (v:debug :verify.user "Creating new user ~a" username)
                             (model-insert (model user))
                             (user-action user "Register" :public T)
                             (session-end *radiance-session*)

@@ -50,8 +50,8 @@
                :description ,docstring
                ,@defsystem))
 
-       (flet ((,classdef () (log:info :radiance.server.module "Defining module ~a" ',name) (make-module-class ,name ,superclasses ,docstring ,extra-slots))
-              (,initializer () (log:info :radiance.server.module "Initializing module ~a" ',name)
+       (flet ((,classdef () (v:info :radiance.server.module "Defining module ~a" ',name) (make-module-class ,name ,superclasses ,docstring ,extra-slots))
+              (,initializer () (v:info :radiance.server.module "Initializing module ~a" ',name)
                             (let ((instance (make-instance ',name 
                                                        :name ,fullname :author ,author :version ,version :license ,license :url ,url :description ,docstring
                                                        :collections ,collections :persistent ,persistent
@@ -141,9 +141,9 @@
                          :first :FILES))
 
 (defun load-module (file &key redefine reinitialize &allow-other-keys)
-  (log:info :radiance.server.module "Discovered mod file: ~a (~a)" file (file-namestring file))
+  (v:info :radiance.server.module "Discovered mod file: ~a (~a)" file (file-namestring file))
   (handler-bind ((module-already-initialized
-                  #'(lambda (c) (log:warn :radiance.server.module "Error loading module: ~a" c)
+                  #'(lambda (c) (v:warn :radiance.server.module "Error loading module: ~a" c)
                             (cond
                               ((not (or redefine reinitialize)) (invoke-restart 'do-nothing))
                               ((and redefine reinitialize) (invoke-restart 'override-both))
@@ -156,7 +156,7 @@
 
 (defmethod compile-module ((module module) &key force)
   (when (or (not (slot-value module 'compiled)) force)
-    (log:info :radiance.server.module "Compiling module ~a (~a)" module (asdf-system module))
+    (v:info :radiance.server.module "Compiling module ~a (~a)" module (asdf-system module))
     (loop for dependency in (slot-value module 'dependencies)
        do (compile-dependency dependency :force force))
     (ql:quickload (asdf-system module))

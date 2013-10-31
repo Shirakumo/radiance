@@ -29,7 +29,7 @@
 (defmethod session-start ((session verify-session) (user user) &key &allow-other-keys)
   "Starts a new session for the given user, enters it in the registry and returns the session object."
   (let ((session (make-instance 'verify-session :user user)))
-    (log:debug "Starting new session for ~a with UUID ~a" user (uuid session))
+    (v:debug :verify.session "Starting new session for ~a with UUID ~a" user (uuid session))
     (when *radiance-request*
         (setf (slot-value session 'remote) (remote-address))
         (set-cookie "token" :value (make-session-cookie session))
@@ -46,7 +46,7 @@
 
 (defmethod session-end ((session verify-session) &key &allow-other-keys)
   "Ends the session and removes it from the registry."
-  (log:debug "Terminating session for ~a with UUID ~a" (s-user session) (uuid session))
+  (v:debug :verify.session "Terminating session for ~a with UUID ~a" (s-user session) (uuid session))
   (remhash (uuid session) *verify-sessions*)
   (setf (active session) NIL)
   (if (eq *radiance-session* session) (set-cookie "token"))

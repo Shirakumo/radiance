@@ -24,17 +24,17 @@
 (defun start ()
   "Loads the configuration and starts the TyNETv5 server."
   (if (server-running-p)
-      (log:fatal :radiance.server.status "Server already running!")
+      (v:fatal :radiance.server.status "Server already running!")
       (progn
         (setf *radiance-startup-time* (get-unix-time))
-        (log:info :radiance.server.status "Loading Config...")
+        (v:info :radiance.server.status "Loading Config...")
         (load-config)
         (if (string-equal (config :root) "autodetect") 
             (config :root (format nil "~a" (asdf:system-source-directory :radiance))))
-        (log:info :radiance.server.status "Loading implementations...")
+        (v:info :radiance.server.status "Loading implementations...")
         (discover-modules)
         (load-implementations)
-        (log:info :radiance.server.status "Setting up Hunchentoot...")
+        (v:info :radiance.server.status "Setting up Hunchentoot...")
         (let ((acceptors (loop for port in (config :ports) 
                             collect (make-instance 'hunchentoot:easy-acceptor 
                                                    :port port
@@ -46,37 +46,37 @@
                       (function handler)))
           (setf hunchentoot:*dispatch-table* *radiance-handlers*)
           (setf hunchentoot:*default-content-type* "application/xhtml+xml")
-          (log:info :radiance.server.status "Connecting Database...")
+          (v:info :radiance.server.status "Connecting Database...")
           (db-connect T (config :database))
-          (log:info :radiance.server.status "Triggering INIT...")
+          (v:info :radiance.server.status "Triggering INIT...")
           (trigger :server :init)
           (user-action (user-get T "sys") "INIT" :public T)
           
           (loop for acceptor in acceptors
-               do (progn (log:info :radiance.server.status "Starting acceptor ~a" acceptor)
+               do (progn (v:info :radiance.server.status "Starting acceptor ~a" acceptor)
                          (hunchentoot:start acceptor)))
           (setf *radiance-acceptors* acceptors)
-          (log:info :radiance.server.status "INIT finished.")))))  
+          (v:info :radiance.server.status "INIT finished.")))))  
 
 (defun stop ()
   "Shuts down the TyNETv5 server."
   (if (server-running-p)
       (progn
         (loop for acceptor in *radiance-acceptors*
-             do (progn (log:info :radiance.server.status "Stopping acceptor ~a" acceptor)
+             do (progn (v:info :radiance.server.status "Stopping acceptor ~a" acceptor)
                        (hunchentoot:stop acceptor)))
         (setf *radiance-acceptors* NIL)
         
-        (log:info :radiance.server.status "Triggering SHUTDOWN...")
+        (v:info :radiance.server.status "Triggering SHUTDOWN...")
         (trigger :server :shutdown)
         (user-action (user-get T "sys") "SHUTDOWN" :public T)
-        (log:info :radiance.server.status "Disconnecting Database...")
+        (v:info :radiance.server.status "Disconnecting Database...")
         (db-disconnect T)
         (setf *radiance-request-count* 0)
         (setf *radiance-request-total* 0)
         (setf *radiance-startup-time* 0)
-        (log:info :radiance.server.status "SHUTDOWN finished."))
-      (log:fatal :radiance.server.status "Server isn't running!")))
+        (v:info :radiance.server.status "SHUTDOWN finished."))
+      (v:fatal :radiance.server.status "Server isn't running!")))
 
 (defun restart ()
   "Performs a stop, followed by a start."
@@ -98,7 +98,7 @@
   (setf *last-ht-reply* reply)
   (let ((*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
     (parse-request request)
-    (log:info :radiance.server.request "~a ~a" (remote-address) request)
+    (v:info :radiance.server.request "~a ~a" (remote-address) request)
     (incf *radiance-request-total*)
     (incf *radiance-request-count*)
     (let ((result (error-handler request)))
@@ -108,7 +108,7 @@
     (lambda () (response request))))
 
 (defun present-error (err &optional unexpected)
-  (log:error :radiance.server.request "Encountered error: ~a" err)
+  (v:error :radiance.server.request "Encountered error: ~a" err)
   ($ (initialize (static "html/error/501.html")))
   ($ "#error h2" (text (format NIL "Error of type ~a" (class-name (class-of err)))))
   ($ "#error pre" (text (trivial-backtrace:print-backtrace err :output NIL)))

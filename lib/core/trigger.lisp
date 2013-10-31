@@ -37,7 +37,7 @@
 (defun defhook (space name module function &key description fields replace-all)
   "Defines a new hook of name, for a certain function of a module. Fields should be an alist of additional fields on the hook."
   (let ((instance (make-instance 'hook :name name :space space :module module :function function :description description)))
-    (log:info :radiance.server.hook "Defining hook ~a for ~a:~a ( ~s )" name module function fields)
+    (v:info :radiance.server.hook "Defining hook ~a for ~a:~a ( ~s )" name module function fields)
     (loop for (key . val) in fields
        do (setf (gethash key (fields instance)) val))
     (let ((namespace (gethash space *radiance-hooks*)))

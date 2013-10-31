@@ -9,12 +9,12 @@
 (implement 'database (get-module 'sqlite))
 
 (defmethod db-connect ((db sqlite) dbname &key (root-path (merge-pathnames "data/" (pathname (config :root)))))
-  (log:info "Connecting to SQLite database ~a on ~a" dbname root-path)
+  (v:info :sqlite "Connecting to SQLite database ~a on ~a" dbname root-path)
   (setf (dbinstance db)
         (sqlite:connect (merge-pathnames dbname root-path))))
 
 (defmethod db-disconnect ((db sqlite) &key)
-  (log:info "Disconnecting...")
+  (v:info :sqlite "Disconnecting...")
   (sqlite:disconnect (dbinstance db))
   (setf (dbinstance db) NIL))
 

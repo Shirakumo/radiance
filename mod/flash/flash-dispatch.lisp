@@ -30,9 +30,9 @@
   (let ((found (find uri (hooks dispatch) :key #'third :test #'uri-same)))
     (when found
       (if (not (eql hook (first found)))
-          (log:warn "Overriding existing trigger ~a on ~a" (car found) uri))
+          (v:warn :flash "Overriding existing trigger ~a on ~a" (car found) uri))
       (setf (hooks dispatch) (remove uri (hooks dispatch) :key #'third :test #'uri-same))))
-  (log:info "Registering ~a for ~a/~a" uri module hook)
+  (v:info :flash "Registering ~a for ~a/~a" uri module hook)
   (setf (hooks dispatch)
         (sort (append (hooks dispatch) `((,hook ,module ,uri)))
               #'sort-dispatcher-hooks))
