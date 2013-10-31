@@ -141,6 +141,7 @@
                  (get-continuation rcid))))
     (if cont
         (with-accessors ((id id) (request request) (function continuation-function)) cont
+          (v:debug :radiance.server.continuations "Resuming continuation ~a" cont)
           (let ((result (funcall function)))
             (remhash id (session-field *radiance-session* 'CONTINUATIONS))
             result))

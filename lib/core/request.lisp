@@ -61,6 +61,7 @@
               (setf subdomains NIL))))
 
     (when (not (config-tree :use-subdomains))
+      ;TODO
       )
 
     (setf (subdomains request) subdomains

@@ -130,6 +130,7 @@ Changes to these cookies will be sent along to the browser with default cookie s
 
 (defun set-content-type (content-type &optional (reply *radiance-reply*))
   "Change the content-type of the current page."
+  (v:debug :radiance.server.request "Setting content-type to: ~a" content-type)
   (setf (hunchentoot:content-type* reply) content-type))
 
 (defun redirect (&optional (uri-or-string (get-redirect)))
@@ -157,6 +158,7 @@ Changes to these cookies will be sent along to the browser with default cookie s
 
 (defun read-data-file (pathspec &key (if-does-not-exist :ERROR))
   "Returns the file contents in string format. Any path is relative to the radiance data directory."
+  (v:trace :radiance.server.site "Reading data file: ~a" pathspec)
   (with-open-file (stream (merge-pathnames pathspec (merge-pathnames "data/" (pathname (config :root)))) :if-does-not-exist if-does-not-exist)
     (let ((seq (make-array (file-length stream) :element-type 'character :fill-pointer t)))
       (setf (fill-pointer seq) (read-sequence seq stream))
@@ -164,6 +166,7 @@ Changes to these cookies will be sent along to the browser with default cookie s
 
 (defun error-page (errorcode)
   "Signals a condition that provokes the requested error page."
+  (v:debug :radiance.server.request "Erroring out to ~a" errorcode)
   (error 'error-page :code errorcode :text "Requested error page."))
 
 (defun upload-file (post-parameter 
@@ -187,6 +190,7 @@ Changes to these cookies will be sent along to the browser with default cookie s
 
 All of these key values except for filename and directory default to values from the configuration file.
 If any of the predicates fail, an assertion error condition is signalled."
+  (v:debug :radiance.server.request "Attemptint to upload file from ~a" post-parameter)
   (let ((param (hunchentoot:post-parameter post-parameter (request *radiance-request*))))
     (assert (listp param) (param) "Post parameter does not contain a file!")
     (assert (not (not param)) (param) "Post parameter does not exist!")
@@ -214,7 +218,7 @@ If any of the predicates fail, an assertion error condition is signalled."
         (assert (or replace-file (not (file-exists-p target))) (target) "File already exists: ~a" target)
         (copy-file tempfile target :overwrite replace-file)
         (assert (file-exists-p target) (target) "File copy from ~a to ~a failed!" tempfile target)
-        (v:info :radiance.server.request "Copied file ~a from ~a to ~a" origname tempfile target)
+        (v:debug :radiance.server.request "Copied file ~a from ~a to ~a" origname tempfile target)
         target))))
 
 (defmacro with-uploaded-file ((file post-parameter
@@ -260,8 +264,10 @@ value of the request is automatically chosen."
                       `(progn ,@body))))
     `(let ((,urigens ,uri)
            (,modgens ,(if module module `(get-module T))))
+       (v:debug :radiance.server.site "Defining new site ~a on ~a for ~a" ',name ,urigens ,modgens)
        (defmethod ,name ((,modulevar (eql ,modgens)))
          (declare (ignorable ,modulevar))
+         (v:trace :radiance.server.request "Entering method for ~a page" ',name)
          ,(if access-branch
               `(progn
                  (ignore-errors (authenticate T))
@@ -311,8 +317,10 @@ requested output type or a page redirect in the case of an URI."
         (modgens (gensym "MODULE-"))
         (methodgens (gensym "METHOD-")))
     `(let ((,modgens (get-module ,(module-symbol module))))
+       (v:debug :radiance.server.site "Defining API page ~a for ~a" ',fullname ,modgens)
        (defmethod ,fullname ((,modulevar (eql ,modgens)) ,methodgens)
          (declare (ignorable ,modulevar ,methodgens))
+         (v:trace :radiance.server.request "Entering method for ~a page" ',fullname)
          ,(unless (eq method T)
             `(unless (eq ,methodgens ,method)
                (call-next-method)
@@ -352,9 +360,11 @@ requested output type or a page redirect in the case of an URI."
 (defmacro define-api-format (name content-type datavar &body body)
   "Define a new API output format function."
   (let ((name (make-keyword name)))
-    `(setf (gethash ,name *radiance-api-formats*)
-           (list ,name ,content-type
-                 (lambda (,datavar) ,@body)))))
+    `(progn
+       (v:debug :radiance.server.site "Defining new api format ~a, ~a" ,name ,content-type)
+       (setf (gethash ,name *radiance-api-formats*)
+             (list ,name ,content-type
+                   (lambda (,datavar) ,@body))))))
              
 (define-api-format none "text/plain; charset=utf-8" data
   (declare (ignore data))

@@ -37,7 +37,7 @@
 (defun defhook (space name module function &key description fields replace-all)
   "Defines a new hook of name, for a certain function of a module. Fields should be an alist of additional fields on the hook."
   (let ((instance (make-instance 'hook :name name :space space :module module :function function :description description)))
-    (v:info :radiance.server.hook "Defining hook ~a for ~a:~a ( ~s )" name module function fields)
+    (v:debug :radiance.server.hook "Defining hook ~a for ~a:~a ( ~s )" name module function fields)
     (loop for (key . val) in fields
        do (setf (gethash key (fields instance)) val))
     (let ((namespace (gethash space *radiance-hooks*)))
@@ -59,6 +59,7 @@
   (restart-case 
       (let ((namespace (gethash space *radiance-hooks*)))
         (if (and (not ignore-defined) namespace) (error 'namespace-conflict :text (format nil "Namespace ~a already exists!" space)))
+        (v:debug :radiance.server.hook "Creating empty namespace ~a" space)
         (setf (gethash space *radiance-hooks*) (make-hash-table))
         space)
     (change-name (name) 
@@ -87,6 +88,7 @@
 
 (defun trigger (space trigger &rest args)
   "Trigger a certain hook and collect all return values."
+  (v:trace :radiance.server.hook "Triggering hook ~a/~a (~{~a~^, ~})" space trigger args)
   (loop for hook in (gethash trigger (get-namespace space))
      if (let ((module (module hook)))
           (unless (persistent module)

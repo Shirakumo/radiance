@@ -24,6 +24,7 @@
 (defun make-continuation (function &key (id (format NIL "~a" (uuid:make-v4-uuid))) (name "CONT") (request *radiance-request*) (session *radiance-session*))
   (if (null (session-field session 'CONTINUATIONS))
       (setf (session-field session 'CONTINUATIONS) (make-hash-table :test 'equal)))
+  (v:debug :radiance.server.continuations "Creating continuation ~a ~a " name id)
   (setf (gethash id (session-field session 'CONTINUATIONS))
         (make-instance 'request-continuation
                        :name name :id id

@@ -25,14 +25,14 @@
 (defmacro defimplclass (slot superclass)
   "Defines an implementations interface class."
   `(progn 
-     (v:info :radiance.server.implementation "Defining implementation ~a with ~a" ',slot ',superclass)
+     (v:debug :radiance.server.implementation "Defining implementation ~a with ~a" ',slot ',superclass)
      (setf (gethash ',slot *radiance-implements*)
            (make-instance 'implementation :superclass ',superclass))
      (defmethod implement ((slot (eql ',slot)) (module module))
        "Standard implements function for badly requested classes."
        (error "Module does not match implementation superclass ~a!" slot))
      (defmethod implement ((slot (eql ',slot)) (module ,superclass))
-       (v:info :radiance.server.implementation "~a implements ~a" module slot)
+       (v:debug :radiance.server.implementation "~a implements ~a" module slot)
        (setf (module (gethash ',slot *radiance-implements*)) module))
      ',superclass))
 
@@ -44,7 +44,7 @@
     (when (stringp (car generics))
       (setf documentation (car generics)
             generics (cdr generics)))
-    (v:info :radiance.server.implementation "Generating implementation ~a with superclasses ~a." slot super)
+    (v:debug :radiance.server.implementation "Generating implementation ~a with superclasses ~a." slot super)
     `(progn
        (defclass ,slot ,super ()
          (:documentation ,documentation))
@@ -82,7 +82,7 @@
 
 (defun load-implementations (&key force)
   (loop for (key . val) in (config :implementations)
-     do (progn (v:info :radiance.server.implementation "Choosing ~a for ~a." val key)
+     do (progn (v:debug :radiance.server.implementation "Choosing ~a for ~a." val key)
                (if (listp val)
                    (loop for module in val 
                       do (compile-module module :force force))

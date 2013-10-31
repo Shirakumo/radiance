@@ -25,7 +25,7 @@
     (v:warn :radiance.server.status "Config-file or *radiance-config-file* are NIL, automatically choosing path through ASDF.")
     (setf config-file (merge-pathnames "radiance.json" (asdf:system-source-directory :radiance))))
 
-  (v:info :radiance.server.status "Reloading radiance config file from ~a" config-file)
+  (v:debug :radiance.server.status "Reloading radiance config file from ~a" config-file)
   (with-open-file (file config-file :if-does-not-exist :ERROR)
     (setf *radiance-config* (json:decode-json file))
     (setf *radiance-config-file* config-file)))
@@ -33,6 +33,7 @@
 (defun config (setting &optional new-value)
   "Get or set configuration values."
   (when new-value
+    (v:debug :radiance.server.status "Setting config ~a to ~a" setting new-value)
     (setf (cdr (assoc setting *radiance-config*)) new-value))
   (cdr (assoc setting *radiance-config*)))
 
@@ -118,6 +119,7 @@ If recursive is T, each directory that passes rec-test is also scanned.
 If follow-symlinks is T, symlinks are resolved and may follow outside of the original directory.
 First can be one of NIL, :FILES or :DIRECTORIES and decides which type is tested/passed first, this also affects recursion order.
 If if-does-not-exist is :error, an error is thrown in case the directory cannot be found."
+  (v:trace :radiance.toolkit "Walking directory ~a" dir)
   (labels ((consider (file)
              (if (cl-fad:directory-pathname-p file)
                  (progn 
