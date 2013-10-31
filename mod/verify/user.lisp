@@ -58,10 +58,6 @@
                                          (assoc "time" column :test #'string=)))
                 :sort `(("time" . ,(if oldest-first :ASC :DESC))) :limit n :skip 0)))
 
-(defun set-user-field (user field value)
-  (user-field user field :value value))
-(defsetf user-field set-user-field)
-
 (defmethod user-save ((user verify-user) &key)
   (if (user-saved-p user)
       (model-save (model user))

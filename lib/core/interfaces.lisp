@@ -29,6 +29,10 @@
   (user-action (action &key public) "Record an action for the user. If public is NIL, the action should not be visible to anyone else..")
   (user-get-actions (n &key public oldest-first) "Returns a list of n cons cells, with the car being the action and the cdr being the time of the action."))
 
+(defun set-user-field (user field value)
+  (user-field user field :value value))
+(defsetf user-field set-user-field)
+
 (defmethod getdf ((user user) field)
   (user-field user field))
 
@@ -52,6 +56,10 @@
   (session-end () "Finalizes the session object and in effect logs the user out.")
   (session-active-p () "Returns T if the session is still active, otherwise NIL.")
   (session-temp-p () "Returns T if the session is only temporary, otherwise NIL."))
+
+(defun set-session-field (session field value)
+  (session-field session field :value value))
+(defsetf session-field set-session-field)
 
 (defimpl (profile)
   "Extension for the user class to get common things such as display name, avatar and fields and provide a UI."

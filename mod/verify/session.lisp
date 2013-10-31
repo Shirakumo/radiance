@@ -58,11 +58,6 @@
       (setf (gethash field (fields session)) value)
       (gethash field (fields session))))
 
-(defun set-session-field (session field value)
-  (session-field session field :value value))
-
-(defsetf session-field set-session-field)
-
 (defmethod session-uuid ((session verify-session) &key &allow-other-keys)
   "Returns the UUID of the session instance."
   (uuid session))
