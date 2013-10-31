@@ -35,6 +35,23 @@ body,html{
     background: #000;
     color: #FFF;
     padding-top:40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#panel::-webkit-scrollbar{
+  width: 12px;  /* for vertical scrollbars */
+  height: 12px; /* for horizontal scrollbars */
+}
+
+#panel::-webkit-scrollbar-track{
+  background: #000;
+  border-left: 1px solid #0088EE;
+}
+
+#panel::-webkit-scrollbar-thumb{
+  background: rgba(0,136,170,0.5);
+  border-radius: 6px;
 }
 
 #panel h1{
@@ -389,4 +406,25 @@ body,html{
 
 #content form.box .actionbar input:first-child{
     border: none;
+}
+
+
+form.question{
+    position: fixed;
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    box-shadow: 0 0 100px #000;
+    background: #FFF;
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 1001;
+}
+#overlay{
+    content: "";
+    position: fixed;
+    left: 0; right: 0;
+    top: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
 }
