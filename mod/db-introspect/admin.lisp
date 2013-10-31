@@ -51,7 +51,7 @@
                       (get-var "id")))
         (name (post-or-get-var "name")))
     (if (and selected name)
-        (string-case:string-case ((post-or-get-var) "action")
+        (string-case:string-case ((post-or-get-var "action"))
           ("Delete" (uibox:confirm ("Are you sure you want to delete the selected record(s)?")
                       (progn
                         (dolist (id (if (listp selected) selected (list selected)))
