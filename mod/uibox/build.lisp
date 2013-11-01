@@ -46,7 +46,6 @@ If prepend is NIL, the notice node is returned instead."
     `(let ((*radiance-session* (or (session-field *radiance-session* ',session-field)
                                    *radiance-session*))
            (,rcidsym (with-request-continuation (:new-request-var ,requestsym)
-                       (set-content-type "text/plain")
                        (cond
                          ((string= (get-var ,confirm-field ,requestsym) ,yes)
                           ,yes-block)
