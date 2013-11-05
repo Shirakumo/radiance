@@ -346,7 +346,7 @@ requested output type or a page redirect in the case of an URI."
 (defun api-return (code text &optional data)
   "Generates an API response in the proper format:
   (:CODE code :TEXT text :DATA data)"
-  (plist->hash-table :CODE code :TEXT text :DATA data))
+  (plist->hash-table :CODE code :TEXT text :TIME (get-unix-time) :DATA data))
 
 (defun api-format (format data)
   "Turn a plist into the requested format."
