@@ -8,10 +8,21 @@
 
 (implement 'database (get-module 'sqlite))
 
+(cffi:defcfun sqlite3-enable-load-extension :int
+  (db sqlite-ffi:p-sqlite3)
+  (onoff :int))
+
+(defun load-extension (db extensionpath)
+  (v:debug :sqlite "Loading sqlite extension ~a" extensionpath)
+  (sqlite3-enable-load-extension (sqlite::handle (dbinstance db)) 1)
+  (sqlite:execute-non-query (dbinstance db) (format NIL "SELECT load_extension('~a');" extensionpath))
+  (sqlite3-enable-load-extension (sqlite::handle (dbinstance db)) 0))
+
 (defmethod db-connect ((db sqlite) dbname &key (root-path (merge-pathnames "data/" (pathname (config :root)))))
   (v:info :sqlite "Connecting to SQLite database ~a on ~a" dbname root-path)
   (setf (dbinstance db)
-        (sqlite:connect (merge-pathnames dbname root-path))))
+        (sqlite:connect (merge-pathnames dbname root-path)))
+  (load-extension db "/usr/lib/sqlite3/pcre.so"))
 
 (defmethod db-disconnect ((db sqlite) &key)
   (v:info :sqlite "Disconnecting...")
