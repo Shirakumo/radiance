@@ -9,6 +9,7 @@
 (defclass request-continuation ()
   ((id :initarg :id :initform (format NIL "~a" (uuid:make-v4-uuid)) :reader id)
    (name :initarg :name :initform "CONT" :accessor name)
+   (timeout :initarg :time :initform (+ (get-unix-time) *radiance-continuation-lifetime*) :accessor timeout)
    (request :initarg :request :initform (error "Request required.") :reader request)
    (function :initarg :function :initform (error "Function required.") :reader continuation-function))
   (:documentation "Request Continuation object."))
@@ -21,6 +22,10 @@
   (if (and session (session-field session 'CONTINUATIONS))
       (gethash id (session-field session 'CONTINUATIONS))))
 
+(defun get-continuations (&optional (session *radiance-session*))
+  (if (and session (session-field session 'CONTINUATIONS))
+      (alexandria:hash-table-values (session-field session 'CONTINUATIONS))))
+
 (defun make-continuation (function &key (id (format NIL "~a" (uuid:make-v4-uuid))) (name "CONT") (request *radiance-request*) (session *radiance-session*))
   (if (null (session-field session 'CONTINUATIONS))
       (setf (session-field session 'CONTINUATIONS) (make-hash-table :test 'equal)))
@@ -30,6 +35,19 @@
                        :name name :id id
                        :request request
                        :function function)))
+
+(defun clean-continuations (&optional (session *radiance-session*))
+  (when (and session (session-field session 'CONTINUATIONS))
+    (let ((conts (session-field session 'CONTINUATIONS)))
+      (loop for key being the hash-keys of conts
+         for val being the hash-values of conts
+         if (> (get-unix-time) (timeout val))
+         do (remhash key conts)
+           (v:debug :radiance.server.continuations "Removing continuation ~a due to timeout (~a > ~a)" val (get-unix-time) (timeout val))))))
+
+(defun clean-continuations-globally ()
+  (dolist (session (session-get-all T))
+    (clean-continuations session)))
 
 ;; Macro to build request continuations
 (defmacro with-request-continuation ((&key (request '*radiance-request*) (session '*radiance-session*) (new-request-var (gensym "NEW-REQUEST")) (name "CONT")) &body continuation)

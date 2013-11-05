@@ -23,12 +23,13 @@
 (defvar *radiance-hooks*       (make-hash-table) "Map of all registered triggers.")
 (defvar *radiance-session*     NIL "Current session object, if any,")
 (defvar *radiance-api-formats* (make-hash-table) "Map of all API output formats.")
+(defvar *radiance-continuation-lifetime* (* 60 60 24) "The amount of seconds until a continuation can be garbage collected.")
 
 (defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789" "Default random characters appearing in make-random-string.")
 (defvar *default-cookie-expire* (* 60 60 24 356) "Default expiration time in seconds.")
 (defconstant *unix-epoch-difference* (encode-universal-time 0 0 0 1 1 1970 0) "Time difference between unix epoch and Lisp time.")
 (defvar *uri-matcher* (cl-ppcre:create-scanner "((\\w+\\.)*?)(\\w+(\\.[a-z]+)?)?(:\\d+)?/(.*)"))
 
-(declaim (fixnum *radiance-request-count* *radiance-request-total* *default-cookie-expire* *unix-epoch-difference* *radiance-startup-time*))
+(declaim (fixnum *radiance-request-count* *radiance-request-total* *default-cookie-expire* *unix-epoch-difference* *radiance-startup-time* *radiance-continuation-lifetime*))
 (declaim (hash-table *radiance-implements* *radiance-modules* *radiance-hooks* *radiance-api-formats*))
 (declaim (string *random-string-characters*))
