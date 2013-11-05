@@ -17,7 +17,9 @@
            :api-auth-error
            ;; continuation.lisp
            :request-continuation
+           :id :name :request :timeout
            :get-continuation
+           :get-continuations
            :with-request-continuation
            ;; globals.lisp
            :*radiance-startup-time*
@@ -74,6 +76,7 @@
 
            :session
            :session-get
+           :session-get-all
            :session-start
            :session-start-temp
            :session-uuid

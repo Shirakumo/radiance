@@ -26,6 +26,10 @@
   "Returns the requested session instance if applicable."
   (gethash uuid *verify-sessions*))
 
+(defmethod session-get-all ((session verify-session) &key)
+  "Returns all sessions still on the server."
+  (alexandria:hash-table-values *verify-sessions*))
+
 (defmethod session-start ((session verify-session) (user user) &key &allow-other-keys)
   "Starts a new session for the given user, enters it in the registry and returns the session object."
   (let ((session (make-instance 'verify-session :user user)))
