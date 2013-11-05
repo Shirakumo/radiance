@@ -68,6 +68,7 @@
   (not (model-hull-p (model user))))
 
 (defmethod user-check ((user verify-user) branch &key &allow-other-keys)
+  (v:trace :verify.user "Checking permissions of ~a for ~a" user branch)
   (let ((perms (user-field user "perms"))
         (branch (split-sequence:split-sequence #\. branch)))
     (when perms
@@ -82,6 +83,7 @@
   NIL)
 
 (defmethod user-grant ((user verify-user) branch &key &allow-other-keys)
+  (v:debug :verify.user "Granting permissions for ~a: ~a" user branch)
   (setf (user-field user "perms")
         (format nil "~:[~;~:*~a~%~]~a" (user-field user "perms") branch)))
 
@@ -89,6 +91,7 @@
   (let ((perms (user-field user "perms"))
         (branch (split-sequence:split-sequence #\. branch))
         (to-remove ()))
+    (v:debug :verify.user "Revoking permissions for ~a: ~a" user branch)
     (when perms
       (setf perms (split-sequence:split-sequence #\newline perms))
       (loop for line in perms
