@@ -181,7 +181,9 @@
            (compile-module deps :force force))))
     (T (error "Dependency ~a not found!" dependency))))
 
-
+(defun compile-modules (&key force)
+  (dolist (module (config :modules))
+    (compile-module module :force force)))
 
 (defclass column ()
   ((name :initform (error "Column name required.") :initarg :name :reader name :type string)

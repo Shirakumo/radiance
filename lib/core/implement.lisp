@@ -79,11 +79,3 @@
   (module (gethash slot *radiance-implements*)))
 
 (defsetf implementation implement)
-
-(defun load-implementations (&key force)
-  (loop for (key . val) in (config :implementations)
-     do (progn (v:debug :radiance.server.implementation "Choosing ~a for ~a." val key)
-               (if (listp val)
-                   (loop for module in val 
-                      do (compile-module module :force force))
-                   (compile-module val :force force)))))

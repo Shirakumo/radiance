@@ -6,18 +6,15 @@
 
 (in-package :radiance)
 
-(defun manage (action &key (config-file) (verbose T))
+(defun manage (action &key (config-file))
   "Manage the TymoonNETv5 web server."
   (if (not (or (stringp action) (functionp action) (symbolp action)))
       (error "Action must be a function, symbol or string."))
-  (if (stringp action)
-      (setf action (find-symbol (string-upcase action) :radiance)))
   (if (symbolp action)
-      (setf action (symbol-function action)))
+      (setf action (symbol-name action)))
   (if (not action) 
       (error "Requested action not found."))
-  
-  (setf *radiance-log-verbose* verbose)
+  (setf action (find-symbol (string-upcase action) :radiance))
   (if config-file (setf *radiance-config-file* config-file))
   (funcall action))
 
@@ -27,13 +24,15 @@
       (v:fatal :radiance.server.status "Server already running!")
       (progn
         (setf *radiance-startup-time* (get-unix-time))
-        (v:info :radiance.server.status "Loading Config...")
+        (v:info :radiance.server.status "Loading config...")
         (load-config)
         (if (string-equal (config :root) "autodetect") 
             (config :root (format nil "~a" (asdf:system-source-directory :radiance))))
-        (v:info :radiance.server.status "Loading implementations...")
+        (v:info :radiance.server.status "Discovering modules...")
         (discover-modules)
-        (load-implementations)
+        (v:info :radiance.server.status "Loading modules...")
+        (compile-modules)
+        (compile-module :core)
         (v:info :radiance.server.status "Setting up Hunchentoot...")
         (let ((acceptors (loop for port in (config :ports) 
                             collect (make-instance 'hunchentoot:easy-acceptor 
@@ -46,7 +45,7 @@
                       (function handler)))
           (setf hunchentoot:*dispatch-table* *radiance-handlers*)
           (setf hunchentoot:*default-content-type* "application/xhtml+xml")
-          (v:info :radiance.server.status "Connecting Database...")
+          (v:info :radiance.server.status "Connecting database...")
           (db-connect T (config :database))
           (v:info :radiance.server.status "Triggering INIT...")
           (trigger :server :init)
@@ -56,7 +55,7 @@
                do (progn (v:info :radiance.server.status "Starting acceptor ~a" acceptor)
                          (hunchentoot:start acceptor)))
           (setf *radiance-acceptors* acceptors)
-          (v:info :radiance.server.status "INIT finished.")))))  
+          (v:info :radiance.server.status "Startup finished.")))))  
 
 (defun stop ()
   "Shuts down the TyNETv5 server."
