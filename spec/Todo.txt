@@ -6,10 +6,19 @@ Date
   - Completed today
   x Marked off as not-necessary
 
+2013.11.04
+  * Add control to trivial-menu to hide certain items based on clauses.
+  v Finish db-introspect pages.
+  * Fix implementation/module loading.
+
+2013.10.31
+  * Add API pages for users, sessions, etc.
+  v Develop Verbose logging library.
+
 2013.10.24
   v Test&Fix continuations.
   x Switch to CL-LOG and log all the things.
-  * Develop Verbose logging library.
+  ^ Develop Verbose logging library.
 
 2013.10.23
   - Added continuations to the system.
@@ -46,7 +55,7 @@ Date
 
 2013.09.07
   v Database introspection admin page.
-  * Finish db-introspect pages.
+  ^ Finish db-introspect pages.
 
 2013.08.28
   - Finished basic verify authentication admin panels.
