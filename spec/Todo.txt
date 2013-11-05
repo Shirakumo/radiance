@@ -6,10 +6,14 @@ Date
   - Completed today
   x Marked off as not-necessary
 
+2013.11.05
+  v Fix implementation/module loading.
+  - Made sqlite regex compatible.
+
 2013.11.04
   * Add control to trivial-menu to hide certain items based on clauses.
   v Finish db-introspect pages.
-  * Fix implementation/module loading.
+  ^ Fix implementation/module loading.
 
 2013.10.31
   * Add API pages for users, sessions, etc.
