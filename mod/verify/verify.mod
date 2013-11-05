@@ -48,7 +48,8 @@
                   (:file "auth" :depends-on ("user" "crypto"))
                   (:file "session" :depends-on ("user"))
                   (:file "sites" :depends-on ("auth" "session"))
-                  (:file "admin" :depends-on ("user" "session")))
+                  (:file "admin" :depends-on ("user" "session"))
+                  (:file "api" :depends-on ("user" "session")))
      :depends-on (:split-sequence
                   :ironclad
                   :uuid))))
