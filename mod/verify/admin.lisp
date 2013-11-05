@@ -63,7 +63,7 @@
      for mechanism being the hash-values of *verify-mechanisms*
      do (show-options mechanism target)))
 
-(define-admin-panel registration verify (:access-branch "admin.verify.registration.*" :menu-icon "" :menu-tooltip "Manage registration settings" :lquery (template "verify/admin-register.html"))
+(define-admin-panel registration verify (:access-branch "admin.verify.registration.*" :menu-icon "icon-edit" :menu-tooltip "Manage registration settings" :lquery (template "verify/admin-register.html"))
   (when (string= (post-var "form") "defaults")
     (setf (config-tree :verify :register :endpoint) (post-var "endpoint")
           (config-tree :verify :register :defaultperms) (split-sequence:split-sequence #\Newline (post-var "permissions")))
