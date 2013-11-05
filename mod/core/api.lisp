@@ -14,7 +14,7 @@
      (handler-case 
          (case (length pathparts)
            ((1 2) (api-return 200 (format NIL "Radiance API v~a" (version module))
-                              (plist->hash-table :VERSION (version module) :TIME (get-unix-time))))
+                              (plist->hash-table :VERSION (version module))))
            (otherwise
             (let* ((module (cadr pathparts))
                    (trigger (make-keyword (concatenate-strings (cddr pathparts) "/")))
@@ -72,7 +72,6 @@
                :string (format nil "TyNET-~a-SBCL~a-α" (version module) (lisp-implementation-version))
                :ports (config :ports)
                :uptime (- (get-unix-time) *radiance-startup-time*)
-               :time (get-unix-time)
                :request-count *radiance-request-count*
                :request-total *radiance-request-total*)))
 
@@ -121,3 +120,12 @@
                  :get (get-vars)
                  :cookie (cookie-vars)
                  :header (header-vars)))))
+
+(defapi continuations () (:access-branch "*")
+  (api-return 200 "Active continuations"
+              (loop for cont in (get-continuations) 
+                 collect (plist->hash-table
+                          :id (id cont)
+                          :name (name cont)
+                          :timeout (timeout cont)
+                          :request (format NIL "~a" (request cont))))))
