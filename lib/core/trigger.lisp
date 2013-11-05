@@ -86,9 +86,14 @@
   "Retrieve all hooks for a trigger."
   (gethash trigger (get-namespace space)))
 
+(defun trigger-print-args (stream arg &rest rest)
+  (declare (ignore rest))
+  (setf arg (format NIL "~a" arg))
+  (format stream "~a" (if (> (length arg) 15) (concatenate 'string (subseq arg 0 12) "...") arg)))
+
 (defun trigger (space trigger &rest args)
   "Trigger a certain hook and collect all return values."
-  (v:trace :radiance.server.hook "Triggering hook ~a/~a (~{~a~^, ~})" space trigger args)
+  (v:trace :radiance.server.hook "Triggering hook ~a/~a (~{\"~/radiance::trigger-print-args/\"~^, ~})" space trigger args)
   (loop for hook in (gethash trigger (get-namespace space))
      if (let ((module (module hook)))
           (unless (persistent module)
