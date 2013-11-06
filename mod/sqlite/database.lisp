@@ -48,30 +48,37 @@
 
 (defmethod db-create ((db sqlite) (collection string) fields &key indices (if-exists :ignore))
   (assert (not (null fields)) () "Fields cannot be an empty list!")
+  (v:trace :sqlite "Creating collection ~a with fields ~a and indices ~a" collection fields indices)
   (sqlite:execute-non-query (dbinstance db) (format NIL "CREATE TABLE ~:[~;IF NOT EXISTS ~]`~a` (_id INTEGER PRIMARY KEY AUTOINCREMENT, ~{~/radiance-mod-sqlite::format-field-type/~^, ~});" (eq if-exists :ignore) collection fields))
   (if indices
       (sqlite:execute-non-query (dbinstance db) (format NIL "CREATE INDEX ~:[~;IF NOT EXISTS ~]`~a_idx` ON `~:*~a` (~{~a~^, ~})" (eq if-exists :ignore) collection indices)))) 
   
 (defmethod db-empty ((db sqlite) (collection string) &key)
+  (v:trace :sqlite "Emptying collection ~a" collection)
   (sqlite:execute-non-query (dbinstance db) (format NIL "DELETE FROM `~a`" collection)))
 
 (defmethod db-drop ((db sqlite) (collection string) &key)
+  (v:trace :sqlite "Dropping collection ~a" collection)
   (sqlite:execute-non-query (dbinstance db) (format NIL "DROP TABLE `~a`" collection)))
 
 (defmethod db-select ((db sqlite) (collection string) query &key fields (skip 0) (limit -1) sort)
   (multiple-value-bind (where-part values) (query-to-where-part query)
+    (v:trace :sqlite "Selecting data (~a) from ~a with query ~a, skipping ~a, limiting ~a, sorting by ~a" fields collection query skip limit sort)
     (get-data db (format NIL "SELECT ~a FROM `~a` ~a ~a ~:[~;~:*LIMIT ~D~] ~:[~;~:*OFFSET ~D~];" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values)))
 
 (defmethod db-iterate ((db sqlite) (collection string) query function &key fields (skip 0) (limit -1) sort)
   (multiple-value-bind (where-part values) (query-to-where-part query)
+    (v:trace :sqlite "Iterating data (~a) from ~a with query ~a, skipping ~a, limiting ~a, sorting by ~a" fields collection query skip limit sort)
     (get-data db (format NIL "SELECT ~a FROM `~a` ~a ~a ~:[~;~:*LIMIT ~D~] ~:[~;~:*OFFSET ~D~];" (fields-to-fields-part fields) collection where-part (sort-to-order-part sort) limit skip) values function)))
 
 (defmethod db-insert ((db sqlite) (collection string) data &key)
   (multiple-value-bind (set-part values) (data-to-insert-part data)
+    (v:trace :sqlite "Inserting into ~a: ~a" collection data)
     (db-query db (format NIL "INSERT INTO `~a` ~a;" collection set-part) values)))
 
 (defmethod db-remove ((db sqlite) (collection string) query &key skip limit sort)
   (multiple-value-bind (where-part values) (query-to-where-part query)
+    (v:trace :sqlite "Removing from ~a with query ~a, skipping ~a, limiting ~a, sorting by ~a" collection query skip limit sort)
     (if (or limit sort)
         (db-query db (format NIL "DELETE FROM `~a` WHERE `_id` = (SELECT `_id` FROM `~a`~a ~a ~:[~;~:*LIMIT ~D~] ~:[~;~:*OFFSET ~D~]);" collection collection where-part (sort-to-order-part sort) limit skip) values)
         (db-query db (format NIL "DELETE FROM `~a`~a ~a;" collection where-part (sort-to-order-part sort)) values))))
@@ -79,6 +86,7 @@
 (defmethod db-update ((db sqlite) (collection string) query data &key (skip 0) (limit -1) sort replace)
   (multiple-value-bind (set-part values1) (data-to-set-part data)
     (multiple-value-bind (where-part values2) (query-to-where-part query)
+      (v:trace :sqlite "Updating ~a with query ~a, skipping ~a, limiting ~a, sorting by ~a: ~a" collection query skip limit sort data)
       (if replace
           (progn
             (db-query db (format NIL "DELETE FROM `~a` WHERE `_id` = (SELECT `_id` FROM `~a`~a ~a ~:[~;~:*LIMIT ~D~] ~:[~;~:*OFFSET ~D~]);" collection collection where-part (sort-to-order-part sort) limit skip) values2)
@@ -88,6 +96,7 @@
               (db-query db (format NIL "UPDATE `~a` ~a ~a ~a" collection set-part where-part (sort-to-order-part sort)) (append values1 values2)))))))
 
 (defmethod db-apropos ((db sqlite) (collection string) &key)
+  (v:trace :sqlite "Retrieving apropos of ~a" collection)
   (mapcar #'second (sqlite:execute-to-list (dbinstance db) (format NIL "PRAGMA table_info(`~a`);" collection))))
 
 (defun query-to-where-part (query)

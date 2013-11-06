@@ -35,6 +35,7 @@
 
 (defmethod model-get ((model sqlite-data-model) (collection string) query &key (skip 0) (limit -1) sort)
   (multiple-value-bind (where-part queryargs) (query-to-where-part query)
+    (v:trace :sqlite.model "Getting model from ~a with query ~a, skipping ~a, limiting ~a, sorting by ~a" collection query skip limit sort)
     (let* ((db (dbinstance (get-module :sqlite)))
            (querystring (format NIL "SELECT * FROM `~a` ~a ~a LIMIT ~D OFFSET ~D;" collection where-part (sort-to-order-part sort) limit skip))
            (stmt (sqlite:prepare-statement db querystring)))
@@ -54,6 +55,7 @@
 
 (defmethod model-get-one ((model sqlite-data-model) (collection string) query &key (skip 0) sort)
   (multiple-value-bind (where-part queryargs) (query-to-where-part query)
+    (v:trace :sqlite.model "Getting one model from ~a with query ~a, skipping ~a, sorting by ~a" collection query skip sort)
     (let* ((db (dbinstance (get-module :sqlite)))
            (querystring (format NIL "SELECT * FROM `~a` ~a ~a LIMIT 1 OFFSET ~D;" collection where-part (sort-to-order-part sort) skip))
            (stmt (sqlite:prepare-statement db querystring)))
@@ -73,6 +75,7 @@
           NIL))))
           
 (defmethod model-hull ((model sqlite-data-model) (collection string) &key)
+  (v:trace :sqlite.model "Creating model hull for ~a" collection)
   (make-instance 'sqlite-data-model :collection collection))
 
 (defmethod model-hull-p ((model sqlite-data-model) &key) 
