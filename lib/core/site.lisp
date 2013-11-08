@@ -369,3 +369,78 @@ requested output type or a page redirect in the case of an URI."
 (define-api-format none "text/plain; charset=utf-8" data
   (declare (ignore data))
   "Unknown format.")
+
+(defmacro save-to-db ((&rest vars) (collection &key query (skip 0) sort (type :POST)))
+  "Autogically collect the given vars from POST or GET vars and save them to an existing or new data model.
+VARS can either be a symbol, dictating the model field and GET/POST var name directly,
+or it can be a list of the following format: (FIELD &optional GETPOSTVAR DEFAULT).
+If GETPOSTVAR is NIL, the DEFAULT will always be used. Otherwise DEFAULT is used if the
+GETPOSTVAR returns NIL. The TYPE parameter dictates where the vars are retrieved from:
+:POST post-var, :GET get-var, T post-or-get-var, NIL NIL."
+  (let ((modelsym (gensym "MODEL")))
+    (flet ((valuepart (name)
+             (ecase type
+               (NIL NIL)
+               (:POST `(post-var ,name))
+               (:GET `(get-var ,name))
+               (T `(post-or-get-var ,name)))))
+      `(with-model 
+           (,modelsym ,@(mapcar #'(lambda (var) (if (listp var) (first var) var)) vars))
+           (,collection ,query :skip ,skip :sort ,sort)
+         ,@(mapcar #'(lambda (var)
+                       (let ((name var)
+                             (value))
+                         (if (listp var)
+                             (destructuring-bind (actname &optional var default) var
+                               (setf name actname)
+                               (setf value (if var
+                                               `(or ,(valuepart var) ,default)
+                                               default)))
+                             (setf value (valuepart (string-downcase (symbol-name name)))))
+                         `(setf ,name ,value)))
+                   vars)
+         (model-insert ,modelsym)))))
+
+(defmacro validate-and-save ((&rest vars) (collection &key query (skip 0) sort (type :POST) (on-invalid :ERROR)))
+  "Validates the given variables and saves them to the database with SAVE-TO-DB.
+Each variable has to be a list of the following syntax: (FIELD &optional VALIDATOR POSTGETVAR DEFAULT FAIL-DEFAULT)
+FIELD is the name of the field in the model/database.
+VALIDATOR is a function that should accept one parameter and return NIL on invalidity.
+POSTGETVAR is the string by which the POST or GET var is retrieved.
+DEFAULT is a default value that is used if POSTGETVAR is NIL or turns out to be NIL. Otherwise it is also used if validation fails and FAIL-DEFAULT is T.
+FAIL-DEFAULT dictates whether the process aborts on validation failure. If it is T, the DEFAULT is used instead of the actual value.
+
+The other parameters are the same as in SAVE-TO-DB, with the exception of ON-INVALID:
+ON-INVALID can be one of (:ERROR :SKIP)"
+  (flet ((valuepart (name)
+             (ecase type
+               (NIL NIL)
+               (:POST `(post-var ,name))
+               (:GET `(get-var ,name))
+               (T `(post-or-get-var ,name)))))
+    `(handler-case
+         (let (,@(mapcar #'(lambda (var)
+                             `(,(first var) (or ,(valuepart (or (third var) 
+                                                                (string-downcase (symbol-name (first var)))))
+                                                ,(fourth var)))) vars))
+           ,@(mapcar #'(lambda (var)
+                         (destructuring-bind (var &optional validator getpost default fail-default) var
+                           (declare (ignore getpost))
+                           `(unless (,validator ,var)
+                              ,(cond
+                                ((eq fail-default NIL)  `(error 'invalid :validator ,validator :var ',var))
+                                ((listp fail-default) `(if ,fail-default
+                                                           (setf ,var ,default)
+                                                           (error 'invalid :validator ,validator :var ',var)))
+                                (T `(setf ,var ,default))))))
+                     (remove-if-not #'(lambda (var) (second var)) vars))
+           (save-to-db 
+            (,@(mapcar #'(lambda (var)
+                           `(,(first var) NIL ,(first var))) 
+                       vars))
+            (,collection :query ,query :skip ,skip :sort ,sort :type NIL)))
+       (invalid (err)
+         (v:warn :radiance.server.site "Error during validation: ~a" err)
+         (ecase ,on-invalid
+           (:ERROR (error err))
+           (:SKIP NIL))))))

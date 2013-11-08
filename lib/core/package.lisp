@@ -10,6 +10,7 @@
   (:export ;; conditions.lisp
            :radiance-error
            :module-already-initialized
+           :invalid
            :error-page
            :auth-error
            :api-error
@@ -200,6 +201,8 @@
            :api-return
            :api-format
            :define-api-format
+           :save-to-db
+           :validate-and-save
            ;; toolkit.lisp
            :time-spent
            :load-config

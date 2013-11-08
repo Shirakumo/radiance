@@ -6,6 +6,9 @@ Date
   - Completed today
   x Marked off as not-necessary
 
+2013.11.06
+  v Add methods for simple submission handling. 
+
 2013.11.05
   v Fix implementation/module loading.
   - Made sqlite regex compatible.
@@ -76,7 +79,7 @@ Date
   * Figure out a solution for the default implementation.
   ^ Database introspection admin page.
   * Add validation functions.
-  * Add methods for simple submission handling.
+  ^ Add methods for simple submission handling.
 
 2013.08.14
   v Add gravatar and general user field convenience functions.
