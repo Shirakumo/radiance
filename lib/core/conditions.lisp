@@ -22,6 +22,13 @@
 (define-condition error-page (radiance-error) ())
 (define-condition auth-error (radiance-error) ())
 
+(define-condition invalid (radiance-error) 
+  ((var :initarg :var :initform "Unknown Variable")
+   (validator :initarg :validator :initform "Unknown Validator"))
+  (:report (lambda (c s) (format s "Variable ~a does not validate to ~a"
+                                 (slot-value c 'var)
+                                 (slot-value c 'validator)))))
+
 (define-condition api-error (radiance-error)
   ((module :initarg :module :initform NIL)
    (apicall :initarg :apicall :initform NIL))
