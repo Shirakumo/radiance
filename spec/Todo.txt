@@ -6,6 +6,9 @@ Date
   - Completed today
   x Marked off as not-necessary
 
+2013.11.10
+  * Redo the module system, gog damnit.
+
 2013.11.06
   v Add methods for simple submission handling. 
 

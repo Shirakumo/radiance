@@ -1,0 +1,9 @@
+  === Module Framework Specification ===
+
+0) radiance load -> searches for module.lisp files in mod/ and loads them.
+1) module def -> expands into a defclass and defsystem call, with as much automation as possible.
+   -> defsystem subclasses module class
+2) system def -> shows all source files that need to be loaded.
+3) source -> actual implementations.
+
+fukken implementation problem, god damnit.
