@@ -6,20 +6,24 @@
 
 (in-package :radiance)
 
+(declaim (inline authenticated-p))
 (defun authenticated-p (&optional (session *radiance-session*))
   "Returns T if the current user is using an authenticated session."
   (and session (session-user session) (user-saved-p (session-user session)) (session-active-p session)))
 
+(declaim (inline authorized-p))
 (defun authorized-p (access-branch &optional (session *radiance-session*))
   "Returns T if the current user is authorized to the given access branch."
   (and (authenticated-p session) (user-check (session-user session) access-branch)))
 
+(declaim (inline user))
 (defun user (&key default authenticate)
   "Returns the currently logged in user or default."
   (when authenticate
     (setf *radiance-session* (authenticate T)))
   (or (and *radiance-session* (session-user *radiance-session*)) default))
 
+(declaim (inline set-cookie))
 (defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (reply *radiance-reply*))
   "Sets a cookie with defaults and ensures proper return object utilization. If domain is NIL, it sets it for multi-subdomain compatibility."
   (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :reply reply)))
@@ -28,6 +32,7 @@
         (setc domain)
         (setc (format NIL ".~a" (domain *radiance-request*))))))
 
+(declaim (inline get-var))
 (defun get-var (name &optional (request *radiance-request*))
   "Returns a GET variable. If the name ends with [], it assumed to be an array and a list of all values is returned."
   (declare (optimize (speed 3)) (string name))
@@ -35,10 +40,12 @@
       (assoc-all name (get-vars) :val #'cdr :test #'string=)
       (hunchentoot:get-parameter name request)))
 
+(declaim (inline get-vars))
 (defun get-vars (&optional (request *radiance-request*))
   "Returns an alist of all GET variables."
   (hunchentoot:get-parameters* request))
 
+(declaim (inline post-var))
 (defun post-var (name &optional (request *radiance-request*))
   "Returns a POST variable. If the name ends with [], it assumed to be an array and a list of all values is returned."
   (declare (optimize (speed 3)) (string name))
@@ -46,14 +53,17 @@
       (assoc-all name (post-vars) :val #'cdr :test #'string=)
       (hunchentoot:post-parameter name request)))
 
+(declaim (inline post-vars))
 (defun post-vars (&optional (request *radiance-request*))
   "Returns an alist of all POST variables."
   (hunchentoot:post-parameters* request))
 
+(declaim (inline post-or-get-var))
 (defun post-or-get-var (name &optional (request *radiance-request*))
   "Returns a POST variable or, if not provided, the GET variable of the same name."
   (or (post-var name request) (get-var name request)))
 
+(declaim (inline cookie-var))
 (defun cookie-var (name &optional (request *radiance-request*))
   "Returns a COOKIE variable."
   (hunchentoot:cookie-in name request))
@@ -61,14 +71,17 @@
 (defsetf cookie-var (cookie) (value)
   `(set-cookie ,cookie :value ,value))
 
+(declaim (inline cookie-vars))
 (defun cookie-vars (&optional (request *radiance-request*))
   "Returns an alist of all COOKIE variables."
   (hunchentoot:cookies-in* request))
 
+(declaim (inline header-var))
 (defun header-var (name &optional (request *radiance-request*))
   "Returns a HEADER variable."
   (hunchentoot:header-in name request))
 
+(declaim (inline header-vars))
 (defun header-vars (&optional (request *radiance-request*))
   "Returns an alist of all HEADER variables."
   (hunchentoot:headers-in* request))
@@ -120,19 +133,23 @@ Changes to these cookies will be sent along to the browser with default cookie s
            collect `(,varname (cookie-var ,fieldname)))
      ,@body))
 
+(declaim (inline request-method))
 (defun request-method (&optional (request *radiance-request*))
   "Returns the http-request method."
   (hunchentoot:request-method request))
 
+(declaim (inline remote-address))
 (defun remote-address (&optional (request *radiance-request*))
   "Returns the remote address of the request."
   (hunchentoot:remote-addr* request))
 
+(declaim (inline set-content-type))
 (defun set-content-type (content-type &optional (reply *radiance-reply*))
   "Change the content-type of the current page."
   (v:debug :radiance.server.request "Setting content-type to: ~a" content-type)
   (setf (hunchentoot:content-type* reply) content-type))
 
+(declaim (inline redirect))
 (defun redirect (&optional (uri-or-string (get-redirect)))
   "Redirects to the requested URI."
   (v:debug :radiance.server.request "Redirecting to ~a" uri-or-string)
@@ -141,6 +158,7 @@ Changes to these cookies will be sent along to the browser with default cookie s
        uri-or-string
        (uri->url uri-or-string))))
 
+(declaim (inline get-redirect))
 (defun get-redirect (&optional (default "/") (request *radiance-request*))
   (or (hunchentoot:get-parameter "redirect" request)
       (hunchentoot:post-parameter "redirect" request)
@@ -148,10 +166,12 @@ Changes to these cookies will be sent along to the browser with default cookie s
       (hunchentoot:referer request)
       default))
 
+(declaim (inline static))
 (defun static (path)
   "Create pathname to static resource."
   (merge-pathnames path (merge-pathnames "data/static/" (pathname (config :root)))))
 
+(declaim (inline template))
 (defun template (path)
   "Create pathname to template."
   (merge-pathnames path (merge-pathnames "data/template/" (pathname (config :root)))))
@@ -164,6 +184,7 @@ Changes to these cookies will be sent along to the browser with default cookie s
       (setf (fill-pointer seq) (read-sequence seq stream))
       seq)))
 
+(declaim (inline error-page))
 (defun error-page (errorcode)
   "Signals a condition that provokes the requested error page."
   (v:debug :radiance.server.request "Erroring out to ~a" errorcode)
@@ -343,11 +364,13 @@ requested output type or a page redirect in the case of an URI."
        (defhook :api ',name ,modgens #',fullname
                 :description ,(format nil "API call for ~a" module)))))
 
+(declaim (inline api-return))
 (defun api-return (code text &optional data)
   "Generates an API response in the proper format:
   (:CODE code :TEXT text :DATA data)"
   (plist->hash-table :CODE code :TEXT text :TIME (get-unix-time) :DATA data))
 
+(declaim (inline api-format))
 (defun api-format (format data)
   "Turn a plist into the requested format."
   (let ((format (gethash format *radiance-api-formats*)))
