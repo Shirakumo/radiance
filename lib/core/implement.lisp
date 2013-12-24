@@ -6,76 +6,65 @@
 
 (in-package :radiance)
 
-(defclass implementation ()
-  ((module :initform NIL :initarg :module :accessor module :type module)
-   (superclass :initform (error "Superclass required.") :initarg :superclass :accessor superclass :type symbol))
-  (:documentation "Radiance implementation class to hold information about an implementations slot."))
+(defmacro define-interface (name &body function-declarations)
+  "Define a new implementation mechanism."
+  (let ((fqpn (intern (format NIL "ORG.TYMOONNEXT.RADIANCE.INTERFACE.~a" name) :KEYWORD))
+        (macro-name (gensym "INTERFACE-GENERATOR"))
+        (pkg-impl-var (gensym "PKG-IMPL-VAR"))
+        (pkg-impl-fun (gensym "PKG-IMPL-FUN")))
+    (flet ((interface-function (funcname args options)
+             (let* ((pkg-function (gensym "PKG-FUNCTION"))
+                    (pkg-method (gensym "PKG-METHOD"))
+                    (pkg-module (gensym "PKG-MODULE"))
+                    (restsymb (gensym "REST"))
+                    (wholesymb (gensym "WHOLE"))
+                    (documentation (second (assoc :documentation options)))
+                    (type (second (assoc :type options)))
+                    (argsvarlist)
+                    (argsgeneric (cons pkg-module (alexandria:flatten args))))
 
-(defmethod print-object ((impl implementation) out)
-  (print-unreadable-object (impl out :type t)
-    (format out "~a -> ~a" (superclass impl) (module impl))))
-
-(defgeneric implement (slot module)
-  (:documentation "Registers a module for an implementation."))
-
-(defmethod implement ((slot symbol) (module module))
-  "Standard implements function for non-existent symbols."
-  (error "Implementation ~a unknown!" slot))
-
-(defmacro defimplclass (slot superclass)
-  "Defines an implementations interface class."
-  `(progn 
-     (v:debug :radiance.server.implementation "Defining implementation ~a with ~a" ',slot ',superclass)
-     (setf (gethash ',slot *radiance-implements*)
-           (make-instance 'implementation :superclass ',superclass))
-     (defmethod implement ((slot (eql ',slot)) (module module))
-       "Standard implements function for badly requested classes."
-       (error "Module does not match implementation superclass ~a!" slot))
-     (defmethod implement ((slot (eql ',slot)) (module ,superclass))
-       (v:debug :radiance.server.implementation "~a implements ~a" module slot)
-       (setf (module (gethash ',slot *radiance-implements*)) module))
-     ',superclass))
-
-(defmacro defimpl (slot &body generics)
-  "Define a new implementation. A generics definition is a list of the following format: (function-name (additional-args*) docstring?)"
-  (let ((documentation "") (mod-gens (gensym "IMPL-GENSYM"))
-        (super (if (listp slot) (cdr slot) '(module)))
-        (slot (if (listp slot) (first slot) slot)))
-    (when (stringp (car generics))
-      (setf documentation (car generics)
-            generics (cdr generics)))
-    (v:debug :radiance.server.implementation "Generating implementation ~a with superclasses ~a." slot super)
-    `(progn
-       (defclass ,slot ,super ()
-         (:documentation ,documentation))
-       ,@(loop for generic in generics collect
-              (destructuring-bind (func args &optional doc) generic
-                (let* ((args (append args
-                                    (if (not (find '&key args)) '(&key))
-                                    '(&allow-other-keys)))
-                      (gen-args (loop for arg in args collect (if (listp arg) (first arg) arg))))
+               ;; Add rest and allow-other-keys
+               (unless (or (find '&body args) (find '&rest args))
+                 (setf args (append args (list '&rest restsymb)))
+                 (if (find '&key args)
+                     (setf argsgeneric (append argsgeneric '(&allow-other-keys)))
+                     (setf argsgeneric (append argsgeneric '(&key &allow-other-keys)))))
+               ;; Create pure var list.
+               (setf argsvarlist (remove-if #'(lambda (a) (find a '(&allow-other-keys &aux &body &environment &key &optional &rest &whole)))
+                                            (alexandria:flatten args)))
+               
+               ;; Triply nested macros. Prepare for hell.               
+               `(let ((,pkg-function (find-symbol ,(format NIL "~a" funcname) ',name))
+                      (,pkg-method (intern ,(format NIL "I-~a" funcname) ',name)))
                   `(progn
-                     (defgeneric ,func ,(append (list mod-gens) gen-args)
-                       (:documentation ,doc))
-                     (defmethod ,func ,(append `((,mod-gens ,slot)) args)
-                       ,(format nil "Standard method implementation for ~a's ~a, always throws an error." slot func)
-                       (declare (ignore ,@(remove-if #'(lambda (x) (find x '(&key &allow-other-keys &rest &optional))) gen-args)))
-                       (error "Module ~a does not implement required method ~a!" ,mod-gens ',func))
-                     (defmethod ,func ,(append `((,mod-gens (eql T))) args)
-                       ,(format nil "Standard method implementation for ~a's ~a, always redirects to current implementation." slot func)
-                       (funcall #',func (implementation ',slot) ,@(args-to-funcall gen-args)))))))
-       
-       (defimplclass ,slot ,slot))))
+                     (defgeneric ,,pkg-method (,@',argsgeneric))
+                     (defmacro ,,pkg-function (&whole ,',wholesymb ,@',args)
+                       ,@',(when documentation (list documentation))
+                       (declare (ignore ,@',argsvarlist))
+                       ,,(ecase type
+                                ((:macro 'macro)
+                                 ``(apply #',,pkg-method ,,pkg-impl-var ,',wholesymb))
+                                ((:function 'function NIL)
+                                 ```(apply #',',,pkg-method ,',,pkg-impl-var ,,',wholesymb)))))))))
+      
+      `(progn
+         (defpackage ,fqpn
+           (:nicknames ,(intern (string-upcase name) :KEYWORD))
+           (:export ,@(append '(#:*implementation* #:implementation) (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) function-declarations))))
+         (macrolet ((,macro-name ()
+                      (let ((,pkg-impl-var (find-symbol "*IMPLEMENTATION*" ',name))
+                            (,pkg-impl-fun (find-symbol "IMPLEMENTATION" ',name)))
+                        `(progn
+                           (defvar ,,pkg-impl-var)
+                           (declaim (inline ,,pkg-impl-fun))
+                           (defun ,,pkg-impl-fun () ,,pkg-impl-var)
+                           ,,@(loop for declaration in function-declarations
+                                 collect (destructuring-bind (funcname args &rest options) declaration
+                                           (interface-function funcname args options)))))))
+           (,macro-name))
+         (find-package ',name)))))
 
-(defun args-to-funcall (args)
-  (alexandria:flatten
-   (loop with kwargs = NIL 
-      for var in args
-      unless (if (or (eq var '&key) (eq var '&allow-other-keys)) (setf kwargs T))
-      collect (if kwargs (list (make-keyword var) var) var))))
-
-(defun implementation (slot)
-  "Retrieves the implementing module."
-  (module (gethash slot *radiance-implements*)))
-
-(defsetf implementation implement)
+(defmacro define-interface-function (function argslist &body body)
+  (let ((pkg-method (find-symbol (format NIL "I-~a" function) (symbol-package function))))
+    `(defmethod ,pkg-method ,argslist
+       ,@body)))
