@@ -19,6 +19,18 @@
   (:report (lambda (c s) (format s "Module ~a already initialized!"
                                  (slot-value c 'module)))))
 
+(define-condition interface-error (radiance-error)
+  ((interface :initarg :interface :reader interface)))
+
+(define-condition no-such-interface-error (interface-error) ()
+  (:report (lambda (c s) (format s "Attempted to load interface ~a, which is not defined." (slot-value c 'interface)))))
+
+(define-condition no-interface-implementation-error (interface-error) ()
+  (:report (lambda (c s) (format s "Attempted to load interface ~a, but no implementation is configured for it." (slot-value c 'interface)))))
+
+(define-condition interface-not-implemented-error (interface-error) ()
+  (:report (lambda (c s) (format s "Attempted to access interface ~a, but no implementation is set!" (slot-value c 'interface)))))
+
 (define-condition error-page (radiance-error) ())
 (define-condition auth-error (radiance-error) ())
 
