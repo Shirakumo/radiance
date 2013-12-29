@@ -51,13 +51,20 @@
          (defpackage ,fqpn
            (:nicknames ,(intern (string-upcase name) :KEYWORD))
            (:export ,@(append '(#:*implementation* #:implementation) (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) function-declarations))))
+         (asdf:defsystem ,(intern (format nil "RADIANCE-~a" name))
+           :class :interface)
          (macrolet ((,macro-name ()
                       (let ((,pkg-impl-var (find-symbol "*IMPLEMENTATION*" ',name))
-                            (,pkg-impl-fun (find-symbol "IMPLEMENTATION" ',name)))
+                            (,pkg-impl-fun (find-symbol "IMPLEMENTATION" ',name))
+                            (new-impl-gens (gensym "NEW-IMPL"))
+                            (provided-gens (gensym "PROVIDED")))
                         `(progn
                            (defvar ,,pkg-impl-var)
                            (declaim (inline ,,pkg-impl-fun))
-                           (defun ,,pkg-impl-fun () ,,pkg-impl-var)
+                           (defun ,,pkg-impl-fun (&optional (,new-impl-gens NIL ,provided-gens))
+                             (if ,provided-gens
+                                 (setf ,,pkg-impl-var ,new-impl-gens)
+                                 ,,pkg-impl-var))
                            ,,@(loop for declaration in function-declarations
                                  collect (destructuring-bind (funcname args &rest options) declaration
                                            (interface-function funcname args options)))))))
