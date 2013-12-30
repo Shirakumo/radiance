@@ -21,17 +21,27 @@
                     (documentation (second (assoc :documentation options)))
                     (type (second (assoc :type options)))
                     (argsvarlist)
-                    (argsgeneric (cons pkg-module (alexandria:flatten args))))
+                    (argsgeneric (cons pkg-module (mapcar #'(lambda (a) (if (listp a) (car a) a)) args))))
 
                ;; Add rest and allow-other-keys
                (unless (or (find '&body args) (find '&rest args))
-                 (setf args (append args (list '&rest restsymb)))
-                 (if (find '&key args)
-                     (setf argsgeneric (append argsgeneric '(&allow-other-keys)))
-                     (setf argsgeneric (append argsgeneric '(&key &allow-other-keys)))))
+                 (let ((keypos (position '&key args)))
+                   (if keypos
+                       (progn
+                         (setf argsgeneric (append argsgeneric '(&allow-other-keys)))
+                         (if (> keypos 0)
+                             (progn
+                               (push restsymb (cdr (nthcdr (1- keypos) args)))
+                               (push '&rest (cdr (nthcdr (1- keypos) args))))
+                             (progn
+                               (push restsymb args)
+                               (push '&rest args))))
+                       (progn
+                         (setf argsgeneric (append argsgeneric '(&key &allow-other-keys)))
+                         (append args (list '&rest restsymb))))))
                ;; Create pure var list.
                (setf argsvarlist (remove-if #'(lambda (a) (find a '(&allow-other-keys &aux &body &environment &key &optional &rest &whole)))
-                                            (alexandria:flatten args)))
+                                            (mapcar #'(lambda (a) (if (listp a) (car a) a)) args)))
                
                ;; Triply nested macros. Prepare for hell.               
                `(let ((,pkg-function (find-symbol ,(format NIL "~a" funcname) ',name))
@@ -52,14 +62,15 @@
            (:nicknames ,(intern (string-upcase name) :KEYWORD))
            (:export ,@(append '(#:*implementation* #:implementation) (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) function-declarations))))
          (asdf:defsystem ,(intern (format nil "RADIANCE-~a" name))
-           :class :interface)
+           :class :interface
+           :interface-name ,(find-symbol (string-upcase name) :KEYWORD))
          (macrolet ((,macro-name ()
                       (let ((,pkg-impl-var (find-symbol "*IMPLEMENTATION*" ',name))
                             (,pkg-impl-fun (find-symbol "IMPLEMENTATION" ',name))
                             (new-impl-gens (gensym "NEW-IMPL"))
                             (provided-gens (gensym "PROVIDED")))
                         `(progn
-                           (defvar ,,pkg-impl-var)
+                           (defvar ,,pkg-impl-var NIL)
                            (declaim (inline ,,pkg-impl-fun))
                            (defun ,,pkg-impl-fun (&optional (,new-impl-gens NIL ,provided-gens))
                              (if ,provided-gens
