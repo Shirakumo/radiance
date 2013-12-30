@@ -7,7 +7,7 @@
 (in-package :radiance)
 
 (defclass interface (asdf:system)
-  ((%interface-name :initarg :interface-name :initform (error "INTERFACE-NAME required.") :accessor interface-name)))
+  ((%interface-name :initarg :interface-name :initform NIL :accessor interface-name)))
 
 (defclass module (asdf:system)
   ((%implement :initarg :implement :initform () :accessor implement)))
