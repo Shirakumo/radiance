@@ -4,10 +4,13 @@
   Todo list for all Radiance issues.
 ** Core
    Work related to the Radiance core framework glue library.
-*** TODO Finish off the ASDF system implementations for interfaces.
+*** DONE Finish off the ASDF system implementations for interfaces.
+    - State "DONE"       from "TODO"       [2014-01-01 Wed 20:14]
+*** DONE Fix macro-lambda-lists for interfaces.
+    - State "DONE"       from "TODO"       [2014-01-01 Wed 21:46]
+*** TODO Fix interface class requirements (data-model, user, etc).
 *** TODO Reimplement the loading procedure.
 *** TODO Fix everything to compile.
-*** TODO Fix macro-lambda-lists for interfaces.
 *** TODO Start testing with core module on new system.
 *** TODO Fix all other modules for the new system.
 *** TODO Add automated caching system.
@@ -36,6 +39,7 @@
 ** TODO Add HTML5 initializing mode.
    
 * Verbose & Piping
-** TODO Add simple constructs to filter output.
+** DONE Add simple constructs to filter output.
+   - State "DONE"       from "TODO"       [2013-12-30 Mon 12:02]
 ** TODO Add simple constructs to start logging to a file.
 ** TODO Maybe see about adding emacs support.
