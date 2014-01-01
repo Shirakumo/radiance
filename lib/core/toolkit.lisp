@@ -55,14 +55,9 @@
   "Turns the keyword arguments into a hash table."
   (alexandria:plist-hash-table plist))
 
-(defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
-
 (defun package-symbol (&optional (package *package*))
   "Retrieves the keyword symbol of the package."
   (make-keyword (package-name package)))
-
-(defmacro nappend (var &rest lists)
-  `(setf ,var (append ,var ,@lists)))
 
 (defun universal-to-unix-time (universal-time)
   (- universal-time *unix-epoch-difference*))

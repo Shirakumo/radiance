@@ -6,7 +6,8 @@
 
 (defpackage org.tymoonnext.radiance
   (:nicknames :org.tymoonnext.radiance :tynet-5 :tynet :radiance)
-  (:use :cl :cl-fad :lquery)
+  (:use :cl :cl-fad :lquery :alexandria)
+  (:shadowing-import-from :alexandria :copy-stream :copy-file)
   (:export ;; conditions.lisp
            :radiance-error
            :module-already-initialized
@@ -210,9 +211,7 @@
            :config-tree
            :concatenate-strings
            :plist->hash-table
-           :make-keyword
            :package-symbol
-           :nappend
            :universal-to-unix-time
            :unix-to-universal-time
            :get-unix-time
