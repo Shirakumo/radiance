@@ -6,73 +6,88 @@
 
 (in-package :radiance)
 
+(defun lambda-keyword-p (symbol)
+  (find symbol '(&allow-other-keys &aux &body &environment &key &optional &rest &whole)))
+
 (defun flatten-lambda-list (lambda-list)
   (mapcar #'(lambda (a) (if (listp a) (car a) a)) lambda-list))
 
 (defun extract-lambda-vars (lambda-list)
-  (remove-if #'(lambda (a) (find a '(&allow-other-keys &aux &body &environment &key &optional &rest &whole)))
-             (flatten-lambda-list lambda-list)))
+  (remove-if #'lambda-keyword-p (flatten-lambda-list lambda-list)))
+
+(defun extract-macro-lambda-vars (macro-lambda-list)
+  (loop with varlist = ()
+     for i from 0 below (length macro-lambda-list)
+     for arg in macro-lambda-list
+     do (when (find arg '(&key &optional &rest &body &aux))
+          (return (append varlist (extract-lambda-vars (nthcdr i macro-lambda-list)))))
+       (unless (lambda-keyword-p arg)
+         (if (listp arg)
+             (appendf varlist (extract-lambda-vars arg))
+             (appendf varlist (list arg))))
+     finally (return varlist)))
+
+(defun make-key-extensible (generic-lambda-list)
+  (if (or (find '&rest generic-lambda-list)
+          (find '&body generic-lambda-list))
+      generic-lambda-list
+      (if (find '&key generic-lambda-list)
+          (append generic-lambda-list '(&allow-other-keys))
+          (append generic-lambda-list '(&key &allow-other-keys)))))
+
+(defun make-rest-swallowing (lambda-list rest-var)
+  (if (or (find '&rest lambda-list)
+          (find '&body lambda-list))
+      lambda-list
+      (let ((keypos (position '&key lambda-list)))
+        (if keypos
+            (append (subseq lambda-list 0 keypos)
+                    (list '&rest rest-var)
+                    (subseq lambda-list keypos))
+            (append lambda-list (list '&rest rest-var))))))
+
+(defun macro-lambda-list->generic-list (macro-lambda-list)
+  (loop with generic-lambda-list = (copy-list macro-lambda-list)
+     for i from 0 below (length macro-lambda-list)
+     for arg in macro-lambda-list
+     until (or (eql arg '&rest) (eql arg '&key) (eql arg '&optional))
+     do (when (listp arg)
+          (setf (nth i generic-lambda-list)
+                (gensym (format NIL "~{~a~^-~}" (extract-lambda-vars arg)))))
+     finally (return generic-lambda-list)))
 
 (defmacro define-interface (name &body function-declarations)
   "Define a new implementation mechanism."
   (with-gensyms
-      ((macro-name   "INTERFACE-GENERATOR")
-       (pkg-impl-var "PKG-IMPL-VAR")
-       (pkg-impl-fun "PKG-IMPL-FUN")
-       (pkg-function "PKG-FUNCTION")
-       (pkg-method   "PKG-METHOD")
-       (pkg-module   "PKG-MODULE")
-       (restsymb     "REST")
-       (wholesymb    "WHOLE"))
-    (let ((fqpn (intern (format NIL "ORG.TYMOONNEXT.RADIANCE.INTERFACE.~a" name) :KEYWORD)) )
+      ((macro-name    "INTERFACE-GENERATOR")
+       (pkg-impl-var  "PKG-IMPL-VAR") (pkg-impl-fun  "PKG-IMPL-FUN")
+       (pkg-function  "PKG-FUNCTION") (pkg-method    "PKG-METHOD")
+       (new-impl-gens "NEW-IMPL") (provided-gens "PROVIDED"))
+    (let ((fqpn (intern (format NIL "ORG.TYMOONNEXT.RADIANCE.INTERFACE.~a" name) :KEYWORD)))
       (flet ((interface-function (funcname args options)
-               (let* ((documentation (second (assoc :documentation options)))
-                      (type (second (assoc :type options)))
-                      (argsvarlist)
-                      (argsgeneric (cons pkg-module (copy-list args))))
+               (let ((documentation (second (assoc :documentation options)))
+                     (type (second (assoc :type options)))
+                     (wholesymb (gensym "WHOLE"))
+                     (argsgeneric (make-key-extensible args)))
 
-                 ;; Add rest and allow-other-keys if missing.
-                 (unless (or (find '&body args) (find '&rest args))
-                   (let ((keypos (position '&key args)))
-                     (if keypos
-                         (progn
-                           (setf argsgeneric (append argsgeneric '(&allow-other-keys)))
-                           (if (> keypos 0)
-                               (progn
-                                 (push restsymb (cdr (nthcdr (1- keypos) args)))
-                                 (push '&rest (cdr (nthcdr (1- keypos) args))))
-                               (progn
-                                 (push restsymb args)
-                                 (push '&rest args))))
-                         (progn
-                           (setf argsgeneric (append argsgeneric '(&key &allow-other-keys)))
-                           (append args (list '&rest restsymb))))))
-
-                 (setf argsvarlist args)
-                 ;; Macro lambda-list handling
+                 ;; Fix up generic args for macro-lambda-lists.
                  (when (or (eql type :macro) (eql type 'macro))
-                   (loop for i from 0 below (length argsgeneric)
-                      for arg in argsgeneric
-                      until (or (eql arg '&rest) (eql arg '&key) (eql arg '&optional))
-                      do (when (listp arg)
-                           (let ((gensym (gensym (format NIL "~{~a~^-~}" (extract-lambda-vars arg)))))
-                             (alexandria:appendf argsvarlist arg)
-                             (setf (nth i argsgeneric) gensym))))
+                   (setf argsgeneric (macro-lambda-list->generic-list argsgeneric))
                    (let ((bodypos (position '&body argsgeneric)))
                      (when bodypos (setf (nth bodypos argsgeneric) '&rest))))
-                 
-                 ;; Create pure var lists.
-                 (setf argsvarlist (extract-lambda-vars argsvarlist))
                  (setf argsgeneric (flatten-lambda-list argsgeneric))
+
+                 ;; Add rest parameter to allow for additional keyword arguments.
+                 (setf args (make-rest-swallowing args (gensym "REST")))
                  
-                 ;; Triply nested macros. Prepare for hell.               
+                 ;; Triply nested macros. Woeyy.
                  `(let ((,pkg-function (find-symbol ,(format NIL "~a" funcname) ',name))
                         (,pkg-method (intern ,(format NIL "I-~a" funcname) ',name)))
                     `(progn
-                       (defgeneric ,,pkg-method (,@',argsgeneric))
+                       (defgeneric ,,pkg-method (,',(gensym "MODULE") ,@',argsgeneric))
                        (defmacro ,,pkg-function (&whole ,',wholesymb ,@',args)
                          ,@',(when documentation (list documentation))
-                         (declare (ignore ,@',argsvarlist))
+                         (declare (ignore ,@',(extract-macro-lambda-vars args)))
                          ,,(ecase type
                                   ((:macro 'macro)
                                    ``(apply #',,pkg-method ,,pkg-impl-var ,',wholesymb))
@@ -82,21 +97,19 @@
         `(progn
            (defpackage ,fqpn
              (:nicknames ,(intern (string-upcase name) :KEYWORD))
-             (:export ,@(append '(#:*implementation* #:implementation) (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) function-declarations))))
+             (:export ,@(append '(#:*implementation* #:implementation)
+                                (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) function-declarations))))
            (asdf:defsystem ,(intern (format nil "RADIANCE-~a" name))
-             :class :interface
-             :interface-name ,(find-symbol (string-upcase name) :KEYWORD))
+             :class :interface  :interface-name ,(find-symbol (string-upcase name) :KEYWORD))
            (macrolet ((,macro-name ()
                         (let ((,pkg-impl-var (find-symbol "*IMPLEMENTATION*" ',name))
-                              (,pkg-impl-fun (find-symbol "IMPLEMENTATION" ',name))
-                              (new-impl-gens (gensym "NEW-IMPL"))
-                              (provided-gens (gensym "PROVIDED")))
+                              (,pkg-impl-fun (find-symbol "IMPLEMENTATION" ',name)))
                           `(progn
                              (defvar ,,pkg-impl-var NIL)
                              (declaim (inline ,,pkg-impl-fun))
-                             (defun ,,pkg-impl-fun (&optional (,new-impl-gens NIL ,provided-gens))
-                               (if ,provided-gens
-                                   (setf ,,pkg-impl-var ,new-impl-gens)
+                             (defun ,,pkg-impl-fun (&optional (,',new-impl-gens NIL ,',provided-gens))
+                               (if ,',provided-gens
+                                   (setf ,,pkg-impl-var ,',new-impl-gens)
                                    ,,pkg-impl-var))
                              ,,@(loop for declaration in function-declarations
                                    collect (destructuring-bind (funcname args &rest options) declaration
