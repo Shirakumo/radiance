@@ -47,14 +47,17 @@
             (append lambda-list (list '&rest rest-var))))))
 
 (defun macro-lambda-list->generic-list (macro-lambda-list)
-  (loop with generic-lambda-list = (copy-list macro-lambda-list)
-     for i from 0 below (length macro-lambda-list)
+  (loop with in-required-args = T
      for arg in macro-lambda-list
-     until (or (eql arg '&rest) (eql arg '&key) (eql arg '&optional))
-     do (when (listp arg)
-          (setf (nth i generic-lambda-list)
-                (gensym (format NIL "~{~a~^-~}" (extract-lambda-vars arg)))))
-     finally (return generic-lambda-list)))
+     collect (cond
+               ((or (eql arg '&rest) (eql arg '&key) (eql arg '&optional))
+                (setf in-required-args NIL)
+                arg)
+               ((and in-required-args (listp arg))
+                (gensym (format NIL "~{~a~^-~}" (extract-lambda-vars arg))))
+               ((listp arg)
+                (car arg))
+               (T arg))))
 
 (defmacro define-interface (name &body function-declarations)
   "Define a new implementation mechanism."
@@ -71,11 +74,12 @@
                      (argsgeneric (make-key-extensible args)))
 
                  ;; Fix up generic args for macro-lambda-lists.
-                 (when (or (eql type :macro) (eql type 'macro))
-                   (setf argsgeneric (macro-lambda-list->generic-list argsgeneric))
-                   (let ((bodypos (position '&body argsgeneric)))
-                     (when bodypos (setf (nth bodypos argsgeneric) '&rest))))
-                 (setf argsgeneric (flatten-lambda-list argsgeneric))
+                 (if (or (eql type :macro) (eql type 'macro))
+                     (progn
+                       (setf argsgeneric (macro-lambda-list->generic-list argsgeneric))
+                       (let ((bodypos (position '&body argsgeneric)))
+                         (when bodypos (setf (nth bodypos argsgeneric) '&rest))))
+                     (setf argsgeneric (flatten-lambda-list argsgeneric)))
 
                  ;; Add rest parameter to allow for additional keyword arguments.
                  (setf args (make-rest-swallowing args (gensym "REST")))
