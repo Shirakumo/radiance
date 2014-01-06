@@ -35,17 +35,6 @@
           (append generic-lambda-list '(&allow-other-keys))
           (append generic-lambda-list '(&key &allow-other-keys)))))
 
-(defun make-rest-swallowing (lambda-list rest-var)
-  (if (or (find '&rest lambda-list)
-          (find '&body lambda-list))
-      lambda-list
-      (let ((keypos (position '&key lambda-list)))
-        (if keypos
-            (append (subseq lambda-list 0 keypos)
-                    (list '&rest rest-var)
-                    (subseq lambda-list keypos))
-            (append lambda-list (list '&rest rest-var))))))
-
 (defun macro-lambda-list->generic-list (macro-lambda-list)
   (loop with in-required-args = T
      for arg in macro-lambda-list
