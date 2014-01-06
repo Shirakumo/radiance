@@ -50,6 +50,9 @@
   (loop with in-required-args = T
      for arg in macro-lambda-list
      collect (cond
+               ((eql arg '&body)
+                (setf in-required-args NIL)
+                '&rest)
                ((or (eql arg '&rest) (eql arg '&key) (eql arg '&optional))
                 (setf in-required-args NIL)
                 arg)
@@ -59,44 +62,54 @@
                 (car arg))
                (T arg))))
 
+(defun intern-list-symbols (list package)
+  (loop for element in list
+     collect (if (and (symbolp element) (not (keywordp element)))
+                 (intern (string-upcase element) package)
+                 element)))
+
 (defmacro define-interface (name &body function-declarations)
   "Define a new implementation mechanism."
   (with-gensyms
       ((macro-name    "INTERFACE-GENERATOR")
        (pkg-impl-var  "PKG-IMPL-VAR") (pkg-impl-fun  "PKG-IMPL-FUN")
        (pkg-function  "PKG-FUNCTION") (pkg-method    "PKG-METHOD")
+       (pkg-class     "PKG-CLASS")
        (new-impl-gens "NEW-IMPL") (provided-gens "PROVIDED"))
     (let ((fqpn (intern (format NIL "ORG.TYMOONNEXT.RADIANCE.INTERFACE.~a" name) :KEYWORD)))
-      (flet ((interface-function (funcname args options)
-               (let ((documentation (second (assoc :documentation options)))
-                     (type (second (assoc :type options)))
-                     (wholesymb (gensym "WHOLE"))
-                     (argsgeneric (make-key-extensible args)))
+      (flet ((interface-class (classname slots options)
+               (let ((slotsgens (gensym "SLOTS"))
+                     (tmpgens (gensym "TEMP")))
+                 `(let ((,pkg-class (find-symbol ,(format NIL "~a" classname) ',name))
+                        (,slotsgens (loop for ,tmpgens in ',slots
+                                       collect (intern-list-symbols ,tmpgens ',name))))
+                    `(defclass ,,pkg-class () ,,slotsgens ,',@(remove :type options :key #'car)))))
+
+             (interface-function (funcname args options)
+               (let* ((documentation (second (assoc :documentation options)))
+                      (type (second (assoc :type options)))
+                      (wholegens (gensym "WHOLE"))
+                      (args (make-key-extensible args))
+                      (argsgeneric args))
 
                  ;; Fix up generic args for macro-lambda-lists.
                  (if (or (eql type :macro) (eql type 'macro))
-                     (progn
-                       (setf argsgeneric (macro-lambda-list->generic-list argsgeneric))
-                       (let ((bodypos (position '&body argsgeneric)))
-                         (when bodypos (setf (nth bodypos argsgeneric) '&rest))))
+                     (setf argsgeneric (macro-lambda-list->generic-list argsgeneric))
                      (setf argsgeneric (flatten-lambda-list argsgeneric)))
-
-                 ;; Add rest parameter to allow for additional keyword arguments.
-                 (setf args (make-rest-swallowing args (gensym "REST")))
                  
                  ;; Triply nested macros. Woeyy.
                  `(let ((,pkg-function (find-symbol ,(format NIL "~a" funcname) ',name))
                         (,pkg-method (intern ,(format NIL "I-~a" funcname) ',name)))
                     `(progn
                        (defgeneric ,,pkg-method (,',(gensym "MODULE") ,@',argsgeneric))
-                       (defmacro ,,pkg-function (&whole ,',wholesymb ,@',args)
+                       (defmacro ,,pkg-function (&whole ,',wholegens ,@',args)
                          ,@',(when documentation (list documentation))
                          (declare (ignore ,@',(extract-macro-lambda-vars args)))
                          ,,(ecase type
                                   ((:macro 'macro)
-                                   ``(apply #',,pkg-method ,,pkg-impl-var ,',wholesymb))
+                                   ``(apply #',,pkg-method ,,pkg-impl-var (cdr ,',wholegens)))
                                   ((:function 'function NIL)
-                                   ```(apply #',',,pkg-method ,',,pkg-impl-var ,,',wholesymb)))))))))
+                                   ```(apply #',',,pkg-method ,',,pkg-impl-var ,@(cdr ,',wholegens))))))))))
         
         `(progn
            (defpackage ,fqpn
@@ -116,8 +129,12 @@
                                    (setf ,,pkg-impl-var ,',new-impl-gens)
                                    ,,pkg-impl-var))
                              ,,@(loop for declaration in function-declarations
-                                   collect (destructuring-bind (funcname args &rest options) declaration
-                                             (interface-function funcname args options)))))))
+                                   collect (destructuring-bind (specified-name args &rest options) declaration
+                                             (ecase (second (assoc :type options))
+                                               ((:macro :function 'macro 'function NIL)
+                                                (interface-function specified-name args options))
+                                               ((:class 'class)
+                                                (interface-class specified-name args options)))))))))
              (,macro-name))
            (find-package ',name))))))
 
