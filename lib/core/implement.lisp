@@ -76,7 +76,9 @@
        (pkg-function  "PKG-FUNCTION") (pkg-method    "PKG-METHOD")
        (pkg-class     "PKG-CLASS")
        (new-impl-gens "NEW-IMPL") (provided-gens "PROVIDED"))
-    (let ((fqpn (intern (format NIL "ORG.TYMOONNEXT.RADIANCE.INTERFACE.~a" name) :KEYWORD)))
+    (let* ((nicknames (if (listp name) name (list name)))
+           (name (if (listp name) (car name) name))
+           (fqpn (intern (format NIL "ORG.TYMOONNEXT.RADIANCE.INTERFACE.~a" name) :KEYWORD)))
       (flet ((interface-class (classname slots options)
                (let ((slotsgens (gensym "SLOTS"))
                      (tmpgens (gensym "TEMP")))
@@ -113,7 +115,7 @@
         
         `(progn
            (defpackage ,fqpn
-             (:nicknames ,(intern (string-upcase name) :KEYWORD))
+             (:nicknames ,@(mapcar #'(lambda (name) (intern (string-upcase name) :KEYWORD)) nicknames))
              (:export ,@(append '(#:*implementation* #:implementation)
                                 (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) function-declarations))))
            (asdf:defsystem ,(intern (format nil "RADIANCE-~a" name))
