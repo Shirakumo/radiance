@@ -21,6 +21,9 @@
     (:documentation "The standard method to invoke when no specific handler has been found.")))
 
 (define-interface user
+  (class ()
+   (:documentation "User base class")
+   (:type :class))
   (get (username)
     (:documentation "Returns the user object of an existing user or creates a new hull instance."))
   (field (user field &key value)
@@ -40,7 +43,7 @@
   (get-actions (user n &key public oldest-first)
     (:documentation "Returns a list of n cons cells, with the car being the action and the cdr being the time of the action.")))
 
-(defmethod getdf ((user user) field)
+(defmethod getdf ((user user:class) field)
   (user:field user field))
 
 (define-interface auth
@@ -56,6 +59,9 @@
     (:documentation "Either displays a full options page or inserts all necessary things into the target if provided.")))
 
 (define-interface session
+  (class ()
+    (:documentation "Sessions base class")
+    (:type :class))
   (get (uuid)
     (:documentation "Returns the session for the given UUID or NIL if no session is found."))
   (get-all ()
@@ -125,6 +131,9 @@
     (:type :MACRO)))
 
 (define-interface data-model
+  (class ()
+    (:documentation "Data-model base class.")
+    (:type :class))
   (id (model)
     (:documentation "Returns the UID of the model."))
   (field (model field &key value)
@@ -169,12 +178,12 @@ of this is always the last statement in the body, even if save is non-NIL."
     (if save (setf body `((let ((,returngens (progn ,@body))) (data-model:save ,modelname) ,returngens))))
     (if modelfields (setf body `((with-fields ,modelfields ,modelname ,@body))))
     `(let ((,modelname ,(if query
-                            `(data-model:get-one T ,collection ,query :skip ,skip :sort ,sort)
-                            `(data-model:hull T ,collection))))
+                            `(data-model:get-one ,collection ,query :skip ,skip :sort ,sort)
+                            `(data-model:hull ,collection))))
        (when ,modelname
          ,@body))))
 
-(defmethod getdf ((model data-model) field)
+(defmethod getdf ((model data-model:class) field)
   (data-model:field model field))
 
 (define-interface admin
