@@ -99,7 +99,7 @@
   (define-panel (name category (&key module (modulevar (gensym "MODULE-")) lquery access-branch menu-icon menu-tooltip) &body body)
     (:type :MACRO)))
 
-(define-interface db
+(define-interface (database db)
   (connect (dbname)
     (:documentation "Connects to the database given the information in the arguments."))
   (disconnect ()
@@ -130,7 +130,7 @@
     (:documentation "Query macro to construct database queries. Usable functions include: := :<= :>= :< :> :in :matches :and :or :not")
     (:type :MACRO)))
 
-(define-interface data-model
+(define-interface (data-model dm)
   (class ()
     (:documentation "Data-model base class.")
     (:type :class))
