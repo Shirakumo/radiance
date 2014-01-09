@@ -59,6 +59,11 @@
 
 (defmacro define-interface (name &body function-declarations)
   "Define a new implementation mechanism."
+  (etypecase name
+    (symbol)
+    (list
+     (assert (not (null name)) () "Interface name cannot be NIL.")
+     (mapc #'(lambda (name) (assert (symbolp name) () "Interface names have to be symbols.")) name)))
   (with-gensyms
       ((macro-name    "INTERFACE-GENERATOR")
        (pkg-impl-var  "PKG-IMPL-VAR") (pkg-impl-fun  "PKG-IMPL-FUN")
@@ -131,5 +136,29 @@
 
 (defmacro define-interface-function (function argslist &body body)
   (let ((pkg-method (find-symbol (format NIL "I-~a" function) (symbol-package function))))
-    `(defmethod ,pkg-method ,argslist
-       ,@body)))
+    (if pkg-method
+        `(defmethod ,pkg-method ,argslist
+           ,@body)
+        (error 'no-such-interface-function-error :interface (package-name (symbol-package function)) :interface-function function))))
+
+(defclass interface (asdf:system)
+  ((%interface-name :initarg :interface-name :initform NIL :accessor interface-name)))
+
+(defmethod asdf:operate ((op asdf:load-op) (interface interface) &key)
+  (let* ((name (interface-name interface))
+         (implementation (config-tree :implementation name)))
+    (if implementation
+        (let ((system (asdf:find-system implementation)))
+          (asdf:load-system system)
+          (let ((package (find-package name)))
+            (if package
+                (let* ((module-spec (assoc name (implement system)))
+                       (module (if (consp (cdr module-spec)) (second module-spec) (cdr module-spec))))
+                  (if module
+                      (setf (symbol-value (find-symbol "*IMPLEMENTATION*" package))
+                            (etypecase module
+                              (function (funcall module))
+                              (symbol module)
+                              (standard-object module)))))
+                (error 'no-such-interface-error :interface name))))
+        (error 'no-interface-implementation-error :interface name))))

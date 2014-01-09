@@ -25,12 +25,13 @@
                (:file "request")
                (:file "validate")
                (:file "module")
-               (:file "trigger")
+;               (:file "trigger")
                (:file "implement")
                (:file "interfaces")
-               (:file "site")
-               (:file "continuation")
-               (:file "server"))
+;               (:file "site")
+;               (:file "continuation")
+;               (:file "server")
+               )
   :depends-on (:alexandria
                :cl-json
                :hunchentoot

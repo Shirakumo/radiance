@@ -31,6 +31,11 @@
 (define-condition interface-not-implemented-error (interface-error) ()
   (:report (lambda (c s) (format s "Attempted to access interface ~a, but no implementation is set!" (slot-value c 'interface)))))
 
+(define-condition no-such-interface-function-error (interface-error)
+  ((interface-function :initarg :interface-function :reader interface-function))
+  (:report (lambda (c s) (format s "Attempted to define interface function ~a for ~a, which is not defined."
+                                 (slot-value c 'interface-function) (slot-value c 'interface)))))
+
 (define-condition error-page (radiance-error) ())
 (define-condition auth-error (radiance-error) ())
 
