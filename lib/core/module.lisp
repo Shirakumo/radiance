@@ -7,20 +7,20 @@
 (in-package :radiance)
 
 (defclass module (asdf:system)
-  ((%implement :initarg :implement :initform () :accessor implement)
+  ((%implementation-map :initarg :implement :initform () :accessor implementation-map)
    (%module-instance :initarg :module-instance :initform NIL :accessor module-instance)
    (%module-package :initarg :module-package :initform *package* :accessor module-package)))
 
 ;; Just some sanity checks for the module definition.
 (defmethod initialize-instance :after ((module module) &rest rest)
   (declare (ignore rest))
-  (assert (listp (implement module)) () "A module's implement map has to be a list of keyword -> identifier pairs.")
+  (assert (listp (implementation-map module)) () "A module's implementation-map has to be a list of keyword -> identifier pairs.")
   (mapc #'(lambda (definition)
             (let ((interface (car definition))
                   (identifier (if (consp (cdr definition)) (second definition) (cdr definition))))
-              (assert (keywordp interface) () "Each interface name in the implement map has to be a keyword.")
+              (assert (keywordp interface) () "Each interface name in the implementation-map has to be a keyword.")
               (etypecase identifier (function) (symbol) (standard-object))))
-        (implement module))
+        (implementation-map module))
   (let ((spec (module-instance module)))
     (etypecase spec
       (function)
@@ -46,13 +46,15 @@
 (defgeneric module-name (identifier)
   (:documentation "The module name of an asdf module system."))
 
+(defmethod module-name ((module-name symbol))
+  (module-name (module-system module-name)))
+
 (defmethod module-name ((module module))
   (asdf:component-name module))
 
+(defmethod module-name ((package package))
+  (module-name (module-system package)))
 
-(defun package-module-identifier (&optional (package *package*))
-  "Retrieve the module-identifier stored in the package."
-  (get (package-symbol package) :module))
 
 (defgeneric module-package (identifier)
   (:documentation "Retrieve the primary package of a module."))
@@ -60,15 +62,21 @@
 (defmethod module-package ((module-name symbol))
   (module-package (module-system module-name)))
 
+(defmethod module-package ((package package))
+  package)
+
 
 (defgeneric module-identifier (identifier)
-  (:documentation "Return the module identifier used in interfaces and the like for a given module."))
+  (:documentation "Return the module identifier of a module."))
 
 (defmethod module-identifier ((module-name symbol))
-  (package-module-identifier (module-package module-name)))
+  (module-identifier (module-package module-name)))
 
 (defmethod module-identifier ((module module))
-  (package-module-identifier (module-package module)))
+  (module-identifier (module-package module)))
+
+(defmethod module-identifier ((package package))
+  (get (package-symbol package) :module))
 
 
 (defgeneric module-system (identifier)
@@ -79,3 +87,9 @@
 
 (defmethod module-system ((module module))
   module)
+
+(defmethod module-system ((package package))
+  )
+
+(defun get-module (&optional (identifier *package*))
+  )
