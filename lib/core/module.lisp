@@ -33,9 +33,13 @@
     (define-module module instance (module-package module))))
 
 (defmacro define-module (system module-instance-form &optional (package *package*))
-  `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (setf (get (package-symbol ,package) :module) ,module-instance-form)
-     (pushnew (module-name ,system) *radiance-modules*)))
+  (with-gensyms ((package-gens "PACKAGE") (system-gens "SYSTEM"))
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
+       (let ((,package-gens ,package)
+             (,system-gens ,system))
+         (setf (get (package-symbol ,package-gens) :module) ,module-instance-form)
+         (pushnew (module-name ,system-gens) *radiance-modules*)
+         (setf (gethash ,package-gens *radiance-package-map*) ,system-gens)))))
 
 
 (defgeneric module-name (identifier)
@@ -84,7 +88,8 @@
   module)
 
 (defmethod module-system ((package package))
-  )
+  (gethash package *radiance-package-map*))
+
 
 (defun get-module (&optional (identifier *package*))
-  )
+  (module-system identifier))
