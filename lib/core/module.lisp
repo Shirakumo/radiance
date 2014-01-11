@@ -22,17 +22,12 @@
               (etypecase identifier (function) (symbol) (standard-object))))
         (implementation-map module))
   (let ((spec (module-instance module)))
-    (etypecase spec
-      (function)
-      (symbol)
-      (list (assert (null spec) () "A module's module-instance slot cannot be a list.")))))
+    (etypecase spec (function) (symbol) (null))))
 
 (defmethod asdf:operate :before ((op asdf:load-op) (module module) &key)
   (let* ((spec (module-instance module))
          (instance (etypecase spec
-                     (list
-                      (assert (null spec) () "MODULE-INSTANCE has to be one of NIL, FUNCTION, SYMBOL.")
-                      (asdf:component-name module))
+                     (null (asdf:component-name module))
                      (function (funcall spec))
                      (symbol spec))))
     (define-module module instance (module-package module))))
