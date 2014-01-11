@@ -9,19 +9,19 @@
 (declaim (inline authenticated-p))
 (defun authenticated-p (&optional (session *radiance-session*))
   "Returns T if the current user is using an authenticated session."
-  (and session (session-user session) (user-saved-p (session-user session)) (session-active-p session)))
+  (and session (session:user session) (user:saved-p (session:user session)) (session:active-p session)))
 
 (declaim (inline authorized-p))
 (defun authorized-p (access-branch &optional (session *radiance-session*))
   "Returns T if the current user is authorized to the given access branch."
-  (and (authenticated-p session) (user-check (session-user session) access-branch)))
+  (and (authenticated-p session) (user:check (session:user session) access-branch)))
 
 (declaim (inline user))
 (defun user (&key default authenticate)
   "Returns the currently logged in user or default."
   (when authenticate
-    (setf *radiance-session* (authenticate T)))
-  (or (and *radiance-session* (session-user *radiance-session*)) default))
+    (setf *radiance-session* (auth:authenticate)))
+  (or (and *radiance-session* (session:user *radiance-session*)) default))
 
 (declaim (inline set-cookie))
 (defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (reply *radiance-reply*))
@@ -86,7 +86,7 @@
   "Returns an alist of all HEADER variables."
   (hunchentoot:headers-in* request))
 
-(defmacro with-var-func (fun (&rest vars) &body body)
+(defmacro %with-var-func (fun (&rest vars) &body body)
   "Constructs a basic with-X let."
   `(let (,@(loop for var in vars
               for varname = (if (listp var) (first var) var)
@@ -99,28 +99,28 @@
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(with-var-func #'get-var (,@vars) ,@body))
+  `(%with-var-func #'get-var (,@vars) ,@body))
 
 (defmacro with-post ((&rest vars) &body body)
   "Same as with-slots, but for POST variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(with-var-func #'post-var (,@vars) ,@body))
+  `(%with-var-func #'post-var (,@vars) ,@body))
 
 (defmacro with-post-or-get ((&rest vars) &body body)
   "Same as with-slots, but for POST and GET variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(with-var-func #'post-or-get-var (,@vars) ,@body))
+  `(%with-var-func #'post-or-get-var (,@vars) ,@body))
 
 (defmacro with-header ((&rest vars) &body body)
   "Same as with-slots, but for HEADER variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(with-var-func #'header-var (,@vars) ,@body))
+  `(%with-var-func #'header-var (,@vars) ,@body))
 
 (defmacro with-cookie ((&rest cookies) &body body)
   "Same as with-slots, but for COOKIE variables.
@@ -162,7 +162,7 @@ Changes to these cookies will be sent along to the browser with default cookie s
 (defun get-redirect (&optional (default "/") (request *radiance-request*))
   (or (hunchentoot:get-parameter "redirect" request)
       (hunchentoot:post-parameter "redirect" request)
-      (if *radiance-session* (session-field *radiance-session* "redirect"))
+      (if *radiance-session* (session:field *radiance-session* "redirect"))
       (hunchentoot:referer request)
       default))
 
@@ -277,21 +277,21 @@ value of the request is automatically chosen."
         (funcbody (if lquery 
                       `(progn 
                          ,(if (and lquery (not (eq lquery T)))
-                              `(lquery:$ (initialize ,lquery)))
+                              `($ (initialize ,lquery)))
                          ,@body
                          (unless (response *radiance-request*)
                            (trigger :user :lquery-post-processing)
-                           (concatenate-strings (lquery:$ (serialize)))))
+                           (concatenate-strings ($ (serialize)))))
                       `(progn ,@body))))
     `(let ((,urigens ,uri)
-           (,modgens ,(if module module `(get-module T))))
+           (,modgens ,(if module module (get-module))))
        (v:debug :radiance.server.site "Defining new site ~a on ~a for ~a" ',name ,urigens ,modgens)
        (defmethod ,name ((,modulevar (eql ,modgens)))
          (declare (ignorable ,modulevar))
          (v:trace :radiance.server.request "Entering method for ~a page" ',name)
          ,(if access-branch
               `(progn
-                 (ignore-errors (authenticate T))
+                 (ignore-errors (auth:authenticate))
                  (if (authorized-p ,access-branch)
                      ,funcbody
                      (error-page 403)))
@@ -299,14 +299,14 @@ value of the request is automatically chosen."
        (defhook :page ',name ,modgens #',name 
                 :description ,description
                 :fields (acons :uri ,urigens ()))
-       (register T ',name (module-symbol ,modgens) ,urigens))))
+       (dispatcher:register ',name (module-symbol ,modgens) ,urigens))))
 
 (defmacro define-file-link (name uri pathspec &key access-branch module content-type)
   "Defines a link of a given URI to a file. Useful for things like
 favicon.ico, robots.txt, humans.txt or other files that cannot be in
 the static/ directory."
   `(defpage ,name ,uri (:module ,module :access-branch ,access-branch)
-    (hunchentoot:handle-static-file ,pathspec ,content-type)))
+     (hunchentoot:handle-static-file ,pathspec ,content-type)))
 
 (defun link (name &key (module (get-module T)) (type :URI))
   "Returns the link to the requested page or API function. Type can
@@ -356,7 +356,7 @@ requested output type or a page redirect in the case of an URI."
                 collect `(assert (not (null ,arg)) () 'api-args-error :module ,modulevar :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
            ,(if access-branch
                 `(progn 
-                   (ignore-errors (authenticate T)) 
+                   (ignore-errors (auth:authenticate)) 
                    (if (authorized-p ,access-branch)
                        ,funcbody
                        (error 'api-auth-error :module ,modulevar :apicall ',name :text "Not authorized.")))
@@ -422,7 +422,7 @@ GETPOSTVAR returns NIL. The TYPE parameter dictates where the vars are retrieved
                              (setf value (valuepart (string-downcase (symbol-name name)))))
                          `(setf ,name ,value)))
                    vars)
-         (model-insert ,modelsym)))))
+         (model:insert ,modelsym)))))
 
 (defmacro validate-and-save ((&rest vars) (collection &key query (skip 0) sort (type :POST) (on-invalid :ERROR)))
   "Validates the given variables and saves them to the database with SAVE-TO-DB.
