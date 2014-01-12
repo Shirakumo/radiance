@@ -263,7 +263,7 @@ See upload-file for more information."
        
        ,(if open-file `(close ,filepathvar)))))
 
-(defmacro defpage (name uri (&key module (modulevar (gensym "MODULE")) access-branch lquery) &body body)
+(defmacro defpage (name uri (&key (module `(get-module)) (modulevar (gensym "MODULE")) access-branch lquery) &body body)
   "Defines a new page for the given module that will be available on the
 specified URI. If access-branch is given, an authorization check on the
 current session at page load will be performed. If lquery is non-NIL,
@@ -273,7 +273,6 @@ the *radiance-request* is already set. If lQuery is unset, the return
 value of the request is automatically chosen."
   (let ((name (intern (format nil "PAGE-~a" name)))
         (urigens (gensym "URI")) (modgens (gensym "MODULE"))
-        (description (format nil "Page call for ~a" module))
         (funcbody (if lquery 
                       `(progn 
                          ,(if (and lquery (not (eq lquery T)))
@@ -284,7 +283,7 @@ value of the request is automatically chosen."
                            (concatenate-strings ($ (serialize)))))
                       `(progn ,@body))))
     `(let ((,urigens ,uri)
-           (,modgens ,(if module module (get-module))))
+           (,modgens ,module))
        (v:debug :radiance.server.site "Defining new site ~a on ~a for ~a" ',name ,urigens ,modgens)
        (defmethod ,name ((,modulevar (eql ,modgens)))
          (declare (ignorable ,modulevar))
@@ -297,7 +296,7 @@ value of the request is automatically chosen."
                      (error-page 403)))
               funcbody))
        (defhook :page ',name ,modgens #',name 
-                :description ,description
+                :description (format nil "Page call for ~a" ,modgens)
                 :fields (acons :uri ,urigens ()))
        (dispatcher:register ',name (module-symbol ,modgens) ,urigens))))
 
@@ -308,7 +307,7 @@ the static/ directory."
   `(defpage ,name ,uri (:module ,module :access-branch ,access-branch)
      (hunchentoot:handle-static-file ,pathspec ,content-type)))
 
-(defun link (name &key (module (get-module T)) (type :URI))
+(defun link (name module &key (type :URI))
   "Returns the link to the requested page or API function. Type can
 be one of the following values: :URI :function :hook."
   (let ((name (intern (format nil "PAGE-~a" name))))
@@ -319,7 +318,7 @@ be one of the following values: :URI :function :hook."
                 (:function (hook-function hook))
                 (:hook hook)))))
 
-(defmacro defapi (name (&rest args) (&key (method T) (module (get-module T)) (modulevar (gensym "MODULE")) access-branch) &body body)
+(defmacro defapi (name (&rest args) (&key (method T) (module `(get-module)) (modulevar (gensym "MODULE")) access-branch) &body body)
   "Defines a new API function for the given module. The arguments specify
 REST values that are expected (or not according to definition) on the
 API call. Any variable can have a default value specified. If 
@@ -337,7 +336,7 @@ requested output type or a page redirect in the case of an URI."
         (funcbody `(progn ,@body))
         (modgens (gensym "MODULE-"))
         (methodgens (gensym "METHOD-")))
-    `(let ((,modgens (get-module ,(module-symbol module))))
+    `(let ((,modgens ,module))
        (v:debug :radiance.server.site "Defining API page ~a for ~a" ',fullname ,modgens)
        (defmethod ,fullname ((,modulevar (eql ,modgens)) ,methodgens)
          (declare (ignorable ,modulevar ,methodgens))
