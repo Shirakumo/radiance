@@ -91,5 +91,5 @@
   (gethash package *radiance-package-map*))
 
 
-(defun get-module (&optional (identifier *package*))
+(defmacro get-module (&optional (identifier *package*))
   (module-system identifier))
