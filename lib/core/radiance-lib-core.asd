@@ -29,7 +29,7 @@
                (:file "standard-interfaces")
 ;               (:file "trigger")
 ;               (:file "site")
-;               (:file "continuation")
+               (:file "continuation")
 ;               (:file "server")
                )
   :depends-on (:alexandria
