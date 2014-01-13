@@ -343,7 +343,6 @@ requested output type or a page redirect in the case of an URI."
   (:CODE code :TEXT text :DATA data)"
   (plist->hash-table :CODE code :TEXT text :TIME (get-unix-time) :DATA data))
 
-(declaim (inline api-format))
 (defun api-format (format data)
   "Turn a plist into the requested format."
   (let ((format (gethash format *radiance-api-formats*)))
@@ -351,7 +350,7 @@ requested output type or a page redirect in the case of an URI."
         (progn
           (setf (hunchentoot:content-type* *radiance-reply*) (second format))
           (funcall (third format) data))
-        (plist->format :none NIL))))
+        (api-format :none NIL))))
 
 (defmacro define-api-format (name content-type datavar &body body)
   "Define a new API output format function."
