@@ -97,11 +97,17 @@
                       (function handler)))
           (setf hunchentoot:*dispatch-table* *radiance-handlers*)
           (setf hunchentoot:*default-content-type* "application/xhtml+xml")
-          (v:info :radiance.server.status "Connecting database...")
-          (db:connect (config :database))
+          (if (db:implementation)
+              (progn
+                (v:info :radiance.server.status "Connecting database...")
+                (db:connect (config :database)))
+              (v:warn :radiance.server.status "No database implementation defined!"))
           (v:info :radiance.server.status "Triggering INIT...")
           (trigger :server :init)
-          (user:action (user:get "sys") "INIT" :public T)
+
+          (if (user:implementation)
+              (user:action (user:get "sys") "INIT" :public T)
+              (v:warn :radiance.server.status "No user implementation defined!"))
           
           (dolist (acceptor acceptors)
             (v:info :radiance.server.status "Starting acceptor ~a" acceptor)
@@ -120,9 +126,11 @@
         
         (v:info :radiance.server.status "Triggering SHUTDOWN...")
         (trigger :server :shutdown)
-        (user:action (user:get "sys") "SHUTDOWN" :public T)
-        (v:info :radiance.server.status "Disconnecting Database...")
-        (db:disconnect)
+        (when (user:implementation)
+          (user:action (user:get "sys") "SHUTDOWN" :public T))
+        (when (db:implementation)
+          (v:info :radiance.server.status "Disconnecting Database...")
+          (db:disconnect))
         (setf *radiance-request-count* 0
               *radiance-request-total* 0
               *radiance-startup-time* 0)
