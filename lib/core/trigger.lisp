@@ -14,17 +14,17 @@
    (description :initform NIL :initarg :description :accessor item-description :type string))
   (:documentation "Radiance hook-item class"))
 
-(defmethod print-object ((hook hook) out)
+(defmethod print-object ((hook hook-item) out)
   (print-unreadable-object (hook out :type T)
     (format out "~a/~a/~a" (item-namespace hook) (name hook) (item-identifier hook))))
 
-(defmethod hook-equal ((a hook) (b hook))
-  "Checks if two hooks designate the same (match in space, module and name)."
+(defmethod hook-equal ((a hook-item) (b hook-item))
+  "Checks if two hook-items designate the same (match in space, module and name)."
   (and (eql (item-identifier a) (item-identifier b))
        (hook-equalp a b)))
 
-(defmethod hook-equalp ((a hook) (b hook))
-  "Checks if two hooks designate the same (match in space and name)."
+(defmethod hook-equalp ((a hook-item) (b hook-item))
+  "Checks if two hook-items designate the same (match in space and name)."
   (and (eql (name a) (name b))
        (eq (item-namespace a) (item-namespace b))))
 
@@ -45,10 +45,10 @@
     (change-name (name) 
       :report "Create a different namespace."
       :interactive read
-      (add-namespace name))
+      (define-namespace name))
     (redefine () 
       :report "Override the definition."
-      (add-namespace space :ignore-defined T))
+      (define-namespace space :ignore-defined T))
     (skip () 
       :report "Don't define anything.")))
 
@@ -58,7 +58,7 @@
   (assert (or (not description) (stringp description)) () "Not a string or NIL: ~s" description)
   (let ((namespace (gethash space *radiance-hooks*)))
     (if namespace
-        (let* ((instance (make-instance 'hook :name name :space space :identifier identifier :function function :description description))
+        (let* ((instance (make-instance 'hook-item :name name :space space :identifier identifier :function function :description description))
                (position (position instance (gethash name namespace) :test #'hook-equal)))
           (if position
               (setf (nth position (gethash name namespace)) instance)

@@ -237,7 +237,7 @@ If any of the predicates fail, an assertion error condition is signalled."
         (setf target (merge-pathnames filename directory))
 
         (assert (or replace-file (not (file-exists-p target))) (target) "File already exists: ~a" target)
-        (copy-file tempfile target :overwrite replace-file)
+        (copy-file tempfile target :if-to-exists (if replace-file :supersede :error))
         (assert (file-exists-p target) (target) "File copy from ~a to ~a failed!" tempfile target)
         (v:debug :radiance.server.request "Copied file ~a from ~a to ~a" origname tempfile target)
         target))))
@@ -301,17 +301,6 @@ favicon.ico, robots.txt, humans.txt or other files that cannot be in
 the static/ directory."
   `(defpage ,name ,uri (:module ,module :access-branch ,access-branch)
      (hunchentoot:handle-static-file ,pathspec ,content-type)))
-
-(defun link (name module &key (type :URI))
-  "Returns the link to the requested page or API function. Type can
-be one of the following values: :URI :function :hook."
-  (let ((name (intern (format nil "PAGE-~a" name))))
-    (loop for hook in (get-hooks :page name)
-       if (eq module (module hook))
-       return (case type
-                (:URI (hook-field hook :uri))
-                (:function (hook-function hook))
-                (:hook hook)))))
 
 (defmacro defapi (name (&rest args) (&key (method T) (identifier `(module-identifier (get-module))) access-branch) &body body)
   "Defines a new API function for the given module. The arguments specify
@@ -406,7 +395,7 @@ GETPOSTVAR returns NIL. The TYPE parameter dictates where the vars are retrieved
                              (setf value (valuepart (string-downcase (symbol-name name)))))
                          `(setf ,name ,value)))
                    vars)
-         (model:insert ,modelsym)))))
+         (dm:insert ,modelsym)))))
 
 (defmacro validate-and-save ((&rest vars) (collection &key query (skip 0) sort (type :POST) (on-invalid :ERROR)))
   "Validates the given variables and saves them to the database with SAVE-TO-DB.
