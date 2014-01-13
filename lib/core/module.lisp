@@ -96,4 +96,9 @@
 
 
 (defun compile-modules ()
-  )
+  (let ((module-class (find-class 'module)))
+    (asdf:map-systems
+     #'(lambda (sys)
+         (when (eql (class-of sys) module-class)
+           (asdf:load-system sys))))))
+ 
