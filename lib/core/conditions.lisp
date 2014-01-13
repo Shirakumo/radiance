@@ -58,4 +58,12 @@
 (define-condition api-args-error (api-error) ())
 (define-condition api-auth-error (api-error) ())
 
-(define-condition namespace-conflict (radiance-error) ())
+(define-condition hook-error (radiance-error) ())
+
+(define-condition namespace-conflict (hook-error)
+  ((%namespace :initarg :namespace :initform (error "Conflicting namespace required.") :reader namespace))
+  (:report (lambda (c s) (format s "Attempted to define namespace ~a, but it already exists." (slot-value c '%namespace)))))
+
+(define-condition namespace-not-found (hook-error)
+  ((%namespace :initarg :namespace :initform (error "Namespace required.") :reader namespace))
+  (:report (lambda (c s) (format s "Attempted to operate on namespace ~a, but it does not exist." (slot-value c '%namespace)))))

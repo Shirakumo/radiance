@@ -6,59 +6,39 @@
 
 (in-package :radiance)
 
-(defclass hook ()
+(defclass hook-item ()
   ((name :initform (error "Hook name required.") :initarg :name :accessor name :type symbol)
-   (space :initform (error "Namespace required.") :initarg :space :accessor namespace :type symbol)
-   (module :initform (error "Hook target module required.") :initarg :module :accessor module :type module)
-   (function :initform (error "Hook module method required.") :initarg :function :accessor hook-function :type function)
-   (fields :initform (make-hash-table) :initarg :fields :accessor fields :type hash-table)
-   (description :initform NIL :initarg :description :accessor description :type string))
-  (:documentation "Radiance hook class"))
+   (space :initform (error "Namespace required.") :initarg :space :accessor item-namespace :type symbol)
+   (identifier :initform (error "Hook identifier required.") :initarg :identifier :accessor item-identifier)
+   (function :initform (error "Hook module method required.") :initarg :function :accessor item-function :type function)
+   (description :initform NIL :initarg :description :accessor item-description :type string))
+  (:documentation "Radiance hook-item class"))
 
 (defmethod print-object ((hook hook) out)
   (print-unreadable-object (hook out :type T)
-    (format out "~a/~a -> ~a:~a" (namespace hook) (name hook) (module hook) (hook-function hook))))
+    (format out "~a/~a/~a" (item-namespace hook) (name hook) (item-identifier hook))))
 
 (defmethod hook-equal ((a hook) (b hook))
   "Checks if two hooks designate the same (match in space, module and name)."
-  (and (equal (name a) (name b))
-       (equal (name (module a)) (name (module b)))
-       (eq (namespace a) (namespace b))))
+  (and (eql (item-identifier a) (item-identifier b))
+       (hook-equalp a b)))
 
 (defmethod hook-equalp ((a hook) (b hook))
   "Checks if two hooks designate the same (match in space and name)."
-  (and (equal (name a) (name b))
-       (eq (namespace a) (namespace b))))
+  (and (eql (name a) (name b))
+       (eq (item-namespace a) (item-namespace b))))
 
-(defmethod hook-field ((hook hook) field)
-  "Returns the value of a field defined on the hook or NIL."
-  (gethash field (fields hook)))
-
-(defun defhook (space name module function &key description fields replace-all)
-  "Defines a new hook of name, for a certain function of a module. Fields should be an alist of additional fields on the hook."
-  (let ((instance (make-instance 'hook :name name :space space :module module :function function :description description)))
-    (v:debug :radiance.server.hook "Defining hook ~a for ~a:~a ( ~s )" name module function fields)
-    (loop for (key . val) in fields
-       do (setf (gethash key (fields instance)) val))
-    (let ((namespace (gethash space *radiance-hooks*)))
-      (unless namespace (add-namespace space))
-      (when replace-all 
-          (setf (gethash name namespace) (remove instance (gethash name namespace) :test #'hook-equalp)))
-      (let ((pos (position instance (gethash name namespace) :test #'hook-equal)))
-        (if pos 
-            (setf (nth pos (gethash name namespace)) instance)
-            (nappend (gethash name namespace) (list instance)))))
-    instance))
-
-(defun get-namespace-map ()
+(defun namespace-map ()
   "Retrieve the hash-map that contains all trigger namespaces."
   *radiance-hooks*)
 
-(defun add-namespace (space &key ignore-defined)
+(defun define-namespace (space &key ignore-defined)
   "Create a certain namespace."
+  (assert (symbolp space) () "Not a symbol: ~s" space)
   (restart-case 
       (let ((namespace (gethash space *radiance-hooks*)))
-        (if (and (not ignore-defined) namespace) (error 'namespace-conflict :text (format nil "Namespace ~a already exists!" space)))
+        (when (and (not ignore-defined) namespace)
+          (error 'namespace-conflict :text (format nil "Namespace ~a already exists!" space)))
         (v:debug :radiance.server.hook "Creating empty namespace ~a" space)
         (setf (gethash space *radiance-hooks*) (make-hash-table))
         space)
@@ -72,34 +52,46 @@
     (skip () 
       :report "Don't define anything.")))
 
-(defun get-namespace (space &key ignore-undefined)
+(defun add-hook-item (space name identifier function &key description)
+  (assert (symbolp name) () "Not a symbol: ~s" name)
+  (assert (functionp function) () "Not a function: ~s" function)
+  (assert (or (not description) (stringp description)) () "Not a string or NIL: ~s" description)
+  (let ((namespace (gethash space *radiance-hooks*)))
+    (if namespace
+        (let* ((instance (make-instance 'hook :name name :space space :identifier identifier :function function :description description))
+               (position (position instance (gethash name namespace) :test #'hook-equal)))
+          (if position
+              (setf (nth position (gethash name namespace)) instance)
+              (push instance (gethash name namespace))))
+        (error 'namespace-not-found :namespace space :text "Tried to add a hook on an undefined namespace."))))
+
+(defun namespace (space &key ignore-undefined)
   "Retrieve a certain namespace."
   (let ((namespace (gethash space *radiance-hooks*)))
-    (if (and (not ignore-undefined) (not namespace)) (error "Unknown trigger namespace ~a" space))
+    (if (and (not ignore-undefined) (not namespace))
+        (error 'namespace-not-found :namespace space :text "Tried to retrieve inexistent namespace."))
     namespace))
 
-(defun get-triggers (space)
-  "Retrieve all triggers of a namespace."
-  (alexandria:hash-table-keys (get-namespace space)))
+(defun hooks (space)
+  "Retrieve all hooks of a namespace."
+  (alexandria:hash-table-keys (namespace space)))
 
-(defun get-hooks (space trigger)
-  "Retrieve all hooks for a trigger."
-  (gethash trigger (get-namespace space)))
+(defun hook-items (space hook)
+  "Retrieve all hook items for a hook."
+  (gethash hook (namespace space)))
 
-(defun trigger-print-args (stream arg &rest rest)
-  (declare (ignore rest))
-  (setf arg (format NIL "~a" arg))
-  (format stream "~a" (if (> (length arg) 15) (concatenate 'string (subseq arg 0 12) "...") arg)))
-
-(defun trigger (space trigger &rest args)
+(defun trigger (space hook)
   "Trigger a certain hook and collect all return values."
-  (v:trace :radiance.server.hook "Triggering hook ~a/~a (~{\"~/radiance::trigger-print-args/\"~^, ~})" space trigger args)
-  (loop for hook in (gethash trigger (get-namespace space))
-     if (let ((module (module hook)))
-          (unless (persistent module)
-            (setf module (make-instance (class-of module))))
-          (apply (hook-function hook) module args))
+  (v:trace :radiance.server.hook "Triggering hook ~a/~a" space hook)
+  (loop for item in (hook-items space hook)
+     if (funcall (item-function item))
      collect it))
+
+(defmacro define-hook ((space name) (&key (identifier `(module-identifier (get-module))) description) &body body)
+  (with-gensyms ((identifiergens "IDENTIFIER"))
+    `(let ((,identifiergens ,identifier))
+       (add-hook-item ,space ,name ,identifiergens
+                      #'(lambda () ,@body) :description ,description))))
 
 (add-namespace :server)
 (add-namespace :api)
