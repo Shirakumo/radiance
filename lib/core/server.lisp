@@ -6,9 +6,6 @@
 
 (in-package :radiance)
 
-(defun server-running-p ()
-  (not (null *radiance-acceptors*)))
-
 (defun handler (&optional (request hunchentoot:*request*) (reply hunchentoot:*reply*))
   "Propagates the call to the next handler registered in the implements."
   (declare (optimize (speed 3) (safety 0)))
@@ -56,7 +53,7 @@
   (let* ((rcid (post-or-get-var "rcid"))
          (cont (when rcid
                  (ignore-errors (auth:authenticate))
-                 (get-continuation rcid))))
+                 (continuation rcid))))
     (if cont
         (with-accessors ((id id) (request request) (function continuation-function)) cont
           (v:debug :radiance.server.continuations "Resuming continuation ~a" cont)
@@ -64,6 +61,9 @@
             (remhash id (session:field *radiance-session* 'CONTINUATIONS))
             result))
         (dispatcher:dispatch request))))
+
+(defun server-running-p ()
+  (not (null *radiance-acceptors*)))
 
 (defun manage (action &key (config-file))
   "Manage the TymoonNETv5 web server."
@@ -129,7 +129,7 @@
         (v:info :radiance.server.status "SHUTDOWN finished."))
       (v:fatal :radiance.server.status "Server isn't running!")))
 
-(defun restart ()
+(defun restart-server ()
   "Performs a stop, followed by a start."
   (stop)
   (start))

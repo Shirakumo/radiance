@@ -93,3 +93,7 @@
 
 (defmacro get-module (&optional (identifier *package*))
   (module-system identifier))
+
+
+(defun compile-modules ()
+  )

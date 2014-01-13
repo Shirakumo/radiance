@@ -60,10 +60,10 @@
 
 (define-condition hook-error (radiance-error) ())
 
-(define-condition namespace-conflict (hook-error)
-  ((%namespace :initarg :namespace :initform (error "Conflicting namespace required.") :reader namespace))
+(define-condition namespace-conflict-error (hook-error)
+  ((%namespace :initarg :namespace :initform (error "Conflicting namespace required.") :reader error-namespace))
   (:report (lambda (c s) (format s "Attempted to define namespace ~a, but it already exists." (slot-value c '%namespace)))))
 
-(define-condition namespace-not-found (hook-error)
-  ((%namespace :initarg :namespace :initform (error "Namespace required.") :reader namespace))
+(define-condition namespace-not-found-error (hook-error)
+  ((%namespace :initarg :namespace :initform (error "Namespace required.") :reader error-namespace))
   (:report (lambda (c s) (format s "Attempted to operate on namespace ~a, but it does not exist." (slot-value c '%namespace)))))

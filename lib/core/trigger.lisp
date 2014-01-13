@@ -38,7 +38,7 @@
   (restart-case 
       (let ((namespace (gethash space *radiance-hooks*)))
         (when (and (not ignore-defined) namespace)
-          (error 'namespace-conflict :text (format nil "Namespace ~a already exists!" space)))
+          (error 'namespace-conflict-error :text (format nil "Namespace ~a already exists!" space)))
         (v:debug :radiance.server.hook "Creating empty namespace ~a" space)
         (setf (gethash space *radiance-hooks*) (make-hash-table))
         space)
@@ -63,13 +63,13 @@
           (if position
               (setf (nth position (gethash name namespace)) instance)
               (push instance (gethash name namespace))))
-        (error 'namespace-not-found :namespace space :text "Tried to add a hook on an undefined namespace."))))
+        (error 'namespace-not-found-error :namespace space :text "Tried to add a hook on an undefined namespace."))))
 
 (defun namespace (space &key ignore-undefined)
   "Retrieve a certain namespace."
   (let ((namespace (gethash space *radiance-hooks*)))
     (if (and (not ignore-undefined) (not namespace))
-        (error 'namespace-not-found :namespace space :text "Tried to retrieve inexistent namespace."))
+        (error 'namespace-not-found-error :namespace space :text "Tried to retrieve inexistent namespace."))
     namespace))
 
 (defun hooks (space)

@@ -18,11 +18,11 @@
   (print-unreadable-object (cont out :type T)
     (format out "~a ~a ~a" (name cont) (id cont) (request cont))))
 
-(defun get-continuation (id &optional (session *radiance-session*))
+(defun continuation (id &optional (session *radiance-session*))
   (if (and session (session-field session 'CONTINUATIONS))
       (gethash id (session-field session 'CONTINUATIONS))))
 
-(defun get-continuations (&optional (session *radiance-session*))
+(defun continuations (&optional (session *radiance-session*))
   (if (and session (session-field session 'CONTINUATIONS))
       (alexandria:hash-table-values (session-field session 'CONTINUATIONS))))
 

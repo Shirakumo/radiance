@@ -191,14 +191,14 @@ Changes to these cookies will be sent along to the browser with default cookie s
   (error 'error-page :code errorcode :text "Requested error page."))
 
 (defun upload-file (post-parameter 
-                    &key (directory (merge-pathnames "data/static/upload/" (pathname (config :root))))
-                      (filename NIL)
-                      (max-file-size (config-tree :upload :max-file-size))
-                      (allowed-mimes (config-tree :upload :allowed-mimes))
-                      (replace-file (config-tree :upload :replace-files))
-                      (max-name-length (config-tree :upload :max-name-length))
-                      (use-uuids (config-tree :upload :use-uuids))
-                      (append-extension (config-tree :upload :append-extension)))
+                       &key (directory (merge-pathnames "data/static/upload/" (pathname (config :root))))
+                       (filename NIL)
+                       (max-file-size (config-tree :upload :max-file-size))
+                       (allowed-mimes (config-tree :upload :allowed-mimes))
+                       (replace-file (config-tree :upload :replace-files))
+                       (max-name-length (config-tree :upload :max-name-length))
+                       (use-uuids (config-tree :upload :use-uuids))
+                       (append-extension (config-tree :upload :append-extension)))
   "Upload a given file using the post parameter as source.
 :directory designates the target for the given file and defaults to /data/static/upload/.
 :filename defaults to either a UUID if use-uuids is set to T or the original filename.
@@ -243,16 +243,16 @@ If any of the predicates fail, an assertion error condition is signalled."
         target))))
 
 (defmacro with-uploaded-file ((file post-parameter
-                                    &key (open-file NIL)
-                                    (directory (merge-pathnames "data/static/upload/" (pathname (config :root))))
-                                    (filename NIL)
-                                    (max-file-size (config-tree :upload :max-file-size))
-                                    (allowed-mimes (config-tree :upload :allowed-mimes))
-                                    (replace-file (config-tree :upload :replace-files))
-                                    (max-name-length (config-tree :upload :max-name-length))
-                                    (use-uuids (config-tree :upload :use-uuids))
-                                    (append-extension (config-tree :upload :append-extension)))
-                                    &body body)
+                                       &key (open-file NIL)
+                                       (directory (merge-pathnames "data/static/upload/" (pathname (config :root))))
+                                       (filename NIL)
+                                       (max-file-size (config-tree :upload :max-file-size))
+                                       (allowed-mimes (config-tree :upload :allowed-mimes))
+                                       (replace-file (config-tree :upload :replace-files))
+                                       (max-name-length (config-tree :upload :max-name-length))
+                                       (use-uuids (config-tree :upload :use-uuids))
+                                       (append-extension (config-tree :upload :append-extension)))
+                                 &body body)
   "Uploads a file and binds either the path to it or a stream to the file to the specified variable, depending on :open-file.
 See upload-file for more information."
   (let ((filepathvar (gensym "RADIANCE-FILE")))

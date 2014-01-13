@@ -47,24 +47,30 @@
 
 (defsetf config config)
 
+(declaim (inline concatenate-strings))
 (defun concatenate-strings (list &optional (delim ""))
   "Joins a list of strings into one string using format."
   (format nil (format nil "~~{~~A~~^~a~~}" delim) list))
 
+(declaim (inline plist->hash-table))
 (defun plist->hash-table (&rest plist)
   "Turns the keyword arguments into a hash table."
   (alexandria:plist-hash-table plist))
 
+(declaim (inline package-symbol))
 (defun package-symbol (&optional (package *package*))
   "Retrieves the keyword symbol of the package."
   (make-keyword (package-name package)))
 
+(declaim (inline universal-to-unix-time))
 (defun universal-to-unix-time (universal-time)
-  (- universal-time *unix-epoch-difference*))
+  (- universal-time +unix-epoch-difference+))
 
+(declaim (inline unix-to-universal-time))
 (defun unix-to-universal-time (unix-time)
-  (+ unix-time *unix-epoch-difference*))
+  (+ unix-time +unix-epoch-difference+))
 
+(declaim (inline get-unix-time))
 (defun get-unix-time ()
   "Returns a unix timestamp."
   (universal-to-unix-time (get-universal-time)))

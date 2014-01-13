@@ -82,9 +82,9 @@ Note that the PATH part is always a regex, excluding the start slash."
                    :port port :domain domain
                    :regex (cl-ppcre:create-scanner path))))
 
-(defun make-uri-helper (stream subchar arg)
+(defun %make-uri (stream subchar arg)
   (declare (ignore subchar arg))
   (let ((string (read stream T)))
     `(make-uri ,string)))
 
-(set-dispatch-macro-character #\# #\u #'make-uri-helper)
+(set-dispatch-macro-character #\# #\u #'%make-uri)
