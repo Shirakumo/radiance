@@ -6,103 +6,20 @@
 
 (in-package :radiance)
 
-(defun manage (action &key (config-file))
-  "Manage the TymoonNETv5 web server."
-  (if (not (or (stringp action) (functionp action) (symbolp action)))
-      (error "Action must be a function, symbol or string."))
-  (if (symbolp action)
-      (setf action (symbol-name action)))
-  (if (not action) 
-      (error "Requested action not found."))
-  (setf action (find-symbol (string-upcase action) :radiance))
-  (if config-file (setf *radiance-config-file* config-file))
-  (funcall action))
-
-(defun start ()
-  "Loads the configuration and starts the TyNETv5 server."
-  (if (server-running-p)
-      (v:fatal :radiance.server.status "Server already running!")
-      (progn
-        (setf *radiance-startup-time* (get-unix-time))
-        (v:info :radiance.server.status "Loading config...")
-        (load-config)
-        (if (string-equal (config :root) "autodetect") 
-            (config :root (format nil "~a" (asdf:system-source-directory :radiance))))
-        (v:info :radiance.server.status "Discovering modules...")
-        (discover-modules)
-        (v:info :radiance.server.status "Loading modules...")
-        (compile-modules)
-        (compile-module :core)
-        (v:info :radiance.server.status "Setting up Hunchentoot...")
-        (let ((acceptors (loop for port in (config :ports) 
-                            collect (make-instance 'hunchentoot:easy-acceptor 
-                                                   :port port
-                                                   :access-log-destination NIL
-                                                   :message-log-destination NIL
-                                                   :request-class 'radiance:request))))
-          (setf *radiance-handlers* 
-                (list (hunchentoot:create-folder-dispatcher-and-handler "/static/" (merge-pathnames "data/static/" (pathname (config :root))))
-                      (function handler)))
-          (setf hunchentoot:*dispatch-table* *radiance-handlers*)
-          (setf hunchentoot:*default-content-type* "application/xhtml+xml")
-          (v:info :radiance.server.status "Connecting database...")
-          (db-connect T (config :database))
-          (v:info :radiance.server.status "Triggering INIT...")
-          (trigger :server :init)
-          (user-action (user-get T "sys") "INIT" :public T)
-          
-          (loop for acceptor in acceptors
-               do (progn (v:info :radiance.server.status "Starting acceptor ~a" acceptor)
-                         (hunchentoot:start acceptor)))
-          (setf *radiance-acceptors* acceptors)
-          (v:info :radiance.server.status "Startup finished.")))))  
-
-(defun stop ()
-  "Shuts down the TyNETv5 server."
-  (if (server-running-p)
-      (progn
-        (loop for acceptor in *radiance-acceptors*
-             do (progn (v:info :radiance.server.status "Stopping acceptor ~a" acceptor)
-                       (hunchentoot:stop acceptor)))
-        (setf *radiance-acceptors* NIL)
-        
-        (v:info :radiance.server.status "Triggering SHUTDOWN...")
-        (trigger :server :shutdown)
-        (user-action (user-get T "sys") "SHUTDOWN" :public T)
-        (v:info :radiance.server.status "Disconnecting Database...")
-        (db-disconnect T)
-        (setf *radiance-request-count* 0)
-        (setf *radiance-request-total* 0)
-        (setf *radiance-startup-time* 0)
-        (v:info :radiance.server.status "SHUTDOWN finished."))
-      (v:fatal :radiance.server.status "Server isn't running!")))
-
-(defun restart ()
-  "Performs a stop, followed by a start."
-  (stop)
-  (start))
-
-(defun status ()
-  "Prints status information about the running server."
-  (format T "Server running: ~:[No~;Yes~]~%Acceptors: ~a~%Current requests: ~a~%Total requests: ~a"
-          *radiance-acceptors* (length *radiance-acceptors*) *radiance-request-count* *radiance-request-total*))
-
 (defun server-running-p ()
-  (if *radiance-acceptors* T NIL))
+  (not (null *radiance-acceptors*)))
 
 (defun handler (&optional (request hunchentoot:*request*) (reply hunchentoot:*reply*))
   "Propagates the call to the next handler registered in the implements."
   (declare (optimize (speed 3) (safety 0)))
-  (setf *last-ht-request* request)
-  (setf *last-ht-reply* reply)
+  (setf *last-ht-request* request
+        *last-ht-reply* reply)
   (let ((*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
     (parse-request request)
     (v:info :radiance.server.request "~a ~a" (remote-address) request)
     (incf *radiance-request-total*)
     (incf *radiance-request-count*)
-    (let ((result (error-handler request)))
-      (cond ((stringp result) (setf (response request) result))
-            ((and result (listp result)) (setf (response request) (concatenate-strings result)))))
+    (error-handler request)
     (decf *radiance-request-count*)
     (lambda () (response request))))
 
@@ -127,21 +44,97 @@
        (radiance-error #'present-error)
        (error #'(lambda (err) (present-error err T))))
     (with-simple-restart (skip-request "Skip the request and show the response stored in *radiance-request*.")
-      (let* ((result (continuation-handler request))
-             (post-result (trigger :server :post-processing result)))
-        (cond ((stringp post-result) post-result)
-              ((and post-result (listp post-result)) (concatenate-strings post-result))
-              (T result))))))
+      (let ((result (continuation-handler request)))
+        (typecase result
+          (null)
+          (string (setf (response request) result))
+          (list (setf (response request) (concatenate-strings result))))
+        (trigger :server :post-processing)
+        result))))
 
 (defun continuation-handler (request)
   (let* ((rcid (post-or-get-var "rcid"))
          (cont (when rcid
-                 (ignore-errors (authenticate T))
+                 (ignore-errors (auth:authenticate))
                  (get-continuation rcid))))
     (if cont
         (with-accessors ((id id) (request request) (function continuation-function)) cont
           (v:debug :radiance.server.continuations "Resuming continuation ~a" cont)
           (let ((result (funcall function)))
-            (remhash id (session-field *radiance-session* 'CONTINUATIONS))
+            (remhash id (session:field *radiance-session* 'CONTINUATIONS))
             result))
-        (dispatch T request))))
+        (dispatcher:dispatch request))))
+
+(defun manage (action &key (config-file))
+  "Manage the TymoonNETv5 web server."
+  (etypecase action (symbol) (string))
+  (setf action (find-symbol (string-upcase action) :radiance))
+  (if config-file (setf *radiance-config-file* config-file))
+  (funcall action))
+
+(defun start ()
+  "Loads the configuration and starts the TyNETv5 server."
+  (if (server-running-p)
+      (v:fatal :radiance.server.status "Server already running!")
+      (progn
+        (setf *radiance-startup-time* (get-unix-time))
+        (v:info :radiance.server.status "Loading config...")
+        (load-config)
+        (if (string-equal (config :root) "autodetect") 
+            (config :root (format nil "~a" (asdf:system-source-directory :radiance))))
+        (v:info :radiance.server.status "Loading modules...")
+        (compile-modules)
+        (v:info :radiance.server.status "Setting up Hunchentoot...")
+        (let ((acceptors (mapcar #'(lambda (port) 
+                                     (make-instance 'hunchentoot:easy-acceptor
+                                                    :port port
+                                                    :access-log-destination NIL
+                                                    :message-log-destination NIL
+                                                    :request-class 'radiance:request))
+                                 (config :ports))))
+          (setf *radiance-handlers* 
+                (list (hunchentoot:create-folder-dispatcher-and-handler "/static/" (merge-pathnames "data/static/" (pathname (config :root))))
+                      (function handler)))
+          (setf hunchentoot:*dispatch-table* *radiance-handlers*)
+          (setf hunchentoot:*default-content-type* "application/xhtml+xml")
+          (v:info :radiance.server.status "Connecting database...")
+          (db:connect (config :database))
+          (v:info :radiance.server.status "Triggering INIT...")
+          (trigger :server :init)
+          (user:action (user:get "sys") "INIT" :public T)
+          
+          (dolist (acceptor acceptors)
+            (v:info :radiance.server.status "Starting acceptor ~a" acceptor)
+            (hunchentoot:start acceptor))
+          (setf *radiance-acceptors* acceptors)
+          (v:info :radiance.server.status "Startup finished.")))))  
+
+(defun stop ()
+  "Shuts down the TyNETv5 server."
+  (if (server-running-p)
+      (progn
+        (dolist (acceptor *radiance-acceptors*)
+          (v:info :radiance.server.status "Stopping acceptor ~a" acceptor)
+          (hunchentoot:stop acceptor))
+        (setf *radiance-acceptors* NIL)
+        
+        (v:info :radiance.server.status "Triggering SHUTDOWN...")
+        (trigger :server :shutdown)
+        (user:action (user:get "sys") "SHUTDOWN" :public T)
+        (v:info :radiance.server.status "Disconnecting Database...")
+        (db:disconnect)
+        (setf *radiance-request-count* 0
+              *radiance-request-total* 0
+              *radiance-startup-time* 0)
+        (v:info :radiance.server.status "SHUTDOWN finished."))
+      (v:fatal :radiance.server.status "Server isn't running!")))
+
+(defun restart ()
+  "Performs a stop, followed by a start."
+  (stop)
+  (start))
+
+(defun status ()
+  "Prints status information about the running server."
+  (format T "Server running: ~:[No~*~*~*~;Yes~%Acceptors: ~a~%Current requests: ~a~%Total requests: ~a~]"
+          *radiance-acceptors* (length *radiance-acceptors*) *radiance-request-count* *radiance-request-total*))
