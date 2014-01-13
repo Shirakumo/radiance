@@ -6,8 +6,6 @@
 
 (in-package :radiance-mod-flash-dispatch)
 
-(implement 'dispatcher (get-module 'flash-dispatch))
-
 (defmethod dispatch ((dispatch flash-dispatch) (request radiance:request) &key)
   (declare (optimize (speed 3)))
   (or

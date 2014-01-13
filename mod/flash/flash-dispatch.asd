@@ -13,16 +13,13 @@
 
 (in-package :radiance-mod-flash-dispatch)
 
-(defmodule flash-dispatch (dispatcher)
-  "Simple static lookup-table dispatcher"
-  (:fullname "Flash Dispatcher" 
-   :author "Nicolas Hafner" 
-   :version "0.0.1"
-   :license "Artistic" 
-   :url "http://tymoon.eu"
+(asdf:defsystem flash-dispatch
+  :class module
+  :name "Flash Dispatcher" 
+  :author "Nicolas Hafner" 
+  :version "0.0.1"
+  :license "Artistic" 
+  :homepage "http://tymoon.eu"
 
-   :implements '(dispatcher)
-   :dependencies ())
-   
-  (:components ((:file "flash-dispatch")))
-  (hooks :initform () :accessor hooks :allocation :class))
+  :implement ((:dispatcher flash-dispatch))
+  :components ((:file "flash-dispatch")))
