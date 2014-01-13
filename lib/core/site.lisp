@@ -263,7 +263,7 @@ See upload-file for more information."
        
        ,(if open-file `(close ,filepathvar)))))
 
-(defmacro defpage (name uri (&key (module `(get-module)) (modulevar (gensym "MODULE")) access-branch lquery) &body body)
+(defmacro defpage (name uri (&key (module `(get-module)) access-branch lquery) &body body)
   "Defines a new page for the given module that will be available on the
 specified URI. If access-branch is given, an authorization check on the
 current session at page load will be performed. If lquery is non-NIL,
@@ -285,9 +285,7 @@ value of the request is automatically chosen."
     `(let ((,urigens ,uri)
            (,modgens ,module))
        (v:debug :radiance.server.site "Defining new site ~a on ~a for ~a" ',name ,urigens ,modgens)
-       (defmethod ,name ((,modulevar (eql ,modgens)))
-         (declare (ignorable ,modulevar))
-         (v:trace :radiance.server.request "Entering method for ~a page" ',name)
+       (define-hook (:page ',name) (:identifier (module-identifier ,modgens) :description (format nil "Page call for ~a" ,modgens))
          ,(if access-branch
               `(progn
                  (ignore-errors (auth:authenticate))
@@ -295,9 +293,6 @@ value of the request is automatically chosen."
                      ,funcbody
                      (error-page 403)))
               funcbody))
-       (defhook :page ',name ,modgens #',name 
-                :description (format nil "Page call for ~a" ,modgens)
-                :fields (acons :uri ,urigens ()))
        (dispatcher:register ',name (module-symbol ,modgens) ,urigens))))
 
 (defmacro define-file-link (name uri pathspec &key access-branch module content-type)
@@ -318,7 +313,7 @@ be one of the following values: :URI :function :hook."
                 (:function (hook-function hook))
                 (:hook hook)))))
 
-(defmacro defapi (name (&rest args) (&key (method T) (module `(get-module)) (modulevar (gensym "MODULE")) access-branch) &body body)
+(defmacro defapi (name (&rest args) (&key (method T) (identifier `(module-identifier (get-module))) access-branch) &body body)
   "Defines a new API function for the given module. The arguments specify
 REST values that are expected (or not according to definition) on the
 API call. Any variable can have a default value specified. If 
@@ -329,39 +324,29 @@ http-method of the request matches, or always if the requested method
 type is set to be T. The return value of the body should be an
 alist or an URI. This will automatically be transformed into the
 requested output type or a page redirect in the case of an URI."
-  (assert (not (eql module NIL)) () "Module cannot be NIL! (Are you in-module context?)")
   (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
-  (let ((fullname (intern (format nil "API-~a" name)))
-        (name (make-keyword name))
+  (let ((name (make-keyword name))
         (funcbody `(progn ,@body))
-        (modgens (gensym "MODULE-"))
-        (methodgens (gensym "METHOD-")))
-    `(let ((,modgens ,module))
-       (v:debug :radiance.server.site "Defining API page ~a for ~a" ',fullname ,modgens)
-       (defmethod ,fullname ((,modulevar (eql ,modgens)) ,methodgens)
-         (declare (ignorable ,modulevar ,methodgens))
-         (v:trace :radiance.server.request "Entering method for ~a page" ',fullname)
-         ,(unless (eq method T)
-            `(unless (eq ,methodgens ,method)
-               (call-next-method)
-               (return-from ,fullname)))
-         (,(case method
-             (:POST 'with-post)
-             (:GET 'with-get)
-             (otherwise 'with-post-or-get))
-                (,@(mapcar #'(lambda (x) (if (listp x) (car x) x)) args))
-           ,@(loop for arg in args
-                if (not (listp arg))
-                collect `(assert (not (null ,arg)) () 'api-args-error :module ,modulevar :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
-           ,(if access-branch
-                `(progn 
-                   (ignore-errors (auth:authenticate)) 
-                   (if (authorized-p ,access-branch)
-                       ,funcbody
-                       (error 'api-auth-error :module ,modulevar :apicall ',name :text "Not authorized.")))
-                (progn funcbody))))
-       (defhook :api ',name ,modgens #',fullname
-                :description ,(format nil "API call for ~a" module)))))
+        (modgens (gensym "MODULE-")))
+    `(let ((,modgens ,identifier))
+       (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,modgens)
+       (define-hook (:api ,name) (:identifier (make-keyword (format NIL "~a:~a" ,modgens ,method)) :description (format NIL "API call for ~a" ,modgens))
+         (when (or (eql ,method T) (eql (request-method) ,method))
+           (,(case method
+                   (:POST 'with-post)
+                   (:GET 'with-get)
+                   (otherwise 'with-post-or-get))
+             (,@(mapcar #'(lambda (x) (if (listp x) (car x) x)) args))
+             ,@(loop for arg in args
+                  if (not (listp arg))
+                  collect `(assert (not (null ,arg)) () 'api-args-error :module ,modgens :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
+             ,(if access-branch
+                  `(progn 
+                     (ignore-errors (auth:authenticate)) 
+                     (if (authorized-p ,access-branch)
+                         ,funcbody
+                         (error 'api-auth-error :module ,modgens :apicall ',name :text "Not authorized.")))
+                  funcbody)))))))
 
 (declaim (inline api-return))
 (defun api-return (code text &optional data)
