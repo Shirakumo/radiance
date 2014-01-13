@@ -27,10 +27,10 @@
                (:file "module")
                (:file "interface")
                (:file "standard-interfaces")
-;               (:file "trigger")
-;               (:file "site")
+               (:file "trigger")
+               (:file "site")
                (:file "continuation")
-;               (:file "server")
+               (:file "server")
                )
   :depends-on (:alexandria
                :cl-json
