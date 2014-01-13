@@ -86,7 +86,11 @@
                       (type (second (assoc :type options)))
                       (wholegens (gensym "WHOLE"))
                       (args (make-key-extensible args))
-                      (argsgeneric args))
+                      (argsgeneric args)
+                      (call-function (if (or (find '&rest args)
+                                             (find '&body args))
+                                         'apply
+                                         'funcall)))
 
                  ;; Fix up generic args for macro-lambda-lists.
                  (if (or (eql type :macro) (eql type 'macro))
@@ -103,9 +107,9 @@
                          (declare (ignore ,@',(extract-macro-lambda-vars args)))
                          ,,(ecase type
                                   ((:macro 'macro)
-                                   ``(apply #',,pkg-method ,,pkg-impl-var (cdr ,',wholegens)))
+                                   ``(,',call-function #',,pkg-method ,,pkg-impl-var (cdr ,',wholegens)))
                                   ((:function 'function NIL)
-                                   ```(apply #',',,pkg-method ,',,pkg-impl-var ,@(cdr ,',wholegens))))))))))
+                                   ```(,',',call-function #',',,pkg-method ,',,pkg-impl-var ,@(cdr ,',wholegens))))))))))
         
         `(progn
            (defpackage ,fqpn
