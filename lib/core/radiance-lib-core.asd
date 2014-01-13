@@ -35,10 +35,10 @@
   :depends-on (:alexandria
                :cl-json
                :hunchentoot
-	       :verbose
                :uuid
                :cl-fad
-               :lquery
                :cl-ppcre
                :trivial-backtrace
-               :local-time))
+               :local-time
+               :verbose
+               :lquery))
