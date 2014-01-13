@@ -93,7 +93,7 @@
        (add-hook-item ,space ,name ,identifiergens
                       #'(lambda () ,@body) :description ,description))))
 
-(add-namespace :server)
-(add-namespace :api)
-(add-namespace :page)
-(add-namespace :user)
+(define-namespace :server)
+(define-namespace :api)
+(define-namespace :page)
+(define-namespace :user)
