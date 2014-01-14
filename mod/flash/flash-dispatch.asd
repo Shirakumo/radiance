@@ -10,16 +10,16 @@
   (:use :cl :radiance)
   (:nicknames :radiance-mod-flash-dispatch)
   (:export :flash-dispatch))
-
 (in-package :radiance-mod-flash-dispatch)
 
 (asdf:defsystem flash-dispatch
-  :class module
+  :class :radiance-module
   :name "Flash Dispatcher" 
   :author "Nicolas Hafner" 
   :version "0.0.1"
   :license "Artistic" 
   :homepage "http://tymoon.eu"
 
-  :implement ((:dispatcher flash-dispatch))
+  :defsystem-depends-on (:radiance)
+  :implement ((:dispatcher :flash-dispatch))
   :components ((:file "flash-dispatch")))
