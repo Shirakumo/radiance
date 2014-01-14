@@ -27,7 +27,7 @@
 (defmethod asdf:operate :before ((op asdf:load-op) (module module) &key)
   (let* ((spec (module-instance module))
          (instance (etypecase spec
-                     (null (asdf:component-name module))
+                     (null (make-keyword (string-upcase (asdf:component-name module))))
                      (function (funcall spec))
                      (symbol spec))))
     (define-module module instance (module-package module))))
@@ -82,7 +82,7 @@
   (:documentation "Return the ASDF system of a module."))
 
 (defmethod module-system ((module-name symbol))
-  (asdf:find-system module-name))
+  (asdf:find-system (string-downcase module-name)))
 
 (defmethod module-system ((module module))
   module)
