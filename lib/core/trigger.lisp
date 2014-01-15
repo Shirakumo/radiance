@@ -52,6 +52,12 @@
     (skip () 
       :report "Don't define anything.")))
 
+(defun remove-namespace (space)
+  "Remove a namespace altogether"
+  (if (namespace space)
+      (remhash space *radiance-hooks*)
+      (error 'namespace-not-found-error :namespace space :text (format NIL "Attempted to remove namespace ~a, but it does not exist." space))))
+
 (defun add-hook-item (space name identifier function &key description)
   (assert (symbolp name) () "Not a symbol: ~s" name)
   (assert (functionp function) () "Not a function: ~s" function)
@@ -94,6 +100,13 @@
        (add-hook-item ,space ,name ,identifiergens
                       #'(lambda () ,@body) :description ,description))))
 
+(defun remove-hook (space hook)
+  "Remove a hook from a namespace."
+  (remhash hook (namespace space)))
+
+(defun clear-hook-items (space hook)
+  "Remove all items from a hook."
+  (setf (gethash hook (namespace space)) NIL))
 
 (unless (namespace :server :ignore-undefined T) (define-namespace :server))
 (unless (namespace :page :ignore-undefined T) (define-namespace :page))

@@ -146,10 +146,13 @@
            #:define-namespace
            #:add-hook-item
            #:namespace
+           #:remove-namespace
            #:hooks
            #:hook-items
            #:trigger
-           #:define-hook)
+           #:define-hook
+           #:remove-hook
+           #:clear-hook-items)
   ;; uri.lisp
   (:export #:uri
            #:subdomains
