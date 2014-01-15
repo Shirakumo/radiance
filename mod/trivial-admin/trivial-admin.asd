@@ -10,7 +10,7 @@
   (:export ))
 (in-package :radiance-mod-admin)
 
-(asdf:defsystem radiance-admin
+(asdf:defsystem trivial-admin
   :class :radiance-module
   :name "Administrator Interface"
   :author "Nicolas Hafner"
@@ -18,6 +18,6 @@
   :license "Artistic"
   :homepage "http://tymoon.eu"
   :defsystem-depends-on (:radiance)
-  :depends-on (:uibox :radiance-dispatcher)
-  :implement ((:admin :radiance-admin))
+  :depends-on (:uibox :radiance-dispatcher :radiance-user)
+  :implement ((:admin :trivial-admin))
   :components ((:file "admin")))
