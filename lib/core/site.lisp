@@ -319,7 +319,7 @@ requested output type or a page redirect in the case of an URI."
         (modgens (gensym "MODULE-")))
     `(let ((,modgens ,identifier))
        (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,modgens)
-       (define-hook (:api ,name) (:identifier (make-keyword (format NIL "~a:~a" ,modgens ,method)) :description (format NIL "API call for ~a" ,modgens))
+       (define-hook (:api (make-keyword (format NIL "~a/~a" ,identifier ,name))) (:identifier (make-keyword (format NIL "~a:~a" ,modgens ,method)) :description (format NIL "API call for ~a" ,modgens))
          (when (or (eql ,method T) (eql (request-method) ,method))
            (,(case method
                    (:POST 'with-post)
