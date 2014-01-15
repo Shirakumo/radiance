@@ -96,7 +96,7 @@
     (:documentation "Returns the URL to the settings page for the user."))
   (page-user (user)
     (:documentation "Returns the URL to the user's profile page."))
-  (define-panel (name category (&key identifier lquery access-branch menu-icon menu-tooltip) &body body)
+  (define-panel (name category (&key lquery access-branch menu-icon menu-tooltip) &body body)
     (:type :MACRO)))
 
 (define-interface (database db)
@@ -187,7 +187,7 @@ of this is always the last statement in the body, even if save is non-NIL."
   (data-model:field model field))
 
 (define-interface admin
-  (define-panel (name category (&key identifier lquery access-branch menu-icon menu-tooltip) &body body)
+  (define-panel (name category (&key lquery access-branch menu-icon menu-tooltip) &body body)
     (:type :MACRO)))
 
 (define-interface parser
