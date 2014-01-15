@@ -20,25 +20,25 @@
 
 (defun continuation (id &optional (session *radiance-session*))
   (if (and session (session:field session 'CONTINUATIONS))
-      (gethash id (session-field session 'CONTINUATIONS))))
+      (gethash id (session:field session 'CONTINUATIONS))))
 
 (defun continuations (&optional (session *radiance-session*))
   (if (and session (session:field session 'CONTINUATIONS))
-      (alexandria:hash-table-values (session-field session 'CONTINUATIONS))))
+      (alexandria:hash-table-values (session:field session 'CONTINUATIONS))))
 
 (defun make-continuation (function &key (id (format NIL "~a" (uuid:make-v4-uuid))) (name "CONT") (request *radiance-request*) (session *radiance-session*))
   (if (null (session:field session 'CONTINUATIONS))
-      (setf (session:field session 'CONTINUATIONS) (make-hash-table :test 'equal)))
+      (session:field session 'CONTINUATIONS :value (make-hash-table :test 'equal)))
   (v:debug :radiance.server.continuations "Creating continuation ~a ~a " name id)
-  (setf (gethash id (session-field session 'CONTINUATIONS))
+  (setf (gethash id (session:field session 'CONTINUATIONS))
         (make-instance 'request-continuation
                        :name name :id id
                        :request request
                        :function function)))
 
 (defun clean-continuations (&optional (session *radiance-session*))
-  (when (and session (session-field session 'CONTINUATIONS))
-    (let ((conts (session-field session 'CONTINUATIONS)))
+  (when (and session (session:field session 'CONTINUATIONS))
+    (let ((conts (session:field session 'CONTINUATIONS)))
       (loop for key being the hash-keys of conts
          for val being the hash-values of conts
          if (> (get-unix-time) (timeout val))
