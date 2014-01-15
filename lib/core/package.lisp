@@ -64,7 +64,8 @@
   (:export #:define-interface
            #:define-interface-method)
   ;; module.lisp
-  (:export #:define-module
+  (:export #:radiance-module
+           #:define-module
            #:module-name
            #:module-package
            #:module-identifier
