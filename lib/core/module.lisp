@@ -99,7 +99,7 @@ PACKAGE to the SYSTEM in *radiance-package-map*."
 (defmacro context-module (&optional (identifier *package*))
   "Retrieve the module-system active in the current code region.
 Defaults to the module-system linked to the one active in the current *package*."
-  (module-system identifier))
+  `(module-system ,identifier))
 
 (defmacro context-module-identifier (&optional (identifier *package*))
   "Retrieve the module-identifer active in the current code region.
