@@ -11,7 +11,7 @@
 (define-interface-method dispatcher:dispatch (request)
   (or
    (let ((hook (dispatcher:effective-trigger request)))
-     (if hook (funcall (item-function hook) (module hook))))
+     (if hook (funcall (item-function hook))))
    (trigger :server :dispatch-default)
    (dispatcher:dispatch-default request)))
 
