@@ -19,16 +19,16 @@
     (format out "~a ~a ~a" (name cont) (id cont) (request cont))))
 
 (defun continuation (id &optional (session *radiance-session*))
-  (if (and session (session-field session 'CONTINUATIONS))
+  (if (and session (session:field session 'CONTINUATIONS))
       (gethash id (session-field session 'CONTINUATIONS))))
 
 (defun continuations (&optional (session *radiance-session*))
-  (if (and session (session-field session 'CONTINUATIONS))
+  (if (and session (session:field session 'CONTINUATIONS))
       (alexandria:hash-table-values (session-field session 'CONTINUATIONS))))
 
 (defun make-continuation (function &key (id (format NIL "~a" (uuid:make-v4-uuid))) (name "CONT") (request *radiance-request*) (session *radiance-session*))
-  (if (null (session-field session 'CONTINUATIONS))
-      (setf (session-field session 'CONTINUATIONS) (make-hash-table :test 'equal)))
+  (if (null (session:field session 'CONTINUATIONS))
+      (setf (session:field session 'CONTINUATIONS) (make-hash-table :test 'equal)))
   (v:debug :radiance.server.continuations "Creating continuation ~a ~a " name id)
   (setf (gethash id (session-field session 'CONTINUATIONS))
         (make-instance 'request-continuation
@@ -46,7 +46,7 @@
            (v:debug :radiance.server.continuations "Removing continuation ~a due to timeout (~a > ~a)" val (get-unix-time) (timeout val))))))
 
 (defun clean-continuations-globally ()
-  (dolist (session (session-get-all T))
+  (dolist (session (session:get-all))
     (clean-continuations session)))
 
 ;; Macro to build request continuations
