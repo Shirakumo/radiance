@@ -6,8 +6,6 @@
 
 (in-package :radiance-mod-markdown)
 
-(implement 'parser (get-module :markdown))
-
-(defmethod parse ((module markdown) (text string) &key)
+(define-interface-method parser:parse (text)
   (with-output-to-string (stream)
-    (3bmd:parse-string-and-print-to-stream text stream)))
+    (3bmd:parse-string-and-print-to-stream (string text) stream)))
