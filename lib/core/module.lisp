@@ -25,14 +25,6 @@
   (let ((spec (module-instance module)))
     (etypecase spec (function) (symbol) (null))))
 
-(defmethod asdf:operate :before ((op asdf:load-op) (module radiance-module) &key)
-  (let* ((spec (module-instance module))
-         (identifier (etypecase spec
-                     (null (make-keyword (string-upcase (asdf:component-name module))))
-                     (function (funcall spec))
-                     (symbol spec))))
-    (define-module module identifier (module-package module))))
-
 (defmacro define-module (system module-identifier-form &optional (package *package*))
   "Sets up the environment to recognize the specified module.
 Specifically: Sets the :MODULE symbol-property on the PACKAGE-SYMBOL,
@@ -46,6 +38,13 @@ PACKAGE to the SYSTEM in *radiance-package-map*."
          (pushnew (module-name ,system-gens) *radiance-modules*)
          (setf (gethash ,package-gens *radiance-package-map*) ,system-gens)))))
 
+(defmethod asdf:operate :before ((op asdf:load-op) (module radiance-module) &key)
+  (let* ((spec (module-instance module))
+         (identifier (etypecase spec
+                     (null (make-keyword (string-upcase (asdf:component-name module))))
+                     (function (funcall spec))
+                     (symbol spec))))
+    (define-module module identifier (module-package module))))
 
 (defgeneric module-name (identifier)
   (:documentation "The module name of an asdf module system."))
