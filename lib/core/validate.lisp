@@ -15,7 +15,7 @@
 ;; very crude... should see about optimizing it.
 (defun username-p (string)
   (and string
-       (user-get T string)))
+       (user:get string)))
 
 (defun displayname-p (string)
   (and string
