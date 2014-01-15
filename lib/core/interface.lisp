@@ -194,8 +194,7 @@ method on the respective INTERFACE::I-PUBLIC-FUNCTION-NAME generic."
               (setf (car argslist) (list (or (caddar argslist) (gensym "MODULE"))
                                          (cadar argslist)))
               (push (list (gensym "MODULE") `(eql (context-module-identifier))) argslist))
-          (unless (find '&key argslist)
-            (appendf argslist (list '&key)))
+          (setf argslist (make-key-extensible argslist))
           `(defmethod ,pkg-method ,argslist
              ,@body))
         (error 'no-such-interface-function-error :interface (package-name (symbol-package function)) :interface-function function))))
