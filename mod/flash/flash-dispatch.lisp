@@ -8,11 +8,11 @@
 
 (defvar *hooks* ())
 
-(define-interface-method dispatcher:dispatch (request radiance:request)
+(define-interface-method dispatcher:dispatch (request)
   (or
    (let ((hook (dispatcher:effective-trigger request)))
-     (if hook (funcall (hook-function hook) (module hook))))
-   (trigger :server :dispatch-default :args (list request))
+     (if hook (funcall (item-function hook) (module hook))))
+   (trigger :server :dispatch-default)
    (dispatcher:dispatch-default request)))
 
 (define-interface-method dispatcher:effective-trigger (request)
@@ -30,9 +30,7 @@
           (v:warn :flash "Overriding existing trigger ~a on ~a" (car found) uri))
       (setf *hooks* (delete uri *hooks* :key #'third :test #'uri-same))))
   (v:debug :flash "Registering ~a for ~a/~a" uri identifier hook)
-  (setf (hooks dispatch)
-        (sort (append *hooks* `((,hook ,identifier ,uri)))
-              #'sort-dispatcher-hooks))
+  (setf *hooks* (sort (append *hooks* `((,hook ,identifier ,uri))) #'sort-dispatcher-hooks))
   hook)
 
 (define-interface-method dispatcher:unregister (uri)
