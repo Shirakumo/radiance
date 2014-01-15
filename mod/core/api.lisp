@@ -17,7 +17,7 @@
                               (plist->hash-table :VERSION (asdf:component-version (context-module)))))
            (otherwise
             (let* ((module (cadr pathparts))
-                   (trigger (make-keyword (string-upcase (concatenate-strings (cddr pathparts) "/"))))
+                   (trigger (make-keyword (string-upcase (concatenate-strings (cdr pathparts) "/"))))
                    (hooks (hook-items :api trigger)))
               (or (call-api module hooks)
                   (api-return 204 "No return data")))))
@@ -32,15 +32,20 @@
                                         :code (slot-value c 'code)
                                         :text (slot-value c 'text))))))))
 
-(defun identifier-matches-p (item-identifier identifier &optional (method (request-method)))
-  (let ((colonpos (position #\: item-identifier)))
+(defun identifier-and-method (item-identifier)
+  (let* ((item-identifier (string item-identifier))
+         (colonpos (position #\: item-identifier)))
     (if colonpos
-        (let ((item-identifier (subseq item-identifier 0 colonpos))
-              (item-method (subseq item-identifier (1+ colonpos))))
-          (and (string-equal item-identifier identifier)
-               (or (string-equal item-method "T")
-                   (string-equal item-method (string method)))))
-        (string-equal item-identifier identifier))))
+        (values (subseq item-identifier 0 colonpos)
+                (subseq item-identifier (1+ colonpos)))
+        (values item-identifier NIL))))
+
+(defun identifier-matches-p (item-identifier identifier &optional (method (request-method)))
+  (multiple-value-bind (item-identifier item-method) (identifier-and-method item-identifier)
+    (and (string-equal item-identifier identifier)
+         (or (not item-method)
+             (string-equal item-method "T")
+             (string-equal item-method (string method))))))
 
 (defun call-api (module hook-items)
   (loop with return = ()
@@ -56,13 +61,16 @@
 (define-api-format json "application/json" data
   (cl-json:encode-json-to-string data))
 
-(defapi formats () ()
+(defapi formats () (:method :GET)
+  "Lists all the available API output formats."
   (api-return 200 "Available output formats" (alexandria:hash-table-keys *radiance-api-formats*)))
 
-(defapi version () ()
+(defapi version () (:method :GET)
+  "Show the current framework version."
   (api-return 200 "Radiance Version" (asdf:component-version (context-module))))
 
-(defapi host () ()
+(defapi host () (:method :GET)
+  "Lists information about the host machine."
   (api-return 200 "Host information" 
               (plist->hash-table
                :machine-instance (machine-instance)
@@ -73,48 +81,59 @@
                :lisp-implementation-type (lisp-implementation-type)
                :lisp-implementation-version (lisp-implementation-version))))
 
-(defapi modules () ()
+(defapi modules () (:method :GET)
+  "Lists the currently loaded radiance modules."
   (api-return 200 "Module listing" *radiance-modules*))
 
-(defapi server () ()
+(defapi server () (:method :GET)
+  "Returns information about the radiance server."
   (api-return 200 "Server information"
               (plist->hash-table
-               :string (format nil "TyNET-~a-SBCL~a-α" (asdf:component-version module) (lisp-implementation-version))
+               :string (format nil "TyNET-~a-SBCL~a-α" (asdf:component-version (context-module)) (lisp-implementation-version))
                :ports (config :ports)
                :uptime (- (get-unix-time) *radiance-startup-time*)
                :request-count *radiance-request-count*
                :request-total *radiance-request-total*)))
 
-(defapi noop () ())
+(defapi noop () (:method :GET)
+  "Returns a NOOP page.")
 
-(defapi echo () ()
+(defapi echo () (:method T)
+  "Returns the map of POST and GET data sent to the server."
   (api-return 200 "Echo data" (list :post (post-vars) :get (get-vars))))
 
-(defapi user () ()
+(defapi user () (:method :GET)
+  "Shows data about the current user."
   (api-return 200 "User data"
               (plist->hash-table
                :authenticated (authenticated-p)
                :session-active (if *radiance-session* T NIL))))
 
-(defapi error () ()
+(defapi error () (:method :GET)
+  "Generates an api-error page."
   (error 'api-error :text "Api error as requested" :code -42))
 
-(defapi internal-error () ()
+(defapi internal-error () (:method :GET)
+  "Generates an internal-error page."
   (error 'radiance-error :text "Internal error as requested" :code -42))
 
-(defapi unexpected-error () ()
+(defapi unexpected-error () (:method :GET)
+  "Generates an unexpected error page."
   (error "Unexpected error as requested"))
 
-(defapi coffee () ()
-  (api-return 418 "I'm a teapot"
+(defapi coffee () (:method :GET)
+  "RFC-2324"
+  (api-return 418 "I'm a teapot."
               (plist->hash-table
-               :temperature (+ 75 (random 10))
+               :temperature (+ 65 (random 20))
                :active T
                :capacity 1
-               :content (/ (+ (random 20) 80) 100)
-               :flavour (alexandria:random-elt '("rose hip" "peppermint" "english breakfast")))))
+               :content (/ (+ (random 60) 40) 100)
+               :flavour (random-elt '("rose hip" "peppermint" "english breakfast" "green tea" "roiboos"))
+               :additives (random-elt '("none" "none" "none" "none" "none" "sugar" "sugar" "sugar" "lemon" "cream" "milk")))))
 
-(defapi request () ()
+(defapi request () (:method :GET)
+  "Returns information about the current request."
   (with-slots (subdomains domain port path) *radiance-request*
     (api-return 200 "Request data"
                 (plist->hash-table
@@ -131,11 +150,29 @@
                  :cookie (cookie-vars)
                  :header (header-vars)))))
 
-(defapi continuations () (:access-branch "*")
+(defapi continuations () (:method :GET :access-branch "*")
+  "Shows information about continuations for the current user."
   (api-return 200 "Active continuations"
-              (loop for cont in (get-continuations) 
-                 collect (plist->hash-table
-                          :id (id cont)
-                          :name (name cont)
-                          :timeout (timeout cont)
-                          :request (format NIL "~a" (request cont))))))
+              (mapcar #'(lambda (cont)
+                          (plist->hash-table
+                           :id (id cont)
+                           :name (name cont)
+                           :timeout (timeout cont)
+                           :request (format NIL "~a" (request cont))))
+                      (continuations))))
+
+(defapi index () (:method :GET)
+  "Returns a map of all possible API calls and their docstring."
+  (api-return 200 "Api call index"
+              (let ((table (make-hash-table)))
+                (mapc #'(lambda (item-name)
+                          (setf (gethash item-name table)
+                                (mapcar #'(lambda (item)
+                                            (multiple-value-bind (identifier method) (identifier-and-method (item-identifier item))
+                                              (plist->hash-table
+                                               :method (if (string-equal "T" method) "ANY" method)
+                                               :module identifier
+                                               :description (item-description item))))
+                                        (hook-items :api item-name))))
+                        (hooks :api))
+                table)))
