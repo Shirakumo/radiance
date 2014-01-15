@@ -57,6 +57,7 @@
                  (intern (string-upcase element) package)
                  element)))
 
+;; Todo: Make extensible and configurable for component types.
 (defmacro define-interface (name &body component-declarations)
   "Define a new implementation mechanism.
 NAME                 ::= PRIMARY-NICKNAME | (PRIMARY-NICKNAME NICKNAME*)
@@ -193,6 +194,8 @@ method on the respective INTERFACE::I-PUBLIC-FUNCTION-NAME generic."
               (setf (car argslist) (list (or (caddar argslist) (gensym "MODULE"))
                                          (cadar argslist)))
               (push (list (gensym "MODULE") `(eql (module-identifier (get-module)))) argslist))
+          (unless (find '&key argslist)
+            (appendf argslist (list '&key)))
           `(defmethod ,pkg-method ,argslist
              ,@body))
         (error 'no-such-interface-function-error :interface (package-name (symbol-package function)) :interface-function function))))
