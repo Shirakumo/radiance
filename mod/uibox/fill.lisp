@@ -73,21 +73,21 @@ See fill-node for more information."
                           ("style" ($ node (attr :style) (node)))
                           (T (if (and (> (length string) 5)
                                       (string= string "attr-" :end1 5))
-                                 ($ node (attr (make-keyword (subseq string 5))) (node))))))) into tokens
+                                 ($ node (attr (make-keyword (string-upcase (subseq string 5)))) (node))))))) into tokens
          finally (return tokens)))))
 
 (defun parse-data (read model)
   (etypecase read
     (symbol (getdf model (string-downcase read)))
     (string read)
-    (list (parse-data-function (make-keyword (car read)) (cdr read) model))
+    (list (parse-data-function (make-keyword (string-upcase (car read))) (cdr read) model))
     (uri (uri->url read))))
 
 (defgeneric parse-data-function (function args model))
 
 (defmacro define-fill-function (name (modelname &rest args) &body body)
   (let ((argsgen (gensym "ARGS")))
-    `(defmethod parse-data-function ((func (eql ,(make-keyword name))) ,argsgen ,modelname)
+    `(defmethod parse-data-function ((func (eql ,(make-keyword (string-upcase name)))) ,argsgen ,modelname)
        (destructuring-bind (,@args) ,argsgen
          ,@body))))
 
@@ -140,7 +140,7 @@ FOREACH    : foreach-SELECTOR"
                 (T (cond 
                      ((and (> (length target) 5)
                            (string= target "attr-" :end1 5))
-                      ($ node (attr (make-keyword (subseq target 5)) data)))
+                      ($ node (attr (make-keyword (string-upcase (subseq target 5))) data)))
                      
                      ((and (> (length target) 8)
                            (string= target "foreach-" :end1 8))

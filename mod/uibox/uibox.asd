@@ -6,7 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.uibox
   (:nicknames :radiance-mod-uibox :uibox)
-  (:use :cl :radiance :lquery)
+  (:use :cl :radiance :lquery :alexandria)
   (:export :fill-node
            :fill-all
            :fill-foreach
@@ -25,4 +25,4 @@
   :homepage "http://tymoon.eu"  
   :components ((:file "fill")
                (:file "build"))
-  :depends-on (:string-case))
+  :depends-on (:string-case :alexandria))
