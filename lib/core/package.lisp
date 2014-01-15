@@ -6,7 +6,7 @@
 
 (defpackage org.tymoonnext.radiance
   (:nicknames :org.tymoonnext.radiance :tynet-5 :tynet :radiance)
-  (:use :cl :cl-fad :lquery :alexandria)
+  (:use :cl :cl-fad :lquery :alexandria :split-sequence)
   (:shadowing-import-from :alexandria :copy-stream :copy-file)
   ;; conditions.lisp
   (:export #:radiance-error

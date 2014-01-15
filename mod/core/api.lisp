@@ -8,18 +8,17 @@
 
 (defpage api #u"/api/" ()
   (let ((pathparts (split-sequence:split-sequence #\/ (path *radiance-request*)))
-        (format (make-keyword (or (get-var "format") (post-var "format") "json")))
-        (module (context-module)))
+        (format (make-keyword (string-upcase (or (get-var "format") (post-var "format") "json")))))
     (api-format 
      format
      (handler-case 
          (case (length pathparts)
-           ((1 2) (api-return 200 (format NIL "Radiance API v~a" (version module))
-                              (plist->hash-table :VERSION (version module))))
+           ((1 2) (api-return 200 (format NIL "Radiance API v~a" (asdf:component-version (context-module)))
+                              (plist->hash-table :VERSION (asdf:component-version (context-module)))))
            (otherwise
             (let* ((module (cadr pathparts))
-                   (trigger (make-keyword (concatenate-strings (cddr pathparts) "/")))
-                   (hooks (get-hooks :api trigger)))
+                   (trigger (make-keyword (string-upcase (concatenate-strings (cddr pathparts) "/"))))
+                   (hooks (hook-items :api trigger)))
               (or (call-api module hooks)
                   (api-return 204 "No return data")))))
        (api-args-error (c)
@@ -32,13 +31,24 @@
                      (plist->hash-table :errortype (class-name (class-of c))
                                         :code (slot-value c 'code)
                                         :text (slot-value c 'text))))))))
-(defun call-api (module hooks)
+
+(defun identifier-matches-p (item-identifier identifier &optional (method (request-method)))
+  (let ((colonpos (position #\: item-identifier)))
+    (if colonpos
+        (let ((item-identifier (subseq item-identifier 0 colonpos))
+              (item-method (subseq item-identifier (1+ colonpos))))
+          (and (string-equal item-identifier identifier)
+               (or (string-equal item-method "T")
+                   (string-equal item-method (string method)))))
+        (string-equal item-identifier identifier))))
+
+(defun call-api (module hook-items)
   (loop with return = ()
      with accepted = NIL
-     for hook in hooks
-     if (string-equal (class-name (class-of (module hook))) module)
+     for item in hook-items
+     if (identifier-matches-p (string (item-identifier item)) module)
      do (setf accepted T)
-       (nappend return (funcall (hook-function hook) (module hook) (request-method)))
+       (appendf return (funcall (item-function item)))
      finally (return (if accepted
                          return
                          (api-return 404 "Call not found")))))
@@ -49,8 +59,8 @@
 (defapi formats () ()
   (api-return 200 "Available output formats" (alexandria:hash-table-keys *radiance-api-formats*)))
 
-(defapi version () (:modulevar module)
-  (api-return 200 "Radiance Version" (version module)))
+(defapi version () ()
+  (api-return 200 "Radiance Version" (asdf:component-version (context-module))))
 
 (defapi host () ()
   (api-return 200 "Host information" 
@@ -64,13 +74,12 @@
                :lisp-implementation-version (lisp-implementation-version))))
 
 (defapi modules () ()
-  (api-return 200 "Module listing"
-              (alexandria:hash-table-keys *radiance-modules*)))
+  (api-return 200 "Module listing" *radiance-modules*))
 
-(defapi server () (:modulevar module)
+(defapi server () ()
   (api-return 200 "Server information"
               (plist->hash-table
-               :string (format nil "TyNET-~a-SBCL~a-α" (version module) (lisp-implementation-version))
+               :string (format nil "TyNET-~a-SBCL~a-α" (asdf:component-version module) (lisp-implementation-version))
                :ports (config :ports)
                :uptime (- (get-unix-time) *radiance-startup-time*)
                :request-count *radiance-request-count*
