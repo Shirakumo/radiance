@@ -62,7 +62,7 @@
            #:+unix-epoch-difference+)
   ;; interface.lisp
   (:export #:define-interface
-           #:define-interface-function)
+           #:define-interface-method)
   ;; module.lisp
   (:export #:define-module
            #:module-name

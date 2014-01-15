@@ -57,8 +57,34 @@
                  (intern (string-upcase element) package)
                  element)))
 
-(defmacro define-interface (name &body function-declarations)
-  "Define a new implementation mechanism."
+(defmacro define-interface (name &body component-declarations)
+  "Define a new implementation mechanism.
+NAME                 ::= PRIMARY-NICKNAME | (PRIMARY-NICKNAME NICKNAME*)
+COMPONENT-DECLARATION::= (NAME PRIMARY-ARGUMENTS OPTION*)
+OPTION               ::= (OPTION-NAME VALUE*)
+
+NAME                 --- A symbol used for the component's identifier.
+PRIMARY-ARGUMENTS    --- A list of arguments used to build the component.
+                         Depends on the component TYPE.
+OPTION-NAME          --- A keyword identifying the supplied option.
+PRIMARY-NICKNAME     --- NICKNAME used to build the fully qualified package name
+                         in the form ofORG.TYMOONNEXT.RADIANCE.INTERFACE.name .
+NICKNAME             --- A nickname symbol for the interface package.
+
+OPTIONS:
+
+ - :TYPE dictates the type of component being declared and may be one of
+:FUNCTION :MACRO :CLASS. It defaults to :FUNCTION. If the TYPE is of MACRO or 
+FUNCTION, the PRIMARY-ARGUMENTS list serves as the function/macro-lambda-list.
+If the TYPE is of CLASS, it is used for the direct-slots of the defined class.
+
+ - :DOCUMENTATION expects a string that is used as a documentation value for
+the component, either as a function documentation string, or as the class 
+documentation string.
+
+ - * Any number of additional options may be passed along, but will not be
+used if the TYPE is FUNCTION or MACRO. In the case of CLASS, the additional
+options are passed directly to the class definition."
   (etypecase name
     (symbol)
     (list
@@ -115,7 +141,7 @@
            (defpackage ,fqpn
              (:nicknames ,@(mapcar #'(lambda (name) (intern (string-upcase name) :KEYWORD)) nicknames))
              (:export ,@(append '(#:*implementation* #:implementation)
-                                (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) function-declarations))))
+                                (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) component-declarations))))
            (asdf:defsystem ,(intern (format nil "RADIANCE-~a" name))
              :class :interface  :interface-name ,(find-symbol (string-upcase name) :KEYWORD))
            (macrolet ((,macro-name ()
@@ -128,7 +154,7 @@
                                (if ,',provided-gens
                                    (setf ,,pkg-impl-var ,',new-impl-gens)
                                    ,,pkg-impl-var))
-                             ,,@(loop for declaration in function-declarations
+                             ,,@(loop for declaration in component-declarations
                                    collect (destructuring-bind (specified-name args &rest options) declaration
                                              (ecase (second (assoc :type options))
                                                ((:macro :function 'macro 'function NIL)
@@ -138,15 +164,45 @@
              (,macro-name))
            (find-package ',name))))))
 
-(defmacro define-interface-function (function argslist &body body)
+(defmacro define-interface-method (function argslist &body body)
+  "Defines a new implementation of an interface function.
+
+BODY       :== form*
+ARGSLIST   :== specialized-lambda-list | ((:module IDENTIFIER [var]) specialized-lambda-list)
+FUNCTION   --- A symbol
+IDENTIFIER --- The module-identifier used for the implementation.
+
+FUNCTION should be the symbol of an interface function. If the 
+requested function cannot be be found in the package, a condition
+of type NO-SUCH-INTERFACE-FUNCTION-ERROR will be signalled.
+
+This macro will attempt to automatically retrieve the module-identifier
+from the current package. If you want to set this manually or bind it
+to a function-local variable, provide a first argument as a list,
+formed in the way specified above. Note that this will be used as a
+parameter-specializer-name, so it can be either a class-symbol or an
+EQL form.
+
+If you want to manually implement an interface function to get hold
+of all of the CLOS functionality, you can always define your own
+method on the respective INTERFACE::I-PUBLIC-FUNCTION-NAME generic."
   (let ((pkg-method (find-symbol (format NIL "I-~a" function) (symbol-package function))))
     (if pkg-method
-        `(defmethod ,pkg-method ,argslist
-           ,@body)
+        (progn
+          (if (and (listp (first argslist)) (eq (caar argslist) :MODULE))
+              (setf (car argslist) (list (or (caddar argslist) (gensym "MODULE"))
+                                         (cadar argslist)))
+              (push (list (gensym "MODULE") `(eql (module-identifier (get-module)))) argslist))
+          `(defmethod ,pkg-method ,argslist
+             ,@body))
         (error 'no-such-interface-function-error :interface (package-name (symbol-package function)) :interface-function function))))
 
 (defclass interface (asdf:system)
-  ((%interface-name :initarg :interface-name :initform NIL :accessor interface-name)))
+  ((%interface-name :initarg :interface-name :initform NIL :accessor interface-name))
+  (:documentation "Base class for radiance interfaces so modules may depend on them. 
+Loading a system of this class will search for an interface definition in the
+radiance configuration and attempt to load it. It is not guaranteed that the 
+requested interface will be properly implemented after the load of this system."))
 
 (defmethod asdf:operate ((op asdf:load-op) (interface interface) &key)
   (let* ((name (interface-name interface))
