@@ -215,7 +215,7 @@ requested interface will be properly implemented after the load of this system."
           (asdf:load-system system)
           (let ((package (find-package name)))
             (if package
-                (let* ((module-spec (assoc name (implement system)))
+                (let* ((module-spec (assoc name (implementation-map system)))
                        (module (if (consp (cdr module-spec)) (second module-spec) (cdr module-spec))))
                   (if module
                       (setf (symbol-value (find-symbol "*IMPLEMENTATION*" package))
