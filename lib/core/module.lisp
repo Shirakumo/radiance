@@ -9,7 +9,8 @@
 (defclass radiance-module (asdf:system)
   ((%implementation-map :initarg :implement :initform () :accessor implementation-map)
    (%module-instance :initarg :module-instance :initform NIL :accessor module-instance)
-   (%module-package :initarg :module-package :initform *package* :accessor module-package)))
+   (%module-package :initarg :module-package :initform *package* :accessor module-package))
+  (:documentation "The base ASDF system class for radiance modules. Any module has to extend this system class."))
 
 ;; Just some sanity checks for the module definition.
 (defmethod initialize-instance :after ((module radiance-module) &rest rest)
@@ -26,18 +27,22 @@
 
 (defmethod asdf:operate :before ((op asdf:load-op) (module radiance-module) &key)
   (let* ((spec (module-instance module))
-         (instance (etypecase spec
+         (identifier (etypecase spec
                      (null (make-keyword (string-upcase (asdf:component-name module))))
                      (function (funcall spec))
                      (symbol spec))))
-    (define-module module instance (module-package module))))
+    (define-module module identifier (module-package module))))
 
-(defmacro define-module (system module-instance-form &optional (package *package*))
+(defmacro define-module (system module-identifier-form &optional (package *package*))
+  "Sets up the environment to recognize the specified module.
+Specifically: Sets the :MODULE symbol-property on the PACKAGE-SYMBOL,
+puts the MODULE-NAME onto the *radiance-modules* list, and maps the
+PACKAGE to the SYSTEM in *radiance-package-map*."
   (with-gensyms ((package-gens "PACKAGE") (system-gens "SYSTEM"))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
        (let ((,package-gens ,package)
              (,system-gens ,system))
-         (setf (get (package-symbol ,package-gens) :module) ,module-instance-form)
+         (setf (get (package-symbol ,package-gens) :module) ,module-identifier-form)
          (pushnew (module-name ,system-gens) *radiance-modules*)
          (setf (gethash ,package-gens *radiance-package-map*) ,system-gens)))))
 
@@ -92,10 +97,14 @@
 
 
 (defmacro get-module (&optional (identifier *package*))
+  "Retrieve the module-system active in the current code region.
+Defaults to the module-system linked to the one active in the current *package*."
   (module-system identifier))
 
 
 (defun compile-modules ()
+  "Search through the ASDF systems and try to perform ASDF:LOAD-SYSTEM
+on any that match the class RADIANCE-MODULE."
   (let ((module-class (find-class 'radiance-module)))
     (asdf:map-systems
      #'(lambda (sys)
