@@ -193,7 +193,7 @@ method on the respective INTERFACE::I-PUBLIC-FUNCTION-NAME generic."
           (if (and (listp (first argslist)) (eq (caar argslist) :MODULE))
               (setf (car argslist) (list (or (caddar argslist) (gensym "MODULE"))
                                          (cadar argslist)))
-              (push (list (gensym "MODULE") `(eql (module-identifier (get-module)))) argslist))
+              (push (list (gensym "MODULE") `(eql (context-module-identifier))) argslist))
           (unless (find '&key argslist)
             (appendf argslist (list '&key)))
           `(defmethod ,pkg-method ,argslist
