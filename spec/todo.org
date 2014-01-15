@@ -8,10 +8,14 @@
     - State "DONE"       from "TODO"       [2014-01-01 Wed 20:14]
 *** DONE Fix macro-lambda-lists for interfaces.
     - State "DONE"       from "TODO"       [2014-01-01 Wed 21:46]
-*** TODO Fix interface class requirements (data-model, user, etc).
-*** TODO Reimplement the loading procedure.
-*** TODO Fix everything to compile.
-*** TODO Start testing with core module on new system.
+*** DONE Fix interface class requirements (data-model, user, etc).
+    - State "DONE"       from "TODO"       [2014-01-15 Wed 23:24]
+*** DONE Reimplement the loading procedure.
+    - State "DONE"       from "TODO"       [2014-01-15 Wed 23:24]
+*** DONE Fix everything to compile.
+    - State "DONE"       from "TODO"       [2014-01-15 Wed 23:24]
+*** DONE Start testing with core module on new system.
+    - State "DONE"       from "TODO"       [2014-01-15 Wed 23:24]
 *** TODO Fix all other modules for the new system.
 *** TODO Add automated caching system.
     
