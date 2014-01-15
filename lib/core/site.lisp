@@ -263,7 +263,7 @@ See upload-file for more information."
        
        ,(if open-file `(close ,filepathvar)))))
 
-(defmacro defpage (name uri (&key (module `(get-module)) access-branch lquery) &body body)
+(defmacro defpage (name uri (&key (identifier `(context-module-identifier)) access-branch lquery) &body body)
   "Defines a new page for the given module that will be available on the
 specified URI. If access-branch is given, an authorization check on the
 current session at page load will be performed. If lquery is non-NIL,
@@ -283,9 +283,9 @@ value of the request is automatically chosen."
                            (concatenate-strings ($ (serialize)))))
                       `(progn ,@body))))
     `(let ((,urigens ,uri)
-           (,modgens ,module))
+           (,modgens ,identifier))
        (v:debug :radiance.server.site "Defining new site ~a on ~a for ~a" ',name ,urigens ,modgens)
-       (define-hook (:page ',name) (:identifier (module-identifier ,modgens) :description (format nil "Page call for ~a" ,modgens))
+       (define-hook (:page ',name) (:identifier ,modgens :description (format nil "Page call for ~a" ,modgens))
          ,(if access-branch
               `(progn
                  (ignore-errors (auth:authenticate))
@@ -293,7 +293,7 @@ value of the request is automatically chosen."
                      ,funcbody
                      (error-page 403)))
               funcbody))
-       (dispatcher:register ',name (module-symbol ,modgens) ,urigens))))
+       (dispatcher:register ',name ,modgens ,urigens))))
 
 (defmacro define-file-link (name uri pathspec &key access-branch module content-type)
   "Defines a link of a given URI to a file. Useful for things like
@@ -302,7 +302,7 @@ the static/ directory."
   `(defpage ,name ,uri (:module ,module :access-branch ,access-branch)
      (hunchentoot:handle-static-file ,pathspec ,content-type)))
 
-(defmacro defapi (name (&rest args) (&key (method T) (identifier `(module-identifier (get-module))) access-branch) &body body)
+(defmacro defapi (name (&rest args) (&key (method T) (identifier `(context-module-identifier)) access-branch) &body body)
   "Defines a new API function for the given module. The arguments specify
 REST values that are expected (or not according to definition) on the
 API call. Any variable can have a default value specified. If 
