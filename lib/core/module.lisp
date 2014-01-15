@@ -96,12 +96,12 @@ PACKAGE to the SYSTEM in *radiance-package-map*."
   (gethash package *radiance-package-map*))
 
 
-(defmacro get-module (&optional (identifier *package*))
+(defmacro context-module (&optional (identifier *package*))
   "Retrieve the module-system active in the current code region.
 Defaults to the module-system linked to the one active in the current *package*."
   (module-system identifier))
 
-(defmacro get-module-identifier (&optional (identifier *package*))
+(defmacro context-module-identifier (&optional (identifier *package*))
   "Retrieve the module-identifer active in the current code region.
 Defaults to the module-identifier linked to the one active in the current *package*."
   (module-identifier identifier))
