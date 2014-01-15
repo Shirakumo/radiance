@@ -209,7 +209,7 @@ requested interface will be properly implemented after the load of this system."
 
 (defmethod asdf:operate ((op asdf:load-op) (interface interface) &key)
   (let* ((name (interface-name interface))
-         (implementation (config-tree :implementation name)))
+         (implementation (config-tree :interface name)))
     (if implementation
         (let ((system (asdf:find-system implementation)))
           (asdf:load-system system)
