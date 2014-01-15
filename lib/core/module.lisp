@@ -101,6 +101,11 @@ PACKAGE to the SYSTEM in *radiance-package-map*."
 Defaults to the module-system linked to the one active in the current *package*."
   (module-system identifier))
 
+(defmacro get-module-identifier (&optional (identifier *package*))
+  "Retrieve the module-identifer active in the current code region.
+Defaults to the module-identifier linked to the one active in the current *package*."
+  (module-identifier identifier))
+
 
 (defun compile-modules ()
   "Search through the ASDF systems and try to perform ASDF:LOAD-SYSTEM

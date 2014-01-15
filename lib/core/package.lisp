@@ -70,7 +70,8 @@
            #:module-package
            #:module-identifier
            #:module-system
-           #:get-module)
+           #:get-module
+           #:get-module-identifier)
   ;; request.lisp
   (:export #:request
            #:request-field
