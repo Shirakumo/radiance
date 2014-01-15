@@ -6,13 +6,13 @@
 
 (in-package :radiance)
 
-(defclass module (asdf:system)
+(defclass radiance-module (asdf:system)
   ((%implementation-map :initarg :implement :initform () :accessor implementation-map)
    (%module-instance :initarg :module-instance :initform NIL :accessor module-instance)
    (%module-package :initarg :module-package :initform *package* :accessor module-package)))
 
 ;; Just some sanity checks for the module definition.
-(defmethod initialize-instance :after ((module module) &rest rest)
+(defmethod initialize-instance :after ((module radiance-module) &rest rest)
   (declare (ignore rest))
   (assert (listp (implementation-map module)) () "A module's implementation-map has to be a list of keyword -> identifier pairs.")
   (mapc #'(lambda (definition)
@@ -24,7 +24,7 @@
   (let ((spec (module-instance module)))
     (etypecase spec (function) (symbol) (null))))
 
-(defmethod asdf:operate :before ((op asdf:load-op) (module module) &key)
+(defmethod asdf:operate :before ((op asdf:load-op) (module radiance-module) &key)
   (let* ((spec (module-instance module))
          (instance (etypecase spec
                      (null (make-keyword (string-upcase (asdf:component-name module))))
@@ -48,7 +48,7 @@
 (defmethod module-name ((module-name symbol))
   (module-name (module-system module-name)))
 
-(defmethod module-name ((module module))
+(defmethod module-name ((module radiance-module))
   (asdf:component-name module))
 
 (defmethod module-name ((package package))
@@ -71,7 +71,7 @@
 (defmethod module-identifier ((module-name symbol))
   (module-identifier (module-package module-name)))
 
-(defmethod module-identifier ((module module))
+(defmethod module-identifier ((module radiance-module))
   (module-identifier (module-package module)))
 
 (defmethod module-identifier ((package package))
@@ -84,7 +84,7 @@
 (defmethod module-system ((module-name symbol))
   (asdf:find-system (string-downcase module-name)))
 
-(defmethod module-system ((module module))
+(defmethod module-system ((module radiance-module))
   module)
 
 (defmethod module-system ((package package))
@@ -96,7 +96,7 @@
 
 
 (defun compile-modules ()
-  (let ((module-class (find-class 'module)))
+  (let ((module-class (find-class 'radiance-module)))
     (asdf:map-systems
      #'(lambda (sys)
          (when (eql (class-of sys) module-class)
