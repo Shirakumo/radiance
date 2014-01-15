@@ -316,10 +316,11 @@ requested output type or a page redirect in the case of an URI."
   (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
   (let ((name (make-keyword name))
         (funcbody `(progn ,@body))
-        (modgens (gensym "MODULE-")))
+        (modgens (gensym "MODULE-"))
+        (documentation (if (stringp (car body)) (car body) NIL)))
     `(let ((,modgens ,identifier))
        (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,modgens)
-       (define-hook (:api (make-keyword (format NIL "~a/~a" ,identifier ,name))) (:identifier (make-keyword (format NIL "~a:~a" ,modgens ,method)) :description (format NIL "API call for ~a" ,modgens))
+       (define-hook (:api (make-keyword (format NIL "~a/~a" ,identifier ,name))) (:identifier (make-keyword (format NIL "~a:~a" ,modgens ,method)) :description ,documentation)
          (when (or (eql ,method T) (eql (request-method) ,method))
            (,(case method
                    (:POST 'with-post)
