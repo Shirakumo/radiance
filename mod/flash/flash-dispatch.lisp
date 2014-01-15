@@ -6,37 +6,39 @@
 
 (in-package :radiance-mod-flash-dispatch)
 
-(defmethod dispatch ((dispatch flash-dispatch) (request radiance:request) &key)
-  (declare (optimize (speed 3)))
+(defvar *hooks* ())
+
+(define-interface-method dispatcher:dispatch (request radiance:request)
   (or
-   (let ((hook (effective-trigger dispatch request)))
+   (let ((hook (dispatcher:effective-trigger request)))
      (if hook (funcall (hook-function hook) (module hook))))
    (trigger :server :dispatch-default :args (list request))
-   (dispatch-default dispatch request)))
+   (dispatcher:dispatch-default request)))
 
-(defmethod effective-trigger ((dispatch flash-dispatch) (request uri) &key)
-  "Returns the trigger that would be called and the URI it registered that matches to it."
-  (declare (optimize (speed 3)))
-  (loop for (hook module uri) in (hooks dispatch)
+(define-interface-method dispatcher:effective-trigger (request)
+  (loop for (hook identifier uri) in *hooks*
      if (uri-matches uri request)
-     do (return (loop for hook in (get-hooks :page hook)
-                   for modsymb symbol = (module-symbol (module hook))
-                   if (eql module modsymb)
-                   return hook))))
+     do (return (loop for item in (hook-items :page hook)
+                   for item-identifier = (item-identifier item)
+                   if (eql identifier item-identifier)
+                   return item))))
 
-(defmethod register ((dispatch flash-dispatch) (hook symbol) (module symbol) (uri uri) &key)
-  (let ((found (find uri (hooks dispatch) :key #'third :test #'uri-same)))
+(define-interface-method dispatcher:register (hook identifier uri)
+  (let ((found (find uri *hooks* :key #'third :test #'uri-same)))
     (when found
       (if (not (eql hook (first found)))
           (v:warn :flash "Overriding existing trigger ~a on ~a" (car found) uri))
-      (setf (hooks dispatch) (remove uri (hooks dispatch) :key #'third :test #'uri-same))))
-  (v:debug :flash "Registering ~a for ~a/~a" uri module hook)
+      (setf *hooks* (delete uri *hooks* :key #'third :test #'uri-same))))
+  (v:debug :flash "Registering ~a for ~a/~a" uri identifier hook)
   (setf (hooks dispatch)
-        (sort (append (hooks dispatch) `((,hook ,module ,uri)))
+        (sort (append *hooks* `((,hook ,identifier ,uri)))
               #'sort-dispatcher-hooks))
   hook)
 
-(defmethod dispatch-default ((dispatch flash-dispatch) (request radiance:request) &key &allow-other-keys)
+(define-interface-method dispatcher:unregister (uri)
+  )
+
+(define-interface-method dispatcher:dispatch-default (request)
   (error-page 404))
 
 (defun sort-dispatcher-hooks (a b)
