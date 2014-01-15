@@ -24,5 +24,5 @@
                (:file "settings")
                (:file "userpage")
                (:file "admin"))
-  :depends-on (:radiance-admin :radiance-parser :uibox :ironclad :drakma :cl-ppcre)
+  :depends-on (:radiance-admin :radiance-parser :radiance-user :uibox :ironclad :drakma :cl-ppcre)
   :implement ((:profile :trivial-profile)))

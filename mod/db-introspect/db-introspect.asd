@@ -17,5 +17,5 @@
   :license "Artistic"
   :homepage "http://tymoon.eu"
   :defsystem-depends-on (:radiance)
-  :depends-on (:admin :uibox :string-case)
+  :depends-on (:radiance-admin :uibox :string-case)
   :components ((:file "admin")))
