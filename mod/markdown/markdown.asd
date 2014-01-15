@@ -5,23 +5,19 @@
 |#
 
 (in-package :radiance)
-
 (defpackage :org.tymoonnext.radiance.mod.markdown
   (:use :cl :radiance)
   (:nicknames :radiance-mod-markdown))
-
 (in-package :radiance-mod-markdown)
 
-(defmodule markdown (parser)
-  "Markdown parser module."
-  (:fullname "Markdown" 
-   :author "Nicolas Hafner" 
-   :version "0.0.1"
-   :license "Artistic" 
-   :url "http://tymoon.eu"
-
-   :implements '(parser)
-   :dependencies ())
-   
-  (:components ((:file "parser"))
-   :depends-on (:3bmd)))
+(asdf:defsystem markdown
+  :class :radiance-module
+  :defsystem-depends-on (:radiance)
+  :name "Markdown" 
+  :author "Nicolas Hafner" 
+  :version "0.0.1"
+  :license "Artistic" 
+  :homepage "http://tymoon.eu"
+  :depends-on (:3bmd)
+  :implement ((:parser :parser))
+  :components ((:file "parser")))

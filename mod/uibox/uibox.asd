@@ -15,15 +15,14 @@
            :confirm))
 (in-package :radiance-mod-uibox)
 
-(defmodule uibox ()
-  "Utility collection to build interfaces in HTML."
-  (:fullname "UIBox"
-   :author "Nicolas Hafner"
-   :version "0.0.1"
-   :license "Artistic"
-   :url "http://tymoon.eu"
-   :implements '(admin))
-  
-  (:components ((:file "fill")
-                (:file "build"))
-   :depends-on (:string-case)))
+(asdf:defsystem uibox
+  :class :radiance-module
+  :defsystem-depends-on (:radiance)
+  :name "UIBox"
+  :author "Nicolas Hafner"
+  :version "0.0.1"
+  :license "Artistic"
+  :homepage "http://tymoon.eu"  
+  :components ((:file "fill")
+               (:file "build"))
+  :depends-on (:string-case))
