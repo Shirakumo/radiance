@@ -295,11 +295,11 @@ value of the request is automatically chosen."
               funcbody))
        (dispatcher:register ',name ,modgens ,urigens))))
 
-(defmacro define-file-link (name uri pathspec &key access-branch module content-type)
+(defmacro define-file-link (name uri pathspec &key access-branch (identifier `(context-module-identifier)) content-type)
   "Defines a link of a given URI to a file. Useful for things like
 favicon.ico, robots.txt, humans.txt or other files that cannot be in
 the static/ directory."
-  `(defpage ,name ,uri (:module ,module :access-branch ,access-branch)
+  `(defpage ,name ,uri (:identifier ,identifier :access-branch ,access-branch)
      (hunchentoot:handle-static-file ,pathspec ,content-type)))
 
 (defmacro defapi (name (&rest args) (&key (method T) (identifier `(context-module-identifier)) access-branch) &body body)
