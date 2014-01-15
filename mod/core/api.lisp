@@ -6,9 +6,10 @@
 
 (in-package :radiance)
 
-(defpage api #u"/api/" (:modulevar module)
+(defpage api #u"/api/" ()
   (let ((pathparts (split-sequence:split-sequence #\/ (path *radiance-request*)))
-        (format (make-keyword (or (get-var "format") (post-var "format") "json"))))
+        (format (make-keyword (or (get-var "format") (post-var "format") "json")))
+        (module (context-module)))
     (api-format 
      format
      (handler-case 
