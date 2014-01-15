@@ -211,6 +211,7 @@ requested interface will be properly implemented after the load of this system."
          (implementation (config-tree :interface name)))
     (if implementation
         (let ((system (asdf:find-system implementation)))
+          (v:info :radiance.framework.interface "Loading interface implementation ~a: ~a" (interface-name interface) implementation)
           (asdf:load-system system)
           (let ((package (find-package name)))
             (if package
