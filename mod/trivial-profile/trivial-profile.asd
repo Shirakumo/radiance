@@ -16,7 +16,7 @@
   :author "Nicolas Hafner"
   :version "0.0.1"
   :license "Artistic"
-  :url "http://tymoon.eu"
+  :homepage "http://tymoon.eu"
   :serial T
   :components ((:file "gravatar")
                (:file "profile")
