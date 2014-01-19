@@ -6,6 +6,15 @@
 
 (in-package :radiance)
 
+(defgeneric module-name (identifier)
+  (:documentation "The module name of an asdf module system."))
+(defgeneric module-package (identifier)
+  (:documentation "Retrieve the primary package of a module."))
+(defgeneric module-identifier (identifier)
+  (:documentation "Return the module identifier of a module."))
+(defgeneric module-system (identifier)
+  (:documentation "Return the ASDF system of a module."))
+
 (defclass radiance-module (asdf:system)
   ((%implementation-map :initarg :implement :initform () :accessor implementation-map)
    (%module-instance :initarg :module-instance :initform NIL :accessor module-instance)
@@ -46,9 +55,6 @@ PACKAGE to the SYSTEM in *radiance-package-map*."
                      (symbol spec))))
     (define-module module identifier (module-package module))))
 
-(defgeneric module-name (identifier)
-  (:documentation "The module name of an asdf module system."))
-
 (defmethod module-name ((module-name symbol))
   (module-name (module-system module-name)))
 
@@ -59,18 +65,12 @@ PACKAGE to the SYSTEM in *radiance-package-map*."
   (module-name (module-system package)))
 
 
-(defgeneric module-package (identifier)
-  (:documentation "Retrieve the primary package of a module."))
-
 (defmethod module-package ((module-name symbol))
   (module-package (module-system module-name)))
 
 (defmethod module-package ((package package))
   package)
 
-
-(defgeneric module-identifier (identifier)
-  (:documentation "Return the module identifier of a module."))
 
 (defmethod module-identifier ((module-name symbol))
   (module-identifier (module-package module-name)))
@@ -81,9 +81,6 @@ PACKAGE to the SYSTEM in *radiance-package-map*."
 (defmethod module-identifier ((package package))
   (get (package-symbol package) :module))
 
-
-(defgeneric module-system (identifier)
-  (:documentation "Return the ASDF system of a module."))
 
 (defmethod module-system ((module-name symbol))
   (asdf:find-system (string-downcase module-name)))
