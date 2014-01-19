@@ -10,7 +10,7 @@
            :sqlite-data-model))
 (in-package :radiance-mod-sqlite)
 
-(asdf:defsystem sqlite
+(asdf:defsystem radiance-sqlite
   :class :radiance-module
   :defsystem-depends-on (:radiance)
   :name "SQLite Binding" 
@@ -18,8 +18,8 @@
   :version "0.0.1" 
   :license "Artistic" 
   :homepage "http://tymoon.eu"
-  :implement ((:database :sqlite)
-              (:data-model :sqlite))
+  :implement ((:database :radiance-sqlite)
+              (:data-model :radiance-sqlite))
   :serial T
   :components ((:file "query")
                (:file "database")
