@@ -49,20 +49,19 @@
   (declare (optimize (speed 3)))
   (string-equal (format NIL "~a" uri) (format NIL "~a" uri2)))
 
-(defgeneric uri->url (uri &optional absolute)
-  (:documentation "Turns the URI into a string URL."))
 
-(defmethod uri->url ((uri uri) &optional (absolute T))
+(defun uri->url (uri &optional (absolute T))
+  "Turns the URI into a string URL."
   (if absolute 
       (format NIL "http://~{~a.~}~a~:[~;:~:*~a~]/~a"
               (subdomains uri) (domain uri) (port uri) (path uri))
       (concatenate 'string "/" (path uri))))
 
-(defmethod uri->server-url ((uri uri))
+(defun uri->server-url (uri)
   (format NIL "http://~{~a.~}~:[~a~;~:*~a~*~]~:[:~a~;:~:*~a~*~]/~a"
           (subdomains uri) (domain uri) (config-tree :domain) (port uri) (first (config-tree :ports)) (path uri)))
 
-(defmethod uri->context-url ((uri uri))
+(defun uri->context-url (uri)
   (format NIL "http://~:[~{~a.~}~;~:*~{~a.~}~*~]~:[~a~;~:*~a~*~]~:[:~a~;:~:*~a~*~]/~a"
           (subdomains uri) (subdomains *radiance-request*) (domain uri) (domain *radiance-request*) (port uri) (port *radiance-request*) (path uri)))
 
