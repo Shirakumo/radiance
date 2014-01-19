@@ -27,7 +27,8 @@
   (get (username)
     (:documentation "Returns the user object of an existing user or creates a new hull instance."))
   (field (user field &key value)
-    (:documentation "Set or get a user data field."))
+    (:documentation "Set or get a user data field.")
+    (:type :accessor) (:class class))
   (save (user)
     (:documentation "Save the user to the database."))
   (saved-p (user)
@@ -42,9 +43,6 @@
     (:documentation "Record an action for the user. If public is NIL, the action should not be visible to anyone else.."))
   (get-actions (user n &key public oldest-first)
     (:documentation "Returns a list of n cons cells, with the car being the action and the cdr being the time of the action.")))
-
-(defmethod getdf ((user user:class) field)
-  (user:field user field))
 
 (define-interface auth
   (authenticate ()
@@ -77,7 +75,8 @@
   (user (session)
     (:documentation "Returns the user associated with this session."))
   (field (session field &key value)
-    (:documentation "Set or get a session data field."))
+    (:documentation "Set or get a session data field.")
+    (:type :accessor) (:class class))
   (end (session)
     (:documentation "Finalizes the session object and in effect logs the user out."))
   (active-p (session)
@@ -137,7 +136,8 @@
   (id (model)
     (:documentation "Returns the UID of the model."))
   (field (model field &key value)
-    (:documentation "Returns the value of a field. Is setf-able.")) 
+    (:documentation "Returns the value of a field. Is setf-able.")
+    (:type :accessor) (:class class)) 
   (get (collection query &key (skip 0) (limit 0) sort)
     (:documentation "Returns a list of model instances built from the query result."))
   (get-one (collection query &key (skip 0) sort)
@@ -163,7 +163,7 @@ and a string, denoting variable name and field name respectively."
            ,(loop for field in field-spec 
                for varname = (if (listp field) (first field) field)
                for fieldname = (if (listp field) (second field) (string-downcase (symbol-name field)))
-               collect `(,varname (data-model:field ,vargens ,fieldname)))
+               collect `(,varname (data-model::i-field data-model::*implementation* ,vargens ,fieldname)))
          ,@body))))
 
 (defmacro with-model (model-spec (collection query &key (skip 0) sort save) &body body)
@@ -182,9 +182,6 @@ of this is always the last statement in the body, even if save is non-NIL."
                             `(data-model:hull ,collection))))
        (when ,modelname
          ,@body))))
-
-(defmethod getdf ((model data-model:class) field)
-  (data-model:field model field))
 
 (define-interface admin
   (define-panel (name category (&key lquery access-branch menu-icon menu-tooltip) &body body)
