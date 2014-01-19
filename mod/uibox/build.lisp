@@ -43,7 +43,7 @@ If prepend is NIL, the notice node is returned instead."
         (confirm-field (symbol-name confirm-field))
         (rcidsym (gensym "RCID"))
         (requestsym (gensym "REQUEST")))
-    `(let ((*radiance-session* (or (session-field *radiance-session* ',session-field)
+    `(let ((*radiance-session* (or (session:field *radiance-session* ',session-field)
                                    *radiance-session*))
            (,rcidsym (with-request-continuation (:new-request-var ,requestsym)
                        (cond
