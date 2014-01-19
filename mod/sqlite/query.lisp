@@ -19,7 +19,7 @@
      for arg in args
      for (part data) = (multiple-value-list (%query (car arg) (cdr arg)))
      collect part into query
-     do (nappend datas data)
+     do (appendf datas data)
      finally (return (values (format NIL "(~{~a~^ AND ~})" query) datas))))
 
 (defmethod %query ((action (eql :or)) args)
@@ -27,7 +27,7 @@
      for arg in args
      for (part data) = (multiple-value-list (%query (car arg) (cdr arg)))
      collect part into query
-     do (nappend datas data)
+     do (appendf datas data)
      finally (return (values (format NIL "(~{~a~^ OR ~})" query) datas))))
 
 (defmethod %query ((action (eql :not)) args)

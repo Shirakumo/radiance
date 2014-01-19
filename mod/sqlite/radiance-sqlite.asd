@@ -5,7 +5,7 @@
 |#
 
 (defpackage radiance-mod-sqlite
-  (:use :cl :radiance)
+  (:use :cl :radiance :alexandria)
   (:export :sqlite
            :sqlite-data-model))
 (in-package :radiance-mod-sqlite)
@@ -24,4 +24,4 @@
   :components ((:file "query")
                (:file "database")
                (:file "data-model"))
-  :depends-on (:sqlite))
+  :depends-on (:sqlite :alexandria))

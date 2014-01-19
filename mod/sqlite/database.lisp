@@ -33,9 +33,9 @@
   (not (null *db*)))
 
 (define-interface-method db:collections ()
-  (db-iterate *db* "sqlite_master" (query (:= "type" "table"))
-              #'(lambda (row) (cdr (assoc "name" row :test #'string=)))
-              :sort '(("name" . :ASC))))
+  (db:iterate "sqlite_master" (db:query (:= "type" "table"))
+    #'(lambda (row) (cdr (assoc "name" row :test #'string=)))
+    :sort '(("name" . :ASC))))
 
 (defun format-field-type (s arg colonp atp)
   (declare (ignore colonp atp))
