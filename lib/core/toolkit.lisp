@@ -83,6 +83,7 @@
 
 (defgeneric getdf (model field)
   (:documentation "Attempts to extract the requested field from a variety of different data models."))
+(defgeneric (setf getdf) (value model field))
 
 (defmethod getdf ((model list) field)
   (if (keywordp (first model))
@@ -90,13 +91,24 @@
       (if (listp (first model))
           (cdr (assoc field model :test #'equalp))
           (error "Model is of type LIST, but is neither an ALIST or PLIST."))))
+(defmethod (setf getdf) (value (model list) field)
+  (if (keywordp (first model))
+      (setf (getf model (if (stringp field) (make-keyword field) field)) value)
+      (if (listp (first model))
+          (setf (cdr (assoc field model :test #'equalp)) value)
+          (error "Model is of type LIST, but is neither an ALIST or PLIST."))))
 
 (defmethod getdf ((model hash-table) field)
   (gethash field model))
+(defmethod (setf getdf) (value (model hash-table) field)
+  (setf (gethash field model) value))
 
 (defmethod getdf ((model standard-object) field)
   (let ((slot (find-symbol (string-upcase field) (symbol-package (class-name (class-of model))))))
     (if slot (slot-value model slot))))
+(defmethod (setf getdf) (value (model standard-object) field)
+  (let ((slot (find-symbol (string-upcase field) (symbol-package (class-name (class-of model))))))
+    (if slot (setf (slot-value model slot) value))))
 
 (defun file-size (pathspec)
   "Retrieves the file size in bytes."
