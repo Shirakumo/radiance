@@ -206,22 +206,50 @@ Loading a system of this class will search for an interface definition in the
 radiance configuration and attempt to load it. It is not guaranteed that the 
 requested interface will be properly implemented after the load of this system."))
 
-(defmethod asdf:operate ((op asdf:load-op) (interface interface) &key)
-  (let* ((name (interface-name interface))
-         (implementation (config-tree :interface name)))
-    (if implementation
-        (let ((system (asdf:find-system implementation)))
-          (v:info :radiance.framework.interface "Loading interface implementation ~a: ~a" (interface-name interface) implementation)
-          (asdf:load-system system)
-          (let ((package (find-package name)))
-            (if package
-                (let* ((module-spec (assoc name (implementation-map system)))
-                       (module (if (consp (cdr module-spec)) (second module-spec) (cdr module-spec))))
-                  (if module
-                      (setf (symbol-value (find-symbol "*IMPLEMENTATION*" package))
-                            (etypecase module
-                              (function (funcall module))
-                              (symbol module)
-                              (standard-object module)))))
-                (error 'no-such-interface-error :interface name))))
-        (error 'no-interface-implementation-error :interface name))))
+(defmacro with-asdf-system ((interface systemvar &optional (namevar (gensym "NAME"))) &body body)
+  (with-gensyms ((implementationgens "IMPLEMENTATION"))
+    `(progn
+       (unless *radiance-config* (load-config))       
+       (let* ((,namevar (interface-name ,interface))
+              (,implementationgens (config-tree :interface ,namevar)))
+         (if ,implementationgens
+             (let ((,systemvar (asdf:find-system ,implementationgens)))
+               ,@body)
+             (error 'no-interface-implementation-error :interface ,namevar))))))
+
+;; Hack into ASDF to delegate to the chosen implementation for the interface.
+(defmethod asdf::plan-action-status ((plan null) (op asdf:operation) (interface interface))
+  (with-asdf-system (interface system)
+    (v:debug :radiance.framework.interface "Delegating (ASDF::PLAN-ACTION-STATUS ~s ~s ~s) to ~s" plan op interface system)
+    (asdf::plan-action-status plan op system)))
+
+(defmethod asdf:needed-in-image-p ((op asdf:operation) (interface interface))
+  (with-asdf-system (interface system)
+    (v:debug :radiance.framework.interface "Delegating (ASDF:NEEDED-IN-IMAGE-P ~s ~s) to ~s" op interface system)
+    (asdf:needed-in-image-p op system)))
+
+(defmethod asdf::compute-action-stamp (plan (op asdf:operation) (interface interface) &key just-done)
+  (with-asdf-system (interface system)
+    (v:debug :radiance.framework.interface "Delegating (ASDF::COMPUTE-ACTION-STAMP ~s ~s ~s :JUST-DONE ~s) to ~s" plan op interface just-done system)
+    (asdf::compute-action-stamp plan op system :just-done just-done)))
+
+(defmethod asdf:perform ((op asdf::load-op) (interface interface))
+  (with-asdf-system (interface system)
+    (v:debug :radiance.framework.interface "Delegating (ASDF:PERFORM ~s ~s) to ~s" op interface system)
+    (asdf:operate op system)))
+
+;; Hook into load-op to define the implementation afterwards.
+(defmethod asdf:perform :after ((op asdf:load-op) (interface interface))
+  (with-asdf-system (interface system name)
+    (v:debug :radiance.framework.interface "Setting ~a as implementation for ~a" system interface)
+    (let ((package (find-package name)))
+      (if package
+          (let* ((module-spec (assoc name (implementation-map system)))
+                 (module (if (consp (cdr module-spec)) (second module-spec) (cdr module-spec))))
+            (if module
+                (setf (symbol-value (find-symbol "*IMPLEMENTATION*" package))
+                      (etypecase module
+                        (function (funcall module))
+                        (symbol module)
+                        (standard-object module)))))
+          (error 'no-such-interface-error :interface name)))))
