@@ -18,12 +18,12 @@
   (print-unreadable-object (hook out :type T)
     (format out "~a/~a/~a" (item-namespace hook) (name hook) (item-identifier hook))))
 
-(defmethod hook-equal ((a hook-item) (b hook-item))
+(defun hook-equal (a b)
   "Checks if two hook-items designate the same (match in space, module and name)."
   (and (eql (item-identifier a) (item-identifier b))
        (hook-equalp a b)))
 
-(defmethod hook-equalp ((a hook-item) (b hook-item))
+(defun hook-equalp (a b)
   "Checks if two hook-items designate the same (match in space and name)."
   (and (eql (name a) (name b))
        (eq (item-namespace a) (item-namespace b))))
@@ -94,7 +94,7 @@
      if (funcall (item-function item))
      collect it))
 
-(defmacro define-hook ((space name) (&key (identifier `(module-identifier (get-module))) description) &body body)
+(defmacro define-hook ((space name) (&key (identifier `(context-module-identifier)) description) &body body)
   (with-gensyms ((identifiergens "IDENTIFIER"))
     `(let ((,identifiergens ,identifier))
        (add-hook-item ,space ,name ,identifiergens
