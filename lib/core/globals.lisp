@@ -18,7 +18,8 @@
 (defvar *radiance-request-count* 0 "Counter for the current amount of requests being handled.")
 (defvar *radiance-request-total* 0 "Counter for the total amount of requests handled.")
 (defvar *radiance-reply*       NIL "Current reply object.")
-(defvar *radiance-modules*     ()  "List of all loaded modules.")
+(defvar *radiance-modules*     ()  "List of all loaded mod")
+(defvar *radiance-interface-expanders* (make-hash-table) "Map for the radiance interface component expanders.")
 (defvar *radiance-package-map* (make-hash-table) "Reverse lookup for packages to modules.")
 (defvar *radiance-hooks*       (make-hash-table) "Map of all registered triggers.")
 (defvar *radiance-session*     NIL "Current session object, if any,")
@@ -32,5 +33,5 @@
 
 (declaim (fixnum *radiance-request-count* *radiance-request-total* *default-cookie-expire* *unix-epoch-difference* *radiance-startup-time* *radiance-continuation-lifetime*))
 (declaim (list *radiance-modules* *radiance-acceptors* *radiance-handlers*))
-(declaim (hash-table *radiance-package-map* *radiance-hooks* *radiance-api-formats*))
+(declaim (hash-table *radiance-package-map* *radiance-hooks* *radiance-api-formats* *radiance-interface-expanders*))
 (declaim (string *random-string-characters*))

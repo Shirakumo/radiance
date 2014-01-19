@@ -36,6 +36,11 @@
   (:report (lambda (c s) (format s "Attempted to define interface function ~a for ~a, which is not defined."
                                  (slot-value c 'interface-function) (slot-value c 'interface)))))
 
+(define-condition no-such-interface-component-error (interface-error)
+  ((interface-component :initarg :interface-component :reader interface-component))
+  (:report (lambda (c s) (format s "Attempted to define interface component of type ~a for ~a, for which no expander exists."
+                                 (slot-value c 'interface-component) (slot-value c 'interface)))))
+
 (define-condition error-page (radiance-error) ())
 (define-condition auth-error (radiance-error) ())
 

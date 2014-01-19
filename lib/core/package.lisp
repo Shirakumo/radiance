@@ -19,6 +19,7 @@
            #:no-interface-implementation-error
            #:interface-not-implemented-error
            #:no-such-interface-function-error
+           #:no-such-interface-component-error
            #:error-page
            #:auth-error
            #:invalid
@@ -62,7 +63,10 @@
            #:+unix-epoch-difference+)
   ;; interface.lisp
   (:export #:define-interface
-           #:define-interface-method)
+           #:define-interface-method
+           #:define-interface-component-expander
+           #:get-interface-component-expander
+           #:interface-component-types)
   ;; module.lisp
   (:export #:radiance-module
            #:define-module

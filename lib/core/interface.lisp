@@ -57,7 +57,100 @@
                  (intern (string-upcase element) package)
                  element)))
 
-;; Todo: Make extensible and configurable for component types.
+(defmacro define-interface-component-expander (name (name-var args-var options-var &optional (interface-var (gensym "INTERFACE-NAME"))) &body body)
+  "Defines a new interface component expander.
+NAME         --- A symbol designating the component's type name.
+NAME-VAR     --- A symbol that will be bound to the name specified in the component
+                 declaration.
+ARGS-VAR     --- A symbol that will be bound to the arguments list specified in the
+                 component declaration.
+OPTIONS-VAR  --- A symbol that will be bound to the options list specified in the
+                 component declaration.
+PKG-NAME-VAR --- A symbol that will be bound to the name of the interface and as
+                 such to the name of the package it is declaring.
+BODY         --- forms.
+
+Do note that the component-expander expands into a macro. This is necessary to
+get access to symbols in a package that may not exist at expansion of the
+interface macro. To reach such a symbol anyway, create a gensym and expand into
+a let that binds the gensym to a FIND-SYMBOL or INTERN call.
+Another consequence of this is that in order to have a form appear in the actual
+interface definition itself it needs to be doubly backquoted, as only one back-
+quote will make it execute within the generated macro."
+  (assert (symbolp name) () "Name has to be a symbol.")
+  `(setf (gethash ,(make-keyword name) *radiance-interface-expanders*)
+         #'(lambda (,name-var ,args-var ,options-var ,interface-var)
+             ,@body)))
+
+(defun get-interface-component-expander (name)
+  "Returns the function-object of the component-expander, if any can be found."
+  (gethash (make-keyword (string-upcase name)) *radiance-interface-expanders*))
+
+(defun interface-component-types ()
+  "Returns a list of supported component-types as their keyword names."
+  (hash-table-keys *radiance-interface-expanders*))
+
+(define-interface-component-expander class (classname slots options package-name)
+    (let ((slotsgens (gensym "SLOTS"))
+          (tmpgens (gensym "TEMP"))
+          (pkg-class (gensym "PKG-CLASS")))
+      `(let ((,pkg-class (find-symbol ,(format NIL "~a" classname) ',package-name))
+             (,slotsgens (loop for ,tmpgens in ',slots
+                               collect (intern-list-symbols ,tmpgens ',package-name))))
+         `(defclass ,,pkg-class () ,,slotsgens ,',@(remove :type options :key #'car)))))
+
+(define-interface-component-expander function (funcname args options package-name)
+  (with-gensyms ((wholegens "WHOLE") (pkg-function "PKG-FUNCTION") (pkg-method "PKG-METHOD") (pkg-impl-var "PKG-IMPL-VAR"))
+    (let* ((documentation (second (assoc :documentation options)))
+           (args (make-key-extensible args))
+           (argsgeneric (flatten-lambda-list args))
+           (call-function (if (or (find '&rest args)) 'apply 'funcall)))
+      `(let ((,pkg-function (find-symbol ,(string funcname) ',package-name))
+             (,pkg-method (intern ,(format NIL "I-~a" funcname) ',package-name))
+             (,pkg-impl-var (find-symbol "*IMPLEMENTATION*" ',package-name)))
+         `(progn
+            (defgeneric ,,pkg-method (,',(gensym "MODULE") ,@',argsgeneric))
+            (defmacro ,,pkg-function (&whole ,',wholegens ,@',args)
+              ,@',(when documentation (list documentation))
+              (declare (ignore ,@',(extract-macro-lambda-vars args)))
+              `(,',',call-function #',',,pkg-method ,',,pkg-impl-var ,@(cdr ,',wholegens))))))))
+
+(define-interface-component-expander macro (funcname args options package-name)
+  (with-gensyms ((wholegens "WHOLE") (pkg-function "PKG-FUNCTION") (pkg-method "PKG-METHOD") (pkg-impl-var "PKG-IMPL-VAR"))
+    (let* ((documentation (second (assoc :documentation options)))
+           (args (make-key-extensible args))
+           (argsgeneric (macro-lambda-list->generic-list args))
+           (call-function (if (or (find '&rest args)
+                                  (find '&body args))
+                              'apply 'funcall)))
+      `(let ((,pkg-function (find-symbol ,(string funcname) ',package-name))
+             (,pkg-method (intern ,(format NIL "I-~a" funcname) ',package-name))
+             (,pkg-impl-var (find-symbol "*IMPLEMENTATION*" ',package-name)))
+         `(progn
+            (defgeneric ,,pkg-method (,',(gensym "MODULE") ,@',argsgeneric))
+            (defmacro ,,pkg-function (&whole ,',wholegens ,@',args)
+              ,@',(when documentation (list documentation))
+              (declare (ignore ,@',(extract-macro-lambda-vars args)))
+              (,',call-function #',,pkg-method ,,pkg-impl-var (cdr ,',wholegens))))))))
+
+(define-interface-component-expander accessor (funcname args options package-name)
+  (with-gensyms ((pkg-class "PKG-CLASS") (pkg-function "PKG-FUNCTION") (pkg-method "PKG-METHOD")
+                 (valuegens "VALUE") (fieldgens "FIELD") (instancegens "INSTANCE") (identifiergens "IDENTIFIER"))
+    (let ((class-name (second (assoc :CLASS options))))
+      (assert class-name () "Class-name required for accessor definition.")
+      ``(progn
+          ,,(funcall (get-interface-component-expander :function) funcname args options package-name)
+          ,(let ((,pkg-class (find-symbol ,(string-upcase class-name) ',package-name))
+                 (,pkg-function (find-symbol ,(string funcname) ',package-name))
+                 (,pkg-method (find-symbol ,(format NIL "I-~a" funcname) ',package-name)))
+             `(progn
+                (defmethod getdf ((,',instancegens ,,pkg-class) ,',fieldgens)
+                  (,,pkg-function ,',instancegens ,',fieldgens))
+                (defmethod (setf getdf) (,',valuegens (,',instancegens ,,pkg-class) ,',fieldgens)
+                  (,,pkg-function ,',instancegens ,',fieldgens :value ,',valuegens))
+                (defmethod (setf ,,pkg-method) (,',valuegens ,',identifiergens (,',instancegens ,,pkg-class) ,',fieldgens)
+                  (,,pkg-method ,',identifiergens ,',instancegens ,',fieldgens :value ,',valuegens))))))))
+
 (defmacro define-interface (name &body component-declarations)
   "Define a new implementation mechanism.
 NAME                 ::= PRIMARY-NICKNAME | (PRIMARY-NICKNAME NICKNAME*)
@@ -74,18 +167,13 @@ NICKNAME             --- A nickname symbol for the interface package.
 
 OPTIONS:
 
- - :TYPE dictates the type of component being declared and may be one of
-:FUNCTION :MACRO :CLASS. It defaults to :FUNCTION. If the TYPE is of MACRO or 
-FUNCTION, the PRIMARY-ARGUMENTS list serves as the function/macro-lambda-list.
-If the TYPE is of CLASS, it is used for the direct-slots of the defined class.
+ - :TYPE dictates the type of component being declared, which in turn
+decides what is done with the rest of the arguments. To see the possible
+components, invoke (RADIANCE:INTERFACE-COMPONENT-TYPES). See 
+DEFINE-INTERFACE-COMPONENT-EXPANDER for more information.
 
- - :DOCUMENTATION expects a string that is used as a documentation value for
-the component, either as a function documentation string, or as the class 
-documentation string.
-
- - * Any number of additional options may be passed along, but will not be
-used if the TYPE is FUNCTION or MACRO. In the case of CLASS, the additional
-options are passed directly to the class definition."
+ - * Any number of additional options may be passed along, but their usage
+depends on the component-expander."
   (etypecase name
     (symbol)
     (list
@@ -94,76 +182,38 @@ options are passed directly to the class definition."
   (with-gensyms
       ((macro-name    "INTERFACE-GENERATOR")
        (pkg-impl-var  "PKG-IMPL-VAR") (pkg-impl-fun  "PKG-IMPL-FUN")
-       (pkg-function  "PKG-FUNCTION") (pkg-method    "PKG-METHOD")
-       (pkg-class     "PKG-CLASS")
        (new-impl-gens "NEW-IMPL") (provided-gens "PROVIDED"))
     (let* ((nicknames (if (listp name) name (list name)))
            (name (if (listp name) (car name) name))
            (fqpn (intern (format NIL "ORG.TYMOONNEXT.RADIANCE.INTERFACE.~a" name) :KEYWORD)))
-      (flet ((interface-class (classname slots options)
-               (let ((slotsgens (gensym "SLOTS"))
-                     (tmpgens (gensym "TEMP")))
-                 `(let ((,pkg-class (find-symbol ,(format NIL "~a" classname) ',name))
-                        (,slotsgens (loop for ,tmpgens in ',slots
-                                       collect (intern-list-symbols ,tmpgens ',name))))
-                    `(defclass ,,pkg-class () ,,slotsgens ,',@(remove :type options :key #'car)))))
-
-             (interface-function (funcname args options)
-               (let* ((documentation (second (assoc :documentation options)))
-                      (type (second (assoc :type options)))
-                      (wholegens (gensym "WHOLE"))
-                      (args (make-key-extensible args))
-                      (argsgeneric args)
-                      (call-function (if (or (find '&rest args)
-                                             (find '&body args))
-                                         'apply
-                                         'funcall)))
-
-                 ;; Fix up generic args for macro-lambda-lists.
-                 (if (or (eql type :macro) (eql type 'macro))
-                     (setf argsgeneric (macro-lambda-list->generic-list argsgeneric))
-                     (setf argsgeneric (flatten-lambda-list argsgeneric)))
-                 
-                 ;; Triply nested macros. Woeyy.
-                 `(let ((,pkg-function (find-symbol ,(format NIL "~a" funcname) ',name))
-                        (,pkg-method (intern ,(format NIL "I-~a" funcname) ',name)))
-                    `(progn
-                       (defgeneric ,,pkg-method (,',(gensym "MODULE") ,@',argsgeneric))
-                       (defmacro ,,pkg-function (&whole ,',wholegens ,@',args)
-                         ,@',(when documentation (list documentation))
-                         (declare (ignore ,@',(extract-macro-lambda-vars args)))
-                         ,,(ecase type
-                                  ((:macro 'macro)
-                                   ``(,',call-function #',,pkg-method ,,pkg-impl-var (cdr ,',wholegens)))
-                                  ((:function 'function NIL)
-                                   ```(,',',call-function #',',,pkg-method ,',,pkg-impl-var ,@(cdr ,',wholegens))))))))))
-        
-        `(progn
-           (defpackage ,fqpn
-             (:nicknames ,@(mapcar #'(lambda (name) (intern (string-upcase name) :KEYWORD)) nicknames))
-             (:export ,@(append '(#:*implementation* #:implementation)
-                                (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) component-declarations))))
-           (asdf:defsystem ,(intern (format nil "RADIANCE-~a" name))
-             :class :interface  :interface-name ,(find-symbol (string-upcase name) :KEYWORD))
-           (macrolet ((,macro-name ()
-                        (let ((,pkg-impl-var (find-symbol "*IMPLEMENTATION*" ',name))
-                              (,pkg-impl-fun (find-symbol "IMPLEMENTATION" ',name)))
-                          `(progn
-                             (defvar ,,pkg-impl-var NIL)
-                             (declaim (inline ,,pkg-impl-fun))
-                             (defun ,,pkg-impl-fun (&optional (,',new-impl-gens NIL ,',provided-gens))
-                               (if ,',provided-gens
-                                   (setf ,,pkg-impl-var ,',new-impl-gens)
-                                   ,,pkg-impl-var))
-                             ,,@(loop for declaration in component-declarations
-                                   collect (destructuring-bind (specified-name args &rest options) declaration
-                                             (ecase (second (assoc :type options))
-                                               ((:macro :function 'macro 'function NIL)
-                                                (interface-function specified-name args options))
-                                               ((:class 'class)
-                                                (interface-class specified-name args options)))))))))
-             (,macro-name))
-           (find-package ',name))))))
+      `(progn
+         (defpackage ,fqpn
+           (:nicknames ,@(mapcar #'(lambda (name) (intern (string-upcase name) :KEYWORD)) nicknames))
+           (:export ,@(append '(#:*implementation* #:implementation)
+                              (mapcar #'(lambda (a) (make-symbol (string-upcase (car a)))) component-declarations))))
+         (asdf:defsystem ,(intern (format nil "RADIANCE-~a" name))
+           :class :interface  :interface-name ,(find-symbol (string-upcase name) :KEYWORD))
+         (macrolet ((,macro-name ()
+                      (let ((,pkg-impl-var (find-symbol "*IMPLEMENTATION*" ',name))
+                            (,pkg-impl-fun (find-symbol "IMPLEMENTATION" ',name)))
+                        `(progn
+                           (defvar ,,pkg-impl-var NIL)
+                           (declaim (inline ,,pkg-impl-fun))
+                           (defun ,,pkg-impl-fun (&optional (,',new-impl-gens NIL ,',provided-gens))
+                             (if ,',provided-gens
+                                 (setf ,,pkg-impl-var ,',new-impl-gens)
+                                 ,,pkg-impl-var))
+                           ,,@(loop for declaration in component-declarations
+                                    collect (destructuring-bind (specified-name args &rest options) declaration
+                                              (let* ((component-type (or (second (assoc :type options)) :function))
+                                                     (function (get-interface-component-expander component-type)))
+                                                (if function
+                                                    (funcall function specified-name args options name)
+                                                    (error 'no-such-interface-component-error
+                                                           :interface-component component-type
+                                                           :interface name)))))))))
+           (,macro-name))
+         (find-package ',name)))))
 
 (defmacro define-interface-method (function argslist &body body)
   "Defines a new implementation of an interface function.
