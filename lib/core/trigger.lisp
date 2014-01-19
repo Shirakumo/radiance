@@ -11,7 +11,7 @@
    (space :initform (error "Namespace required.") :initarg :space :accessor item-namespace :type symbol)
    (identifier :initform (error "Hook identifier required.") :initarg :identifier :accessor item-identifier)
    (function :initform (error "Hook module method required.") :initarg :function :accessor item-function :type function)
-   (description :initform NIL :initarg :description :accessor item-description :type string))
+   (documentation :initform NIL :initarg :documentation :accessor item-documentation :type string))
   (:documentation "Radiance hook-item class"))
 
 (defmethod print-object ((hook hook-item) out)
@@ -58,13 +58,13 @@
       (remhash space *radiance-hooks*)
       (error 'namespace-not-found-error :namespace space :text (format NIL "Attempted to remove namespace ~a, but it does not exist." space))))
 
-(defun add-hook-item (space name identifier function &key description)
+(defun add-hook-item (space name identifier function &key documentation)
   (assert (symbolp name) () "Not a symbol: ~s" name)
   (assert (functionp function) () "Not a function: ~s" function)
-  (assert (or (not description) (stringp description)) () "Not a string or NIL: ~s" description)
+  (assert (or (not documentation) (stringp documentation)) () "Not a string or NIL: ~s" documentation)
   (let ((namespace (gethash space *radiance-hooks*)))
     (if namespace
-        (let* ((instance (make-instance 'hook-item :name name :space space :identifier identifier :function function :description description))
+        (let* ((instance (make-instance 'hook-item :name name :space space :identifier identifier :function function :documentation documentation))
                (position (position instance (gethash name namespace) :test #'hook-equal)))
           (if position
               (setf (nth position (gethash name namespace)) instance)
@@ -94,11 +94,11 @@
      if (funcall (item-function item))
      collect it))
 
-(defmacro define-hook ((space name) (&key (identifier `(context-module-identifier)) description) &body body)
+(defmacro define-hook ((space name) (&key (identifier `(context-module-identifier)) documentation) &body body)
   (with-gensyms ((identifiergens "IDENTIFIER"))
     `(let ((,identifiergens ,identifier))
        (add-hook-item ,space ,name ,identifiergens
-                      #'(lambda () ,@body) :description ,description))))
+                      #'(lambda () ,@body) :documentation ,documentation))))
 
 (defun remove-hook (space hook)
   "Remove a hook from a namespace."

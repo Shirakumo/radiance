@@ -8,14 +8,14 @@
 
 (defvar *menu-node* NIL)
 
-(define-hook (:user :lquery-post-processing) (:description "Post processing hook to display the menu.")
+(define-hook (:user :lquery-post-processing) (:documentation "Post processing hook to display the menu.")
   ;; Hack to avoid having to change the owner document
   (when *menu-node*
     (setf (slot-value *menu-node* 'rune-dom::owner) lquery:*lquery-master-document*)
     ($ "head" (append (lquery:parse-html "<link rel=\"stylesheet\" href=\"/static/css/menu.css\" />")))
     ($ "body" (prepend *menu-node*))))
 
-(define-hook (:server :init) (:description "Server init hook to build the menu from the database.")
+(define-hook (:server :init) (:documentation "Server init hook to build the menu from the database.")
   (init-menu))
 
 (defun init-menu ()

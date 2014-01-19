@@ -285,7 +285,7 @@ value of the request is automatically chosen."
     `(let ((,urigens ,uri)
            (,modgens ,identifier))
        (v:debug :radiance.server.site "Defining new site ~a on ~a for ~a" ',name ,urigens ,modgens)
-       (define-hook (:page ',name) (:identifier ,modgens :description (format nil "Page call for ~a" ,modgens))
+       (define-hook (:page ',name) (:identifier ,modgens :documentation (format nil "Page call for ~a" ,modgens))
          ,(if access-branch
               `(progn
                  (ignore-errors (auth:authenticate))
@@ -320,7 +320,7 @@ requested output type or a page redirect in the case of an URI."
         (documentation (if (stringp (car body)) (car body) NIL)))
     `(let ((,modgens ,identifier))
        (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,modgens)
-       (define-hook (:api (make-keyword (format NIL "~a/~a" ,identifier ,name))) (:identifier (make-keyword (format NIL "~a:~a" ,modgens ,method)) :description ,documentation)
+       (define-hook (:api (make-keyword (format NIL "~a/~a" ,identifier ,name))) (:identifier (make-keyword (format NIL "~a:~a" ,modgens ,method)) :documentation ,documentation)
          (when (or (eql ,method T) (eql (request-method) ,method))
            (,(case method
                    (:POST 'with-post)
