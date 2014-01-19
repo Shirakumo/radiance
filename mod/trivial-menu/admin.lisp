@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-trivial-menu)
 
-(defapi admin (action) (:access-branch "admin.menu.*" :modulevar module)
+(defapi admin (action) (:access-branch "admin.menu.*")
   (string-case:string-case ((post-var "action"))
     ("Add"
      (with-model (model pid title tooltip link sort) ("trivial-menu" NIL)
@@ -15,26 +15,26 @@
              tooltip (post-var "tooltip")
              link (post-var "link")
              sort (parse-integer (post-var "sort")))
-       (model-insert model))
-     (init-menu module)
+       (dm:insert model))
+     (init-menu)
      (redirect "/menu/items"))
     ("Delete"
      (let ((selected (or (post-var "selected[]") (list (post-var "id")))))
        (dolist (id selected)
-         (db-remove T "trivial-menu" (query (:= "_id" id)) :limit NIL)))
-     (init-menu module)
+         (db:remove "trivial-menu" (db:query (:= "_id" id)) :limit NIL)))
+     (init-menu)
      (redirect "/menu/items"))
     ("Edit"
      (assert (not (null (post-var "id"))) () 'api-args-error :text "ID argument required.")
-     (with-model (model pid title tooltip link sort) ("trivial-menu" (query (:= "_id" (post-var "id"))) :save T)
+     (with-model (model pid title tooltip link sort) ("trivial-menu" (db:query (:= "_id" (post-var "id"))) :save T)
        (setf pid (parse-integer (post-var "pid"))
              title (post-var "title")
              tooltip (post-var "tooltip")
              link (post-var "link")
              sort (parse-integer (post-var "sort"))))
-     (init-menu module)
+     (init-menu)
      (redirect "/menu/items"))))
     
 
-(define-admin-panel items menu (:access-branch "admin.menu.*" :menu-icon "icon-external-link-sign" :menu-tooltip "Change menu items." :lquery (template "trivial-menu/admin.html"))
-  (uibox:fill-foreach (model-get T "trivial-menu" :all :sort '(("sort" . :ASC)) :limit -1) "tbody #template"))
+(admin:define-panel items menu (:access-branch "admin.menu.*" :menu-icon "icon-external-link-sign" :menu-tooltip "Change menu items." :lquery (template "trivial-menu/admin.html"))
+  (uibox:fill-foreach (dm:get "trivial-menu" :all :sort '(("sort" . :ASC)) :limit -1) "tbody #template"))

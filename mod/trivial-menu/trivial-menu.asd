@@ -17,6 +17,7 @@
   :version "0.0.1"
   :license "Artistic"
   :homepage "http://tymoon.eu"
+  :serial T
   :components ((:file "menu")
                (:file "admin"))
-  :depends-on (:string-case :radiance-admin))
+  :depends-on (:string-case :radiance-admin :radiance-database :radiance-data-model :lquery))
