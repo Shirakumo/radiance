@@ -148,6 +148,7 @@ quote will make it execute within the generated macro."
                   (,,pkg-function ,',instancegens ,',fieldgens))
                 (defmethod (setf getdf) (,',valuegens (,',instancegens ,,pkg-class) ,',fieldgens)
                   (,,pkg-function ,',instancegens ,',fieldgens :value ,',valuegens))
+                (defgeneric (setf ,,pkg-method) (,',valuegens ,',identifiergens ,',instancegens ,',fieldgens))
                 (defmethod (setf ,,pkg-method) (,',valuegens ,',identifiergens (,',instancegens ,,pkg-class) ,',fieldgens)
                   (,,pkg-method ,',identifiergens ,',instancegens ,',fieldgens :value ,',valuegens))))))))
 
