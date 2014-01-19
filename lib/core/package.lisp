@@ -89,6 +89,7 @@
            #:status)
   ;; site.lisp
   (:export #:get-var
+           #:authenticated-p
            #:authorized-p
            #:user
            #:set-cookie
