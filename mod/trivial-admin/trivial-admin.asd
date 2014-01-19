@@ -18,6 +18,8 @@
   :license "Artistic"
   :homepage "http://tymoon.eu"
   :defsystem-depends-on (:radiance)
-  :depends-on (:uibox :radiance-dispatcher :radiance-user)
+  :depends-on (:uibox :radiance-dispatcher)
   :implement ((:admin :trivial-admin))
-  :components ((:file "admin")))
+  :serial T
+  :components ((:file "admin")
+               (:file "default-panels")))
