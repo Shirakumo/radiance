@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-sqlite)
 
-(defmacro query (&rest forms)
+(define-interface-method db:query (&rest forms)
   (multiple-value-bind (query data) (if (cdr forms)
                                         (%query :and forms)
                                         (%query (car (first forms)) (cdr (first forms))))
