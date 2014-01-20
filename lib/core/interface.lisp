@@ -246,6 +246,8 @@ method on the respective INTERFACE::I-PUBLIC-FUNCTION-NAME generic."
                                          (cadar argslist)))
               (push (list (gensym "MODULE") `(eql (context-module-identifier))) argslist))
           (setf argslist (make-key-extensible argslist))
+          (let ((restpos (position '&body argslist)))
+            (if restpos (setf (nth restpos argslist) '&rest)))
           `(defmethod ,pkg-method ,argslist
              ,@body))
         (error 'no-such-interface-function-error :interface (package-name (symbol-package function)) :interface-function function))))
