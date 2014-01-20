@@ -6,7 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.verify.openid
   (:nicknames :radiance-mod-verify-openid)
-  (:use :cl :radiance :lquery :radiance-mod-verify)
+  (:use :cl :radiance :lquery :radiance-mod-verify :alexandria)
   (:export))
 (in-package :radiance-mod-verify-openid)
 
@@ -21,4 +21,5 @@
   :components ((:file "openid"))
   :depends-on (:verify
                :cl-openid
-               :puri))
+               :puri
+               :alexandria))
