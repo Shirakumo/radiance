@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-mongo)
 
-(defclass mongo-data-model (data-model)
+(defclass mongo-data-model (data-model:class)
   ((document :initarg :document :initform (make-document :oid T) :accessor document)
    (collection :initarg :collection :initform (error "Collection required") :accessor collection))
   (:documentation "Datamodel for mongodb."))
@@ -17,49 +17,42 @@
         (format out "~a" (collection model))
         (format out "STUB"))))
 
-(implement 'data-model (make-instance 'mongo-data-model :collection NIL :document NIL))
-
-(defmethod model-field ((model mongo-data-model) (field string) &key (value NIL v-p))
+(define-interface-method dm:field ((model mongo-data-model) (field string) &key (value NIL v-p))
   (if v-p
       (setf (gethash field (cl-mongo::elements (document model))) value)
       (gethash field (cl-mongo::elements (document model)))))
 
-(defun model-field-set (model field value)
-  (model-field model field :value value))
-
-(defsetf model-field model-field-set)
-
-(defmethod model-id ((model mongo-data-model) &key)
+(define-interface-method dm:id ((model mongo-data-model))
   (slot-value (document model) 'cl-mongo::_id))
   
-(defmethod model-get ((model mongo-data-model) (collection string) query &key (skip 0) (limit 0) sort)
+(define-interface-method dm:get (collection query &key (skip 0) (limit 0) sort)
   (db-iterate
    (implementation 'database) collection query 
    (lambda (doc) (make-instance 'mongo-data-model :collection collection :document doc))
    :sort sort :limit limit :skip skip))
 
-(defmethod model-get-one ((model mongo-data-model) (collection string) query &key (skip 0) sort)
+(define-interface-method dm:get-one (collection query &key (skip 0) sort)
   (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
   (let ((docs (docs (iter (db.find collection query :skip skip)))))
     (if docs (make-instance 
               'mongo-data-model :collection collection
               :document (first docs)))))
 
-(defmethod model-hull ((model mongo-data-model) (collection string) &key)
+(define-interface-method dm:hull ((collection string))
   (make-instance 'mongo-data-model :collection collection))
 
-(defmethod model-hull-p ((model mongo-data-model) &key)
+(define-interface-method dm:hull-p ((model mongo-data-model))
   (eq (doc-id (document model)) T))
 
-(defmethod model-save ((model mongo-data-model) &key)
+(define-interface-method dm:save ((model mongo-data-model))
   (assert (not (eq (doc-id (document model)) T)) () "Model has not been inserted before.")
   (db.save (collection model) (document model)))
 
-(defmethod model-delete ((model mongo-data-model) &key)
+(define-interface-method dm:delete ((model mongo-data-model))
   (assert (not (eq (doc-id (document model)) T)) () "Model has not been inserted before.")
   (db.delete (collection model) (kv "_id" (cl-mongo::_id (document model)))))
 
-(defmethod model-insert ((model mongo-data-model) &key (clone NIL))
+(define-interface-method dm:insert ((model mongo-data-model) &key (clone NIL))
   (if clone 
       (setf model (make-instance 'mongo-data-model :collection (collection model) :document (clone-document (document model))))
       (setf (slot-value (document model) 'cl-mongo::_id) (cl-mongo::make-bson-oid)))

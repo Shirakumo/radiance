@@ -4,67 +4,56 @@
   Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(defpackage radiance-mod-mongo
-  (:use :cl :radiance :cl-mongo)
-  (:export :mongodb
-           :mongo-data-model))
-
 (in-package :radiance-mod-mongo)
+(use-package :cl-mongo)
 
-(implement 'database (get-module 'mongodb))
+(defvar *db* NIL)
 
-(defmethod db-connect ((db mongodb) dbname &key (host (config-tree :mongo :host))
-                                             (port (config-tree :mongo :port))
-                                             (user (config-tree :mongo :user))
-                                             (pass (config-tree :mongo :pass)))
-  "Connects to the mongodb."
+(define-interface-method db:connect (dbname &key (host (config-tree :mongo :host))
+                                            (port (config-tree :mongo :port))
+                                            (user (config-tree :mongo :user))
+                                            (pass (config-tree :mongo :pass)))
   (if (not host) (setf host *mongo-default-host*))
   (if (not port) (setf port *mongo-default-port*))
-  (log:info "Connecting to mongoDB on ~a:~a" host port)
+  (v:info :mongodb "Connecting to mongoDB on ~a:~a" host port)
   (let ((mongo (mongo :db dbname :port port :host host)))
-    (setf (dbinstance db) mongo)
+    (setf *db* mongo)
     (when (and user pass)
-      (log:info "Authenticating with ~a/~a" user pass)
+      (v:info :mongodb "Authenticating with ~a/~a" user pass)
       (db.auth user pass))
-    (log:info "Switching database to ~a" dbname)
+    (v:info :mongodb "Switching database to ~a" dbname)
     (db.use dbname)))
 
-(defmethod db-disconnect ((db mongodb) &key)
-  "Disconnects from mongodb."
+(define-interface-method db:disconnect ()
   (mongo-close :default)
-  (setf (dbinstance db) NIL))
+  (setf *db* NIL))
 
-(defmethod db-connected-p ((db mongodb) &key)
-  "Returns T if a connection exists, NIL otherwise."
-  (if (dbinstance db) T NIL))
+(define-interface-method db:connected-p ()
+  (not (null *db*)))
 
-(defmethod db-collections ((db mongodb) &key)
-  "Returns a list of all collection names available in the database."
-  (db.collections :mongo (dbinstance db)))
+(define-interface-method db:collections ()
+  (db.collections :mongo *db*))
 
-(defmethod db-create ((db mongodb) (collection string) fields &key indices (if-exists :ignore))
-  "Creates a new collection on the database. Optionally a list of indexed fields can be supplied."
+(define-interface-method db:create (collection fields &key indices (if-exists :ignore))
   (declare (ignore fields))
   (db.create-collection collection)
   (loop for index in indices
      do (destructuring-bind (keys &key drop-duplicates unique) index
-          (db.ensure-index collection keys :drop-duplicates drop-duplicates :unique unique :mongo (dbinstance db)))))
+          (db.ensure-index collection keys :drop-duplicates drop-duplicates :unique unique :mongo *db*))))
 
-(defmethod db-empty ((db mongodb) (collection string) &key)
+(define-interface-method db:empty (collection )
   (db.find "$cmd" (cl-mongo::kv->ht (kv "empty" collection)) :mongo mongo))
 
-(defmethod db-drop ((db mongodb) (collection string) &key)
+(define-interface-method db:drop (collection )
   (db.run-command :drop :collection collection))
 
-(defmethod db-select ((db mongodb) (collection string) query &key fields (skip 0) (limit 0) sort)
-  "Select data from the collection. Using the iterate function is generally faster."
-  (db-iterate db collection query #'identity :fields fields :skip skip :limit limit :sort sort))
+(define-interface-method db:select (collection query &key fields (skip 0) (limit 0) sort)
+  (db:iterate collection query #'identity :fields fields :skip skip :limit limit :sort sort))
 
-(defmethod db-iterate ((db mongodb) (collection string) query function &key fields (skip 0) (limit 0) sort)
-  "Iterate over a set of data. The collected return values are returned."
+(define-interface-method db:iterate (collection query function &key fields (skip 0) (limit 0) sort)
   (declare (ignore fields))
   (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
-  (let ((result (db.find collection query :limit limit :skip skip :mongo (dbinstance db))))
+  (let ((result (db.find collection query :limit limit :skip skip :mongo *db*)))
     (multiple-value-bind (iterator collection docs) (cl-mongo::db.iterator result)
       (loop ; Collect all sets of records.
          for next = '(NIL (0 1)) then (db.next collection iter)
@@ -76,42 +65,35 @@
          for doc in docs 
          collect (funcall function (document->alist doc))))))
 
-(defmethod db-insert ((db mongodb) (collection string) (data list) &key)
-  "Insert data into the collection using the rows/fields provided in data."
-  (db-insert db collection (alist->document data)))
+(define-interface-method db:insert (collection (data list))
+  (db:insert collection (alist->document data)))
 
-(defmethod db-insert ((db mongodb) (collection string) (data cl-mongo::document) &key)
-  "Insert data into the collection using the rows/fields provided in data."
-  (db.insert collection data :mongo (dbinstance db)))
+(define-interface-method db:insert (collection (data cl-mongo::document))
+  (db.insert collection data :mongo *db*))
 
-(defmethod db-remove ((db mongodb) (collection string) query &key (skip 0) (limit 0) sort)
-  "Remove data from the collection that matches the query. Note that if skip or limit are supplied, the delete operation will be pretty slow due to having to use a select and a remove for each match."
+(define-interface-method db:remove (collection query &key (skip 0) (limit 0) sort)
   (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
   (if (= 0 skip limit)
       (db.delete collection query)
-      (cl-mongo:rm collection (iter (db.find collection query :limit limit :skip skip :mongo (dbinstance db))) :mongo (dbinstance db))))
+      (cl-mongo:rm collection (iter (db.find collection query :limit limit :skip skip :mongo *db*)) :mongo *db*)))
 
-(defmethod db-update ((db mongodb) (collection string) query (data list) &key (skip 0) (limit 0) sort (replace NIL) insert-inexistent)
-  "Update all rows that match the query with the new data. Note that if skip or limit are supplied, the update operation will be pretty slow due to having to use a select and an update for each match."
-  (db-update db collection query (alist->document data) :skip skip :limit limit :replace replace :sort sort :insert-inexistent insert-inexistent)) 
+(define-interface-method db:update (collection query (data list) &key (skip 0) (limit 0) sort (replace NIL) insert-inexistent)
+  (db:update collection query (alist->document data) :skip skip :limit limit :replace replace :sort sort :insert-inexistent insert-inexistent)) 
 
-(defmethod db-update ((db mongodb) (collection string) query (data cl-mongo::document) &key (skip 0) (limit 0) sort (replace NIL) insert-inexistent)
-  "Update all rows that match the query with the new data. Note that if skip or limit are supplied, the update operation will be pretty slow due to having to use a select and an update for each match."
-  (db-update db collection query (cl-mongo::elements data) :limit limit :skip skip :replace replace :sort sort :insert-inexistent insert-inexistent))
+(define-interface-method db:update (collection query (data cl-mongo::document) &key (skip 0) (limit 0) sort (replace NIL) insert-inexistent)
+  (db:update collection query (cl-mongo::elements data) :limit limit :skip skip :replace replace :sort sort :insert-inexistent insert-inexistent))
 
-(defmethod db-update ((db mongodb) (collection string) query (data hash-table) &key (skip 0) (limit 0) (replace NIL) sort insert-inexistent)
-  "Update all rows that match the query with the new data. Note that if skip or limit are supplied, the update operation will be pretty slow due to having to use a select and an update for each match."
+(define-interface-method db:update (collection query (data hash-table) &key (skip 0) (limit 0) (replace NIL) sort insert-inexistent)
   (if sort (setf query (kv (kv "query" query) (kv "orderby" (alist->document sort)))))
   (if (not replace) (setf data (kv "$set" data)))
   (if (and (= 0 skip limit) (not replace))
-      (db.update collection query data :multi T :upsert insert-inexistent :mongo (dbinstance db))
+      (db.update collection query data :multi T :upsert insert-inexistent :mongo *db*)
       (let ((docs (docs (db.find collection query :limit limit :skip skip))))
         (if (= 0 (length docs))
             (if insert-inexistent (db.insert collection data))
             (loop for doc in docs do (db.update collection doc data))))))
 
-(defmethod db-apropos ((db mongodb) (collection string) &key)
-  "Always returns NIL as any field or type is allowed in MongoDB."
+(define-interface-method db:apropos (collection)
   NIL)
 
 (defun document->alist (document)
@@ -142,7 +124,7 @@
       (loop for val in value collect (%alist->document val))
       (add-element (car value) (%alist->document (cdr value)) (make-document))))
 
-(defmacro query (&rest forms)
+(define-interface-method db:query (&rest forms)
   (if (cdr forms)
       `(:and ,@forms)
       (first forms)))

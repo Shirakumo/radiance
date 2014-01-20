@@ -9,7 +9,7 @@
   (:export :mongodb :mongo-data-model))
 (in-package :radiance-mod-mongo)
 
-(asdf:defsystem mongodb
+(asdf:defsystem radiance-mongo
   :class :radiance-module
   :defsystem-depends-on (:radiance)
   :name "MongoDB Binding" 
@@ -17,8 +17,8 @@
   :version "0.0.1" 
   :license "Artistic" 
   :homepage "http://tymoon.eu"
-  :implement ((:database :mongodb)
-              (:data-model :mongodb))
+  :implement ((:database :radiance-mongo)
+              (:data-model :radiance-mongo))
   :components ((:file "database")
                (:file "data-model" :depends-on ("database")))
   :depends-on (:cl-mongo))
