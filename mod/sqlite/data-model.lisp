@@ -22,9 +22,6 @@
       (setf (gethash field (document model)) value)
       (gethash field (document model))))
 
-(defmethod (setf dm:field) (value (model sqlite-data-model) (field string))
-  (dm:field model field :value value))
-
 (define-interface-method dm:id ((model sqlite-data-model))
   (gethash "_id" (document model)))
 
