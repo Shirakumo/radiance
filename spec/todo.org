@@ -16,7 +16,9 @@
     - State "DONE"       from "TODO"       [2014-01-15 Wed 23:24]
 *** DONE Start testing with core module on new system.
     - State "DONE"       from "TODO"       [2014-01-15 Wed 23:24]
-*** TODO Fix all other modules for the new system.
+*** DONE Fix all other modules for the new system.
+    - State "DONE"       from "TODO"       [2014-01-20 Mon 11:00]
+*** TODO Test all modules and fix potential problems.
 *** TODO Add automated caching system.
     
 ** Trivial-Menu
