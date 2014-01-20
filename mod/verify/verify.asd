@@ -6,7 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.verify
   (:nicknames :radiance-mod-verify)
-  (:use :cl :radiance :lquery)
+  (:use :cl :radiance :lquery :alexandria)
   (:export :username
            :verify-auth 
            :verify-user 
@@ -45,6 +45,7 @@
   :depends-on (:split-sequence
                :ironclad
                :uuid
+               :radiance-database
                :radiance-data-model
                :radiance-dispatcher
                :radiance-admin

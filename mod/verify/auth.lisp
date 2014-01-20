@@ -8,8 +8,6 @@
 
 (defvar *verify-mechanisms* (make-hash-table))
 
-(implement 'auth (get-module 'verify))
-
 (defclass mechanism ()
   () (:documentation "Class to represent authentication mechanisms."))
 
@@ -48,7 +46,7 @@
 
 (define-condition auth-session-error (auth-error) ())
 
-(defmethod authenticate ((verify verify) &key &allow-other-keys)
+(define-interface-method auth:authenticate ()
   (let ((token (hunchentoot:cookie-in "token" *radiance-request*)))
     (if (and token (> (length token) 0) (not *radiance-session*))
         (progn 
@@ -56,9 +54,9 @@
           (setf token (decrypt token (config-tree :verify :session :secret))) 
           (if (and token (find #\- token))
               (let* ((username (subseq token 0 (position #\- token)))
-                     (user (user-get T username))
+                     (user (user:get username))
                      (token (subseq token (1+ (position #\- token)))))
-                (if (user-saved-p user)
+                (if (user:saved-p user)
                     (authenticate-user user token)
                     (error 'auth-session-error :text (format nil "Unknown user: ~a" username) :code 2)))
               (error 'auth-session-error :text (format nil "Malformed token: ~a" token) :code 1))))))
@@ -66,13 +64,13 @@
 (defun authenticate-user (user token)
   ;; If per user secrets are activated, decrypt session data with the secret.
   (setf token (if (config-tree :verify :session :use-per-user-secret)
-                  (decrypt token (user-field user "secret"))
+                  (decrypt token (user:field user "secret"))
                   token))
   (let ((data (split-sequence:split-sequence #\: token)))
     (if (= (length data) 3)
         (destructuring-bind (timestamp random session-id) data
           (declare (ignore random))
-          (let ((session (session-get T session-id)))
+          (let ((session (session:get session-id)))
             (if session
                 (if (= (parse-integer timestamp) (session-time session))
                     (progn (v:debug :verify.auth "User ~a successfully authenticated session ~a (initiated on ~a)" user session-id timestamp)
@@ -87,19 +85,16 @@
 (defun auth-page (page redirect)
   (format nil "http://auth.~a:~a/~a?redirect=~a" (domain *radiance-request*) (port *radiance-request*) page redirect))
 
-(defmethod auth-page-login ((verify verify) &key redirect)
-  (declare (ignore verify))
+(define-interface-method auth:page-login (&key redirect)
   (auth-page "login" redirect))
 
-(defmethod auth-page-logout ((verify verify) &key redirect)
-  (declare (ignore verify))
+(define-interface-method auth:page-logout (&key redirect)
   (auth-page "logout" redirect))
 
-(defmethod auth-page-register ((verify verify) &key redirect)
-  (declare (ignore verify))
+(define-interface-method auth:page-register (&key redirect)
   (auth-page "register" redirect))
 
 #|
-(defmethod auth-page-options ((verify verify) &key target)
+(define-interface-method auth:page-options (&key target)
   )
 |#

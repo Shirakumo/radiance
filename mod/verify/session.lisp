@@ -8,7 +8,7 @@
 
 (defvar *verify-sessions* (make-hash-table :test 'equal) "Session registry")
 
-(defclass verify-session (session)
+(defclass verify-session (session:class)
   ((uuid :initarg :uuid :initform (format nil "~a" (uuid:make-v4-uuid)) :reader uuid)
    (time :initarg :time :initform (get-unix-time) :reader session-time)
    (user :initarg :user :initform (error "User required") :accessor s-user)
@@ -20,17 +20,15 @@
   (print-unreadable-object (session out :type T)
     (format out "~a" (s-user session))))
 
-(implement 'session (make-instance 'verify-session :uuid NIL :time NIL :user NIL :fields NIL :active NIL :remote NIL))
-
-(defmethod session-get ((session verify-session) (uuid string) &key &allow-other-keys)
+(define-interface-method session:get ((uuid string))
   "Returns the requested session instance if applicable."
   (gethash uuid *verify-sessions*))
 
-(defmethod session-get-all ((session verify-session) &key)
+(define-interface-method session:get-all ()
   "Returns all sessions still on the server."
   (alexandria:hash-table-values *verify-sessions*))
 
-(defmethod session-start ((session verify-session) (user user) &key &allow-other-keys)
+(define-interface-method session:start ((user user:class))
   "Starts a new session for the given user, enters it in the registry and returns the session object."
   (let ((session (make-instance 'verify-session :user user)))
     (v:debug :verify.session "Starting new session for ~a with UUID ~a" user (uuid session))
@@ -40,15 +38,15 @@
         (setf *radiance-session* session))
     (setf (gethash (uuid session) *verify-sessions*) session)))
 
-(defmethod session-start ((session verify-session) (username string) &key &allow-other-keys)
+(define-interface-method session:start ((username string))
   "Starts a new session for the given user, enters it in the registry and returns the session object."
-  (session-start session (user-get T username)))
+  (session:start (user:get username)))
 
-(defmethod session-start-temp ((session verify-session) &key &allow-other-keys)
+(define-interface-method session:start-temp ()
   "Starts a new temporary session, enters it in the registry and returns the session object."
-  (session-start session "temp"))
+  (session:start "temp"))
 
-(defmethod session-end ((session verify-session) &key &allow-other-keys)
+(define-interface-method session:end ((session verify-session))
   "Ends the session and removes it from the registry."
   (v:debug :verify.session "Terminating session for ~a with UUID ~a" (s-user session) (uuid session))
   (remhash (uuid session) *verify-sessions*)
@@ -56,25 +54,25 @@
   (if (eq *radiance-session* session) (set-cookie "token"))
   session)
 
-(defmethod session-field ((session verify-session) field &key (value NIL v-p) &allow-other-keys)
+(define-interface-method session:field ((session verify-session) field &key (value NIL v-p))
   "Set or get a field of the user. Note that this will not save it to the database!"
   (if v-p
       (setf (gethash field (fields session)) value)
       (gethash field (fields session))))
 
-(defmethod session-uuid ((session verify-session) &key &allow-other-keys)
+(define-interface-method session:uuid ((session verify-session))
   "Returns the UUID of the session instance."
   (uuid session))
 
-(defmethod session-user ((session verify-session) &key &allow-other-keys)
+(define-interface-method session:user ((session verify-session))
   "Retrieves a database instance of the corresponding user object."
   (s-user session))
 
-(defmethod session-active-p ((session verify-session) &key &allow-other-keys)
+(define-interface-method session:active-p ((session verify-session))
   "Returns T if the session is still active, otherwise NIL."
   (active session))
 
-(defmethod session-temp-p ((session verify-session) &key &allow-other-keys)
+(define-interface-method session:temp-p ((session verify-session))
   "Returns T if the session is only temporary, otherwise NIL."
   (equal (username (s-user session)) "temp"))
 
@@ -86,5 +84,5 @@
          (uuid (uuid session))
          (data (format NIL "~a:~a:~a" timestamp random uuid)))
     (if (config-tree :verify :session :use-per-user-secret)
-        (setf data (encrypt data (user-field (s-user session) "secret"))))
+        (setf data (encrypt data (user:field (s-user session) "secret"))))
     (encrypt (format NIL "~a-~a" username data) (config-tree :verify :session :secret))))
