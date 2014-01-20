@@ -6,7 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.verify.oauth
   (:nicknames :radiance-mod-verify-oauth)
-  (:use :cl :radiance :lquery :radiance-mod-verify)
+  (:use :cl :radiance :lquery :radiance-mod-verify :alexandria)
   (:export))
 (in-package :radiance-mod-verify-oauth)
 
@@ -21,4 +21,5 @@
   :components ((:file "oauth"))
   :depends-on (:verify
                :cl-oauth
-               :cl-json))
+               :cl-json
+               :alexandria))

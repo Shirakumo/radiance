@@ -6,9 +6,8 @@
 
 (in-package :radiance-mod-verify-oauth)
 
-(defmethod init-oauth-db ((module verify-oauth))
-  (db-create T "linked-oauths" '(("provider" :varchar 32) ("claimed-id" :varchar 128) ("username" :varchar 32))))
-(defhook :server :init (get-module :verify-oauth) #'init-oauth-db)
+(define-hook (:server :init) (:documentation "Initialize verify-oauth table.")
+  (db:create "linked-oauths" '(("provider" :varchar 32) ("claimed-id" :varchar 128) ("username" :varchar 32))))
 
 (defun get-callback ()
   (uri->url *radiance-request*))
@@ -28,18 +27,18 @@
 (defun handle-initiate (provider)
   (let* ((rt (get-request-token provider))
          (link (cl-oauth:make-authorization-uri (config-tree :verify :oauth provider :auth-endpoint) rt :callback-uri (get-callback))))
-    (session-field *radiance-session* "redirect" :value (get-redirect))
-    (session-field *radiance-session* "request-token" :value rt)
-    (session-field *radiance-session* "provider" :value provider)
+    (session:field *radiance-session* "redirect" :value (get-redirect))
+    (session:field *radiance-session* "request-token" :value rt)
+    (session:field *radiance-session* "provider" :value provider)
     (v:debug :verify.mechanism.oauth "Initiating OAuth handle: ~a" link)
     (redirect (format nil "~a" link))))
 
 (defun handle-response ()
-  (if (or (not *radiance-session*) (not (session-temp-p *radiance-session*)))
+  (if (or (not *radiance-session*) (not (session:temp-p *radiance-session*)))
       (error 'auth-login-error :text "No temporary session active!" :code 12))
-  (let ((rt (session-field *radiance-session* "request-token"))
-        (provider (session-field *radiance-session* "provider")))
-    (session-field *radiance-session* "link-in-progress" :value NIL)
+  (let ((rt (session:field *radiance-session* "request-token"))
+        (provider (session:field *radiance-session* "provider")))
+    (session:field *radiance-session* "link-in-progress" :value NIL)
     (assert rt)
     (handler-case
         (cl-oauth:authorize-request-token-from-request
@@ -60,14 +59,14 @@
     (values (format nil "~a" (cdr (assoc :id credentials))) "twitter")))
 
 (defun get-linked-user (id provider)
-  (let ((model (model-get-one T "linked-oauths" (query (:and (:= "claimed-id" id) (:= "provider" provider))))))
+  (let ((model (dm:get-one "linked-oauths" (db:query (:and (:= "claimed-id" id) (:= "provider" provider))))))
     (if model
-        (user-get T (model-field model "username"))
+        (user:get (dm:field model "username"))
         (error 'auth-login-error :text "Account not linked!" :code 15))))
 
 (defpage login #u"auth./login/oauth" ()
-  (ignore-errors (authenticate T))
-  (if (not *radiance-session*) (setf *radiance-session* (session-start-temp T)))
+  (ignore-errors (auth:authenticate))
+  (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (cond
     ((post-var "provider")
      (let ((provider (make-keyword (post-var "provider"))))
@@ -75,18 +74,18 @@
            (handle-initiate provider)
            (error 'auth-login-error :text "Unknown provider!" :code 11))))
     
-    ((and *radiance-session* (session-field *radiance-session* "request-token"))
+    ((and *radiance-session* (session:field *radiance-session* "request-token"))
      (multiple-value-bind (id provider) (handle-response)
-       (session-end *radiance-session*)
+       (session:end *radiance-session*)
        (let ((user (get-linked-user id provider)))
-         (session-start T user)
-         (user-action user "Login (OAuth)"))))
+         (session:start user)
+         (user:action user "Login (OAuth)"))))
     
     (T (error 'auth-login-error :text "Nothing to do!" :code 10))))
 
 (defpage register #u"auth./register/oauth" ()
-  (ignore-errors (authenticate T))
-  (if (not *radiance-session*) (setf *radiance-session* (session-start-temp T)))
+  (ignore-errors (auth:authenticate))
+  (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (cond
     ((post-var "provider")
      (let ((provider (make-keyword (post-var "provider"))))
@@ -94,10 +93,10 @@
            (handle-initiate provider)
            (error 'auth-register-error :text "Unknown provider!" :code 11))))
     
-    ((and *radiance-session* (session-field *radiance-session* "request-token"))
+    ((and *radiance-session* (session:field *radiance-session* "request-token"))
      (multiple-value-bind (id provider) (handle-response)
        (v:debug :verify.mechanism.oauth "Linking: ~a/~a" id provider)
-       (nappend (session-field *radiance-session* "oauth-links") (list (cons provider id)))))
+       (appendf (getdf *radiance-session* "oauth-links") (list (cons provider id)))))
 
     (T (error 'auth-register-error :text "Nothing to do!" :code 10))))
     
@@ -110,9 +109,9 @@
   (show-register ()
     (let ((element (lquery:parse-html (read-data-file "template/verify/register-oauth.html"))))
       (when *radiance-session*
-        (loop for link in (session-field *radiance-session* "oauth-links")
+        (loop for link in (session:field *radiance-session* "oauth-links")
            do ($ element (find (format nil "li.~a" (car link))) (add-class "linked")))
-        (if (> (length (session-field *radiance-session* "oauth-links")) 0)
+        (if (> (length (session:field *radiance-session* "oauth-links")) 0)
             ($ element (find "h2") (html "<i class=\"icon-ok-sign\"></i> Account linked."))))
       element))
   
@@ -131,28 +130,27 @@
 
     (let ((form (lquery:parse-html (read-data-file "template/verify/admin-auth-oauth.html"))))
       (loop with template = ($ form "#providers li" (node))
-         for node = (dom:clone-node template T)
-         for (name . vals) in (config-tree :verify :oauth)
-         do
-           ($ node "h4" (text name))
-           ($ node "input[name=\"name[]\"]" (val name))
-           ($ node "input[name=\"key[]\"]" (val (cdr (assoc :key vals))))
-           ($ node "input[name=\"secret[]\"]" (val (cdr (assoc :secret vals))))
-           ($ node "input[name=\"request[]\"]" (val (cdr (assoc :request-endpoint vals))))
-           ($ node "input[name=\"auth[]\"]" (val (cdr (assoc :auth-endpoint vals))))
-           ($ node "input[name=\"access[]\"]" (val (cdr (assoc :access-endpoint vals))))
-         collect node into nodes
-         finally ($ form "#providers" (empty) (append nodes)))
+            for node = (dom:clone-node template T)
+            for (name . vals) in (config-tree :verify :oauth)
+            do
+               ($ node "h4" (text name))
+               ($ node "input[name=\"name[]\"]" (val name))
+               ($ node "input[name=\"key[]\"]" (val (cdr (assoc :key vals))))
+               ($ node "input[name=\"secret[]\"]" (val (cdr (assoc :secret vals))))
+               ($ node "input[name=\"request[]\"]" (val (cdr (assoc :request-endpoint vals))))
+               ($ node "input[name=\"auth[]\"]" (val (cdr (assoc :auth-endpoint vals))))
+               ($ node "input[name=\"access[]\"]" (val (cdr (assoc :access-endpoint vals))))
+            collect node into nodes
+            finally ($ form "#providers" (empty) (append nodes)))
       ($ target 
-         (append form))))
+        (append form))))
   
   (handle-register (user)
-    (let ((links (session-field *radiance-session* "oauth-links")))
-      (loop with db = (implementation 'database)
-         for link in links
-         do (db-insert db "linked-oauths" 
-                       (acons "provider" (car link)
-                       (acons "claimed-id" (cdr link)
-                       (acons "username" (user-field user "username") 
-                       ())))))
+    (let ((links (session:field *radiance-session* "oauth-links")))
+      (loop for link in links
+            do (db:insert "linked-oauths" 
+                          (acons "provider" (car link)
+                                 (acons "claimed-id" (cdr link)
+                                        (acons "username" (user:field user "username") 
+                                               ())))))
       (if links T))))
