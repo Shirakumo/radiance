@@ -6,42 +6,33 @@
 
 (in-package :radiance-mod-trivial-profile)
 
-(defclass base-profile (profile) ())
-(implement 'profile (make-instance 'base-profile))
 
-(defmethod init-profile-db ((module trivial-profile))
-  (db-create T "trivial-profile-fields" '(("field" :varchar 32) ("value" :text) ("type" :varchar 16) ("public" :varchar 3)) :indices '("field"))
-  (db-create T "trivial-profile" '(("user" :varchar 32) ("field" :varchar 32) ("value" :text)) :indices '("user")))
-(defhook :server :init (get-module :trivial-profile) #'init-profile-db)
+(define-hook (:server :init) (:documentation "Database initializer for trivial-profile.")
+  (db:create "trivial-profile-fields" '(("field" :varchar 32) ("value" :text) ("type" :varchar 16) ("public" :varchar 3)) :indices '("field"))
+  (db:create "trivial-profile" '(("user" :varchar 32) ("field" :varchar 32) ("value" :text)) :indices '("user")))
 
-(defmethod profile-field ((profile base-profile) (user user) (name string) &key value default)
+(define-interface-method profile:field ((user user:class) (name string) &key value default)
   (if value
-      (user-field user name :value value)
-      (or (user-field user name) default)))
+      (user:field user name :value value)
+      (or (user:field user name) default)))
 
-(defmethod profile-field (profile (user T) (name string) &key value default)
+(define-interface-method profile:field ((user T) (name string) &key value default)
   (if *radiance-session*
-      (profile-field profile (session-user *radiance-session*) name :value value :default default)
+      (profile:field (session:user *radiance-session*) name :value value :default default)
       default))
 
-(defmethod profile-avatar ((profile base-profile) (user user) (size fixnum) &key)
-  (gravatar-image (user-field user "email") :size size :default :mm))
+(define-interface-method profile:avatar ((user user:class) (size fixnum) &key)
+  (gravatar-image (user:field user "email") :size size :default :mm))
 
-(defmethod profile-avatar (profile (user T) (size fixnum) &key)
+(define-interface-method profile:avatar ((user T) (size fixnum) &key)
   (if *radiance-session*
-      (profile-avatar profile (session-user *radiance-session*) size)
+      (profile:avatar (session:user *radiance-session*) size)
       (gravatar-image "noop@example.com" :size size :default :mm)))
 
-(defmethod profile-name ((profile base-profile) (user user) &key)
-  (user-field user "displayname"))
+(define-interface-method profile:name ((user user:class) &key)
+  (user:field user "displayname"))
 
-(defmethod profile-name (profile (user T) &key)
+(define-interface-method profile:name ((user T) &key)
   (if *radiance-session*
-      (profile-name profile (session-user *radiance-session*))
+      (profile:name (session:user *radiance-session*))
       NIL))
-
-(defmethod profile-page-settings ((profile base-profile) (user user) &key)
-  )
-
-(defmethod profile-page-user ((profile base-profile) user &key)
-  )
