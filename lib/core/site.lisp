@@ -23,69 +23,6 @@
     (setf *radiance-session* (auth:authenticate)))
   (or (and *radiance-session* (session:user *radiance-session*)) default))
 
-(declaim (inline set-cookie))
-(defun set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (reply *radiance-reply*))
-  "Sets a cookie with defaults and ensures proper return object utilization. If domain is NIL, it sets it for multi-subdomain compatibility."
-  (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :reply reply)))
-    (v:debug :radiance.server.request "Setting cookie '~a' on ~a ~a exp ~a (HTTP ~a;SECURE ~a) to ~a" name domain path expires http-only secure value)
-    (if domain
-        (setc domain)
-        (setc (format NIL ".~a" (domain *radiance-request*))))))
-
-(declaim (inline get-var))
-(defun get-var (name &optional (request *radiance-request*))
-  "Returns a GET variable. If the name ends with [], it assumed to be an array and a list of all values is returned."
-  (declare (optimize (speed 3)) (string name))
-  (if (and (> (length name) 2) (string= name "[]" :start1 (- (length name) 2)))
-      (assoc-all name (get-vars) :val #'cdr :test #'string=)
-      (hunchentoot:get-parameter name request)))
-
-(declaim (inline get-vars))
-(defun get-vars (&optional (request *radiance-request*))
-  "Returns an alist of all GET variables."
-  (hunchentoot:get-parameters* request))
-
-(declaim (inline post-var))
-(defun post-var (name &optional (request *radiance-request*))
-  "Returns a POST variable. If the name ends with [], it assumed to be an array and a list of all values is returned."
-  (declare (optimize (speed 3)) (string name))
-  (if (and (> (length name) 2) (string= name "[]" :start1 (- (length name) 2)))
-      (assoc-all name (post-vars) :val #'cdr :test #'string=)
-      (hunchentoot:post-parameter name request)))
-
-(declaim (inline post-vars))
-(defun post-vars (&optional (request *radiance-request*))
-  "Returns an alist of all POST variables."
-  (hunchentoot:post-parameters* request))
-
-(declaim (inline post-or-get-var))
-(defun post-or-get-var (name &optional (request *radiance-request*))
-  "Returns a POST variable or, if not provided, the GET variable of the same name."
-  (or (post-var name request) (get-var name request)))
-
-(declaim (inline cookie-var))
-(defun cookie-var (name &optional (request *radiance-request*))
-  "Returns a COOKIE variable."
-  (hunchentoot:cookie-in name request))
-
-(defsetf cookie-var (cookie) (value)
-  `(set-cookie ,cookie :value ,value))
-
-(declaim (inline cookie-vars))
-(defun cookie-vars (&optional (request *radiance-request*))
-  "Returns an alist of all COOKIE variables."
-  (hunchentoot:cookies-in* request))
-
-(declaim (inline header-var))
-(defun header-var (name &optional (request *radiance-request*))
-  "Returns a HEADER variable."
-  (hunchentoot:header-in name request))
-
-(declaim (inline header-vars))
-(defun header-vars (&optional (request *radiance-request*))
-  "Returns an alist of all HEADER variables."
-  (hunchentoot:headers-in* request))
-
 (defmacro %with-var-func (fun (&rest vars) &body body)
   "Constructs a basic with-X let."
   `(let (,@(loop for var in vars
@@ -99,71 +36,42 @@
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'get-var (,@vars) ,@body))
+  `(%with-var-func #'server:get (,@vars) ,@body))
 
 (defmacro with-post ((&rest vars) &body body)
   "Same as with-slots, but for POST variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'post-var (,@vars) ,@body))
+  `(%with-var-func #'server:post (,@vars) ,@body))
 
 (defmacro with-post-or-get ((&rest vars) &body body)
   "Same as with-slots, but for POST and GET variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'post-or-get-var (,@vars) ,@body))
+  `(%with-var-func #'server:post-or-get (,@vars) ,@body))
 
 (defmacro with-header ((&rest vars) &body body)
   "Same as with-slots, but for HEADER variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'header-var (,@vars) ,@body))
+  `(%with-var-func #'server:header (,@vars) ,@body))
 
 (defmacro with-cookie ((&rest cookies) &body body)
   "Same as with-slots, but for COOKIE variables.
 Uses *radiance-request* to retrieve variables.
-Changes to these cookies will be sent along to the browser with default cookie settings."
-  `(symbol-macrolet
-       ,(loop for cookie in cookies 
-           for varname = (if (listp cookie) (first cookie) cookie)
-           for fieldname = (if (listp cookie) (second cookie) (string-downcase (symbol-name cookie)))
-           collect `(,varname (cookie-var ,fieldname)))
-     ,@body))
-
-(declaim (inline request-method))
-(defun request-method (&optional (request *radiance-request*))
-  "Returns the http-request method."
-  (hunchentoot:request-method request))
-
-(declaim (inline remote-address))
-(defun remote-address (&optional (request *radiance-request*))
-  "Returns the remote address of the request."
-  (hunchentoot:remote-addr* request))
-
-(declaim (inline set-content-type))
-(defun set-content-type (content-type &optional (reply *radiance-reply*))
-  "Change the content-type of the current page."
-  (v:debug :radiance.server.request "Setting content-type to: ~a" content-type)
-  (setf (hunchentoot:content-type* reply) content-type))
-
-(declaim (inline redirect))
-(defun redirect (&optional (uri-or-string (get-redirect)))
-  "Redirects to the requested URI."
-  (v:debug :radiance.server.request "Redirecting to ~a" uri-or-string)
-  (hunchentoot:redirect 
-   (if (stringp uri-or-string)
-       uri-or-string
-       (uri->url uri-or-string))))
+Note that changes to the variables will not be saved
+in the actual request and are therefore purely temporary."
+  `(%with-var-func #'server:cookie))
 
 (declaim (inline get-redirect))
 (defun get-redirect (&optional (default "/") (request *radiance-request*))
-  (or (hunchentoot:get-parameter "redirect" request)
-      (hunchentoot:post-parameter "redirect" request)
+  (or (server:get "redirect" :request request)
+      (server:post "redirect" :request request)
       (if *radiance-session* (session:field *radiance-session* "redirect"))
-      (hunchentoot:referer request)
+      (server:referer :request request)
       default))
 
 (declaim (inline static))
@@ -212,7 +120,7 @@ Changes to these cookies will be sent along to the browser with default cookie s
 All of these key values except for filename and directory default to values from the configuration file.
 If any of the predicates fail, an assertion error condition is signalled."
   (v:debug :radiance.server.request "Attemptint to upload file from ~a" post-parameter)
-  (let ((param (hunchentoot:post-parameter post-parameter (request *radiance-request*))))
+  (let ((param (server:post post-parameter :request *radiance-request*)))
     (assert (listp param) (param) "Post parameter does not contain a file!")
     (assert (not (not param)) (param) "Post parameter does not exist!")
     (destructuring-bind (tempfile origname mimetype) param
@@ -321,7 +229,7 @@ requested output type or a page redirect in the case of an URI."
     `(let ((,modgens ,identifier))
        (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,modgens)
        (define-hook (:api (make-keyword (format NIL "~a/~a" ,identifier ,name))) (:identifier (make-keyword (format NIL "~a:~a" ,modgens ,method)) :documentation ,documentation)
-         (when (or (eql ,method T) (eql (request-method) ,method))
+         (when (or (eql ,method T) (eql (server:request-method) ,method))
            (,(case method
                    (:POST 'with-post)
                    (:GET 'with-get)
@@ -349,7 +257,7 @@ requested output type or a page redirect in the case of an URI."
   (let ((format (gethash format *radiance-api-formats*)))
     (if format
         (progn
-          (setf (hunchentoot:content-type* *radiance-reply*) (second format))
+          (server:set-content-type (second format))
           (funcall (third format) data))
         (api-format :none NIL))))
 
@@ -372,14 +280,14 @@ VARS can either be a symbol, dictating the model field and GET/POST var name dir
 or it can be a list of the following format: (FIELD &optional GETPOSTVAR DEFAULT).
 If GETPOSTVAR is NIL, the DEFAULT will always be used. Otherwise DEFAULT is used if the
 GETPOSTVAR returns NIL. The TYPE parameter dictates where the vars are retrieved from:
-:POST post-var, :GET get-var, T post-or-get-var, NIL NIL."
+:POST server:post, :GET server:get, T server:post-or-get, NIL NIL."
   (let ((modelsym (gensym "MODEL")))
     (flet ((valuepart (name)
              (ecase type
                (NIL NIL)
-               (:POST `(post-var ,name))
-               (:GET `(get-var ,name))
-               (T `(post-or-get-var ,name)))))
+               (:POST `(server:post ,name))
+               (:GET `(server:get ,name))
+               (T `(server:post-or-get ,name)))))
       `(with-model 
            (,modelsym ,@(mapcar #'(lambda (var) (if (listp var) (first var) var)) vars))
            (,collection ,query :skip ,skip :sort ,sort)
@@ -411,9 +319,9 @@ ON-INVALID can be one of (:ERROR :SKIP)"
   (flet ((valuepart (name)
              (ecase type
                (NIL NIL)
-               (:POST `(post-var ,name))
-               (:GET `(get-var ,name))
-               (T `(post-or-get-var ,name)))))
+               (:POST `(server:post ,name))
+               (:GET `(server:get ,name))
+               (T `(server:post-or-get ,name)))))
     `(handler-case
          (let (,@(mapcar #'(lambda (var)
                              `(,(first var) (or ,(valuepart (or (third var) 

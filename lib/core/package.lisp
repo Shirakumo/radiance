@@ -81,23 +81,9 @@
            #:restart-server
            #:status)
   ;; site.lisp
-  (:export #:get-var
-           #:authenticated-p
+  (:export #:authenticated-p
            #:authorized-p
            #:user
-           #:set-cookie
-           #:get-vars
-           #:post-var
-           #:post-vars
-           #:post-or-get-var
-           #:cookie-var
-           #:cookie-vars
-           #:header-var
-           #:header-vars
-           #:request-method
-           #:remote-address
-           #:set-content-type
-           #:redirect
            #:get-redirect
            #:static
            #:template
