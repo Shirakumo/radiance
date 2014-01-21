@@ -8,14 +8,16 @@
 
 (defun handler (request reply)
   "Propagates the call to the next handler registered in the implements."
-  (declare (optimize (speed 3) (safety 0)))
   (let ((*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
     (v:info :radiance.server.request "~a ~a" (server:remote-address) request)
     (incf *radiance-request-total*)
     (incf *radiance-request-count*)
+    
     (error-handler request)
+    
     (decf *radiance-request-count*)))
 
+(declaim (inline present-error))
 (defun present-error (err &optional unexpected)
   (v:error :radiance.server.request "Encountered error: ~a" err)
   ($ (initialize (static "html/error/501.html")))
@@ -28,6 +30,7 @@
   (setf (response *radiance-request*) ($ (serialize) (node)))
   (invoke-restart 'skip-request))
 
+(declaim (inline error-handler))
 (defun error-handler (request)
   (handler-bind
       ((error-page #'(lambda (err)
@@ -37,7 +40,7 @@
        (radiance-error #'present-error)
        (error #'(lambda (err) (present-error err T))))
     (with-simple-restart (skip-request "Skip the request and show the response stored in *radiance-request*.")
-      (let ((result (continuation-handler request)))
+      (let ((result (file-handler request)))
         (typecase result
           (null)
           (string (setf (response request) result))
@@ -45,6 +48,15 @@
         (trigger :server :post-processing)
         result))))
 
+(declaim (inline static-handler))
+(defun file-handler (request)
+  (if (and (> (length (path request)) 8)
+           (string-equal (path request) "/static/" :end1 8))
+      (progn (server:serve-file (static (subseq (path request) 0 8)))
+             NIL)
+      (continuation-handler request)))
+
+(declaim (inline continuation-handler))
 (defun continuation-handler (request)
   (let* ((rcid (server:post-or-get "rcid"))
          (cont (when rcid
