@@ -93,11 +93,12 @@ quote will make it execute within the generated macro."
 (define-interface-component-expander class (classname slots options package-name)
     (let ((slotsgens (gensym "SLOTS"))
           (tmpgens (gensym "TEMP"))
-          (pkg-class (gensym "PKG-CLASS")))
+          (pkg-class (gensym "PKG-CLASS"))
+          (superclasses (second (assoc :superclasses options))))
       `(let ((,pkg-class (find-symbol ,(format NIL "~a" classname) ',package-name))
              (,slotsgens (loop for ,tmpgens in ',slots
                                collect (intern-list-symbols ,tmpgens ',package-name))))
-         `(defclass ,,pkg-class () ,,slotsgens ,',@(remove :type options :key #'car)))))
+         `(defclass ,,pkg-class ,',superclasses ,,slotsgens ,',@(remove-if #'(lambda (a) (find a '(:type :superclasses))) options :key #'car)))))
 
 (define-interface-component-expander function (funcname args options package-name)
   (with-gensyms ((wholegens "WHOLE") (pkg-function "PKG-FUNCTION") (pkg-method "PKG-METHOD") (pkg-impl-var "PKG-IMPL-VAR"))
