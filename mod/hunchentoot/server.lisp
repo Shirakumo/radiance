@@ -109,12 +109,19 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (define-interface-method server:set-response-content (content &key (response *radiance-response*))
   (setf (body response) content))
 
-(define-interface-method server:redirect (&key (uri-or-string (get-redirect)))
-  (v:debug :radiance.server.request "Redirecting to ~a" uri-or-string)
-  (hunchentoot:redirect 
-   (if (stringp uri-or-string)
-       uri-or-string
-       (uri->url uri-or-string))))
+(define-interface-method server:redirect ((uri T) &key response)
+  (v:debug :radiance.server.request "Redirecting to ~a" uri)
+  (let ((hunchentoot:*reply* response))
+    (hunchentoot:redirect (string uri))))
+
+(define-interface-method server:redirect ((uri uri) &key (response *radiance-response*))
+  (server::i-redirect :radiance-hunchentoot (uri->url uri) :response response))
+
+(define-interface-method server:serve-file (pathname &key content-type response)
+  (let ((hunchentoot:*reply* response))
+    (if content-type
+        (hunchentoot:handle-static-file pathname content-type)
+        (hunchentoot:handle-static-file pathname))))
 
 (define-interface-method server:set-handler-function (handler-fun)
   (setf *handler* handler-fun))

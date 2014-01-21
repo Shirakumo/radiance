@@ -72,6 +72,8 @@ An instance of this will be bound to *radiance-response* during dispatch."))
     (:documentation "Set the main HTTP response body."))
   (redirect (new-address &key response)
     (:documentation "Sets the HTTP Redirect header."))
+  (serve-file (pathname &key content-type response)
+    (:documentation "Send a file from disk. If content-type is NIL, it is attempted to determine it from the file."))
   (set-handler-function (handler-fun)
     (:documentation "Sets the handler function that the request and response instances are dispatched to. Should default to RADIANCE:HANDLER .")))
 
