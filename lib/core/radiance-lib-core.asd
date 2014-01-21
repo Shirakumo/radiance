@@ -22,7 +22,6 @@
                (:file "conditions")
                (:file "toolkit")
                (:file "uri")
-               (:file "request")
                (:file "module")
                (:file "interface")
                (:file "standard-interfaces")
@@ -30,8 +29,7 @@
                (:file "site")
                (:file "validate")
                (:file "continuation")
-               (:file "server")
-               )
+               (:file "server"))
   :depends-on (:alexandria
                :cl-json
                :hunchentoot
