@@ -71,7 +71,8 @@
         (dispatcher:dispatch request))))
 
 (defun server-running-p ()
-  (not (null *radiance-acceptors*)))
+  (and server:*implementation*
+       (server:get-listeners)))
 
 (defun manage (action &key (config-file))
   "Manage the TymoonNETv5 web server."
