@@ -25,6 +25,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (hunchentoot:stop (gethash name *listeners*))
   (remhash name *listeners*))
 
+(define-interface-method server:get-listeners ()
+  (alexandria:hash-table-keys *listeners*))
+
 (define-interface-method server:cookie (name &key (request *radiance-request*))
   (hunchentoot:cookie-in name request))
 
@@ -80,6 +83,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (define-interface-method server:local-port (&key (request *radiance-request*))
   (hunchentoot:local-port request))
 
+(define-interface-method server:request-uri (&key (request *radiance-request*))
+  (hunchentoot:request-uri request))
+
 (define-interface-method server:set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (response *radiance-response*))
   (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :response response)))
     (v:debug :radiance.server.request "Setting cookie '~a' on ~a ~a exp ~a (HTTP ~a;SECURE ~a) to ~a" name domain path expires http-only secure value)
@@ -100,6 +106,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (define-interface-method server:set-header (name value &key (response *radiance-response*))
   (setf (hunchentoot:header-out name response) value))
 
+(define-interface-method server:set-response-content (content &key (response *radiance-response*))
+  (setf (body response) content))
+
 (define-interface-method server:redirect (&key (uri-or-string (get-redirect)))
   (v:debug :radiance.server.request "Redirecting to ~a" uri-or-string)
   (hunchentoot:redirect 
@@ -109,3 +118,11 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (define-interface-method server:set-handler-function (handler-fun)
   (setf *handler* handler-fun))
+
+(define-hook (:server :init) (:documentation "Set up hunchentoot.")
+  (setf hunchentoot:*dispatch-table* (list #'pre-handler)))
+
+(defun pre-handler ()
+  (parse-request hunchentoot:*request*)
+  (funcall *handler* hunchentoot:*request* hunchentoot:*reply*)
+  (lambda () (body hunchentoot:*reply*)))

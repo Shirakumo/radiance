@@ -21,7 +21,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
   :defsystem-depends-on (:radiance)
   :implement ((:server :radiance-hunchentoot))
-  :depends-on (:hunchentoot)
+  :depends-on (:hunchentoot :alexandria)
   :serial T
   :components ((:file "request")
                (:file "server")))
