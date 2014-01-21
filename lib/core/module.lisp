@@ -103,12 +103,7 @@ Defaults to the module-identifier linked to the one active in the current *packa
   (module-identifier identifier))
 
 
-(defun compile-modules ()
-  "Search through the ASDF systems and try to perform ASDF:LOAD-SYSTEM
-on any that match the class RADIANCE-MODULE."
-  (let ((module-class (find-class 'radiance-module)))
-    (asdf:map-systems
-     #'(lambda (sys)
-         (when (eql (class-of sys) module-class)
-           (asdf:load-system sys))))))
+(defun load-modules ()
+  "Load all systems specified in the configuration."
+  (mapc #'asdf:load-system (config :modules)))
  
