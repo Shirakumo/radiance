@@ -81,7 +81,8 @@
            #:request-field
            #:parse-request)
   ;; server.lisp
-  (:export #:server-running-p
+  (:export #:handler
+           #:server-running-p
            #:manage
            #:start
            #:stop
