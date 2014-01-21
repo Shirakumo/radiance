@@ -4,7 +4,7 @@ This file is a part of TyNETv5/Radiance
 Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package :radiance)
+(in-package :radiance-mod-hunchentoot)
 
 (defclass request (server:request hunchentoot:request) ())
 

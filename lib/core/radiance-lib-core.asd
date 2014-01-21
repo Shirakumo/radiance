@@ -32,10 +32,9 @@
                (:file "server"))
   :depends-on (:alexandria
                :cl-json
-               :hunchentoot
-               :uuid
                :cl-fad
                :cl-ppcre
+               :uuid
                :trivial-backtrace
                :local-time
                :verbose

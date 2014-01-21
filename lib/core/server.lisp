@@ -6,16 +6,27 @@
 
 (in-package :radiance)
 
-(defun handler (request reply)
-  "Propagates the call to the next handler registered in the implements."
-  (let ((*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
-    (v:info :radiance.server.request "~a ~a" (server:remote-address) request)
-    (incf *radiance-request-total*)
-    (incf *radiance-request-count*)
-    
-    (error-handler request)
-    
-    (decf *radiance-request-count*)))
+(declaim (inline continuation-handler))
+(defun continuation-handler (request)
+  (let* ((rcid (server:post-or-get "rcid"))
+         (cont (when rcid
+                 (ignore-errors (auth:authenticate))
+                 (continuation rcid))))
+    (if cont
+        (with-accessors ((id id) (request request) (function continuation-function)) cont
+          (v:debug :radiance.server.continuations "Resuming continuation ~a" cont)
+          (let ((result (funcall function)))
+            (remhash id (session:field *radiance-session* 'CONTINUATIONS))
+            result))
+        (dispatcher:dispatch request))))
+
+(declaim (inline static-handler))
+(defun file-handler (request)
+  (if (and (> (length (path request)) 8)
+           (string-equal (path request) "/static/" :end1 8))
+      (progn (server:serve-file (static (subseq (path request) 0 8)))
+             NIL)
+      (continuation-handler request)))
 
 (declaim (inline present-error))
 (defun present-error (err &optional unexpected)
@@ -27,7 +38,7 @@
     ($ "h1" (text "Unexpected Internal Error"))
     ($ "head title" (text "Unexpected Internal Eerror"))
     ($ "html" (add-class :unexpected)))
-  (setf (response *radiance-request*) ($ (serialize) (node)))
+  (server:set-response-content ($ (serialize) (node)))
   (invoke-restart 'skip-request))
 
 (declaim (inline error-handler))
@@ -43,32 +54,21 @@
       (let ((result (file-handler request)))
         (typecase result
           (null)
-          (string (setf (response request) result))
-          (list (setf (response request) (concatenate-strings result))))
+          (string (server:set-response-content result))
+          (list (server:set-response-content (concatenate-strings result))))
         (trigger :server :post-processing)
         result))))
 
-(declaim (inline static-handler))
-(defun file-handler (request)
-  (if (and (> (length (path request)) 8)
-           (string-equal (path request) "/static/" :end1 8))
-      (progn (server:serve-file (static (subseq (path request) 0 8)))
-             NIL)
-      (continuation-handler request)))
-
-(declaim (inline continuation-handler))
-(defun continuation-handler (request)
-  (let* ((rcid (server:post-or-get "rcid"))
-         (cont (when rcid
-                 (ignore-errors (auth:authenticate))
-                 (continuation rcid))))
-    (if cont
-        (with-accessors ((id id) (request request) (function continuation-function)) cont
-          (v:debug :radiance.server.continuations "Resuming continuation ~a" cont)
-          (let ((result (funcall function)))
-            (remhash id (session:field *radiance-session* 'CONTINUATIONS))
-            result))
-        (dispatcher:dispatch request))))
+(defun handler (request reply)
+  "Propagates the call to the next handler registered in the implements."
+  (let ((*radiance-request* request) (*radiance-response* reply) (*radiance-session* NIL))
+    (v:info :radiance.server.request "~a ~a" (server:remote-address) request)
+    (incf *radiance-request-total*)
+    (incf *radiance-request-count*)
+    
+    (error-handler request)
+    
+    (decf *radiance-request-count*)))
 
 (defun server-running-p ()
   (and server:*implementation*
@@ -112,7 +112,7 @@
             (v:warn :radiance.server.status "No user implementation defined!"))
 
         (v:info :radiance.server.status "Starting listeners...")
-        (mapcar #'(lambda (port) (server:start-listener (make-keyword (format NIL "PORT-~a") port))) (config :ports))
+        (mapcar #'(lambda (port) (server:start-listener (make-keyword (format NIL "PORT-~a" port)) :port port)) (config :ports))
         
         (v:info :radiance.server.status "Startup finished."))))  
 
@@ -121,7 +121,7 @@
   (if (server-running-p)
       (progn
         (v:info :radiance.server.status "Stopping listeners...")
-        (dolist (listener server:get-listeners)
+        (dolist (listener (server:get-listeners))
           (server:stop-listener listener))
         
         (v:info :radiance.server.status "Triggering SHUTDOWN...")

@@ -17,11 +17,13 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                                  :message-log-destination NIL
                                  :request-class 'request
                                  :reply-class 'response)))
+    (v:info :radiance.server.hunchentoot "Starting listener ~a on ~@[~a]:~a" name address port)
     (setf (gethash name *listeners*) listener)
     (hunchentoot:start listener)))
 
 (define-interface-method server:stop-listener (name)
   (assert (not (null (gethash name *listeners*))) () "No listener ~a known!" name)
+  (v:info :radiance.server.hunchentoot "Stopping listener ~a" name)
   (hunchentoot:stop (gethash name *listeners*))
   (remhash name *listeners*))
 
@@ -53,14 +55,18 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (hunchentoot:post-parameters request))
 
 (define-interface-method server:post-or-get (name &key (request *radiance-request*))
-  (or (server:post name request)
-      (server:get name request)))
+  (or (server::i-post :radiance-hunchentoot name :request request)
+      (server::i-get :radiance-hunchentoot name :request request)))
 
-(define-interface-method server:header (name &key (request *radiance-request*))
-  (hunchentoot:header-in name request))
+(define-interface-method server:header (name &key (request-or-response *radiance-request*))
+  (etypecase request-or-response
+    (server:request (hunchentoot:header-in name request-or-response))
+    (server:response (hunchentoot:header-out name request-or-response))))
 
-(define-interface-method server:headers (&key (request *radiance-request*))
-  (hunchentoot:headers-in request))
+(define-interface-method server:headers (&key (request-or-response *radiance-request*))
+  (etypecase request-or-response
+    (server:request (hunchentoot:headers-in request-or-response))
+    (server:response (hunchentoot:headers-out request-or-response))))
 
 (define-interface-method server:request-method (&key (request *radiance-request*))
   (hunchentoot:request-method request))
@@ -88,19 +94,21 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (define-interface-method server:set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (response *radiance-response*))
   (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :response response)))
-    (v:debug :radiance.server.request "Setting cookie '~a' on ~a ~a exp ~a (HTTP ~a;SECURE ~a) to ~a" name domain path expires http-only secure value)
+    (v:debug :radiance.server.hunchentoot "Setting cookie '~a' on ~a ~a exp ~a (HTTP ~a;SECURE ~a) to ~a" name domain path expires http-only secure value)
     (if domain
         (setc domain)
         (setc (format NIL ".~a" (domain *radiance-request*))))))
 
 (define-interface-method server:set-default-content-type (content-type)
+  (v:debug :radiance.server.hunchentoot "Setting default content-type to: ~a" content-type)
   (setf hunchentoot:*default-content-type* content-type))
 
 (define-interface-method server:set-content-type (content-type &key (response *radiance-response*))
-  (v:debug :radiance.server.request "Setting content-type to: ~a" content-type)
+  (v:debug :radiance.server.hunchentoot "Setting content-type to: ~a" content-type)
   (setf (hunchentoot:content-type* response) content-type))
 
 (define-interface-method server:set-return-code (return-code &key (response *radiance-response*))
+  (v:debug :radiance.server.hunchentoot "Setting return-code to: ~a" return-code)
   (setf (hunchentoot:return-code response) return-code))
 
 (define-interface-method server:set-header (name value &key (response *radiance-response*))
@@ -110,26 +118,29 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (setf (body response) content))
 
 (define-interface-method server:redirect ((uri T) &key response)
-  (v:debug :radiance.server.request "Redirecting to ~a" uri)
+  (v:debug :radiance.server.hunchentoot "Redirecting to ~a" uri)
   (let ((hunchentoot:*reply* response))
     (hunchentoot:redirect (string uri))))
 
 (define-interface-method server:redirect ((uri uri) &key (response *radiance-response*))
   (server::i-redirect :radiance-hunchentoot (uri->url uri) :response response))
 
-(define-interface-method server:serve-file (pathname &key content-type response)
+(define-interface-method server:serve-file (pathname &key content-type (response *radiance-response*))
+  (v:debug :radiance.server.hunchentoot "Serving file from ~a (~a)" pathname content-type)
   (let ((hunchentoot:*reply* response))
     (if content-type
         (hunchentoot:handle-static-file pathname content-type)
         (hunchentoot:handle-static-file pathname))))
 
 (define-interface-method server:set-handler-function (handler-fun)
+  (v:debug :radiance.server.hunchentoot "Setting handler function to: ~a" handler-fun)
   (setf *handler* handler-fun))
 
 (define-hook (:server :init) (:documentation "Set up hunchentoot.")
   (setf hunchentoot:*dispatch-table* (list #'pre-handler)))
 
-(defun pre-handler ()
+(defun pre-handler (request)
+  (declare (ignore request))
   (parse-request hunchentoot:*request*)
   (funcall *handler* hunchentoot:*request* hunchentoot:*reply*)
   (lambda () (body hunchentoot:*reply*)))
