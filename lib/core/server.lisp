@@ -6,19 +6,15 @@
 
 (in-package :radiance)
 
-(defun handler (&optional (request hunchentoot:*request*) (reply hunchentoot:*reply*))
+(defun handler (request reply)
   "Propagates the call to the next handler registered in the implements."
   (declare (optimize (speed 3) (safety 0)))
-  (setf *last-ht-request* request
-        *last-ht-reply* reply)
   (let ((*radiance-request* request) (*radiance-reply* reply) (*radiance-session* NIL))
-    (parse-request request)
-    (v:info :radiance.server.request "~a ~a" (remote-address) request)
+    (v:info :radiance.server.request "~a ~a" (server:remote-address) request)
     (incf *radiance-request-total*)
     (incf *radiance-request-count*)
     (error-handler request)
-    (decf *radiance-request-count*)
-    (lambda () (response request))))
+    (decf *radiance-request-count*)))
 
 (defun present-error (err &optional unexpected)
   (v:error :radiance.server.request "Encountered error: ~a" err)
@@ -35,8 +31,8 @@
 (defun error-handler (request)
   (handler-bind
       ((error-page #'(lambda (err)
-                       (setf (hunchentoot:return-code* *radiance-reply*) (slot-value err 'code)
-                             (response *radiance-request*) (read-data-file (format nil "static/html/error/~a.html" (slot-value err 'code))))
+                       (server:set-return-code (slot-value err 'code))
+                       (server:set-response-content (read-data-file (format nil "static/html/error/~a.html" (slot-value err 'code))))
                        (invoke-restart 'skip-request)))
        (radiance-error #'present-error)
        (error #'(lambda (err) (present-error err T))))
@@ -50,7 +46,7 @@
         result))))
 
 (defun continuation-handler (request)
-  (let* ((rcid (post-or-get-var "rcid"))
+  (let* ((rcid (server:post-or-get "rcid"))
          (cont (when rcid
                  (ignore-errors (auth:authenticate))
                  (continuation rcid))))
@@ -82,58 +78,53 @@
         (load-config)
         (when (string-equal (config :root) "autodetect") 
           (config :root (directory-namestring (asdf:system-source-directory :radiance))))
-        (v:info :radiance.server.status "Loading modules...")
-        (compile-modules)
-        (v:info :radiance.server.status "Setting up Hunchentoot...")
-        (let ((acceptors (mapcar #'(lambda (port) 
-                                     (make-instance 'hunchentoot:easy-acceptor
-                                                    :port port
-                                                    :access-log-destination NIL
-                                                    :message-log-destination NIL
-                                                    :request-class 'radiance:request))
-                                 (config :ports))))
-          (setf *radiance-handlers* 
-                (list (hunchentoot:create-folder-dispatcher-and-handler "/static/" (merge-pathnames "data/static/" (pathname (config :root))))
-                      (function handler)))
-          (setf hunchentoot:*dispatch-table* *radiance-handlers*)
-          (setf hunchentoot:*default-content-type* "application/xhtml+xml")
-          (if (db:implementation)
-              (progn
-                (v:info :radiance.server.status "Connecting database...")
-                (db:connect (config :database)))
-              (v:warn :radiance.server.status "No database implementation defined!"))
-          (v:info :radiance.server.status "Triggering INIT...")
-          (trigger :server :init)
 
-          (if (user:implementation)
-              (user:action (user:get "sys") "INIT" :public T)
-              (v:warn :radiance.server.status "No user implementation defined!"))
-          
-          (dolist (acceptor acceptors)
-            (v:info :radiance.server.status "Starting acceptor ~a" acceptor)
-            (hunchentoot:start acceptor))
-          (setf *radiance-acceptors* acceptors)
-          (v:info :radiance.server.status "Startup finished.")))))  
+        (v:info :radiance.server.status "Loading modules...")
+        (load-modules)
+        (asdf:load-system "radiance-server")
+        
+        (v:info :radiance.server.status "Setting up server...")
+        (server:set-default-content-type "application/xhtml+xml")
+        (if (db:implementation)
+            (progn
+              (v:info :radiance.server.status "Connecting database...")
+              (db:connect (config :database)))
+            (v:warn :radiance.server.status "No database implementation defined!"))
+
+        (v:info :radiance.server.status "Triggering INIT...")
+        (trigger :server :init)
+
+        (if (user:implementation)
+            (user:action (user:get "sys") "INIT" :public T)
+            (v:warn :radiance.server.status "No user implementation defined!"))
+
+        (v:info :radiance.server.status "Starting listeners...")
+        (mapcar #'(lambda (port) (server:start-listener (make-keyword (format NIL "PORT-~a") port))) (config :ports))
+        
+        (v:info :radiance.server.status "Startup finished."))))  
 
 (defun stop ()
   "Shuts down the TyNETv5 server."
   (if (server-running-p)
       (progn
-        (dolist (acceptor *radiance-acceptors*)
-          (v:info :radiance.server.status "Stopping acceptor ~a" acceptor)
-          (hunchentoot:stop acceptor))
-        (setf *radiance-acceptors* NIL)
+        (v:info :radiance.server.status "Stopping listeners...")
+        (dolist (listener server:get-listeners)
+          (server:stop-listener listener))
         
         (v:info :radiance.server.status "Triggering SHUTDOWN...")
         (trigger :server :shutdown)
+        
         (when (user:implementation)
           (user:action (user:get "sys") "SHUTDOWN" :public T))
+
         (when (db:implementation)
           (v:info :radiance.server.status "Disconnecting Database...")
           (db:disconnect))
+
         (setf *radiance-request-count* 0
               *radiance-request-total* 0
               *radiance-startup-time* 0)
+
         (v:info :radiance.server.status "SHUTDOWN finished."))
       (v:fatal :radiance.server.status "Server isn't running!")))
 
@@ -144,5 +135,5 @@
 
 (defun status ()
   "Prints status information about the running server."
-  (format T "Server running: ~:[No~*~*~*~;Yes~%Acceptors: ~a~%Current requests: ~a~%Total requests: ~a~]"
-          *radiance-acceptors* (length *radiance-acceptors*) *radiance-request-count* *radiance-request-total*))
+  (format T "Server running: ~:[No~*~*~*~;Yes~%Listeners: ~a~%Current requests: ~a~%Total requests: ~a~]"
+          (server:get-listeners) (length (server:get-listeners)) *radiance-request-count* *radiance-request-total*))
