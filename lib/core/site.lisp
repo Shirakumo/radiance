@@ -208,7 +208,7 @@ value of the request is automatically chosen."
 favicon.ico, robots.txt, humans.txt or other files that cannot be in
 the static/ directory."
   `(defpage ,name ,uri (:identifier ,identifier :access-branch ,access-branch)
-     (hunchentoot:handle-static-file ,pathspec ,content-type)))
+     (server:serve-file ,pathspec :content-type ,content-type)))
 
 (defmacro defapi (name (&rest args) (&key (method T) (identifier `(context-module-identifier)) access-branch) &body body)
   "Defines a new API function for the given module. The arguments specify
