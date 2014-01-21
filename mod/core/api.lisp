@@ -8,7 +8,7 @@
 
 (defpage api #u"/api/" ()
   (let ((pathparts (split-sequence:split-sequence #\/ (path *radiance-request*)))
-        (format (make-keyword (string-upcase (or (get-var "format") (post-var "format") "json")))))
+        (format (make-keyword (string-upcase (or (server:get "format") (server:post "format") "json")))))
     (api-format 
      format
      (handler-case 
@@ -40,7 +40,7 @@
                 (subseq item-identifier (1+ colonpos)))
         (values item-identifier NIL))))
 
-(defun identifier-matches-p (item-identifier identifier &optional (method (request-method)))
+(defun identifier-matches-p (item-identifier identifier &optional (method (server:request-method)))
   (multiple-value-bind (item-identifier item-method) (identifier-and-method item-identifier)
     (and (string-equal item-identifier identifier)
          (or (not item-method)
@@ -100,7 +100,7 @@
 
 (defapi echo () (:method T)
   "Returns the map of POST and GET data sent to the server."
-  (api-return 200 "Echo data" (list :post (post-vars) :get (get-vars))))
+  (api-return 200 "Echo data" (list :post (server:posts) :get (server:gets))))
 
 (defapi user () (:method :GET)
   "Shows data about the current user."
@@ -141,14 +141,14 @@
                  :domain domain
                  :port port
                  :path path
-                 :remote-addr (hunchentoot:remote-addr *radiance-request*)
-                 :remote-port (hunchentoot:remote-port *radiance-request*)
-                 :referer (hunchentoot:referer *radiance-request*)
-                 :method (hunchentoot:request-method *radiance-request*)
-                 :post (post-vars)
-                 :get (get-vars)
-                 :cookie (cookie-vars)
-                 :header (header-vars)))))
+                 :remote-addr (server:remote-address)
+                 :remote-port (server:remote-port)
+                 :referer (server:referer)
+                 :method (server:request-method)
+                 :post (server:posts)
+                 :get (server:gets)
+                 :cookie (server:cookies)
+                 :header (server:headers)))))
 
 (defapi continuations () (:method :GET :access-branch "*")
   "Shows information about continuations for the current user."

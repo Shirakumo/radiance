@@ -47,9 +47,9 @@ If prepend is NIL, the notice node is returned instead."
                                    *radiance-session*))
            (,rcidsym (with-request-continuation (:new-request-var ,requestsym)
                        (cond
-                         ((string= (get-var ,confirm-field ,requestsym) ,yes)
+                         ((string= (server:get ,confirm-field :request ,requestsym) ,yes)
                           ,yes-block)
-                         ((string= (get-var ,confirm-field ,requestsym) ,no)
+                         ((string= (server:get ,confirm-field :request ,requestsym) ,no)
                           ,no-block)
                          (T "WTF?")))))
        ($ (initialize (template "uibox/confirm.html")))

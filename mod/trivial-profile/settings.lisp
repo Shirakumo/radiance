@@ -81,5 +81,5 @@
     (db:iterate "trivial-profile-fields" :all
                 #'(lambda (row)
                     (let ((field (cdr (assoc "field" row :test #'string=))))
-                      (db:insert "trivial-profile" `(("user" . ,username ) ("field" . ,field) ("value" . ,(post-var field))))))))
-  (redirect))
+                      (db:insert "trivial-profile" `(("user" . ,username ) ("field" . ,field) ("value" . ,(server:post field))))))))
+  (server:redirect (get-redirect)))

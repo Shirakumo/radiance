@@ -17,7 +17,7 @@
 
 (defapi fields/add (field type value public) (:method :POST :access-branch "admin.profile.fields")
   (db:insert "trivial-profile-fields" `(("field" . ,field) ("type" . ,type) ("value" . ,value) ("public" . ,public)))
-  (redirect "/profile/fields"))
+  (server:redirect "/profile/fields"))
 
 (defapi fields/edit (orig-field field type value public) (:method :POST :access-branch "admin.profile.fields")
   (with-model model ("trivial-profile-fields" (db:query (:= "field" orig-field)) :save T)
@@ -25,10 +25,10 @@
           (getdf model "type") type
           (getdf model "value") value
           (getdf model "public") public))
-  (redirect "/profile/fields"))
+  (server:redirect "/profile/fields"))
 
 (defapi fields/delete () (:method :POST :access-branch "admin.profile.fields")
-  (let ((selected (or (post-var "selected[]") (list (post-var "field")))))
+  (let ((selected (or (server:post "selected[]") (list (server:post "field")))))
     (dolist (field selected)
       (db:remove "trivial-profile-fields" (db:query (:= "field" field)) :limit NIL)))
-  (redirect "/profile/fields"))
+  (server:redirect "/profile/fields"))

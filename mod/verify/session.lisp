@@ -33,8 +33,8 @@
   (let ((session (make-instance 'verify-session :user user)))
     (v:debug :verify.session "Starting new session for ~a with UUID ~a" user (uuid session))
     (when *radiance-request*
-        (setf (slot-value session 'remote) (remote-address))
-        (set-cookie "token" :value (make-session-cookie session))
+        (setf (slot-value session 'remote) (server:remote-address))
+        (server:set-cookie "token" :value (make-session-cookie session))
         (setf *radiance-session* session))
     (setf (gethash (uuid session) *verify-sessions*) session)))
 
@@ -51,7 +51,7 @@
   (v:debug :verify.session "Terminating session for ~a with UUID ~a" (s-user session) (uuid session))
   (remhash (uuid session) *verify-sessions*)
   (setf (active session) NIL)
-  (if (eq *radiance-session* session) (set-cookie "token"))
+  (if (eq *radiance-session* session) (server:set-cookie "token"))
   session)
 
 (define-interface-method session:field ((session verify-session) field &key (value NIL v-p))

@@ -47,7 +47,7 @@
 (define-condition auth-session-error (auth-error) ())
 
 (define-interface-method auth:authenticate ()
-  (let ((token (hunchentoot:cookie-in "token" *radiance-request*)))
+  (let ((token (server:cookie "token")))
     (if (and token (> (length token) 0) (not *radiance-session*))
         (progn 
           ;; Decrypt token with global key to get user and session data

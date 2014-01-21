@@ -23,7 +23,7 @@
   (let ((rp (get-relying-party)))
     (session:field *radiance-session* "relying-party" :value rp)
     (session:field *radiance-session* "redirect" :value (radiance-mod-verify::get-redirect))
-    (redirect (cl-openid:initiate-authentication rp (post-var "openid_identifier")))))
+    (server:redirect (cl-openid:initiate-authentication rp (server:post "openid_identifier")))))
 
 (defun handle-response ()
   (if (or (not *radiance-session*) (not (session:temp-p *radiance-session*)))
@@ -31,17 +31,17 @@
   (let ((rp (session:field *radiance-session* "relying-party")))
     (cl-openid:handle-indirect-response 
      rp 
-     (get-vars)
-     (puri:merge-uris (hunchentoot:request-uri *radiance-request*) (cl-openid:root-uri rp)))))
+     (server:gets)
+     (puri:merge-uris (server:request-uri) (cl-openid:root-uri rp)))))
 
 (defpage login #u"auth./login/openid" ()
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (cond
-    ((post-var "openid_identifier")
+    ((server:post "openid_identifier")
      (handle-initiate))
     
-    ((get-var cl-openid:+authproc-handle-parameter+)
+    ((server:get cl-openid:+authproc-handle-parameter+)
      (handler-case
          (multiple-value-bind (id authproc) (handle-response)
            (if id
@@ -62,10 +62,10 @@
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (cond
-    ((post-var "openid_identifier")
+    ((server:post "openid_identifier")
      (handle-initiate))
     
-    ((get-var cl-openid:+authproc-handle-parameter+)
+    ((server:get cl-openid:+authproc-handle-parameter+)
        (handler-case
            (multiple-value-bind (id authproc) (handle-response)
              (if id

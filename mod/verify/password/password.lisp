@@ -18,15 +18,15 @@
           (error 'radiance-error :text (format nil "Unknown hashing algorithm configured: ~a" algorithm) :code 21))))
 
 (defpage login #u"auth./login/password" ()
-  (let ((user (user:get (post-var "username"))))
+  (let ((user (user:get (server:post "username"))))
     (if (user:saved-p user)
         (let ((model (dm:get-one "linked-passwords" (db:query (:= "username" (username user))))))
           (if model
-              (let ((hash (make-password-hash (post-var "password") (dm:field model "salt") (dm:field model "hash-type"))))
+              (let ((hash (make-password-hash (server:post "password") (dm:field model "salt") (dm:field model "hash-type"))))
                 (if (string= hash (dm:field model "hash"))
                     (progn (session:start user)
                            (user:action user "Login (Password)")
-                           (redirect (get-redirect)))
+                           (server:redirect (get-redirect)))
                     (error 'auth-login-error :text "Invalid username or password." :code 22)))
               (error 'auth-login-error :text "Invalid username or password." :code 21)))
         (error 'auth-login-error :text "Invalid username or password." :code 20))))
@@ -34,8 +34,8 @@
 (defpage register #u"auth./register/password" ()
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
-  (let ((password (post-var "password" *radiance-request*))
-        (pwconfirm (post-var "pwconfirm" *radiance-request*)))
+  (let ((password (server:post "password" *radiance-request*))
+        (pwconfirm (server:post "pwconfirm" *radiance-request*)))
     (if (and password pwconfirm (> (length password) 0))
         (if (string= password pwconfirm)
             (session:field *radiance-session* "password" :value password)
@@ -46,8 +46,8 @@
     ""
   (show-login ()
     (let ((element (lquery:parse-html (read-data-file "template/verify/login-password.html"))))
-      (if (string= (get-var "mechanism") "password")
-          ($ element "#passworderror" (text (get-var "errortext"))))
+      (if (string= (server:get "mechanism") "password")
+          ($ element "#passworderror" (text (server:get "errortext"))))
       element))
   
   (show-register ()
@@ -58,9 +58,9 @@
       element))
   
   (show-options (target)
-    (when (string= (post-var "form") "password")
-      (setf (config-tree :verify :password :salt) (post-var "salt")
-            (config-tree :verify :password :algorithm) (string-upcase (post-var "algorithm")))
+    (when (string= (server:post "form") "password")
+      (setf (config-tree :verify :password :salt) (server:post "salt")
+            (config-tree :verify :password :algorithm) (string-upcase (server:post "algorithm")))
       (uibox:notice "Password settings updated."))
 
     (let ((form (lquery:parse-html (read-data-file "template/verify/admin-auth-password.html"))))

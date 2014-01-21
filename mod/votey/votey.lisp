@@ -24,8 +24,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
   (if (not (authenticated-p)) 
       ($ "input" (remove)))
-  ($ "#error" (text (get-var "error")))
-  ($ "#ok" (text (get-var "ok"))))
+  ($ "#error" (text (server:get "error")))
+  ($ "#ok" (text (server:get "ok"))))
 
 (defapi vote (option) (:access-branch "*")
   (let ((option (dm:get-one "votey-options" (:= "id" (parse-integer option)))))
@@ -33,5 +33,5 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
         (progn (setf (dm:field option "votes") 
                      (1+ (dm:field option "votes")))
                (dm:save option)
-               (redirect "/?ok=Vote registered!"))
-        (redirect "/?error=No such option!"))))
+               (server:redirect "/?ok=Vote registered!"))
+        (server:redirect "/?error=No such option!"))))
