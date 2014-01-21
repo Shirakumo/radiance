@@ -40,21 +40,17 @@
            #:clean-continuations-globally
            #:with-request-continuation)
   ;; globals.lisp
-  (:export #:*last-ht-request*
-           #:*last-ht-reply*
-           #:*radiance-startup-time*
+  (:export #:*radiance-startup-time*
            #:*radiance-config-file*
            #:*radiance-config*
-           #:*radiance-acceptors*
-           #:*radiance-handlers*
            #:*radiance-request*
+           #:*radiance-response*
+           #:*radiance-session*
            #:*radiance-request-count*
            #:*radiance-request-total*
-           #:*radiance-reply*
            #:*radiance-modules*
            #:*radiance-package-map*
            #:*radiance-hooks*
-           #:*radiance-session*
            #:*radiance-api-formats*
            #:*radiance-continuation-lifetime*
            #:*uri-matcher*
@@ -76,10 +72,6 @@
            #:module-system
            #:context-module
            #:context-module-identifier)
-  ;; request.lisp
-  (:export #:request
-           #:request-field
-           #:parse-request)
   ;; server.lisp
   (:export #:handler
            #:server-running-p
