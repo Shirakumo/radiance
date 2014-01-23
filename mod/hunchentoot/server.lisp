@@ -115,7 +115,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (setf (hunchentoot:header-out name response) value))
 
 (define-interface-method server:set-response-content (content &key (response *radiance-response*))
-  (setf (body response) content))
+  (setf (server::content response) content))
 
 (define-interface-method server:redirect ((uri T) &key response)
   (v:debug :radiance.server.hunchentoot "Redirecting to ~a" uri)
@@ -143,4 +143,4 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (declare (ignore request))
   (parse-request hunchentoot:*request*)
   (funcall *handler* hunchentoot:*request* hunchentoot:*reply*)
-  (lambda () (body hunchentoot:*reply*)))
+  (lambda () (server::content hunchentoot:*reply*)))

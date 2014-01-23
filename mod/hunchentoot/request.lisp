@@ -13,8 +13,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
     (format out "~a:~a → (~a /~a)" (domain request) (port request) (subdomains request) (path request)))
   request)
 
-(defclass response (server:response hunchentoot:reply)
-  ((%body :initform NIL :accessor body)))
+(defclass response (server:response hunchentoot:reply) ())
 
 (defun parse-request (request)
   (declare (optimize (speed 3) (safety 0)))
