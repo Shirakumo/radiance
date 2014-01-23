@@ -186,7 +186,7 @@ value of the request is automatically chosen."
                          ,(if (and lquery (not (eq lquery T)))
                               `($ (initialize ,lquery)))
                          ,@body
-                         (unless (response *radiance-request*)
+                         (unless (server::content *radiance-response*)
                            (trigger :user :lquery-post-processing)
                            (concatenate-strings ($ (serialize)))))
                       `(progn ,@body))))
