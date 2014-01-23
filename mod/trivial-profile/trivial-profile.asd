@@ -27,7 +27,9 @@
                (:file "admin"))
   :depends-on (:radiance-admin
                :radiance-parser
+               :radiance-auth
                :radiance-user
+               :radiance-session
                :radiance-database
                :radiance-data-model
                :uibox

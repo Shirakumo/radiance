@@ -19,4 +19,8 @@
   :license "Artistic" 
   :homepage "http://tymoon.eu"
   :components ((:file "password"))
-  :depends-on (:verify :uibox))
+  :depends-on (:verify
+               :uibox
+               :radiance-auth
+               :radiance-session
+               :radiance-user))

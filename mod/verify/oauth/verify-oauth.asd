@@ -22,4 +22,7 @@
   :depends-on (:verify
                :cl-oauth
                :cl-json
-               :alexandria))
+               :alexandria
+               :radiance-auth
+               :radiance-session
+               :radiance-user))

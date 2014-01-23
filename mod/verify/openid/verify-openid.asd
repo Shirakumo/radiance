@@ -22,4 +22,7 @@
   :depends-on (:verify
                :cl-openid
                :puri
-               :alexandria))
+               :alexandria
+               :radiance-auth
+               :radiance-session
+               :radiance-user))
