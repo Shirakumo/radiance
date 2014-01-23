@@ -6,7 +6,7 @@
 
 (in-package :radiance)
 
-(asdf:defsystem core
+(asdf:defsystem trivial-core
   :class :radiance-module
   :name "Radiance Core" 
   :author "Nicolas Hafner" 
@@ -15,7 +15,7 @@
   :homepage "http://tymoon.eu"
   
   :defsystem-depends-on (:radiance)
-  :implement ((:core :core))
+  :implement ((:core :trivial-core))
   :depends-on (:radiance-dispatcher)
   :components ((:file "api")
                (:file "core")))
