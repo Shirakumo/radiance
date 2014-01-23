@@ -23,14 +23,7 @@
   (user:get (string-downcase (symbol-name username))))
 
 (define-interface-method user:get ((username string))
-  (setf username (string-downcase username))
-  (if *radiance-request*
-      (progn
-        (if (null (request-field :users)) (setf (request-field :users) (make-hash-table :test 'equal)))
-        (or (gethash username (request-field :users))
-            (setf (gethash username (request-field :users))
-                  (%user-get username))))
-      (%user-get username)))  
+  (%user-get (string-downcase username)))  
 
 (defun %user-get (username)
   (let ((model (dm:get-one "verify-users" (db:query (:= "username" username)))))
