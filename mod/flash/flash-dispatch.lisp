@@ -35,7 +35,8 @@
   hook)
 
 (define-interface-method dispatcher:unregister (uri)
-  )
+  (v:debug :flash-dispatch "Deleting hooks on uri ~a." uri)
+  (setf *hooks* (delete uri *hooks* :test #'(lambda (a) (uri-same uri (third a))))))
 
 (define-interface-method dispatcher:dispatch-default (request)
   (error-page 404))
