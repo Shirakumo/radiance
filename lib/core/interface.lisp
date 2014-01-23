@@ -284,14 +284,19 @@ requested interface will be properly implemented after the load of this system."
     (asdf::plan-action-status plan op system)))
 
 (defmethod asdf:needed-in-image-p ((op asdf:operation) (interface interface))
-  (with-asdf-system (interface system)
+  (with-asdf-system (interface system name)
     (v:debug :radiance.framework.interface "Delegating (ASDF:NEEDED-IN-IMAGE-P ~s ~s) to ~s" op interface system)
-    (asdf:needed-in-image-p op system)))
+    (or (asdf:needed-in-image-p op system)
+        (not (eq (second (assoc name (implementation-map system)))
+                 (symbol-value (find-symbol "*IMPLEMENTATION*" (find-package name))))))))
 
 (defmethod asdf::compute-action-stamp (plan (op asdf:operation) (interface interface) &key just-done)
-  (with-asdf-system (interface system)
+  (with-asdf-system (interface system name)
     (v:debug :radiance.framework.interface "Delegating (ASDF::COMPUTE-ACTION-STAMP ~s ~s ~s :JUST-DONE ~s) to ~s" plan op interface just-done system)
-    (asdf::compute-action-stamp plan op system :just-done just-done)))
+    (if (not (eq (second (assoc name (implementation-map system)))
+                 (symbol-value (find-symbol "*IMPLEMENTATION*" (find-package name)))))
+        (values T NIL)
+        (asdf::compute-action-stamp plan op system :just-done just-done))))
 
 (defmethod asdf:perform ((op asdf::load-op) (interface interface))
   (with-asdf-system (interface system)
@@ -304,8 +309,7 @@ requested interface will be properly implemented after the load of this system."
     (v:debug :radiance.framework.interface "Setting ~a as implementation for ~a" system interface)
     (let ((package (find-package name)))
       (if package
-          (let* ((module-spec (assoc name (implementation-map system)))
-                 (module (if (consp (cdr module-spec)) (second module-spec) (cdr module-spec))))
+          (let ((module (second (assoc name (implementation-map system)))))
             (if module
                 (setf (symbol-value (find-symbol "*IMPLEMENTATION*" package))
                       (etypecase module
