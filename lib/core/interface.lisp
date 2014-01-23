@@ -266,6 +266,22 @@ Loading a system of this class will search for an interface definition in the
 radiance configuration and attempt to load it. It is not guaranteed that the 
 requested interface will be properly implemented after the load of this system."))
 
+(defgeneric effective-system (interface))
+(defmethod effective-system ((interface string))
+  (effective-system (asdf:find-system interface)))
+(defmethod effective-system ((interface interface))
+  (with-asdf-system (interface system)
+    system))
+
+(defmacro with-interface (interface-name &body body)
+  "Assure that a certain interface is implemented before executing the body."
+  (with-gensyms ((namegens "NAME"))
+    `(let ((,namegens (string-upcase ,interface-name)))
+       (asdf:load-system (format NIL "RADIANCE-~a" ,namegens))
+       (assert (not (null (symbol-value (find-symbol "*IMPLEMENTATION*" (find-package ,namegens)))))
+               () 'interface-not-implemented-error :interface ,namegens :text "WITH-INTERFACE failed. Interface ~a not loaded." ,namegens)
+       ,@body)))
+
 (defmacro with-asdf-system ((interface systemvar &optional (namevar (gensym "NAME"))) &body body)
   (with-gensyms ((implementationgens "IMPLEMENTATION"))
     `(progn

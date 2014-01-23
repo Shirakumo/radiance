@@ -62,7 +62,9 @@
            #:define-interface-method
            #:define-interface-component-expander
            #:get-interface-component-expander
-           #:interface-component-types)
+           #:interface-component-types
+           #:effective-system
+           #:with-interface)
   ;; module.lisp
   (:export #:radiance-module
            #:define-module
