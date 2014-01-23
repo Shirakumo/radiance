@@ -65,7 +65,7 @@
 (defun handler (request reply)
   "Propagates the call to the next handler registered in the implements."
   (let ((*radiance-request* request) (*radiance-response* reply) (*radiance-session* NIL))
-    (v:info :radiance.server.request "~a ~a" (server:remote-address) request)
+    (v:trace :radiance.server.request "~a ~a" (server:remote-address) request)
     (incf *radiance-request-total*)
     (incf *radiance-request-count*)
     
@@ -80,9 +80,12 @@
 (defun manage (action &key (config-file))
   "Manage the TymoonNETv5 web server."
   (etypecase action (symbol) (string))
-  (setf action (find-symbol (string-upcase action) :radiance))
-  (if config-file (setf *radiance-config-file* config-file))
-  (funcall action))
+  (let ((action (string-upcase action)))
+    (if (string= action "RESTART")
+        (setf action 'restart-server)
+        (setf action (find-symbol action :radiance)))
+    (if config-file (setf *radiance-config-file* config-file))
+    (funcall action)))
 
 (defun start ()
   "Loads the configuration and starts the TyNETv5 server."
