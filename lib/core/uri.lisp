@@ -9,9 +9,9 @@
 (defclass uri ()
   ((subdomains :initarg :subdomains :initform NIL :accessor subdomains :type list)
    (domain :initarg :domain :initform NIL :accessor domain :type (or string null))
-   (port :initarg :port :initform NIL :accessor port :type (or fixnum null))
+   (port :initarg :port :initform NIL :accessor port :type (or (integer 0 65535) null))
    (path :initarg :path :initform ".*" :accessor path :type string)
-   (pathregex :initarg :regex :initform NIL :accessor regex))
+   (pathregex :initarg :regex :initform NIL :accessor regex :type function))
   (:documentation "URI class used in Radiance to build links and such."))
 
 (defmethod print-object ((uri uri) stream)
@@ -29,17 +29,20 @@
   (declare (optimize (speed 3)))
   (and (or (not (domain uri))
            (not (domain uri2))
-           (equal (domain uri) (domain uri2)))
+           (string-equal (domain uri) (domain uri2)))
        (or (not (port uri))
            (not (port uri2))
-           (equal (port uri) (port uri)))
+           (= (the (integer 0 65535) (port uri))
+              (the (integer 0 65535) (port uri))))
        (or (not (subdomains uri))
            (not (subdomains uri2))
            (loop for sda in (reverse (subdomains uri))
-              for sdb in (reverse (subdomains uri2))
-              unless (string= sda sdb)
-              return NIL
-              finally (return T)))
+                 for sdb in (reverse (subdomains uri2))
+                 unless (string=
+                         (the (simple-base-string) sda)
+                         (the (simple-base-string) sdb))
+                   return NIL
+                 finally (return T)))
        (or (not (path uri))
            (not (path uri2))
            (cl-ppcre:scan (regex uri) (path uri2)))))
@@ -47,8 +50,8 @@
 (defun uri-same (uri uri2)
   "Checks if the given URIs are identical."
   (declare (optimize (speed 3)))
-  (string-equal (format NIL "~a" uri) (format NIL "~a" uri2)))
-
+  (string-equal (format NIL "~a" uri)
+                (format NIL "~a" uri2)))
 
 (defun uri->url (uri &optional (absolute T))
   "Turns the URI into a string URL."
@@ -78,7 +81,8 @@ Note that the PATH part is always a regex, excluding the start slash."
     (make-instance 'uri 
                    :path path
                    :subdomains subdomains
-                   :port port :domain domain
+                   :port (if port (parse-integer (subseq port 1)))
+                   :domain domain
                    :regex (cl-ppcre:create-scanner path))))
 
 (defun %make-uri (stream subchar arg)
