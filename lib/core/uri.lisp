@@ -27,6 +27,7 @@
 (defmethod uri-matches ((uri uri) (uri2 uri))
   "Checks if the given URI is compatible with the other URI."
   (declare (optimize (speed 3)))
+  (format T "COMPARING: ~a VS ~a" uri uri2)
   (and (or (not (domain uri))
            (not (domain uri2))
            (string-equal (domain uri) (domain uri2)))
@@ -34,15 +35,15 @@
            (not (port uri2))
            (= (the (integer 0 65535) (port uri))
               (the (integer 0 65535) (port uri))))
-       (or (not (subdomains uri))
-           (not (subdomains uri2))
-           (loop for sda in (reverse (subdomains uri))
-                 for sdb in (reverse (subdomains uri2))
-                 unless (string=
-                         (the (simple-base-string) sda)
-                         (the (simple-base-string) sdb))
-                   return NIL
-                 finally (return T)))
+       (and (subdomains uri)
+            (subdomains uri2)
+            (loop for sda in (reverse (subdomains uri))
+                  for sdb in (reverse (subdomains uri2))
+                  unless (string=
+                          (the (simple-array character (*)) sda)
+                          (the (simple-array character (*)) sdb))
+                    return NIL
+                  finally (return T)))
        (or (not (path uri))
            (not (path uri2))
            (cl-ppcre:scan (regex uri) (path uri2)))))
