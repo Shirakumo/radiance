@@ -6,7 +6,7 @@
 
 (in-package :radiance)
 
-(declaim (inline continuation-handler))
+;;(declaim (inline continuation-handler))
 (defun continuation-handler (request)
   (let* ((rcid (server:post-or-get "rcid"))
          (cont (when rcid
@@ -20,15 +20,18 @@
             result))
         (dispatcher:dispatch request))))
 
-(declaim (inline static-handler))
+;;(declaim (inline static-handler))
 (defun file-handler (request)
-  (if (and (> (length (path request)) 8)
-           (string-equal (path request) "/static/" :end1 8))
-      (progn (server:serve-file (static (subseq (path request) 0 8)))
-             NIL)
+  (if (and (> (length (path request)) 7)
+           (string-equal (path request) "static/" :end1 7))
+      (let ((pathname (static (subseq (path request) 7))))
+        (if (file-exists-p pathname)
+            (server:serve-file pathname)
+            (error-page 404))
+        NIL)
       (continuation-handler request)))
 
-(declaim (inline present-error))
+;;(declaim (inline present-error))
 (defun present-error (err &optional unexpected)
   (v:error :radiance.server.request "Encountered error: ~a" err)
   ($ (initialize (static "html/error/501.html")))
@@ -41,7 +44,7 @@
   (server:set-response-content ($ (serialize) (node)))
   (invoke-restart 'skip-request))
 
-(declaim (inline error-handler))
+;;(declaim (inline error-handler))
 (defun error-handler (request)
   (handler-bind
       ((error-page #'(lambda (err)
