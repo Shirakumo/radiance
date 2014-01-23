@@ -17,7 +17,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                                  :message-log-destination NIL
                                  :request-class 'request
                                  :reply-class 'response)))
-    (v:info :radiance.server.hunchentoot "Starting listener ~a on ~@[~a]:~a" name address port)
+    (v:info :radiance.server.hunchentoot "Starting listener ~a on ~:[localhost~;~:*~a~]:~a" name address port)
     (setf (gethash name *listeners*) listener)
     (hunchentoot:start listener)))
 
