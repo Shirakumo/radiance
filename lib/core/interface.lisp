@@ -53,7 +53,7 @@
 
 (defun intern-list-symbols (list package)
   (loop for element in list
-     collect (if (and (symbolp element) (not (keywordp element)))
+     collect (if (and (symbolp element) (not (keywordp element)) (not (null element)))
                  (intern (string-upcase element) package)
                  element)))
 

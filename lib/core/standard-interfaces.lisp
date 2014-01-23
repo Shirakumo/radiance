@@ -14,7 +14,7 @@
     (:superclasses (uri))
     (:documentation "Base class for the server's request object that contains information about the current request. 
 An instance of this will be bound to *radiance-request* during dispatch."))
-  (response ((content :accessor content))
+  (response ((content :initform NIL :accessor content))
     (:type :class)
     (:documentation "Base class for the server's response object that contains information about the response that will be sent out. 
 An instance of this will be bound to *radiance-response* during dispatch."))
