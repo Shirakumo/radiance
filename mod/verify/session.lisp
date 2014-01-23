@@ -18,7 +18,8 @@
 
 (defmethod print-object ((session verify-session) out)
   (print-unreadable-object (session out :type T)
-    (format out "~a" (s-user session))))
+    (format out "~a" (s-user session)))
+  session)
 
 (define-interface-method session:get ((uuid string))
   "Returns the requested session instance if applicable."

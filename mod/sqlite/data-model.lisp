@@ -15,7 +15,8 @@
   (print-unreadable-object (model out :type T)
     (if (collection model)
         (format out "~a" (collection model))
-        (format out "STUB"))))
+        (format out "STUB")))
+  model)
 
 (define-interface-method dm:field ((model sqlite-data-model) (field string) &key (value NIL v-p))
   (if v-p

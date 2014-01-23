@@ -16,7 +16,8 @@
 
 (defmethod print-object ((cont request-continuation) out)
   (print-unreadable-object (cont out :type T)
-    (format out "~a ~a ~a" (name cont) (id cont) (request cont))))
+    (format out "~a ~a ~a" (name cont) (id cont) (request cont)))
+  cont)
 
 (defun continuation (id &optional (session *radiance-session*))
   (if (and session (session:field session 'CONTINUATIONS))

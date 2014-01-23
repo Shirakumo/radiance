@@ -16,7 +16,8 @@
 
 (defmethod print-object ((user verify-user) out)
   (print-unreadable-object (user out :type T)
-    (format out "~a~:[ UNSAVED~;~]" (username user) (user:saved-p user))))
+    (format out "~a~:[ UNSAVED~;~]" (username user) (user:saved-p user)))
+  user)
 
 (define-interface-method user:get ((username symbol))
   (user:get (string-downcase (symbol-name username))))

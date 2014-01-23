@@ -16,7 +16,8 @@
 
 (defmethod print-object ((hook hook-item) out)
   (print-unreadable-object (hook out :type T)
-    (format out "~a/~a/~a" (item-namespace hook) (name hook) (item-identifier hook))))
+    (format out "~a/~a/~a" (item-namespace hook) (name hook) (item-identifier hook)))
+  hook)
 
 (defun hook-equal (a b)
   "Checks if two hook-items designate the same (match in space, module and name)."

@@ -10,7 +10,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (defmethod print-object ((request request) out)
   (print-unreadable-object (request out :type T)
-    (format out "~a:~a → (~a /~a)" (domain request) (port request) (subdomains request) (path request))))
+    (format out "~a:~a → (~a /~a)" (domain request) (port request) (subdomains request) (path request)))
+  request)
 
 (defclass response (server:response hunchentoot:reply)
   ((%body :initform NIL :accessor body)))
