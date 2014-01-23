@@ -22,7 +22,7 @@
   (v:info :sqlite "Connecting to SQLite database ~a on ~a" dbname root-path)
   (setf *db*
         (sqlite:connect (merge-pathnames dbname root-path)))
-  (load-extension *db* "/usr/lib/sqlite3/pcre.so"))
+  (load-extension *db* "/usr/lib/sqlite3/pcre"))
 
 (define-interface-method db:disconnect ()
   (v:info :sqlite "Disconnecting...")
@@ -33,7 +33,7 @@
   (not (null *db*)))
 
 (define-interface-method db:collections ()
-  (db:iterate "sqlite_master" (db:query (:= "type" "table"))
+  (db:iterate "sqlite_master" (db::i-query :radiance-sqlite (:= "type" "table"))
     #'(lambda (row) (cdr (assoc "name" row :test #'string=)))
     :sort '(("name" . :ASC))))
 
