@@ -25,5 +25,14 @@
                (:file "default-panels")
                (:file "userpage")
                (:file "admin"))
-  :depends-on (:radiance-admin :radiance-parser :radiance-user :radiance-database :radiance-data-model :uibox :ironclad :drakma :cl-ppcre :alexandria)
+  :depends-on (:radiance-admin
+               :radiance-parser
+               :radiance-user
+               :radiance-database
+               :radiance-data-model
+               :uibox
+               :ironclad
+               :drakma
+               :cl-ppcre
+               :alexandria)
   :implement ((:profile :trivial-profile)))

@@ -63,11 +63,6 @@
                 ,menu-tooltip))
          (build-menu)))))
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (when (or (eql (profile:implementation) :trivial-profile)
-            (not (profile:implementation)))
-    (profile:implementation :trivial-profile)))
-
 (defapi profile/edit (displayname email) (:access-branch "user.settings.profile")
   (let ((username (user:field (user) "username")))
     (db:remove "trivial-profile" (db:query (:= "user" username)) :limit NIL)

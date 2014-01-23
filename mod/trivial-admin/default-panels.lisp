@@ -7,13 +7,13 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (in-package :radiance-mod-admin)
 
 
-(admin:define-panel index core (:menu-icon "icon-home" :menu-tooltip "Index" :lquery (template "admin/panel-index.html"))
+(admin::m-define-panel :trivial-admin index core (:menu-icon "icon-home" :menu-tooltip "Index" :lquery (template "admin/panel-index.html"))
   )
 
-(admin:define-panel modules core (:menu-icon "icon-tasks" :menu-tooltip "Manage radiance modules" :lquery (template "admin/panel-modules.html"))
+(admin::m-define-panel :trivial-admin modules core (:menu-icon "icon-tasks" :menu-tooltip "Manage radiance modules" :lquery (template "admin/panel-modules.html"))
   (uibox:fill-foreach (alexandria:hash-table-values *radiance-modules*) "tbody tr"))
 
-(admin:define-panel hooks core (:menu-icon "icon-random" :menu-tooltip "Manage triggers and hooks" :lquery (template "admin/panel-hooks.html"))
+(admin::m-define-panel :trivial-admin hooks core (:menu-icon "icon-random" :menu-tooltip "Manage triggers and hooks" :lquery (template "admin/panel-hooks.html"))
   (uibox:fill-foreach
    (loop for space being the hash-keys of *radiance-hooks*
          for hooks being the hash-values of *radiance-hooks*

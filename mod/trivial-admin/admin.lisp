@@ -66,9 +66,4 @@
                        funcbody))
                 ,menu-icon
                 ,menu-tooltip))
-         (build-menu)))))
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (when (or (eql (admin:implementation) :trivial-admin)
-            (not (admin:implementation)))
-    (admin:implementation :trivial-admin)))  
+         (build-menu)))))  

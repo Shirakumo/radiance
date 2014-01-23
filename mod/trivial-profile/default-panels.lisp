@@ -6,7 +6,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (in-package :radiance-mod-trivial-profile)
 
-(profile:define-panel profile user (:menu-icon "icon-user" :menu-tooltip "Profile settings" :lquery (template "trivial-profile/panel-profile.html"))
+(profile::m-define-panel :trivial-profile profile user (:menu-icon "icon-user" :menu-tooltip "Profile settings" :lquery (template "trivial-profile/panel-profile.html"))
   ($ "*[data-uibox]" (each #'(lambda (node) (uibox:fill-node node (user)))))
   
   (let* ((parent ($ "#fields li" (parent) (node)))
@@ -26,5 +26,5 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                        (return))
             ($ parent (append clone)))))))
 
-(profile:define-panel comments user (:menu-icon "icon-comments" :menu-tooltip "Manage comments on your profile" :lquery (template "trivial-profile/panel-comments.html"))
+(profile::m-define-panel :trivial-profile comments user (:menu-icon "icon-comments" :menu-tooltip "Manage comments on your profile" :lquery (template "trivial-profile/panel-comments.html"))
   (uibox:fill-foreach (dm:get "trivial-profile-comments" (db:query (:= "user" (user:field (user) "username"))) :sort '(("time" . :DESC)) :limit -1) "tbody tr"))
