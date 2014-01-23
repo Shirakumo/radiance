@@ -33,7 +33,7 @@
   (not (null *db*)))
 
 (define-interface-method db:collections ()
-  (db:iterate "sqlite_master" (db::i-query :radiance-sqlite (:= "type" "table"))
+  (db:iterate "sqlite_master" (db::m-query :radiance-sqlite (:= "type" "table"))
     #'(lambda (row) (cdr (assoc "name" row :test #'string=)))
     :sort '(("name" . :ASC))))
 
