@@ -101,12 +101,18 @@
 
 (defmethod getdf ((model hash-table) field)
   (gethash field model))
+
 (defmethod (setf getdf) (value (model hash-table) field)
   (setf (gethash field model) value))
 
 (defmethod getdf ((model standard-object) field)
   (let ((slot (find-symbol (string-upcase field) (symbol-package (class-name (class-of model))))))
     (if slot (slot-value model slot))))
+
+(defmethod getdf ((model asdf:component) field)
+  (let ((slot (find-symbol (string-upcase field) :ASDF)))
+    (if slot (slot-value model slot))))
+
 (defmethod (setf getdf) (value (model standard-object) field)
   (let ((slot (find-symbol (string-upcase field) (symbol-package (class-name (class-of model))))))
     (if slot (setf (slot-value model slot) value))))
