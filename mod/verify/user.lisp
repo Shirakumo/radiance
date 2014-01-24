@@ -60,19 +60,21 @@
 
 (define-interface-method user:check ((user verify-user) branch)
   (v:trace :verify.user "Checking permissions of ~a for ~a" user branch)
-  (block user-check
-    (let ((perms (user:field user "perms"))
-          (branch (split-sequence:split-sequence #\. branch)))
-      (when perms
-        (loop for line in (split-sequence:split-sequence #\newline perms)
-              do (loop for leaf-a in branch
-                       for leaf-b in (split-sequence:split-sequence #\. line)
-                       do (cond
-                            ((string= leaf-a "*") (return-from user-check branch))
-                            ((string= leaf-b "*") (return-from user-check branch))
-                            ((not (string= leaf-a leaf-b)) (return)))
-                       finally (if (string= leaf-a leaf-b) (return-from user-check branch)))))))
-  NIL)
+  (or
+   (block user-check
+     (let ((perms (user:field user "perms"))
+           (branch (split-sequence:split-sequence #\. branch)))
+       (when perms
+         (loop for line in (split-sequence:split-sequence #\newline perms)
+               do (loop for leaf-a in branch
+                        for leaf-b in (split-sequence:split-sequence #\. line)
+                        do (cond
+                             ((string= leaf-a "*") (return-from user-check branch))
+                             ((string= leaf-b "*") (return-from user-check branch))
+                             ((not (string= leaf-a leaf-b)) (return)))
+                        finally (when (and (string= leaf-a leaf-b) (<= (length line) (length branch)))
+                                  (return-from user-check branch)))))))
+   NIL))
 
 (define-interface-method user:grant ((user verify-user) branch)
   (v:debug :verify.user "Granting permissions for ~a: ~a" user branch)
