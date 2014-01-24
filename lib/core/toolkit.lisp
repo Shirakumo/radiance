@@ -87,13 +87,14 @@
 
 (defmethod getdf ((model list) field)
   (if (keywordp (first model))
-      (getf model (if (stringp field) (make-keyword field) field))
+      (getf model (if (stringp field) (make-keyword (string-upcase field)) field))
       (if (listp (first model))
           (cdr (assoc field model :test #'equalp))
           (error "Model is of type LIST, but is neither an ALIST or PLIST."))))
+
 (defmethod (setf getdf) (value (model list) field)
   (if (keywordp (first model))
-      (setf (getf model (if (stringp field) (make-keyword field) field)) value)
+      (setf (getf model (if (stringp field) (make-keyword (string-upcase field)) field)) value)
       (if (listp (first model))
           (setf (cdr (assoc field model :test #'equalp)) value)
           (error "Model is of type LIST, but is neither an ALIST or PLIST."))))
