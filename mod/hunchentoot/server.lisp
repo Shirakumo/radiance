@@ -117,7 +117,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (define-interface-method server:set-response-content (content &key (response *radiance-response*))
   (setf (server::content response) content))
 
-(define-interface-method server:redirect ((uri T) &key response)
+(define-interface-method server:redirect ((uri T) &key (response *radiance-response*))
   (v:debug :radiance.server.hunchentoot "Redirecting to ~a" uri)
   (let ((hunchentoot:*reply* response))
     (hunchentoot:redirect (string uri))))
