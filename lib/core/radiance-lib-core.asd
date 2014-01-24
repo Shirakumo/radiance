@@ -29,7 +29,8 @@
                (:file "site")
                (:file "validate")
                (:file "continuation")
-               (:file "server"))
+               (:file "server")
+               (:file "indent"))
   :depends-on (:alexandria
                :cl-json
                :cl-fad
