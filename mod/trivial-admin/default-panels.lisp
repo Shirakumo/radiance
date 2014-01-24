@@ -11,7 +11,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   )
 
 (admin::m-define-panel :trivial-admin modules core (:menu-icon "icon-tasks" :menu-tooltip "Manage radiance modules" :lquery (template "admin/panel-modules.html"))
-  (uibox:fill-foreach (alexandria:hash-table-values *radiance-modules*) "tbody tr"))
+  (uibox:fill-foreach (mapcar #'asdf:find-system *radiance-modules*) "tbody tr"))
 
 (admin::m-define-panel :trivial-admin hooks core (:menu-icon "icon-random" :menu-tooltip "Manage triggers and hooks" :lquery (template "admin/panel-hooks.html"))
   (uibox:fill-foreach
