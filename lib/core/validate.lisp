@@ -8,7 +8,7 @@
 
 (defmacro verify-multiple (&rest checks)
   ""
-  `(loop for (function variable &rest arg) in checks
+  `(loop for (function variable &rest arg) in ,checks
       unless (apply (function function) variable arg)
       collect variable))
 
