@@ -1,0 +1,26 @@
+#|
+This file is a part of TyNETv5/Radiance
+(c) 2013 TymoonNET/NexT http://tymoon.eu (shinmera@tymoon.eu)
+Author: Nicolas Hafner <shinmera@tymoon.eu>
+|#
+
+(defpackage radiance-mod-plaster
+  (:use :cl :radiance)
+  (:export))
+(in-package :radiance-mod-plaster)
+
+(asdf:defsystem plaster
+  :class :radiance-module
+  :defsystem-depends-on (:radiance)
+  :name "Plaster Pasting Service" 
+  :author "Nicolas Hafner"
+  :version "0.0.1" 
+  :license "Artistic" 
+  :homepage "http://tymoon.eu"
+  :implement ()
+  :components ()
+  :depends-on (:radiance-database
+               :radiance-data-model
+               :radiance-user
+               :radiance-session
+               :uibox))
