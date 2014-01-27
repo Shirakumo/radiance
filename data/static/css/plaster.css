@@ -1,0 +1,133 @@
+html,body{
+    font-family: sans-serif;
+    padding: 0;
+    margin: 0;
+    min-height: 800px;
+}
+
+html{
+    background: #000 url("/static/img/TyNET-logo-david-dark-256.png") no-repeat no-repeat bottom right;
+}
+
+body{
+    margin: 0 10% 0 10%;
+    min-width: 600px;
+}
+
+header{
+    background: #151515;
+    color: #FFF;
+}
+
+header h1{
+    margin: 0; padding: 5px 5px 5px 20px;
+}
+
+header nav ul{
+    position: relative;
+}
+
+header nav ul::after{
+    content: "";
+    position: absolute;
+    right: -20px;
+    top: 0;
+    width: 0;
+    height: 0px;
+    border-top: 20px solid transparent;
+    border-left: 20px solid #0088EE;
+}
+
+#content{
+    background: #DDD;
+    padding: 20px;
+}
+
+#editorarea{
+    background: #000;
+}
+
+#posterinfo{
+    border-bottom: 3px solid #0088EE;
+    background: #151515;
+    padding: 5px 10px 5px 10px;
+    color: #FFF;
+}
+
+#posterinfo img{
+    width: 64px;
+    height: 64px;
+    border: 5px solid #0088EE;
+    float: left;
+    margin: 10px;
+}
+
+#posterinfo h2{
+    margin: 0; padding: 0;
+}
+
+#posterinfo a{
+    color: #FFF;
+}
+
+#editor{
+    clear: both;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+#editorbar{
+    position: absolute;
+    right: 0;
+    bottom: -20px;
+    height: 20px;
+}
+
+#editorbar::after{
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 0;
+    width: 0;
+    height: 0px;
+    border-bottom: 20px solid transparent;
+    border-right: 20px solid #0088EE;
+}
+
+footer{
+    font-size: 8pt;
+    text-align: center;
+    background: #151515;
+    color: #555;
+    padding: 5px;
+}
+
+.buttonbar{
+    background: #0088EE;
+    list-style: none;
+    margin: 0; padding: 0;
+    display: inline-block;
+    position: relative;
+    height: 20px;
+}
+
+.buttonbar li{
+    display: inline-block;
+}
+
+.buttonbar li a{
+    color: #FFF;
+    text-decoration: none;
+    
+    display: inline-block;
+    padding: 0 10px 0 10px;
+}
+
+.buttonbar li a:hover{
+    background: #00EEFF;
+}
+
+span.date{
+    font-family: Consolas, monospace;
+    
+}
