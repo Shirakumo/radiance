@@ -98,14 +98,16 @@ See fill-node for more information."
   (uri->context-url (make-uri (concatenate 'string "/" (parse-data urldesc model)))))
 
 (define-fill-function avatar (model &optional (size 128) (user model))
-  (if (not (eq model user)) (setf user (parse-data user model)))
-  (if (stringp user) (setf user (user-get T user)))
-  (profile-avatar T user size))
+  (with-interface "profile"
+    (if (not (eq model user)) (setf user (parse-data user model)))
+    (if (stringp user) (setf user (user:get user)))
+    (profile:avatar user size)))
 
 (define-fill-function name (model &optional (user model))
-  (if (not (eq model user)) (setf user (parse-data user model)))
-  (if (stringp user) (setf user (user-get T user)))
-  (user-field user "displayname"))
+  (with-interface "user"
+    (if (not (eq model user)) (setf user (parse-data user model)))
+    (if (stringp user) (setf user (user:get user)))
+    (user:field user "displayname")))
 
 (define-fill-function date (model field &rest format)
   (if format
@@ -116,7 +118,8 @@ See fill-node for more information."
   (timestamp-to-datetime (parse-data field model)))
 
 (define-fill-function parse (model field)
-  (parse T (parse-data field model)))
+  (with-interface "parser"
+    (parser:parse (parse-data field model))))
 
 (defun fill-node (node model)
   "Fills data into the node according to uibox constants. Syntax:
