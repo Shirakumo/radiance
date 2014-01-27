@@ -19,5 +19,5 @@
   :license "Artistic" 
   :homepage "http://tymoon.eu"
   :depends-on (:3bmd)
-  :implement ((:parser :parser))
+  :implement ((:parser :markdown))
   :components ((:file "parser")))
