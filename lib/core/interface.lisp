@@ -266,13 +266,6 @@ Loading a system of this class will search for an interface definition in the
 radiance configuration and attempt to load it. It is not guaranteed that the 
 requested interface will be properly implemented after the load of this system."))
 
-(defgeneric effective-system (interface))
-(defmethod effective-system ((interface string))
-  (effective-system (asdf:find-system interface)))
-(defmethod effective-system ((interface interface))
-  (with-asdf-system (interface system)
-    system))
-
 (defmacro with-interface (interface-name &body body)
   "Assure that a certain interface is implemented before executing the body."
   (with-gensyms ((namegens "NAME"))
@@ -292,6 +285,13 @@ requested interface will be properly implemented after the load of this system."
              (let ((,systemvar (asdf:find-system ,implementationgens)))
                ,@body)
              (error 'no-interface-implementation-error :interface ,namevar))))))
+
+(defgeneric effective-system (interface))
+(defmethod effective-system ((interface string))
+  (effective-system (asdf:find-system interface)))
+(defmethod effective-system ((interface interface))
+  (with-asdf-system (interface system)
+    system))
 
 ;; Hack into ASDF to delegate to the chosen implementation for the interface.
 (defmethod asdf::plan-action-status ((plan null) (op asdf:operation) (interface interface))
