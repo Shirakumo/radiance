@@ -59,12 +59,12 @@ Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
   `(%with-var-func #'server:header (,@vars) ,@body))
 
-(defmacro with-cookie ((&rest cookies) &body body)
+(defmacro with-cookie ((&rest vars) &body body)
   "Same as with-slots, but for COOKIE variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'server:cookie))
+  `(%with-var-func #'server:cookie (,@vars) ,@body))
 
 (declaim (inline get-redirect))
 (defun get-redirect (&optional (default "/") (request *radiance-request*))
