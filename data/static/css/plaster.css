@@ -75,6 +75,25 @@ header nav ul::after{
     color: #FFF;
 }
 
+#maineditor input#title{
+    background: #333;
+    border: 1px solid #000;
+    font-size: 1.5em;
+    color: #FFF;
+    width: 500px;
+}
+
+#maineditor #typeselect{
+    background: #333;
+    color: #FFF;
+    width: 200px;
+    font-size: 18px;
+    line-height: 1;
+    border: 1px solid #000;
+    border-radius: 0;
+    -webkit-appearance: none;
+}
+
 .editor{
     clear: both;
     position: relative;

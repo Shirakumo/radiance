@@ -5,8 +5,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
 (defpackage radiance-mod-plaster
-  (:use :cl :radiance)
-  (:export))
+  (:use :cl :radiance :lquery :alexandria))
 (in-package :radiance-mod-plaster)
 
 (asdf:defsystem plaster
@@ -18,9 +17,12 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   :license "Artistic" 
   :homepage "http://tymoon.eu"
   :implement ()
-  :components ()
+  :components ((:file "frontend")
+               (:file "backend")
+               (:file "api"))
   :depends-on (:radiance-database
                :radiance-data-model
                :radiance-user
                :radiance-session
-               :uibox))
+               :uibox
+               :alexandria))
