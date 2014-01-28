@@ -109,6 +109,12 @@ See fill-node for more information."
     (if (stringp user) (setf user (user:get user)))
     (user:field user "displayname")))
 
+(define-fill-function username (model &optional (user model))
+  (with-interface "user"
+    (if (not (eq model user)) (setf user (parse-data user model)))
+    (if (stringp user) (setf user (user:get user)))
+    (user:field user "username")))
+
 (define-fill-function date (model field &rest format)
   (if format
       (timestamp-to-date (parse-data field model) format)
