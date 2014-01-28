@@ -20,7 +20,7 @@
 (defun user (&key default authenticate)
   "Returns the currently logged in user or default."
   (when authenticate
-    (setf *radiance-session* (auth:authenticate)))
+    (ignore-errors (setf *radiance-session* (auth:authenticate))))
   (or (and *radiance-session* (session:user *radiance-session*)) default))
 
 (defun %with-var-func (fun vars body)
