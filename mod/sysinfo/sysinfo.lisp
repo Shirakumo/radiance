@@ -20,32 +20,12 @@
 
   ;Modules
   (let ((nodes (loop for template = ($ "#module")
-                  for module being the hash-values of *radiance-modules*
+                  for module in *radiance-modules*
                   collect (create-module-node module ($ template (clone))))))
-    ($ "#modules ul" (empty) (append nodes)))
-  
-  ;Implementations
-  (let ((nodes (loop for impl being the hash-keys of *radiance-implements*
-                    collect (create-implementation-node impl))))
-    ($ "#implementations" (append nodes))))
+    ($ "#modules ul" (empty) (append nodes))))
 
 (defun create-module-node (module template)
-  ($ template "h3" (text (slot-value module 'radiance::name)))
-  ($ template "blockquote" (text (documentation (class-of module) 'type)))
-  (let ((nodes (loop for slotdef in (closer-mop:class-slots (class-of module))
-                  when (create-slot-node slotdef)
-                  collect it)))
-    ($ template ".modinfo tbody" (append nodes)))
-  (first template))
-
-(defun create-slot-node (slotdef)
-  (let ((location (closer-mop:slot-definition-location slotdef)))
-    (when (consp location)
-      (first (lquery:parse-html
-              (format nil "<tr><td>~a</td><td>~a</td></tr>" (car location)
-                      (hunchentoot:escape-for-html (format nil "~a" (cdr location)))))))))
-
-(defun create-implementation-node (impl)
-  (first (lquery:parse-html
-          (format nil "<div class=\"key-val\"><label>~a</label><span>~a</span></div>" impl 
-                  (hunchentoot:escape-for-html (format nil "~a" (implementation impl)))))))
+  (let ((module (asdf:find-system module)))
+    ($ template "h3" (text (asdf:component-name module)))
+    ($ template "blockquote" (text (asdf:system-description module)))
+    (first template)))
