@@ -6,7 +6,7 @@ html,body{
 }
 
 html{
-    background: #000 url("/static/img/TyNET-logo-david-dark-256.png") no-repeat no-repeat bottom right;
+    background: #000;
 }
 
 body{
@@ -43,18 +43,18 @@ header nav ul::after{
     padding: 20px;
 }
 
-#editorarea{
+.editorarea{
     background: #000;
 }
 
-#posterinfo{
+.posterinfo{
     border-bottom: 3px solid #0088EE;
     background: #151515;
     padding: 5px 10px 5px 10px;
     color: #FFF;
 }
 
-#posterinfo img{
+.posterinfo img{
     width: 64px;
     height: 64px;
     border: 5px solid #0088EE;
@@ -62,28 +62,28 @@ header nav ul::after{
     margin: 10px;
 }
 
-#posterinfo h2{
+.posterinfo h2{
     margin: 0; padding: 0;
 }
 
-#posterinfo a{
+.posterinfo a{
     color: #FFF;
 }
 
-#editor{
+.editor{
     clear: both;
     position: relative;
     margin-bottom: 20px;
+    height: 500px;
 }
 
-#editorbar{
-    position: absolute;
+.editorbar{
+    position: absolute !important;
     right: 0;
     bottom: -20px;
-    height: 20px;
 }
 
-#editorbar::after{
+.editorbar::after{
     content: "";
     position: absolute;
     left: -20px;
@@ -92,6 +92,44 @@ header nav ul::after{
     height: 0px;
     border-bottom: 20px solid transparent;
     border-right: 20px solid #0088EE;
+}
+
+.editorbar .edit{
+    background: #880000;
+}
+
+.editorbar .editorresize i{
+    color: #FFF;
+    padding: 0 10px 0 10px;
+    cursor: ns-resize;
+}
+
+.annotation{
+    margin-top: 30px;
+}
+
+.annotation .posterinfo{
+    padding: 0 5px 5px 0;
+}
+
+.annotation .posterinfo img{
+    width: 32px; height: 32px;
+    margin: 0;
+}
+
+.annotation .posterinfo h2{
+    display: inline-block;
+    font-size: 12pt;
+    margin: 5px 5px 0 5px;
+}
+
+.annotation .posterinfo .pasteinfo{
+    display: inline-block;
+    font-size: 10pt;
+}
+
+.annotation .editor{
+    height: 200px;
 }
 
 footer{
@@ -121,6 +159,7 @@ footer{
     
     display: inline-block;
     padding: 0 10px 0 10px;
+    height: 20px;
 }
 
 .buttonbar li a:hover{
@@ -131,3 +170,5 @@ span.date{
     font-family: Consolas, monospace;
     
 }
+
+
