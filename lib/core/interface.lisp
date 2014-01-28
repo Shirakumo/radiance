@@ -270,7 +270,7 @@ requested interface will be properly implemented after the load of this system."
   "Assure that a certain interface is implemented before executing the body."
   (with-gensyms ((namegens "NAME"))
     `(let ((,namegens (string-upcase ,interface-name)))
-       (asdf:load-system (find-symbol (format NIL "RADIANCE-~a" ,namegens) :KEYWORD))
+       (asdf:load-system (intern (format NIL "RADIANCE-~a" ,namegens) :KEYWORD))
        (assert (not (null (symbol-value (find-symbol "*IMPLEMENTATION*" (find-package ,namegens)))))
                () 'interface-not-implemented-error :interface ,namegens :text "WITH-INTERFACE failed. Interface ~a not loaded." ,namegens)
        ,@body)))
