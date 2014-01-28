@@ -23,12 +23,12 @@
     (setf *radiance-session* (auth:authenticate)))
   (or (and *radiance-session* (session:user *radiance-session*)) default))
 
-(defmacro %with-var-func (fun (&rest vars) &body body)
+(defun %with-var-func (fun vars body)
   "Constructs a basic with-X let."
   `(let (,@(loop for var in vars
               for varname = (if (listp var) (first var) var)
               for funcname = (if (listp var) (second var) (string-downcase (symbol-name var)))
-              collect `(,varname (funcall ,fun ,funcname))))
+              collect `(,varname (,fun ,funcname))))
      ,@body))
 
 (defmacro with-get ((&rest vars) &body body)
@@ -36,35 +36,35 @@
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'server:get (,@vars) ,@body))
+  (%with-var-func 'server:get vars body))
 
 (defmacro with-post ((&rest vars) &body body)
   "Same as with-slots, but for POST variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'server:post (,@vars) ,@body))
+  (%with-var-func 'server:post vars body))
 
 (defmacro with-post-or-get ((&rest vars) &body body)
   "Same as with-slots, but for POST and GET variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'server:post-or-get (,@vars) ,@body))
+  (%with-var-func 'server:post-or-get vars body))
 
 (defmacro with-header ((&rest vars) &body body)
   "Same as with-slots, but for HEADER variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'server:header (,@vars) ,@body))
+  (%with-var-func 'server:header vars body))
 
 (defmacro with-cookie ((&rest vars) &body body)
   "Same as with-slots, but for COOKIE variables.
 Uses *radiance-request* to retrieve variables.
 Note that changes to the variables will not be saved
 in the actual request and are therefore purely temporary."
-  `(%with-var-func #'server:cookie (,@vars) ,@body))
+  (%with-var-func 'server:cookie vars body))
 
 (declaim (inline get-redirect))
 (defun get-redirect (&optional (default "/") (request *radiance-request*))
