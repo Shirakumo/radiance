@@ -27,6 +27,10 @@ header nav ul{
     position: relative;
 }
 
+header nav ul li a{
+    font-size: 12pt !important;
+}
+
 header nav ul::after{
     content: "";
     position: absolute;
@@ -41,16 +45,17 @@ header nav ul::after{
 #content{
     background: #DDD;
     padding: 20px;
+    /*padding: 20px 0 20px 0;*/
 }
 
 .editorarea{
-    background: #000;
+    background: #FFF;
 }
 
 .posterinfo{
     border-bottom: 3px solid #0088EE;
     background: #151515;
-    padding: 5px 10px 5px 10px;
+    padding: 0 10px 5px 0;
     color: #FFF;
 }
 
@@ -59,7 +64,7 @@ header nav ul::after{
     height: 64px;
     border: 5px solid #0088EE;
     float: left;
-    margin: 10px;
+    margin: 0 10px 0 0;
 }
 
 .posterinfo h2{
@@ -74,7 +79,18 @@ header nav ul::after{
     clear: both;
     position: relative;
     margin-bottom: 20px;
-    height: 500px;
+    height: 300px;
+}
+
+.editor .code{
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: none;
+}
+
+.editor .code:focus{
+    outline: none;
 }
 
 .editorbar{
@@ -98,14 +114,51 @@ header nav ul::after{
     background: #880000;
 }
 
+.editorbar .edit:hover{
+    background: #FF0000;
+}
+
 .editorbar .editorresize i{
     color: #FFF;
     padding: 0 10px 0 10px;
     cursor: ns-resize;
 }
 
+h3{
+    margin: 0;
+    padding: 0 20px 0 10px;
+    background: #0088EE;
+    color: #FFF;
+    font-size: 16pt;
+    display: inline-block;
+    height: 25px;
+    position: relative;
+}
+
+h3:after{
+    content: "";
+    position: absolute;
+    right: -25px;
+    top: 0;
+    width: 0;
+    height: 0px;
+    border-top: 25px solid transparent;
+    border-left: 25px solid #0088EE;
+}
+
+#annotations{
+    border-top: 5px solid #0088EE;
+    background: transparent;
+    padding-top: 10px;
+    margin-top: -3px;
+}
+
 .annotation{
-    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.annotation:last-child{
+    margin-bottom: 0;
 }
 
 .annotation .posterinfo{
@@ -117,10 +170,15 @@ header nav ul::after{
     margin: 0;
 }
 
+.annotation .posterinfo>a{
+    text-decoration: none;
+}
+
 .annotation .posterinfo h2{
     display: inline-block;
     font-size: 12pt;
     margin: 5px 5px 0 5px;
+    text-decoration: underline;
 }
 
 .annotation .posterinfo .pasteinfo{
@@ -129,7 +187,7 @@ header nav ul::after{
 }
 
 .annotation .editor{
-    height: 200px;
+    height: 150px;
 }
 
 footer{
@@ -140,6 +198,10 @@ footer{
     padding: 5px;
 }
 
+footer a{
+    color: #888;
+}
+
 .buttonbar{
     background: #0088EE;
     list-style: none;
@@ -147,28 +209,33 @@ footer{
     display: inline-block;
     position: relative;
     height: 20px;
+    font-size: 0;
 }
 
 .buttonbar li{
     display: inline-block;
+    margin: 0; padding: 0;
 }
 
-.buttonbar li a{
+.buttonbar li a, .buttonbar li input, .buttonbar li button, .buttonbar li>i{
+    font-size: 10pt;
     color: #FFF;
     text-decoration: none;
-    
+    border: none;
+    margin: 0;
+    background: transparent;
     display: inline-block;
     padding: 0 10px 0 10px;
     height: 20px;
+    cursor: pointer;
 }
 
-.buttonbar li a:hover{
+.buttonbar li a:hover, .buttonbar li input:hover, .buttonbar li button:hover{
     background: #00EEFF;
 }
 
 span.date{
-    font-family: Consolas, monospace;
-    
+    font-family: Consolas, monospace;    
 }
 
 

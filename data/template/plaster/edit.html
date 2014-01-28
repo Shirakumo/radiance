@@ -4,7 +4,6 @@
     <meta charset="utf-8"/>
     <title>Plaster</title>
     <link rel="stylesheet" href="/static/css/plaster.css" />
-    <link href="/static/js/plaster/codemirror-3.21/theme/base16-dark.css" rel="stylesheet" />
     <link href="/static/js/plaster/codemirror-3.21/lib/codemirror.css" rel="stylesheet" />
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
   </head>
@@ -13,70 +12,89 @@
       <h1>Plaster</h1>
       <nav>
         <ul class="buttonbar">
-          <li><a href="/new"><i class="fa fa-edit"></i> New Paste</a></li>
-          <li><a href="/"><i class="fa fa-user"></i> My Profile</a></li>
-          <li><a href="/recent"><i class="fa fa-list"></i> Public List</a></li>
+          <li><a href="/new" title="Submit a new paste"><i class="fa fa-edit"></i> New Paste</a></li>
+          <li><a href="/user/USERNAME" title="Return to your profile" data-uibox="attr-href:(concat &quot;/user/&quot; username)"><i class="fa fa-user"></i> My Profile</a></li>
+          <li><a href="/" title="View a list of recent pastes"><i class="fa fa-list"></i> Public List</a></li>
         </ul>
       </nav>
     </header>
     <div id="content">
       <div id="maineditor" class="editorarea">
         <div class="posterinfo">
-          <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=128&amp;d=mm" />
-          <h2>Foo test</h2>
+          <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=128&amp;d=mm" data-uibox="attr-src:(avatar 64 author)"/>
+          <h2 data-uibox="text:title">TITLE</h2>
           <div class="pasteinfo">
-            Posted by <a href="http://user.linuz.com:4545/shinmera">Monika Kalan</a> on <span class="label date unixtime">2013.9.3 15:27:0</span> as <span class="language commonlisp">Common Lisp</span>.
+            Posted by <a href="/USERNAME" data-uibox="text:(name author) attr-href:(make-uri author)">DISPLAYNAME</a>
+            on <span class="label date unixtime" data-uibox="text:(datetime time)">DATE-POST</span>
+            as <span class="language commonlisp" data-uibox="text:type">TYPE</span>.
           </div>
         </div>
-        <div class="editor">
+        <form class="editor" method="post" data-mode="MODE" data-uibox="attr-data-mode:type">
           <ul class="editorbar buttonbar">
-            <li><a class="repaste" href="/new" title="Submit as a new paste"><i class="fa fa-retweet"></i> Repaste</a></li>
-            <li><a class="repaste" href="/new" title="Submit as a new paste"><i class="fa fa-quote-left"></i> Annotate</a></li>
-            <li><a class="raw" href="/raw" title="View the code in raw form"><i class="fa fa-file-text"></i> Raw</a></li>
-            <li><a class="edit" href="/edit" title="Edit this paste"><i class="fa fa-edit"></i> Edit</a></li>
-            <li class="editorresize"><i class="fa fa-sort"></i></li>
+            <li>
+              <button type="submit" name="action" value="repaste" class="repaste" formaction="/new" title="Submit as a new paste">
+                <i class="fa fa-retweet"></i> Repaste</button></li>
+            <li>
+              <button type="submit" name="action" value="annotate" class="annotate" formaction="/new?annotate=ID" title="Annotate this paste" data-uibox="attr-formaction:(concat &quot;/new?annotate=&quot; _id)">
+                <i class="fa fa-quote-left"></i> Annotate</button></li>
+            <li>
+              <button type="submit" name="action" value="raw" class="raw" formaction="/api/plaster/raw?id=ID" title="View the code in raw form" data-uibox="attr-formaction:(concat &quot;/api/plaster/raw?id=&quot; _id)">
+                <i class="fa fa-file-text"></i> Raw</button></li>
+            <li>
+              <button type="submit" name="action" value="edit" class="edit" formaction="/edit?id=ID" title="Edit this paste" data-uibox="attr-formaction:(concat &quot;/edit?id=&quot; _id)">
+                <i class="fa fa-edit"></i> Edit</button></li>
+            <li class="editorresize">
+              <i class="fa fa-sort"></i></li>
           </ul>
-        <pre class="code">
-(defmacro foo (foo bar &amp;body baz)
-  `(apply (function ,foo) ,bar
-          #'(lambda () ,@baz)))
-</pre>
-        </div>
+          <input type="hidden" name="id" value="ID" data-uibox="value:_id"/>
+          <textarea class="code" name="code" data-uibox="text:text">CODE</textarea>
+        </form>
       </div>
 
       <h3>Annotations</h3>
-      
-      <div class="editorarea annotation">
-        <div class="posterinfo">
-          <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=128&amp;d=mm" />
-          <h2>Foo test</h2>
-          <div class="pasteinfo">
-            Posted by <a href="http://user.linuz.com:4545/shinmera">Monika Kalan</a> on <span class="label date unixtime">2013.9.3 15:27:0</span> as <span class="language commonlisp">Common Lisp</span>.
+      <div id="annotations">        
+        <div class="editorarea annotation">
+          <div class="posterinfo">
+            <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=128&amp;d=mm" data-uibox="attr-src:(avatar 32 author)"/>
+            <a id="annotation-ID" href="#annotation-ID" data-uibox="attr-id:(concat &quot;annotation-&quot; _id) attr-href:(concat &quot;#annotation-&quot; _id)">
+              <h2 data-uibox="text:title">TITLE</h2>
+            </a>
+            <div class="pasteinfo">
+              Posted by <a href="/USERNAME" data-uibox="text:(name author) attr-href:(make-uri author)">DISPLAYNAME</a>
+              on <span class="label date unixtime" data-uibox="text:(datetime time)">DATE-POST</span>
+              as <span class="language commonlisp" data-uibox="text:type">TYPE</span>.
+            </div>
           </div>
-        </div>
-        <div class="editor">
-          <ul class="editorbar buttonbar">
-            <li><a class="repaste" href="/new" title="Submit as a new paste"><i class="fa fa-retweet"></i> Repaste</a></li>
-            <li><a class="raw" href="/raw" title="View the code in raw form"><i class="fa fa-file-text"></i> Raw</a></li>
-            <li><a class="edit" href="/edit" title="Edit this paste"><i class="fa fa-edit"></i> Edit</a></li>
-            <li class="editorresize"><i class="fa fa-sort"></i></li>
-          </ul>
-        <pre class="code">
-(defmacro foo (foo bar &amp;body baz)
-  `(apply (function ,foo) ,bar
-          #'(lambda () ,@baz)))
-</pre>
-        </div>
-      </div>
-      
+          <form class="editor" method="post" data-mode="text">
+            <ul class="editorbar buttonbar">
+            <li>
+              <button type="submit" name="action" value="repaste" class="repaste" formaction="/new" title="Submit as a new paste">
+                <i class="fa fa-retweet"></i> Repaste</button></li>
+            <li>
+              <button type="submit" name="action" value="raw" class="raw" formaction="/api/plaster/raw?id=ID" title="View the code in raw form" data-uibox="attr-formaction:(concat &quot;/api/plaster/raw?id=&quot; _id)">
+                <i class="fa fa-file-text"></i> Raw</button></li>
+            <li>
+              <button type="submit" name="action" value="edit" class="edit" formaction="/edit?id=ID" title="Edit this paste" data-uibox="attr-formaction:(concat &quot;/edit?id=&quot; _id)">
+                <i class="fa fa-edit"></i> Edit</button></li>
+            <li class="editorresize">
+              <i class="fa fa-sort"></i></li>
+            </ul>
+            <input type="hidden" name="id" value="ID" data-uibox="value:_id"/>
+            <textarea class="code" name="code" data-uibox="text:text">CODE</textarea>
+          </form>
+        </div>        
+      </div>      
     </div>
     <footer>
-      &#169;2014 TymoonNET/NexT
+      Site &#169;2014 TymoonNET/NexT. Plaster uses <a href="http://codemirror.net/">Code Mirror</a> for fancy editing and display. <br />
+      Disclaimer: Pastes can be made by anyone, at any time. TymoonNET/NexT is not responsible for their contents.<br />
     </footer>
+    <script type="text/javascript">
+      window.mirrorTheme="mdn-like";
+    </script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/radiance.js"></script>
     <script type="text/javascript" src="/static/js/plaster/codemirror-3.21/lib/codemirror.js"></script>
-    <script type="text/javascript" src="/static/js/plaster/codemirror-3.21/mode/commonlisp/commonlisp.js"></script>
     <script type="text/javascript" src="/static/js/plaster/plaster.js"></script>
   </body>
 </html>
