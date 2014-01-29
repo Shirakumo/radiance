@@ -15,16 +15,17 @@ $(function(){
             mirror.setSize(null, height);
         }
 
-        function initializeMirror(){
+        function initializeMirror(mode){
             var code = $(".code", editor).text();
             mirror = CodeMirror(editor, {
                 value: code,
                 theme: window.mirrorTheme,
-                mode: $(editor).data("mode"),
+                mode: mode,
                 lineNumbers: true,
                 styleActiveLine: true,
                 matchBrackets: true
             });
+            $(editor).data("mirror", mirror);
             $(".code", editor).text("").hide();
             
             var mirrorsize = $(".CodeMirror-sizer", editor).height();
@@ -62,10 +63,11 @@ $(function(){
         });
 
         var mode = $(editor).data("mode");
+        if(mode == undefined) mode = $("#typeselect")[0].value;
         if(mode != undefined && mode != "raw" && mode != "text"){
             $.getScript("/static/js/plaster/codemirror-3.21/mode/"+mode+"/"+mode+".js")
-                .done(function(){ initializeMirror(); })
-                .fail(function(){ $(editor).data("mode", null); initializeMirror(); }); 
+                .done(function(){ initializeMirror(mode); })
+                .fail(function(){ initializeMirror(null); }); 
         }else{
             $(editor).data("mode", null);
             initializeMirror();
@@ -76,5 +78,17 @@ $(function(){
 
     $(".editor").each(function(i, editor){
         setupEditor(i, editor);
+    });
+
+    $("#typeselect").change(function(){
+        var mode = this.value;
+        if(mode != "raw" && mode != "text"){
+            $.getScript("/static/js/plaster/codemirror-3.21/mode/"+mode+"/"+mode+".js")
+                .done(function(){
+                    $("#maineditor .editor").data("mirror").setOption("mode", mode);
+                });
+        }else{
+            $("#maineditor .editor").data("mirror").setOption("mode", "default");
+        }
     });
 });

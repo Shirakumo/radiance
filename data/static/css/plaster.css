@@ -81,6 +81,7 @@ header nav ul::after{
     font-size: 1.5em;
     color: #FFF;
     width: 500px;
+    padding: 0 0 0 5px;
 }
 
 #maineditor #typeselect{

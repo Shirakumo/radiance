@@ -40,10 +40,16 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
           ($ (initialize (template "plaster/edit.html")))
           (uibox:fill-foreach (dm:get "plaster-types" :all :sort '(("title" . :ASC))) "#typeselect option")
           (uibox:fill-all "body" user)
-          ($ "#code" (text code))))))
+          ($ "#code" (text code))
+          (let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
+            (if model
+                (progn
+                  ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme"))))
+                  ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (dm:field model "default-type"))) (attr :selected "selected")))
+                ($ "#typeselect option[value=\"text\"]" (attr :selected "selected"))))))))
 
 (defpage view #u"plaster./view" (:lquery (template "plaster/view.html"))
-  (let ((model ))))
+  )
 
 (defpage edit #u"plaster./edit" (:lquery (template "plaster/edit.html"))
   )
