@@ -84,7 +84,7 @@ header nav ul::after{
     padding: 0 0 0 5px;
 }
 
-#maineditor #typeselect{
+#maineditor #typeselect, #maineditor #viewselect, #maineditor #viewpassword{
     background: #333;
     color: #FFF;
     width: 200px;
@@ -92,6 +92,7 @@ header nav ul::after{
     line-height: 1;
     border: 1px solid #000;
     border-radius: 0;
+    padding: 0; margin: 0;
     -webkit-appearance: none;
 }
 

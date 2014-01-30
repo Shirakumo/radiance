@@ -97,6 +97,14 @@ $(function(){
         }
     });
 
+    $("#viewpassword").hide();
+    $("#viewselect").change(function(){
+        if(this.value == "3")
+            $("#viewpassword").show();
+        else
+            $("#viewpassword").hide();
+    });
+
     $("#maineditor .editorbar .paste").click(function(){
         $("#maineditor .code").text($("#maineditor .editor").data("mirror").getValue());
     });

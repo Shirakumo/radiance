@@ -19,15 +19,21 @@
       </nav>
     </header>
     <div id="content">
-      <form id="maineditor" class="editorarea" action="#" method="post">
+      <form id="maineditor" class="editorarea" action="/api/plaster/paste" method="post">
         <div class="posterinfo">
           <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=128&amp;d=mm" data-uibox="attr-src:(avatar 64)"/>
           <input type="text" id="title" maxlength="64" placeholder="Title" name="title"></input>
           <div class="pasteinfo">
             <span id="annotateinfo"></span>
-            Paste as <select name="type" id="typeselect">
+            Paste as <select name="type" id="typeselect" title="Select the language or mode to use to display and edit your paste.">
               <option value="VALUE" data-uibox="value:name text:title">NAME</option>
             </select>.
+            This paste will be <select name="view" id="viewselect" title="Select how your paste will be visible to the internet. Note that encryption passwords are not stored.">
+              <option value="0">public</option>
+              <option value="1">unlisted</option>
+              <option value="2">private</option>
+              <option value="3">encrypted with:</option>
+            </select> <input type="password" name="password" placeholder="Password" id="viewpassword" autocomplete="off" maxlength="32" />.
           </div>
         </div>
         <div class="editor" method="post">
@@ -40,7 +46,9 @@
             <li class="editorresize" title="Change editor height">
               <i class="fa fa-sort"></i></li>
           </ul>
-          <textarea class="code" name="code" data-uibox="text:text">CODE</textarea>
+          <input type="hidden" name="client" value="true" />
+          <input type="hidden" name="annotate" value="-1" id="annotateid" />
+          <textarea class="code" name="text" data-uibox="text:text" placeholder="Text">Text</textarea>
         </div>
       </form>      
     </div>

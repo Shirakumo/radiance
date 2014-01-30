@@ -32,7 +32,7 @@
         <form class="editor" method="post" data-mode="MODE" data-uibox="attr-data-mode:type">
           <ul class="editorbar buttonbar">
             <li>
-              <button type="submit" name="action" value="repaste" class="repaste" formaction="/new" title="Submit as a new paste">
+              <button type="submit" name="action" value="repaste" class="repaste" formaction="/new?repaste=ID" title="Submit as a new paste" data-uibox="attr-formaction:(concat &quot;/new?repaste=&quot; _id)">
                 <i class="fa fa-retweet"></i> Repaste</button></li>
             <li>
               <button type="submit" name="action" value="annotate" class="annotate" formaction="/new?annotate=ID" title="Annotate this paste" data-uibox="attr-formaction:(concat &quot;/new?annotate=&quot; _id)">
@@ -70,7 +70,7 @@
           <form class="editor" method="post" data-mode="text">
             <ul class="editorbar buttonbar">
             <li>
-              <button type="submit" name="action" value="repaste" class="repaste" formaction="/new" title="Submit as a new paste">
+              <button type="submit" name="action" value="repaste" class="repaste" formaction="/new?repaste=ID" title="Submit as a new paste" data-uibox="attr-formaction:(concat &quot;/new?repaste=&quot; _id)">
                 <i class="fa fa-retweet"></i> Repaste</button></li>
             <li>
               <button type="submit" name="action" value="raw" class="raw" formaction="/api/plaster/raw?id=ID" title="View the code in raw form" data-uibox="attr-formaction:(concat &quot;/api/plaster/raw?id=&quot; _id)">
