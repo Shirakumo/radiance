@@ -7,30 +7,32 @@
 (in-package :radiance)
 
 (defpage api #u"/api/" ()
-  (let ((pathparts (split-sequence:split-sequence #\/ (path *radiance-request*)))
-        (format (make-keyword (string-upcase (or (server:get "format") (server:post "format") "json")))))
-    (api-format 
-     format
-     (handler-case 
-         (case (length pathparts)
-           ((1 2) (api-return 200 (format NIL "Radiance API v~a" (asdf:component-version (context-module)))
-                              (plist->hash-table :VERSION (asdf:component-version (context-module)))))
-           (otherwise
-            (let* ((module (cadr pathparts))
-                   (trigger (make-keyword (string-upcase (concatenate-strings (cdr pathparts) "/"))))
-                   (hooks (hook-items :api trigger)))
-              (or (call-api module hooks)
-                  (api-return 204 "No return data")))))
-       (api-args-error (c)
-         (api-return 400 "Invalid arguments"
-                     (plist->hash-table :errortype (class-name (class-of c)) 
-                                        :code (slot-value c 'code)
-                                        :text (slot-value c 'text))))
-       (api-error (c)
-         (api-return 500 "Api error"
-                     (plist->hash-table :errortype (class-name (class-of c))
-                                        :code (slot-value c 'code)
-                                        :text (slot-value c 'text))))))))
+  (server:set-content-type "none")
+  (let* ((pathparts (split-sequence:split-sequence #\/ (path *radiance-request*)))
+         (format (make-keyword (string-upcase (or (server:get "format") (server:post "format") "json"))))
+         (value  (handler-case 
+                     (case (length pathparts)
+                       ((1 2) (api-return 200 (format NIL "Radiance API v~a" (asdf:component-version (context-module)))
+                                          (plist->hash-table :VERSION (asdf:component-version (context-module)))))
+                       (otherwise
+                        (let* ((module (cadr pathparts))
+                               (trigger (make-keyword (string-upcase (concatenate-strings (cdr pathparts) "/"))))
+                               (hooks (hook-items :api trigger)))
+                          (or (call-api module hooks)
+                              (api-return 204 "No return data")))))
+                   (api-args-error (c)
+                     (api-return 400 "Invalid arguments"
+                                 (plist->hash-table :errortype (class-name (class-of c)) 
+                                                    :code (slot-value c 'code)
+                                                    :text (slot-value c 'text))))
+                   (api-error (c)
+                     (api-return 500 "Api error"
+                                 (plist->hash-table :errortype (class-name (class-of c))
+                                                    :code (slot-value c 'code)
+                                                    :text (slot-value c 'text)))))))
+    (if (string-equal (server:content-type) "none")
+        (api-format format value)
+        value)))
 
 (defun identifier-and-method (item-identifier)
   (let* ((item-identifier (string item-identifier))

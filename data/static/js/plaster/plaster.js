@@ -22,13 +22,14 @@ $(function(){
                 theme: window.mirrorTheme,
                 mode: mode,
                 lineNumbers: true,
+                lineWrapping: true,
                 styleActiveLine: true,
                 matchBrackets: true
             });
             $(editor).data("mirror", mirror);
             $(".code", editor).text("").hide();
             
-            var mirrorsize = $(".CodeMirror-sizer", editor).height();
+            var mirrorsize = $(".CodeMirror-sizer", editor).height()+20;
             var editorsize = $(editor).height();
             if($(editor).parent().hasClass("annotation"))
                 setHeight(Math.max(Math.min(editorsize, mirrorsize), 50));
@@ -55,6 +56,10 @@ $(function(){
                     $(".editorresize", editor).removeClass("dragging");
                     $(this).off("mousemove.editorresize"+i);
                 }
+            });
+
+            $(".editorwrapping", editor).click(function(){
+                mirror.setOption("lineWrapping", !mirror.getOption("lineWrapping"));
             });
         }
 
@@ -90,5 +95,9 @@ $(function(){
         }else{
             $("#maineditor .editor").data("mirror").setOption("mode", "default");
         }
+    });
+
+    $("#maineditor .editorbar .paste").click(function(){
+        $("#maineditor .code").text($("#maineditor .editor").data("mirror").getValue());
     });
 });
