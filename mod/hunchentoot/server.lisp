@@ -92,6 +92,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (define-interface-method server:request-uri (&key (request *radiance-request*))
   (hunchentoot:request-uri request))
 
+(define-interface-method server:content-type (&key (response *radiance-response*))
+  (hunchentoot:content-type response))
+
 (define-interface-method server:set-cookie (name &key (value "") domain (path "/") (expires (+ (get-universal-time) *default-cookie-expire*)) (http-only T) secure (response *radiance-response*))
   (flet ((setc (domain) (hunchentoot:set-cookie name :value value :domain domain :path path :expires expires :http-only http-only :secure secure :reply response)))
     (v:debug :radiance.server.hunchentoot "Setting cookie '~a' on ~a ~a exp ~a (HTTP ~a;SECURE ~a) to ~a" name domain path expires http-only secure value)
