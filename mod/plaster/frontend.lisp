@@ -122,7 +122,13 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
          (uibox:fill-all "#maineditor" paste)
          (unless (and user (string-equal (dm:field paste "author") (user:field user "name")))
            ($ "#maineditor .editorbar .edit" (remove)))
-         (uibox:fill-foreach annotations "#annotations .annotation")
+         (uibox:fill-foreach
+          annotations "#annotations .annotation"
+          :iter-fun #'(lambda (model node)
+                        (when (= (dm:field model "view") 3)
+                          (setf (getdf model "text") (decrypt (dm:field model "text") (server:get "password"))))
+                        (unless (and user (string-equal (dm:field model "author") (user:field user "name")))
+                          ($ node ".editorbar .edit" (remove)))))
          (when (= (dm:field paste "view") 3)
            ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password")))))))))))))
 
