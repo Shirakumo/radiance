@@ -21,7 +21,8 @@
                  (T (error "Template is not of type NIL, NODE, STRING or PATHNAME.")))))))
      ,@body))
 
-(defun fill-foreach (models selector &key template)
+(defun noop (&rest args) (declare (ignore args)))
+(defun fill-foreach (models selector &key template (iter-fun #'noop))
   "Fills the node with data using the provided list of alists, plists, data-models or a list in order of the fields.
 
 Selector is a CSS selector that matches the node to be repeated and filled with data.
@@ -31,15 +32,19 @@ See uibox:fill-node for more information on how the data is filled into the node
 Template can either be a dom-node, a pathname or NIL.
 If it is a dom-node, all actions will be performed on this dom-node.
 If it is a pathname or a string, lQuery will be initialized with the new document.
-If it is NIL, it is expected that lQuery has already been initialized with a document."
+If it is NIL, it is expected that lQuery has already been initialized with a document.
+
+Iter-fun is an additional function invoked on each model and element, to avoid having to loop twice.
+Its return function is discarded. Note that iter-fun is invoked BEFORE the fill-all."
   (with-initialized-lquery template
     (if (typep models 'hash-table) (setf models (alexandria:hash-table-values models)))
     (let* ((parent ($ selector (node) (parent) (node)))
            (nodes (loop with template = ($ selector (node) (remove) (node)) 
-                     for model in models
-                     for clone = ($ template (clone) (node))
-                     do (fill-all clone model)
-                     collect clone)))
+                        for model in models
+                        for clone = ($ template (clone) (node))
+                        do (funcall iter-fun model clone)
+                           (fill-all clone model)
+                        collect clone)))
       ($ parent (prepend nodes)))
     lquery:*lquery-master-document*))
 
