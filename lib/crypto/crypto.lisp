@@ -48,18 +48,19 @@
 (defgeneric make-salt (salt)
   (:documentation "Create a salt."))
 
-(defgeneric pbkdf2-hash (password salt &key digest iterations)
-  (:documentation "Compute a PBKDF2 hash for the provided password and salt."))
-
-(defgeneric simple-hash (password salt &key digest iterations)
-  (:documentation "Compute a simple hash for the provided password and salt using the given digest."))
-
 (defmethod make-salt ((salt T)) (ironclad:make-random-salt))
 (defmethod make-salt ((salt integer)) (ironclad:make-random-salt salt))
 (defmethod make-salt ((salt string)) (ironclad:ascii-string-to-byte-array salt))
 (defmethod make-salt ((salt vector)) salt)
 
-(defmethod pbkdf2-hash ((password string) salt &key (digest 'ironclad:sha512) (iterations 1000))
+(defun pbkdf2-key (password salt &key (digest 'ironclad:sha512) (iterations 1000))
+  (setf salt (make-salt salt))
+  (values (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array password)
+                                         :salt salt :digest digest :iterations iterations)
+          (byte-array-to-ascii-string salt)
+          digest iterations))
+
+(defun pbkdf2-hash (password salt &key (digest 'ironclad:sha512) (iterations 1000))
   (setf salt (make-salt salt))
   (values (ironclad:byte-array-to-hex-string
            (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array password)
@@ -67,7 +68,7 @@
           (byte-array-to-ascii-string salt)
           digest iterations))
 
-(defmethod simple-hash  ((password string) salt &key (digest 'ironclad:sha512) (iterations 1000))
+(defun simple-hash  (password salt &key (digest 'ironclad:sha512) (iterations 1000))
   (setf salt (make-salt salt))
   (values (ironclad:byte-array-to-hex-string
            (let ((hash (ironclad:make-digest digest)))

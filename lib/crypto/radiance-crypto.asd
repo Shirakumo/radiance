@@ -12,6 +12,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
    :encrypt
    :decrypt
    :make-salt
+   :pbkdf2-key
    :pbkdf2-hash
    :simple-hash))
 (in-package :radiance-lib-crypto)
