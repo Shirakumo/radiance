@@ -12,9 +12,9 @@
 (defun make-password-hash (password &optional (salt (config-tree :verify :password :salt)) (algorithm (config-tree :verify :password :algorithm)))
   ""
   (if (string-equal algorithm "pbkdf2")
-      (pbkdf2-hash password salt)
+      (rad-crypto:pbkdf2-hash password salt)
       (if (find-symbol algorithm :ironclad)
-          (simple-hash password salt :digest (find-symbol algorithm :ironclad))
+          (rad-crypto:simple-hash password salt :digest (find-symbol algorithm :ironclad))
           (error 'radiance-error :text (format nil "Unknown hashing algorithm configured: ~a" algorithm) :code 21))))
 
 (defpage login #u"auth./login/password" ()

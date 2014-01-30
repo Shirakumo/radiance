@@ -11,11 +11,6 @@
            :verify-auth 
            :verify-user 
            :verify-session
-           :encrypt
-           :decrypt
-           :make-salt
-           :pbkdf2-hash
-           :simple-hash
            :defmechanism 
            :show-login 
            :show-register
@@ -35,15 +30,14 @@
   :version "0.0.1"
   :license "Artistic" 
   :homepage "http://tymoon.eu"  
-  :components ((:file "crypto")
-               (:file "user")
-               (:file "auth" :depends-on ("user" "crypto"))
+  :components ((:file "user")
+               (:file "auth" :depends-on ("user"))
                (:file "session" :depends-on ("user"))
                (:file "sites" :depends-on ("auth" "session"))
                (:file "admin" :depends-on ("user" "session"))
                (:file "api" :depends-on ("user" "session")))
   :depends-on (:split-sequence
-               :ironclad
+               :radiance-crypto
                :uuid
                :radiance-database
                :radiance-data-model

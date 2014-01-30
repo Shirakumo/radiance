@@ -4,7 +4,7 @@
   Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package :radiance-mod-verify)
+(in-package :radiance-lib-crypto)
 
 (defun byte-array-to-ascii-string (array)
   (coerce (mapcar #'code-char (coerce array 'list)) 'string))

@@ -51,7 +51,7 @@
     (if (and token (> (length token) 0) (not *radiance-session*))
         (progn 
           ;; Decrypt token with global key to get user and session data
-          (setf token (decrypt token (config-tree :verify :session :secret))) 
+          (setf token (rad-crypto:decrypt token (config-tree :verify :session :secret))) 
           (if (and token (find #\- token))
               (let* ((username (subseq token 0 (position #\- token)))
                      (user (user:get username))
@@ -64,7 +64,7 @@
 (defun authenticate-user (user token)
   ;; If per user secrets are activated, decrypt session data with the secret.
   (setf token (if (config-tree :verify :session :use-per-user-secret)
-                  (decrypt token (user:field user "secret"))
+                  (rad-crypto:decrypt token (user:field user "secret"))
                   token))
   (let ((data (split-sequence:split-sequence #\: token)))
     (if (= (length data) 3)
