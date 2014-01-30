@@ -67,12 +67,12 @@ Each form should be of the following format:
     (when annotate
       (setf annotate (dm:get-one "plaster" (db:query (:= "_id" annotate)
                                                      (:= "pid" -1))))
+      (setf view (dm:field annotate "view"))
       (assert-api (:apicall "paste" :module "plaster")
         ((not (null annotate))
          :code 404 :text "No such paste to annotate found.")
         ((paste-accessible-p annotate user)
-         :code 403 :text "You are not allowed to repaste/annotate this paste."))
-      (setf view 0))
+         :code 403 :text "You are not allowed to repaste/annotate this paste.")))
 
     (when (= view 3)
       (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
