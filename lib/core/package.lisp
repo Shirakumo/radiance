@@ -101,7 +101,7 @@
            #:with-uploaded-file
            #:defpage
            #:define-file-link
-           #:defapi
+           #:define-api
            #:define-api-format
            #:save-to-db
            #:validate-and-save)

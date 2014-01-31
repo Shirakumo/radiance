@@ -210,41 +210,39 @@ the static/ directory."
   `(defpage ,name ,uri (:identifier ,identifier :access-branch ,access-branch)
      (server:serve-file ,pathspec :content-type ,content-type)))
 
-(defmacro defapi (name (&rest args) (&key (method T) (identifier `(context-module-identifier)) access-branch) &body body)
-  "Defines a new API function for the given module. The arguments specify
-REST values that are expected (or not according to definition) on the
-API call. Any variable can have a default value specified. If 
-access-branch is given, an authorization check on the current session
-at page load will be performed. Method can be one of T :GET :POST
-:PUT :PATCH :DELETE. The API call will only be performed if the
-http-method of the request matches, or always if the requested method
-type is set to be T. The return value of the body should be an
-alist or an URI. This will automatically be transformed into the
-requested output type or a page redirect in the case of an URI."
+(defmacro define-api (name args (&key (method T) access-branch (identifier `(context-module-identifier))) &body body)
+  ""
   (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
-  (let ((name (make-keyword name))
-        (funcbody `(progn ,@body))
-        (modgens (gensym "MODULE-"))
-        (documentation (if (stringp (car body)) (car body) NIL)))
-    `(let ((,modgens ,identifier))
-       (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,modgens)
-       (define-hook (:api (make-keyword (format NIL "~a/~a" ,identifier ,name))) (:identifier (make-keyword (format NIL "~a:~a" ,modgens ,method)) :documentation ,documentation)
-         (when (or (eql ,method T) (eql (server:request-method) ,method))
-           (,(case method
-                   (:POST 'with-post)
-                   (:GET 'with-get)
-                   (otherwise 'with-post-or-get))
-             (,@(mapcar #'(lambda (x) (if (listp x) (car x) x)) args))
-             ,@(loop for arg in args
-                  if (not (listp arg))
-                  collect `(assert (not (null ,arg)) () 'api-args-error :module ,modgens :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
-             ,(if access-branch
-                  `(progn 
-                     (ignore-errors (auth:authenticate)) 
-                     (if (authorized-p ,access-branch)
-                         ,funcbody
-                         (error 'api-auth-error :module ,modgens :apicall ',name :text "Not authorized.")))
-                  funcbody)))))))
+  (assert (symbolp name) () "Name has to be a symbol.")
+  (assert (listp args) () "Args has to be a list.")
+  (assert (not (find-any '(&allow-other-keys &body &environment &rest &whole) args))
+          () "Only &optional, &key and &aux operators are allowed here.")
+
+  (let* ((argsgens (gensym "ARGUMENTS"))
+         (arggens (gensym "ARG"))
+         (identgens (gensym "IDENTIFIER"))
+         (args (cons '&key (remove-if #'(lambda (a) (find a '(&key &optional))) args)))
+         (documentation (if (stringp (car body)) NIL))
+         (methodfun (case method (:POST 'server:post) (:GET 'server:get) (otherwise 'server:post-or-get)))
+         (function `(apply #'(lambda ,args ,@body)
+                           (let ((,argsgens ()))
+                             ,@(mapcar #'(lambda (arg)
+                                           `(when-let (,arggens (,methodfun ,(string-downcase arg)))
+                                              (push ,arggens ,argsgens)
+                                              (push ,(make-keyword arg) ,argsgens)))
+                                       (extract-lambda-vars args))
+                             ,argsgens))))
+    `(let ((,identgens ,identifier))
+       (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,identgens)
+       (define-hook (:api (make-keyword (format NIL "~a/~a" ,identgens ',name))) (:identifier (make-keyword (format NIL "~a:~a" ,identgens ,method)) :documentation ,documentation)
+         ,@(loop for arg in args until (lambda-keyword-p arg)
+                 collect `(assert (not (null (,methodfun ,(string-downcase arg))))
+                                  () 'api-args-error :module ,identgens :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
+         ,(when access-branch
+            `(progn (ignore-errors (auth:authenticate))
+                    (assert (authorized-p ,access-branch)
+                            () 'api-auth-error :module ,identgens :apicall ',name :text "Not authorized.")))
+         ,function))))
 
 (declaim (inline api-return))
 (defun api-return (code text &optional data)
