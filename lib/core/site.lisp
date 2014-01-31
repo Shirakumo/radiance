@@ -171,16 +171,29 @@ See upload-file for more information."
        
        ,(if open-file `(close ,filepathvar)))))
 
-(defmacro defpage (name uri (&key (identifier `(context-module-identifier)) access-branch lquery) &body body)
-  "Defines a new page for the given module that will be available on the
-specified URI. If access-branch is given, an authorization check on the
-current session at page load will be performed. If lquery is non-NIL,
-lQuery will be initialized with the given pathspec and the page output
-will be set to the lQuery serialization, unless the response field of
-the *radiance-request* is already set. If lQuery is unset, the return
-value of the request is automatically chosen."
-  (let ((name (intern (format nil "PAGE-~a" name)))
-        (urigens (gensym "URI")) (modgens (gensym "MODULE"))
+(defmacro define-page (name uri (&key access-branch lquery (identifier `(context-module-identifier))) &body body)
+  "Defines a new page for the given module.
+NAME has to be a symbol identifying the page call.
+
+URI should be an instance of URI, which will be used to
+identify if a given request matches for the page call. See
+MAKE-URI for more.
+
+ACCESS-BRANCH if supplied performs an automatic authenticated-p
+check on the supplied access branch. As a consequence it will
+also invoke AUTH:AUTHENTICATE.
+
+LQUERY can be either a pathname to initialize lQuery with or T. 
+In both cases, the defined page will automatically trigger the 
+ (:user :lquery-post-processing) hook before finally returning
+the result of ($ (serialize)). The return value of the body is
+discarded. Both of these actions are not performed
+if the response's content is not-NIL.
+
+DEFINE-PAGE works by creating a new hook on the :PAGE namespace
+with the hook name NAME."
+  (assert (symbolp name) () "The name has to be a symbol.")
+  (let ((urigens (gensym "URI")) (modgens (gensym "MODULE"))
         (funcbody (if lquery 
                       `(progn 
                          ,(if (and lquery (not (eq lquery T)))
@@ -230,10 +243,11 @@ ACCESS-BRANCH if supplied performs an automatic authenticated-p
 check on the supplied access branch. As a consequence it will
 also invoke AUTH:AUTHENTICATE.
 
-DEFAPI works by creating a new hook on the :API namespace with
-the hook name format of IDENTIFIER/NAME. The module identifier
-is modified into the form of IDENTIFIER:METHOD to account for
-the possibility of multiple-dispatch on different request methods."
+DEFINE-API works by creating a new hook on the :API namespace
+with the hook name format of IDENTIFIER/NAME. The module
+identifier is modified into the form of IDENTIFIER:METHOD to 
+account for the possibility of multiple-dispatch on different
+request methods."
   (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
   (assert (symbolp name) () "Name has to be a symbol.")
   (assert (listp args) () "Args has to be a list.")

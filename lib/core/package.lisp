@@ -99,7 +99,7 @@
            #:with-header
            #:with-cookie
            #:with-uploaded-file
-           #:defpage
+           #:define-page
            #:define-file-link
            #:define-api
            #:define-api-format
