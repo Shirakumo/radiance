@@ -21,7 +21,7 @@
                  (server:redirect "/database/database"))
                (server:redirect "/database/database"))
             (display-collection selected))
-        (server:redirect))))
+        (server:redirect (get-redirect)))))
 
 (defun display-collection (name)
   ($ "h2" (text (concatenate 'string "Manage Collection " name)))
@@ -85,5 +85,5 @@
 (defun save-record (collection id)
   (with-model model (collection (db:query (:= "_id" id)) :save T)
     (dolist (field (db:apropos collection))
-      (setf (dm:field model field) (server:post field)))
+      (setf (getdf model field) (server:post field)))
     (uibox:notice "Record updated.")))

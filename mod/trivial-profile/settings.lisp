@@ -11,7 +11,7 @@
 
 (defpage user-settings #u"user./settings" (:lquery (template "trivial-profile/settings.html") :access-branch "user.settings.*")
   (uibox:fill-foreach *menu* "#template")
-  ($ "#my-profile" (attr :href (concatenate 'string "/" (user-field (user) "username"))))
+  ($ "#my-profile" (attr :href (concatenate 'string "/" (user:field (user) "username"))))
   (let ((pathparts (cdr (split-sequence:split-sequence #\/ (string-downcase (path *radiance-request*))))))
     (if (< (length pathparts) 2) (setf pathparts (list "user" "profile")))
     ($ (find (format NIL "a[href=\"/settings/~a/~a\"]" (first pathparts) (second pathparts))) (parent) (add-class "active"))
@@ -67,10 +67,10 @@
   (let ((username (user:field (user) "username")))
     (db:remove "trivial-profile" (db:query (:= "user" username)) :limit NIL)
     (if (email-p email)
-        (setf (user:field (user) "email") email)
+        (setf (getdf (user) "email") email)
         (error 'api-args-error :apicall 'profile/edit :text "Email-Address is invalid."))
     (if (displayname-p displayname)
-        (setf (user:field (user) "displayname") displayname)
+        (setf (getdf (user) "displayname") displayname)
         (error 'api-args-error :apicall 'profile/edit :text "Displayname is invalid."))
     (user:save (user))
     (db:iterate "trivial-profile-fields" :all
