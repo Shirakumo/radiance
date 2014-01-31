@@ -135,7 +135,7 @@ header nav ul::after{
     background: #880000;
 }
 
-.editorbar .edit:hover, .editorbar .delete{
+.editorbar .edit:hover, .editorbar .delete:hover{
     background: #FF0000;
 }
 
