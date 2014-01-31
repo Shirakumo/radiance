@@ -7,12 +7,15 @@
 (defpackage org.tymoonnext.radiance.mod.uibox
   (:nicknames :radiance-mod-uibox :uibox)
   (:use :cl :radiance :lquery :alexandria)
-  (:export :fill-node
-           :fill-all
-           :fill-foreach
-           :input-select
-           :notice
-           :confirm))
+  (:export
+   :fill-node
+   :fill-all
+   :fill-foreach
+   :define-fill-function
+   :parse-data
+   :input-select
+   :notice
+   :confirm))
 (in-package :radiance-mod-uibox)
 
 (asdf:defsystem uibox
