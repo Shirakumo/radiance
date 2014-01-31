@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Recent Public Pastes - Plaster</title>
+    <link rel="stylesheet" href="/static/css/plaster.css" />
+    <link href="/static/js/plaster/codemirror-3.21/lib/codemirror.css" rel="stylesheet" />
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header>
+      <h1>Plaster</h1>
+      <nav>
+        <ul class="buttonbar">
+          <li><a href="/new" title="Submit a new paste"><i class="fa fa-edit"></i> New Paste</a></li>
+          <li><a href="/user/USERNAME" title="Return to your profile" data-uibox="attr-href:(concat &quot;/user/&quot; username)"><i class="fa fa-user"></i> My Profile</a></li>
+          <li><a href="/" title="View a list of recent pastes"><i class="fa fa-list"></i> Public List</a></li>
+        </ul>
+      </nav>
+    </header>
+    <div id="content">
+      <table id="pastelist">
+        <thead>
+          <tr><th>Title</th><th>Type</th><th>Author</th><th>Time</th></tr>
+        </thead>
+        <tbody>
+          <tr class="paste">
+            <td><a href="/view?id=ID" data-uibox="text:title attr-href:(concat &quot;/view?id=&quot; (id->hash _id))"></a></td>
+            <td data-uibox="text:type"></td>
+            <td><a href="/user/USER" data-uibox="text:(name author) attr-href:(concat &quot;/user/&quot; author)"></a></td>
+            <td data-uibox="text:(datetime time)"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <footer>
+      Site &#169;2014 TymoonNET/NexT. Plaster uses <a href="http://codemirror.net/">Code Mirror</a> for fancy editing and display. <br />
+      Disclaimer: Pastes can be made by anyone, at any time. TymoonNET/NexT is not responsible for their contents.<br />
+    </footer>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/radiance.js"></script>
+    <script type="text/javascript" src="/static/js/plaster/codemirror-3.21/lib/codemirror.js"></script>
+    <script type="text/javascript" src="/static/js/plaster/plaster.js"></script>
+  </body>
+</html>

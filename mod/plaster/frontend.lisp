@@ -18,6 +18,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (defun hash->id (hash) (parse-integer hash :radix 36))
 
+(uibox:define-fill-function id->hash (model field)
+  (id->hash (uibox:parse-data field model)))
+
 (defmacro string-or (default &rest values)
   (let ((var (gensym)) (def (gensym)))
     `(let* ((,def ,default)
@@ -50,7 +53,6 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (and paste
        (or (not (= (dm:field paste "view") 2))
            (and user (string-equal (user:field user "username") (dm:field paste "author"))))
-       (or (v:info :TEST "AAAAA: ~a" (server:post "password")) T)
        (or (not (= (dm:field paste "view") 3))
            (and (server:post-or-get "password")
                 (< 0 (length (server:post-or-get "password")))
@@ -61,19 +63,19 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
        (or (= (dm:field paste "pid") -1)
            (paste-accessible-p (dm:get-one "plaster" (db:query (:= "_id" (dm:field paste "pid")))) user))))
 
-(defpage list #u"plaster./" (:lquery T)
+(define-page list #u"plaster./" (:lquery (template "plaster/list.html"))
+  (uibox:fill-foreach (dm:get "plaster" (db:query (:= "view" 0) (:= "pid" -1)) :sort '(("time" . :DESC)) :limit 20) "#pastelist .paste"))
+
+(define-page profile #u"plaster./profile" (:lquery T)
   )
 
-(defpage profile #u"plaster./profile" (:lquery T)
-  )
-
-(defpage new #u"plaster./new" (:lquery T)
+(define-page new #u"plaster./new" (:lquery (template "plaster/edit.html"))
   (let* ((user (user :authenticate T :default (user:get "temp")))
          (annotate (when-let ((annotate-id (server:get "annotate")))
-                     (dm:get-one "plaster" (db:query (:= "_id" annotate-id)
+                     (dm:get-one "plaster" (db:query (:= "_id" (hash->id annotate-id))
                                                      (:= "pid" -1)))))
          (repaste (when-let ((repaste-id (server:get "repaste")))
-                    (dm:get-one "plaster" (db:query (:= "_id" repaste-id)))))
+                    (dm:get-one "plaster" (db:query (:= "_id" (hash->id repaste-id))))))
          ;; We have to do this here due to paste-accessible-p's side-effecting decryption.
          (accessible (or (and (not annotate) (not repaste))
                          (paste-accessible-p (or annotate repaste) user)))
@@ -84,9 +86,6 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
          (type (or (server:post "type")
                    (when annotate (dm:field annotate "type"))
                    (when repaste (dm:field repaste "type")))))
-    
-    ($ (initialize (template "plaster/edit.html")))
-
     (if accessible
         (progn
           (uibox:fill-foreach (dm:get "plaster-types" :all :sort '(("title" . :ASC))) "#typeselect option")
@@ -101,36 +100,36 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
           (when annotate
             ($ "#annotateinfo" (text (format NIL "Annotating paste ~a." (id->hash (dm:field annotate "_id")))))
             ($ "#viewselect" (replace-with "public/private depending on its parent"))
-            ($ "#annotateid" (attr :value (dm:field annotate "_id")))
+            ($ "#annotateid" (attr :value (id->hash (dm:field annotate "_id"))))
             (when (= (dm:field annotate "view") 3)
               ($ "#viewpassword" (attr :value (server:get "password")))))
           ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (or type "text"))) (attr :selected "selected")))
         ($ "#content" (html "<h2>You are not allowed to repaste/annotate this paste.</h2>")))))
 
-(defpage view #u"plaster./view" (:lquery (template "plaster/view.html"))
+(define-page view #u"plaster./view" (:lquery (template "plaster/view.html"))
   (let* ((user (user :authenticate T))
          (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id (server:get "id")))
                                                 (:= "pid" -1)))))
-    ($ (initialize (template "plaster/view.html")))
     (cond
       ((not paste)
        ($ "#content" (html "<h2>No such paste.</h2>")))
       ((not (paste-accessible-p paste user))
        ($ "#content" (html "<h2>You are not allowed to view this paste.</h2>")))
       (T
-       (let ((annotations (dm:get "plaster" (db:query (:= "pid" (dm:field paste "_id"))))))
-         (uibox:fill-all "#maineditor" paste)
-         (unless (and user (string-equal (dm:field paste "author") (user:field user "name")))
-           ($ "#maineditor .editorbar .edit" (remove)))
-         (uibox:fill-foreach
-          annotations "#annotations .annotation"
-          :iter-fun #'(lambda (model node)
-                        (when (= (dm:field model "view") 3)
-                          (setf (getdf model "text") (decrypt (dm:field model "text") (server:get "password"))))
-                        (unless (and user (string-equal (dm:field model "author") (user:field user "name")))
-                          ($ node ".editorbar .edit" (remove)))))
-         (when (= (dm:field paste "view") 3)
-           ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password")))))))))))))
+       ($ "head title" (text (format NIL "~a - Paste #~a - Plaster" (dm:field paste "title") (id->hash (dm:field paste "_id")))))
+       (uibox:fill-all "#maineditor" paste)
+       (unless (and user (string-equal (dm:field paste "author") (user:field user "name")))
+         ($ "#maineditor .editorbar .edit" (remove)))
+       (uibox:fill-foreach
+        (dm:get "plaster" (db:query (:= "pid" (dm:field paste "_id"))))
+        "#annotations .annotation"
+        :iter-fun #'(lambda (model node)
+                      (when (= (dm:field model "view") 3)
+                        (setf (getdf model "text") (decrypt (dm:field model "text") (server:get "password"))))
+                      (unless (and user (string-equal (dm:field model "author") (user:field user "name")))
+                        ($ node ".editorbar .edit" (remove)))))
+       (when (= (dm:field paste "view") 3)
+         ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password"))))))))))))
 
-(defpage edit #u"plaster./edit" (:lquery (template "plaster/edit.html"))
+(define-page edit #u"plaster./edit" (:lquery (template "plaster/edit.html"))
   )
