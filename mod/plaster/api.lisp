@@ -61,6 +61,14 @@ Each form should be of the following format:
   "Edit an existing paste"
   (paste-edit id text title type view password client))
 
+(define-api paste (id &optional password (client "false")) (:method :DELETE)
+  "Delete an existing paste"
+  (paste-delete id password client))
+
+(define-api paste/delete (id &optional password (client "false")) (:method T)
+  "Delete an existing paste"
+  (paste-delete id password client))
+
 (defun paste-add (text annotate title type view password client)
   (let ((user (user :authenticate T))
         (annotate (hash->id annotate))
@@ -144,5 +152,19 @@ Each form should be of the following format:
           (getdf paste "type") (or type (dm:field paste "type"))
           (getdf paste "text") (or text (dm:field paste "text")))
     (dm:save paste)
+    (server:redirect (format NIL (if client "/view?id=~a~@[&password=~a~]" "/api/plaster/paste?id=~a~@[&password=~a~]")
+                             (id->hash (if (= (dm:field paste "pid") -1) id (dm:field paste "pid"))) password))))
+
+(defun paste-delete (id password client)
+  (let ((user (user :authenticate T))
+        (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id id)))))
+        (client (string-equal client "true")))
+    (assert-api (:apicall "paeste" :module "plaster")
+      ((not (null paste))
+       :code 404 :text "No such paste found.")
+      ((and user (string-equal (dm:field paste "author") (user:field user "username")))
+       :code 403 :text "You are not allowed to edit this paste."))
+
+    (dm:delete paste)
     (server:redirect (format NIL (if client "/view?id=~a~@[&password=~a~]" "/api/plaster/paste?id=~a~@[&password=~a~]")
                              (id->hash (if (= (dm:field paste "pid") -1) id (dm:field paste "pid"))) password))))

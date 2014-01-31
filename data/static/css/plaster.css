@@ -131,11 +131,11 @@ header nav ul::after{
     border-right: 20px solid #0088EE;
 }
 
-.editorbar .edit{
+.editorbar .edit, .editorbar .delete{
     background: #880000;
 }
 
-.editorbar .edit:hover{
+.editorbar .edit:hover, .editorbar .delete{
     background: #FF0000;
 }
 
