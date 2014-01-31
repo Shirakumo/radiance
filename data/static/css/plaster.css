@@ -211,6 +211,41 @@ h3:after{
     height: 150px;
 }
 
+#pastelist{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#pastelist thead{
+    background: #0088EE;
+    color: #FFF;
+}
+
+#pastelist tbody{
+    background: #FFF;
+}
+
+#pastelist th, #pastelist td{
+    border-right: 1px solid #0088EE;
+    padding: 3px;
+}
+
+#pastelist th:last-child, #pastelist td:last-child{
+    border-right: none;
+}
+
+#pastelist th:nth-child(1){text-align:left;text-indent: 10px;}
+#pastelist td:nth-child(2){width: 100px;text-align: center;}
+#pastelist td:nth-child(3){width: 150px;text-align: center;}
+#pastelist td:nth-child(4){width: 200px;text-align: right;}
+
+#pastelist tr:nth-child(2n){
+    background: #EEE;
+}
+
+#pastelist a{color: #0066AA;}
+#pastelist a:hover{color: #00EEFF;}
+
 footer{
     font-size: 8pt;
     text-align: center;
@@ -255,7 +290,7 @@ footer a{
     background: #00EEFF;
 }
 
-span.date{
+.label.date{
     font-family: Consolas, monospace;    
 }
 

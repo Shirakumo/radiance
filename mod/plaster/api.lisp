@@ -47,6 +47,21 @@ Each form should be of the following format:
 
 (define-api paste (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method :POST)
   "Create a new paste"
+  (paste-add text annotate title type view password client))
+
+(define-api paste/add (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method T)
+  "Create a new paste"
+  (paste-add text annotate title type view password client))
+
+(define-api paste (id &optional text title type view password (client "false")) (:method :PATCH)
+  "Edit an existing paste"
+  (paste-edit id text title type view password client))
+
+(define-api paste/edit (id &optional text title type view password (client "false")) (:method T)
+  "Edit an existing paste"
+  (paste-edit id text title type view password client))
+
+(defun paste-add (text annotate title type view password client)
   (let ((user (user :authenticate T))
         (annotate (hash->id annotate))
         (title (string-or "Untitled" title))
@@ -56,7 +71,7 @@ Each form should be of the following format:
     (when (= annotate -1) (setf annotate NIL))
     
     (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
-      ((< 0 (length text))
+      ((< 1 (length text))
        "Text must be at least one character long.")
       ((not (null (dm:get-one "plaster-types" (db:query (:= "name" type)))))
        (format NIL "Type ~a not valid." type))
@@ -77,8 +92,8 @@ Each form should be of the following format:
 
     (when (= view 3)
       (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
-        ((and password (< 0 (length password)))
-         "Encrypted view mode requires a password.")
+        ((and password (< (length password) 6))
+         "Encrypted view mode requires a password of at least 6 characters.")
         ((<= (length password) 32)
          "Passwords must be less than 32 characters long."))
       (setf text (encrypt text password)))
@@ -95,3 +110,39 @@ Each form should be of the following format:
       (dm:insert model)
       (server:redirect (format NIL (if client "/view?id=~a~@[&password=~a~]" "/api/plaster/paste?id=~a~@[&password=~a~]")
                                (id->hash (dm:field (or annotate model) "_id")) password)))))
+
+(defun paste-edit (id text title type view password client)
+  (let ((user (user :authenticate T))
+        (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id id)))))
+        (client (string-equal client "true")))
+    (setf view (if view (parse-integer view) (dm:field paste "view")))
+    
+    (assert-api (:apicall "paeste" :module "plaster")
+      ((not (null paste))
+       :code 404 :text "No such paste found.")
+      ((and user (string-equal (dm:field paste "author") (user:field user "username")))
+       :code 403 :text "You are not allowed to edit this paste.")
+      ((or (not text) (< 1 (length text)))
+       :code 400 :text "Text must be at least one character long.")
+      ((or (not type) (not (null (dm:get-one "plaster-types" (db:query (:= "name" type))))))
+       :code 400 :text (format NIL "Type ~a not valid." type))
+      ((or (not view) (and (< -1 view) (< view 4)))
+       :code 400 :text "View must be between 0 and 3."))
+
+    (when (= view 3)
+      (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
+        ((and password (< (length password) 6))
+         "Encrypted view mode requires a password of at least 6 characters.")
+        ((<= (length password) 32)
+         "Passwords must be less than 32 characters long.")
+        (text
+         "Text to encrypt is required."))
+      (setf text (encrypt text password)))
+
+    (setf (getdf paste "title") (or title (dm:field paste "title"))
+          (getdf paste "view") view
+          (getdf paste "type") (or type (dm:field paste "type"))
+          (getdf paste "text") (or text (dm:field paste "text")))
+    (dm:save paste)
+    (server:redirect (format NIL (if client "/view?id=~a~@[&password=~a~]" "/api/plaster/paste?id=~a~@[&password=~a~]")
+                             (id->hash (if (= (dm:field paste "pid") -1) id (dm:field paste "pid"))) password))))

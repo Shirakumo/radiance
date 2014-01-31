@@ -14,11 +14,12 @@
         <ul class="buttonbar">
           <li><a href="/new" title="Submit a new paste"><i class="fa fa-edit"></i> New Paste</a></li>
           <li><a href="/user/USERNAME" title="Return to your profile" data-uibox="attr-href:(concat &quot;/user/&quot; username)"><i class="fa fa-user"></i> My Profile</a></li>
-          <li><a href="/" title="View a list of recent pastes"><i class="fa fa-list"></i> Public List</a></li>
+          <li><a href="/recent" title="View a list of recent pastes"><i class="fa fa-list"></i> Public List</a></li>
         </ul>
       </nav>
     </header>
     <div id="content">
+      <h2>Recent Public Pastes</h2>
       <table id="pastelist">
         <thead>
           <tr><th>Title</th><th>Type</th><th>Author</th><th>Time</th></tr>
@@ -28,7 +29,7 @@
             <td><a href="/view?id=ID" data-uibox="text:title attr-href:(concat &quot;/view?id=&quot; (id->hash _id))"></a></td>
             <td data-uibox="text:type"></td>
             <td><a href="/user/USER" data-uibox="text:(name author) attr-href:(concat &quot;/user/&quot; author)"></a></td>
-            <td data-uibox="text:(datetime time)"></td>
+            <td data-uibox="text:(datetime time)" class="label unixtime date"></td>
           </tr>
         </tbody>
       </table>
@@ -39,7 +40,6 @@
     </footer>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/radiance.js"></script>
-    <script type="text/javascript" src="/static/js/plaster/codemirror-3.21/lib/codemirror.js"></script>
     <script type="text/javascript" src="/static/js/plaster/plaster.js"></script>
   </body>
 </html>

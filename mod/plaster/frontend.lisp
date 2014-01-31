@@ -63,13 +63,15 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
        (or (= (dm:field paste "pid") -1)
            (paste-accessible-p (dm:get-one "plaster" (db:query (:= "_id" (dm:field paste "pid")))) user))))
 
-(define-page list #u"plaster./" (:lquery (template "plaster/list.html"))
+(define-page index #u"plaster./" () (server:redirect "/new"))
+
+(define-page list #u"plaster./recent" (:lquery (template "plaster/list.html"))
   (uibox:fill-foreach (dm:get "plaster" (db:query (:= "view" 0) (:= "pid" -1)) :sort '(("time" . :DESC)) :limit 20) "#pastelist .paste"))
 
 (define-page profile #u"plaster./profile" (:lquery T)
   )
 
-(define-page new #u"plaster./new" (:lquery (template "plaster/edit.html"))
+(define-page new #u"plaster./new" (:lquery (template "plaster/new.html"))
   (let* ((user (user :authenticate T :default (user:get "temp")))
          (annotate (when-let ((annotate-id (server:get "annotate")))
                      (dm:get-one "plaster" (db:query (:= "_id" (hash->id annotate-id))
@@ -118,7 +120,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (T
        ($ "head title" (text (format NIL "~a - Paste #~a - Plaster" (dm:field paste "title") (id->hash (dm:field paste "_id")))))
        (uibox:fill-all "#maineditor" paste)
-       (unless (and user (string-equal (dm:field paste "author") (user:field user "name")))
+       (unless (and user (string-equal (dm:field paste "author") (user:field user "username")))
          ($ "#maineditor .editorbar .edit" (remove)))
        (uibox:fill-foreach
         (dm:get "plaster" (db:query (:= "pid" (dm:field paste "_id"))))
@@ -126,10 +128,26 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
         :iter-fun #'(lambda (model node)
                       (when (= (dm:field model "view") 3)
                         (setf (getdf model "text") (decrypt (dm:field model "text") (server:get "password"))))
-                      (unless (and user (string-equal (dm:field model "author") (user:field user "name")))
+                      (unless (and user (string-equal (dm:field model "author") (user:field user "username")))
                         ($ node ".editorbar .edit" (remove)))))
        (when (= (dm:field paste "view") 3)
          ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password"))))))))))))
 
 (define-page edit #u"plaster./edit" (:lquery (template "plaster/edit.html"))
-  )
+  (let* ((user (user :authenticate T))
+         (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id (server:get "id")))))))
+    (if paste
+        (if (and user (string-equal (dm:field paste "author") (user:field user "username")))
+            (progn
+              (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
+                ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme")))))
+              (uibox:fill-foreach (dm:get "plaster-types" :all :sort '(("title" . :ASC))) "#typeselect option")
+              (uibox:fill-all "body" (user:get (dm:field paste "author")))
+              ($ "#title" (attr :value (dm:field paste "title")))
+              ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (dm:field paste "type"))) (attr :selected "selected"))
+              ($ (inline (format NIL "#viewselect option[value=\"~a\"]" (dm:field paste "view"))))
+              ($ "#viewpassword" (attr :value (server:get "password")))
+              ($ "#editid" (attr :value (id->hash (dm:field paste "_id"))))
+              ($ ".code" (text (dm:field paste "text"))))
+            ($ "#content" (html "<h2>You are not allowed to edit this paste.</h2>")))
+        ($ "#content" (html "<h2>No such paste found.</h2>")))))
