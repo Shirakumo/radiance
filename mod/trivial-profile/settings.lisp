@@ -9,7 +9,7 @@
 (defvar *menu* ())
 (defvar *categories* (make-hash-table))
 
-(defpage user-settings #u"user./settings" (:lquery (template "trivial-profile/settings.html") :access-branch "user.settings.*")
+(define-page user-settings #u"user./settings" (:lquery (template "trivial-profile/settings.html") :access-branch "user.settings.*")
   (uibox:fill-foreach *menu* "#template")
   ($ "#my-profile" (attr :href (concatenate 'string "/" (user:field (user) "username"))))
   (let ((pathparts (cdr (split-sequence:split-sequence #\/ (string-downcase (path *radiance-request*))))))

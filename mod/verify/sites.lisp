@@ -9,7 +9,7 @@
 (define-condition auth-login-error (auth-error) ())
 (define-condition auth-register-error (auth-error) ())
 
-(defpage main-login #u"auth./login" (:lquery (template "verify/login.html"))
+(define-page main-login #u"auth./login" (:lquery (template "verify/login.html"))
   (ignore-errors (auth:authenticate))
   (if (server:get "errortext") ($ "#error" (html (concatenate 'string "<i class=\"icon-remove-sign\"></i> " (server:get "errortext")))))
   (when (and *radiance-session* (not (authenticated-p)))
@@ -24,14 +24,14 @@
                ($ panel (append (lquery:parse-html (format NIL "<li class=\"~a\"><a>~:*~a</a></li>" name)))))
       ($ "#error" (html "<i class=\"icon-remove-sign\"></i> You are already logged in."))))
         
-(defpage main-logout #u"auth./logout" ()
+(define-page main-logout #u"auth./logout" ()
   (ignore-errors (auth:authenticate))
   (when *radiance-session*
     (user:action (session:user *radiance-session*) "Logout")
     (session:end *radiance-session*))
   (server:redirect (get-redirect)))
 
-(defpage main-register #u"auth./register" (:lquery (template "verify/register.html"))
+(define-page main-register #u"auth./register" (:lquery (template "verify/register.html"))
   (ignore-errors (auth:authenticate))
   (if (server:get "errortext") ($ "#error" (html (concatenate 'string "<i class=\"icon-remove-sign\"></i> " (server:get "errortext")))))
   (loop with target = ($ "#content")
@@ -58,7 +58,7 @@
       (server:redirect (format NIL "/register?errortext=~a&errorcode=~a&panel=logins" (slot-value c 'radiance::text) (slot-value c 'radiance::code)))))
   (server:redirect "/register"))
 
-(defpage register/finish #u"auth./register/finish"  ()
+(define-page register/finish #u"auth./register/finish"  ()
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (if (server:posts)

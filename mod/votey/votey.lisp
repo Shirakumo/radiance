@@ -16,7 +16,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                    (acons "title" option ()))))))
   
 
-(defpage vote #u"vote./" (:lquery (template "votey.html"))
+(define-page vote #u"vote./" (:lquery (template "votey.html"))
   (let ((options (dm:get "votey-options" :all)))
     (if options
         (uibox:fill-foreach options "#options")

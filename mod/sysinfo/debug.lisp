@@ -6,11 +6,11 @@
 
 (in-package :radiance-mod-sysinfo)
 
-(defpage debug #u"inf./debug" ()
+(define-page debug #u"inf./debug" ()
   (when (server:get "eval")
     (server:set-content-type "text/plain; format=utf-8")
     (eval (read-from-string (server:get "eval")))))
 
-(defpage data-file #u"inf./data-file" ()
+(define-page data-file #u"inf./data-file" ()
   (when (server:get "path")
     (read-data-file (server:get "path"))))

@@ -6,7 +6,7 @@
 
 (in-package :radiance)
 
-(defpage api #u"/api/" ()
+(define-page api #u"/api/" ()
   (server:set-content-type "none")
   (let* ((pathparts (split-sequence:split-sequence #\/ (path *radiance-request*)))
          (format (make-keyword (string-upcase (or (server:get "format") (server:post "format") "json"))))

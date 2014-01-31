@@ -14,7 +14,7 @@
   (or (find-symbol name :keyword)
       (intern name :keyword)))
 
-(defpage admin #u"admin./" (:lquery (template "admin/index.html") :access-branch "admin.*")
+(define-page admin #u"admin./" (:lquery (template "admin/index.html") :access-branch "admin.*")
   (uibox:fill-foreach *menu* "#panel>ul>li")
   (let ((pathparts (split-sequence:split-sequence #\/ (string-downcase (path *radiance-request*)))))
     (if (< (length pathparts) 2) (setf pathparts (list "core" "index")))

@@ -17,7 +17,7 @@
           (rad-crypto:simple-hash password salt :digest (find-symbol algorithm :ironclad))
           (error 'radiance-error :text (format nil "Unknown hashing algorithm configured: ~a" algorithm) :code 21))))
 
-(defpage login #u"auth./login/password" ()
+(define-page login #u"auth./login/password" ()
   (let ((user (user:get (server:post "username"))))
     (if (user:saved-p user)
         (let ((model (dm:get-one "linked-passwords" (db:query (:= "username" (username user))))))
@@ -31,7 +31,7 @@
               (error 'auth-login-error :text "Invalid username or password." :code 21)))
         (error 'auth-login-error :text "Invalid username or password." :code 20))))
 
-(defpage register #u"auth./register/password" ()
+(define-page register #u"auth./register/password" ()
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (let ((password (server:post "password"))

@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-trivial-profile)
 
-(defpage profile #u"user./" (:lquery T)
+(define-page profile #u"user./" (:lquery T)
   (ignore-errors (auth:authenticate))
   (let* ((username (if (= (length (path *radiance-request*)) 0)
                        (user:field (user) "username")

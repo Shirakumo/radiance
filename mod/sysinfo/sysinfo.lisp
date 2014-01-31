@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-sysinfo)
 
-(defpage site-info #u"inf./" (:lquery (template "sysinfo/index.html"))  
+(define-page site-info #u"inf./" (:lquery (template "sysinfo/index.html"))  
   ;Simple fields
   ($ "#acceptors" (text (concatenate-strings (config :ports) ", ")))
   ($ "#cur-requests" (text (format nil "~a" *radiance-request-count*)))
