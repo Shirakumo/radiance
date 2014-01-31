@@ -80,4 +80,4 @@
 
 (defun timestamp-to-datetime (timestamp)
   "Turns a unix timestamp into a human readable datestring."
-  (timestamp-to-date timestamp '(:year #\. :month #\. :day #\space :hour #\: :min #\: :sec)))
+  (timestamp-to-date timestamp '((:year 4) #\. (:month 2) #\. (:day 2) #\space (:hour 2) #\: (:min 2) #\: (:sec 2))))
