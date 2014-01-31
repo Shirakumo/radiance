@@ -63,7 +63,7 @@
                 ,menu-tooltip))
          (build-menu)))))
 
-(defapi profile/edit (displayname email) (:access-branch "user.settings.profile")
+(define-api profile/edit (displayname email) (:access-branch "user.settings.profile")
   (let ((username (user:field (user) "username")))
     (db:remove "trivial-profile" (db:query (:= "user" username)) :limit NIL)
     (if (email-p email)

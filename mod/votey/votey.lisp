@@ -27,7 +27,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   ($ "#error" (text (server:get "error")))
   ($ "#ok" (text (server:get "ok"))))
 
-(defapi vote (option) (:access-branch "*")
+(define-api vote (option) (:access-branch "*")
   (let ((option (dm:get-one "votey-options" (:= "id" (parse-integer option)))))
     (if option
         (progn (setf (dm:field option "votes") 

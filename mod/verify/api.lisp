@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-verify)
 
-(defapi user () (:access-branch "*")
+(define-api user () (:access-branch "*")
   (when *radiance-session*
     (let ((user (session:user *radiance-session*)))
       (api-return 200 "Current user information"
@@ -16,7 +16,7 @@
                    :email (user:field user "email")
                    :register-date (user:field user "register-date"))))))
 
-(defapi user/search (query) ()
+(define-api user/search (query) ()
   (if (= (length query) 0)
       (error 'api-args-error :apicall "verify/user/search" :module :verify :text "Search query required." :code 1))
   (api-return 200 "Matching usernames"
@@ -25,21 +25,21 @@
                                             :username (cdr (assoc "username" data :test #'string-equal))
                                             :displayname (cdr (assoc "displayname" data :test #'string-equal)))))))
 
-(defapi user/action (action) (:access-branch "*")
+(define-api user/action (action) (:access-branch "*")
   (user:action (session:user *radiance-session*) action :public T)
   (api-return 200 "Action published"))
 
-(defapi user/check (permission) (:access-branch "*")
+(define-api user/check (permission) (:access-branch "*")
   (api-return 200 "Permission check"
               (plist->hash-table
                :permission-branch permission
                :check (not (null (user:check (session:user *radiance-session*) permission))))))
 
-(defapi auth/login () ()
+(define-api auth/login () ()
   )
 
-(defapi auth/register () ()
+(define-api auth/register () ()
   )
 
-(defapi auth/logout () ()
+(define-api auth/logout () ()
   )

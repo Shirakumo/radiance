@@ -63,15 +63,15 @@
 (define-api-format json "application/json" data
   (cl-json:encode-json-to-string data))
 
-(defapi formats () (:method :GET)
+(define-api formats () (:method :GET)
   "Lists all the available API output formats."
   (api-return 200 "Available output formats" (alexandria:hash-table-keys *radiance-api-formats*)))
 
-(defapi version () (:method :GET)
+(define-api version () (:method :GET)
   "Show the current framework version."
   (api-return 200 "Radiance Version" (asdf:component-version (context-module))))
 
-(defapi host () (:method :GET)
+(define-api host () (:method :GET)
   "Lists information about the host machine."
   (api-return 200 "Host information" 
               (plist->hash-table
@@ -83,11 +83,11 @@
                :lisp-implementation-type (lisp-implementation-type)
                :lisp-implementation-version (lisp-implementation-version))))
 
-(defapi modules () (:method :GET)
+(define-api modules () (:method :GET)
   "Lists the currently loaded radiance modules."
   (api-return 200 "Module listing" *radiance-modules*))
 
-(defapi server () (:method :GET)
+(define-api server () (:method :GET)
   "Returns information about the radiance server."
   (api-return 200 "Server information"
               (plist->hash-table
@@ -97,33 +97,33 @@
                :request-count *radiance-request-count*
                :request-total *radiance-request-total*)))
 
-(defapi noop () (:method :GET)
+(define-api noop () (:method :GET)
   "Returns a NOOP page.")
 
-(defapi echo () (:method T)
+(define-api echo () (:method T)
   "Returns the map of POST and GET data sent to the server."
   (api-return 200 "Echo data" (list :post (server:posts) :get (server:gets))))
 
-(defapi user () (:method :GET)
+(define-api user () (:method :GET)
   "Shows data about the current user."
   (api-return 200 "User data"
               (plist->hash-table
                :authenticated (authenticated-p)
                :session-active (if *radiance-session* T NIL))))
 
-(defapi error () (:method :GET)
+(define-api error () (:method :GET)
   "Generates an api-error page."
   (error 'api-error :text "Api error as requested" :code -42))
 
-(defapi internal-error () (:method :GET)
+(define-api internal-error () (:method :GET)
   "Generates an internal-error page."
   (error 'radiance-error :text "Internal error as requested" :code -42))
 
-(defapi unexpected-error () (:method :GET)
+(define-api unexpected-error () (:method :GET)
   "Generates an unexpected error page."
   (error "Unexpected error as requested"))
 
-(defapi coffee () (:method :GET)
+(define-api coffee () (:method :GET)
   "RFC-2324"
   (api-return 418 "I'm a teapot."
               (plist->hash-table
@@ -134,7 +134,7 @@
                :flavour (random-elt '("rose hip" "peppermint" "english breakfast" "green tea" "roiboos"))
                :additives (random-elt '("none" "none" "none" "none" "none" "sugar" "sugar" "sugar" "lemon" "cream" "milk")))))
 
-(defapi request () (:method :GET)
+(define-api request () (:method :GET)
   "Returns information about the current request."
   (with-slots (subdomains domain port path) *radiance-request*
     (api-return 200 "Request data"
@@ -152,7 +152,7 @@
                  :cookie (server:cookies)
                  :header (server:headers)))))
 
-(defapi continuations () (:method :GET :access-branch "*")
+(define-api continuations () (:method :GET :access-branch "*")
   "Shows information about continuations for the current user."
   (api-return 200 "Active continuations"
               (mapcar #'(lambda (cont)
@@ -163,7 +163,7 @@
                            :request (format NIL "~a" (request cont))))
                       (continuations))))
 
-(defapi index () (:method :GET)
+(define-api index () (:method :GET)
   "Returns a map of all possible API calls and their docstring."
   (api-return 200 "Api call index"
               (let ((table (make-hash-table)))

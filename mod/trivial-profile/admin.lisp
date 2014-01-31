@@ -15,11 +15,11 @@
 (admin:define-panel comments profile (:access-branch "admin.profile.comments" :menu-icon "icon-comment" :menu-tooltip "Manage user profile comments" :lquery (template "trivial-profile/admin-comments.html"))
   (uibox:fill-foreach (dm:get "trivial-profile-comments" :all :sort '(("time" . :DESC)) :limit -1) "tbody tr"))
 
-(defapi fields/add (field type value public) (:method :POST :access-branch "admin.profile.fields")
+(define-api fields/add (field type value public) (:method :POST :access-branch "admin.profile.fields")
   (db:insert "trivial-profile-fields" `(("field" . ,field) ("type" . ,type) ("value" . ,value) ("public" . ,public)))
   (server:redirect "/profile/fields"))
 
-(defapi fields/edit (orig-field field type value public) (:method :POST :access-branch "admin.profile.fields")
+(define-api fields/edit (orig-field field type value public) (:method :POST :access-branch "admin.profile.fields")
   (with-model model ("trivial-profile-fields" (db:query (:= "field" orig-field)) :save T)
     (setf (getdf model "field") field
           (getdf model "type") type
@@ -27,7 +27,7 @@
           (getdf model "public") public))
   (server:redirect "/profile/fields"))
 
-(defapi fields/delete () (:method :POST :access-branch "admin.profile.fields")
+(define-api fields/delete () (:method :POST :access-branch "admin.profile.fields")
   (let ((selected (or (server:post "selected[]") (list (server:post "field")))))
     (dolist (field selected)
       (db:remove "trivial-profile-fields" (db:query (:= "field" field)) :limit NIL)))

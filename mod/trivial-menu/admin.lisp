@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-trivial-menu)
 
-(defapi admin (action) (:access-branch "admin.menu.*")
+(define-api admin (action) (:access-branch "admin.menu.*")
   (string-case:string-case ((server:post "action"))
     ("Add"
      (with-model (model pid title tooltip link sort) ("trivial-menu" NIL)

@@ -6,8 +6,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (in-package :radiance-mod-plaster)
 
-(defapi raw (id (password "")) (:method T)
+(define-api raw (id &optional (password "")) (:method T)
   "Returns the raw paste text in text/plain format."
+  (declare (ignore password))
   (let ((paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id id))))))
     (if paste
         (if (paste-accessible-p paste)
@@ -16,8 +17,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
             (error 'api-auth-error :apicall "raw" :module "plaster" :code 403 :text "You are not allowed to view this paste."))
         (error 'api-error :apicall "raw" :module "plaster" :code 404 :text "No such paste found."))))
 
-(defapi paste (id (password "")) (:method :GET)
+(define-api paste (id &optional (password "")) (:method :GET)
   "Returns all available information about a paste."
+  (declare (ignore password))
   (let ((paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id id))))))
     (if paste
         (if (paste-accessible-p paste)
@@ -43,11 +45,10 @@ Each form should be of the following format:
                    `(unless ,(car form) (error 'api-error ,@default-args ,@(cdr form))))
                forms)))
 
-(defapi paste (text (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method :POST)
+(define-api paste (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method :POST)
   "Create a new paste"
-  (v:info :TEST "ADAWDD ~a" password)
   (let ((user (user :authenticate T))
-        (annotate (hash->id (or annotate "-1")))
+        (annotate (hash->id annotate))
         (title (string-or "Untitled" title))
         (type (string-or "text" type))
         (view (parse-integer (string-or "0" view)))

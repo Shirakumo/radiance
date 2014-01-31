@@ -9,12 +9,12 @@
 (define-hook (:server :init) (:documentation "Initialize the trivial-profile comment database.")
   (db:create "trivial-profile-comments" '(("user" :varchar 32) ("author" :varchar 32) ("time" :integer) ("text" :text)) :indices '("user")))
 
-(defapi comment/add (text user) (:method :POST :access-branch "user.comment")
+(define-api comment/add (text user) (:method :POST :access-branch "user.comment")
   (db:insert "trivial-profile-comments" `(("user" . ,user) ("author" . ,(user:field (user) "username")) ("time" . ,(get-unix-time)) ("text" . ,text)))
   (user:action (user) (format NIL "Commented on ~a's profile." user) :public T)
   (server:redirect (concatenate 'string "/" user)))
 
-(defapi comment/delete () (:method :POST :access-branch "user.comment")
+(define-api comment/delete () (:method :POST :access-branch "user.comment")
   (let ((selected (or (server:post "selected[]")
                       (list (server:post "id")))))
     (dolist (id selected)
