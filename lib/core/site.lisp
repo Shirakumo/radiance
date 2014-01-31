@@ -211,7 +211,29 @@ the static/ directory."
      (server:serve-file ,pathspec :content-type ,content-type)))
 
 (defmacro define-api (name args (&key (method T) access-branch (identifier `(context-module-identifier))) &body body)
-  ""
+  "Define a new api function.
+NAME has to be a symbol identifying the api call path:
+ /api/IDENTIFIER/NAME
+
+ARGS should be a lambda-list limited to the &optional, &key
+and &aux operators. Note that due to the nature of HTTP
+requests, the order of arguments and the distinction between
+&optional and &key does not actually matter.
+
+METHOD should be one of T, :GET, :POST, :PUT, :PATCH, :DELETE.
+The same api function can be defined on multiple methods. In
+the case of GET, only GET variables are considered, similarly
+for POST. For all other functions, the POST takes precedence
+over GET, but both are considered.
+
+ACCESS-BRANCH if supplied performs an automatic authenticated-p
+check on the supplied access branch. As a consequence it will
+also invoke AUTH:AUTHENTICATE.
+
+DEFAPI works by creating a new hook on the :API namespace with
+the hook name format of IDENTIFIER/NAME. The module identifier
+is modified into the form of IDENTIFIER:METHOD to account for
+the possibility of multiple-dispatch on different request methods."
   (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
   (assert (symbolp name) () "Name has to be a symbol.")
   (assert (listp args) () "Args has to be a list.")
