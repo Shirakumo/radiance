@@ -12,7 +12,7 @@
   (:documentation "Datamodel for sqlite."))
 
 (defmethod print-object ((model sqlite-data-model) out)
-  (print-unreadable-object (model out :type T)
+  (print-unreadable-object (model out :type T :identity T)
     (if (collection model)
         (format out "~a" (collection model))
         (format out "STUB")))
