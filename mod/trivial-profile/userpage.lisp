@@ -6,6 +6,12 @@
 
 (in-package :radiance-mod-trivial-profile)
 
+(uibox:define-fill-function profile-link (model &optional (user model))
+  (with-interface "user"
+    (if (not (eq model user)) (setf user (uibox:parse-data user model)))
+    (unless (stringp user) (setf user (user:field user "username")))
+    (uri->context-url (make-uri (format NIL "user./~a" user)))))
+
 (define-page profile #u"user./" (:lquery T)
   (ignore-errors (auth:authenticate))
   (let* ((username (if (= (length (path *radiance-request*)) 0)
