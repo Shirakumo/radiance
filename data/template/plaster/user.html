@@ -21,7 +21,7 @@
     <div id="content">
       <div id="userinfo">
         <img src="https://secure.gravatar.com/avatar/daa167d57e692a423067fceba30aadf8?s=128&amp;d=mm" data-uibox="attr-src:(avatar 128)"/>
-        <a href="user./USER" data-uibox="attr-href:(profile-link username)"><h2 data-uibox="text:(name)"></h2></a>
+        <h2><a href="user./USER" data-uibox="attr-href:(profile-link username) text:(name)"></a></h2>
       </div>
       <div id="userprofile">
         <h2>Pastes</h2>
@@ -32,7 +32,7 @@
           <tbody>
             <tr class="paste">
               <td class="title"><a href="/view?id=ID" data-uibox="text:title attr-href:(concat &quot;/view?id=&quot; (id->hash _id))"></a></td>
-              <td class="view" ><i class="fa" id="pasteviewicon" data-uibox="class:(concat &quot;view-&quot; view)"></i></td>
+              <td class="view" ><i class="fa" id="pasteviewicon" data-uibox="class:(concat &quot;view-&quot; view) text:view"></i></td>
               <td class="hits" data-uibox="text:hits"></td>
               <td class="type" data-uibox="text:type"></td>
              <td data-uibox="text:(datetime time)" class="label unixtime date"></td>
@@ -47,7 +47,7 @@
           <tbody>
             <tr class="paste">
               <td class="title"><a href="/view?id=ID#annotation-ID" data-uibox="text:title attr-href:(concat &quot;/view?id=&quot; (id->hash pid) &quot;#annotation-&quot; (id->hash _id))"></a></td>
-              <td class="view" ><i class="fa" id="pasteviewicon" data-uibox="class:(concat &quot;view-&quot; view)"></i></td>
+              <td class="view" ><i class="fa" id="pasteviewicon" data-uibox="class:(concat &quot;view-&quot; view) text:view"></i></td>
               <td class="parent"><a href="/view?id=ID" data-uibox="text:(id->hash pid) attr-href:(concat &quot;/view?id=&quot; (id->hash pid))"></a></td>
               <td class="type" data-uibox="text:type"></td>
               <td data-uibox="text:(datetime time)" class="label unixtime date"></td>

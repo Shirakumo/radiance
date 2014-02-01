@@ -24,6 +24,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                :radiance-data-model
                :radiance-user
                :radiance-session
+               :radiance-admin
+               :radiance-profile
                :uibox
                :alexandria
                :radiance-crypto))

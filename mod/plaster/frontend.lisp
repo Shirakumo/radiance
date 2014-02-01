@@ -63,6 +63,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
        (or (= (dm:field paste "pid") -1)
            (paste-accessible-p (dm:get-one "plaster" (db:query (:= "_id" (dm:field paste "pid")))) user))))
 
+;; TODO: Take care of error reporting problems of api functions.
+
 (define-page index #u"plaster./" () (server:redirect "/new"))
 
 (define-page list #u"plaster./recent" (:lquery (template "plaster/list.html"))

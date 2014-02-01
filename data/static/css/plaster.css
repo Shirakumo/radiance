@@ -274,6 +274,8 @@ h3:after{
 .pastelist a{color: #0066AA;}
 .pastelist a:hover{color: #00EEFF;}
 
+.pastelist td.view i{font-size:0;color: transparent;}
+.pastelist td.view i:before{font-size:12pt;}
 .pastelist td.view i.view-0:before{
     content: "\f0ac";
     color: #0A0;
