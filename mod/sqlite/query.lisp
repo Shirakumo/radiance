@@ -44,7 +44,7 @@
   (values (format NIL "`~a` REGEXP ?" (first args)) (list (second args))))
 
 (defmacro def-ops ()
-  `(progn ,@(loop for op in '(:= :>= :<= :> :<)
+  `(progn ,@(loop for op in '(:!= := :>= :<= :> :<)
                collect `(defmethod %query ((action (eql ,op)) args)
                           (values (format NIL ,(format NIL "`~~a` ~a ?" op) (first args)) (list (second args)))))))
 (def-ops)
