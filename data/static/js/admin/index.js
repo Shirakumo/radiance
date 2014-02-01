@@ -35,12 +35,4 @@ $(function(){
 	"bSort": true,
 	"bInfo": false,
     });
-
-    // Complex UI
-
-    function AppViewModel() {
-
-    }
-
-    ko.applyBindings(new AppViewModel());
 });
