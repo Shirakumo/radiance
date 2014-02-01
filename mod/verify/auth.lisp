@@ -78,7 +78,9 @@
                            (setf *radiance-session* session)
                            session)
                     (error 'auth-session-error :text (format nil "Timestamp mismatch: ~a ~a" timestamp (session-time session)) :code 6))
-                (error 'auth-session-error :text (format nil "Invalid session: ~a" session-id) :code 5))))
+                (progn
+                  (server:set-cookie "token")
+                  (error 'auth-session-error :text (format nil "Invalid session: ~a" session-id) :code 5)))))
         (error 'auth-session-error :text (format nil "Invalid data length: ~a" (length data)) :code 4))))
 
 
