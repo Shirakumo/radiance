@@ -220,7 +220,7 @@ with the hook name NAME."
   "Defines a link of a given URI to a file. Useful for things like
 favicon.ico, robots.txt, humans.txt or other files that cannot be in
 the static/ directory."
-  `(defpage ,name ,uri (:identifier ,identifier :access-branch ,access-branch)
+  `(define-page ,name ,uri (:identifier ,identifier :access-branch ,access-branch)
      (server:serve-file ,pathspec :content-type ,content-type)))
 
 (defmacro define-api (name args (&key (method T) access-branch (identifier `(context-module-identifier))) &body body)
