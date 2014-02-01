@@ -20,15 +20,15 @@
     </header>
     <div id="content">
       <h2>Recent Public Pastes</h2>
-      <table id="pastelist">
+      <table id="pastelist" class="pastelist">
         <thead>
-          <tr><th>Title</th><th>Type</th><th>Author</th><th>Time</th></tr>
+          <tr><th class="title">Title</th><th class="type">Type</th><th class="author">Author</th><th class="date">Time</th></tr>
         </thead>
         <tbody>
           <tr class="paste">
-            <td><a href="/view?id=ID" data-uibox="text:title attr-href:(concat &quot;/view?id=&quot; (id->hash _id))"></a></td>
-            <td data-uibox="text:type"></td>
-            <td><a href="/user/USER" data-uibox="text:(name author) attr-href:(concat &quot;/user/&quot; author)"></a></td>
+            <td class="title"><a href="/view?id=ID" data-uibox="text:title attr-href:(concat &quot;/view?id=&quot; (id->hash _id))"></a></td>
+            <td class="type" data-uibox="text:type"></td>
+            <td class="author"><a href="/user/USER" data-uibox="text:(name author) attr-href:(concat &quot;/user/&quot; author)"></a></td>
             <td data-uibox="text:(datetime time)" class="label unixtime date"></td>
           </tr>
         </tbody>

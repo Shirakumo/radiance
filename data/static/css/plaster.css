@@ -211,40 +211,107 @@ h3:after{
     height: 150px;
 }
 
-#pastelist{
+#userinfo{
+    background: #151515;
+    padding: 10px;
+    color: #FFF;
+    border-bottom: 2px solid #0088EE;
+}
+
+#userinfo img{
+    float: left;
+    border: 5px solid #0088EE;
+    margin-right: 10px;
+}
+
+#userinfo a{color: #FFF; text-decoration: none;}
+#userinfo h2{margin: 0; padding: 0;}
+
+#userprofile{
+    margin-left: 168px;
+}
+
+#userprofile h2{
+    margin: 10px 0 0 0;
+}
+
+.pastelist{
     width: 100%;
     border-collapse: collapse;
 }
 
-#pastelist thead{
+.pastelist thead{
     background: #0088EE;
     color: #FFF;
 }
 
-#pastelist tbody{
+.pastelist tbody{
     background: #FFF;
 }
 
-#pastelist th, #pastelist td{
+.pastelist th, .pastelist td{
     border-right: 1px solid #0088EE;
     padding: 3px;
 }
 
-#pastelist th:last-child, #pastelist td:last-child{
+.pastelist th:last-child, .pastelist td:last-child{
     border-right: none;
 }
 
-#pastelist th:nth-child(1){text-align:left;text-indent: 10px;}
-#pastelist td:nth-child(2){width: 100px;text-align: center;}
-#pastelist td:nth-child(3){width: 150px;text-align: center;}
-#pastelist td:nth-child(4){width: 200px;text-align: right;}
+.pastelist th.title{text-align:left;text-indent: 10px;}
+.pastelist .title{width: auto;}
+.pastelist .parent{width: 100px;text-align: center;}
+.pastelist .type{width: 100px;text-align: center;}
+.pastelist .author{width: 150px;text-align: center;}
+.pastelist .view{width: 50px;text-align: center;}
+.pastelist .hits{width: 100px;text-align: center;}
+.pastelist .date{width: 200px;text-align: right;}
 
-#pastelist tr:nth-child(2n){
+.pastelist tr:nth-child(2n){
     background: #EEE;
 }
 
-#pastelist a{color: #0066AA;}
-#pastelist a:hover{color: #00EEFF;}
+.pastelist a{color: #0066AA;}
+.pastelist a:hover{color: #00EEFF;}
+
+.pastelist td.view i.view-0:before{
+    content: "\f0ac";
+    color: #0A0;
+}
+.pastelist td.view i.view-1:before{
+    content: "\f09c";
+    color: #777;
+}
+.pastelist td.view i.view-2:before{
+    content: "\f007";
+    color: #A00;
+}
+.pastelist td.view i.view-3:before{
+    content: "\f023";
+}
+
+.dataTables_filter{
+    background: #0088EE;
+    display: inline-block;
+    float:right;
+    position: relative;
+    height: 20px;
+    color: #FFF;
+}
+
+.dataTables_filter:before{
+    content: "";
+    position: absolute;
+    left:-20px;top:0;
+    width: 0;height: 0; 
+    border-bottom: 20px solid #0088EE;
+    border-left: 20px solid transparent;
+}
+
+.dataTables_filter input{
+    border: 1px solid #005588;
+    background: #FFF;
+}
 
 footer{
     font-size: 8pt;

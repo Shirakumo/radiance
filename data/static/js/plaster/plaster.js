@@ -1,6 +1,3 @@
-
-
-
 $(function(){
     if(window.mirrorTheme != undefined && window.mirrorTheme != "default")
         $("<link>").appendTo($("head"))
@@ -108,4 +105,13 @@ $(function(){
     $("#maineditor .editorbar .paste").click(function(){
         $("#maineditor .code").text($("#maineditor .editor").data("mirror").getValue());
     });
+
+    if($(".pastelist").length > 0){
+        $(".pastelist").dataTable({
+	    "bPaginate": false,
+	    "bFilter": true,
+	    "bSort": true,
+	    "bInfo": false,
+        });
+    }
 });

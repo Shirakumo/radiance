@@ -32,6 +32,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                          :type (dm:field paste "type")
                          :time (dm:field paste "time")
                          :view (dm:field paste "view")
+                         :hits (dm:field paste "hits")
                          :text (dm:field paste "text")))
             (error 'api-auth-error :apicall "raw" :module "plaster" :code 403 :text "You are not allowed to view this paste."))
         (error 'api-error :apicall "raw" :module "plaster" :code 404 :text "No such paste found."))))
@@ -79,7 +80,7 @@ Each form should be of the following format:
     (when (= annotate -1) (setf annotate NIL))
     
     (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
-      ((< 1 (length text))
+      ((< 0 (length text))
        "Text must be at least one character long.")
       ((not (null (dm:get-one "plaster-types" (db:query (:= "name" type)))))
        (format NIL "Type ~a not valid." type))
@@ -100,7 +101,7 @@ Each form should be of the following format:
 
     (when (= view 3)
       (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
-        ((and password (< (length password) 6))
+        ((and password (< 5 (length password)))
          "Encrypted view mode requires a password of at least 6 characters.")
         ((<= (length password) 32)
          "Passwords must be less than 32 characters long."))
@@ -114,6 +115,7 @@ Each form should be of the following format:
             (getdf model "time") (get-unix-time)
             (getdf model "view") view
             (getdf model "type") type
+            (getdf model "hits") 0
             (getdf model "text") text)
       (dm:insert model)
       (server:redirect (format NIL (if client "/view?id=~a~@[&password=~a~]" "/api/plaster/paste?id=~a~@[&password=~a~]")
@@ -130,7 +132,7 @@ Each form should be of the following format:
        :code 404 :text "No such paste found.")
       ((and user (string-equal (dm:field paste "author") (user:field user "username")))
        :code 403 :text "You are not allowed to edit this paste.")
-      ((or (not text) (< 1 (length text)))
+      ((or (not text) (< 0 (length text)))
        :code 400 :text "Text must be at least one character long.")
       ((or (not type) (not (null (dm:get-one "plaster-types" (db:query (:= "name" type))))))
        :code 400 :text (format NIL "Type ~a not valid." type))
@@ -139,7 +141,7 @@ Each form should be of the following format:
 
     (when (= view 3)
       (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
-        ((and password (< (length password) 6))
+        ((and password (< 5 (length password)))
          "Encrypted view mode requires a password of at least 6 characters.")
         ((<= (length password) 32)
          "Passwords must be less than 32 characters long.")
@@ -153,7 +155,7 @@ Each form should be of the following format:
           (getdf paste "text") (or text (dm:field paste "text")))
     (dm:save paste)
     (server:redirect (format NIL (if client "/view?id=~a~@[&password=~a~]" "/api/plaster/paste?id=~a~@[&password=~a~]")
-                             (id->hash (if (= (dm:field paste "pid") -1) id (dm:field paste "pid"))) password))))
+                             (if (= (dm:field paste "pid") -1) id (id->hash (dm:field paste "pid"))) password))))
 
 (defun paste-delete (id password client)
   (let ((user (user :authenticate T))

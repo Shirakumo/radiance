@@ -10,7 +10,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   ;; PID: -1 or _id of annotated parent.
   ;; Type: Has to be a type-name in plaster-types.
   ;; View: 0 Public, 1 Unlisted, 2 Private, 3 Encrypted
-  (db:create "plaster" '(("pid" :integer) ("title" :varchar 64) ("author" :varchar 32) ("type" :varchar 16) ("time" :integer) ("text" :text) ("view" :integer)) :indices '("pid" "author"))
+  (db:create "plaster" '(("pid" :integer) ("title" :varchar 64) ("author" :varchar 32) ("type" :varchar 16) ("time" :integer) ("text" :text) ("view" :integer) ("hits" :integer)) :indices '("pid" "author"))
   (db:create "plaster-types" '(("title" :varchar 16) ("name" :varchar 16)))
   (db:create "plaster-user" '(("user" :varchar 32) ("theme" :varchar 32) ("default-type" :varchar 16)) :indices '("user")))
 
@@ -66,10 +66,27 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (define-page index #u"plaster./" () (server:redirect "/new"))
 
 (define-page list #u"plaster./recent" (:lquery (template "plaster/list.html"))
-  (uibox:fill-foreach (dm:get "plaster" (db:query (:= "view" 0) (:= "pid" -1)) :sort '(("time" . :DESC)) :limit 20) "#pastelist .paste"))
+  (uibox:fill-foreach (dm:get "plaster" (db:query (:= "view" 0) (:= "pid" -1)) :sort '(("time" . :DESC)) :limit 20) "#pastelist .paste")
+  (uibox:fill-all "body" (user :authenticate T :default (user:get "temp"))))
 
 (define-page user #u"plaster./user" (:lquery (template "plaster/user.html"))
-  )
+  (destructuring-bind (path username &optional (page "0")) (split-sequence:split-sequence #\/ (path *radiance-request*))
+    (declare (ignore path))
+    (let ((user (user :authenticate T :default (user:get "temp")))
+          (viewuser (user:get username))
+          (page (or (parse-integer page :junk-allowed T) 1)))
+      (if viewuser
+          (progn
+            ($ "head title" (text (format NIL "~a's Profile - Plaster" (profile:name viewuser))))
+            (uibox:fill-all "#userinfo" viewuser)
+            (if (string= (user:field user "username") (user:field viewuser "username"))
+                (uibox:fill-foreach (dm:get "plaster" (db:query (:= "pid" -1) (:= "author" username))
+                                            :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#pastelist .paste")
+                (uibox:fill-foreach (dm:get "plaster" (db:query (:= "pid" -1) (:= "view" 0) (:= "author" username))
+                                            :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#pastelist .paste"))
+            (uibox:fill-foreach (dm:get "plaster" (db:query (:!= "pid" -1) (:= "view" 0) (:= "author" username))) "#annotatelist .paste")
+            (uibox:fill-all "body" user))
+          ($ "#content" (html "<h2>No such user found.</h2>"))))))
 
 (define-page new #u"plaster./new" (:lquery (template "plaster/new.html"))
   (let* ((user (user :authenticate T :default (user:get "temp")))
@@ -117,7 +134,11 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       ((not paste)
        ($ "#content" (html "<h2>No such paste.</h2>")))
       ((not (paste-accessible-p paste user))
-       ($ "#content" (html "<h2>You are not allowed to view this paste.</h2>")))
+       (if (= (dm:field paste "view") 3)
+           (progn
+             ($ "#content" (html-file (template "plaster/passwordprompt.html")))
+             (uibox:fill-all "body" paste))
+           ($ "#content" (html "<h2>You are not allowed to view this paste.</h2>"))))
       (T
        ($ "head title" (text (format NIL "~a - Paste #~a - Plaster" (dm:field paste "title") (id->hash (dm:field paste "_id")))))
        (uibox:fill-all "#maineditor" paste)
@@ -133,7 +154,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                         ($ node ".editorbar .edit" (remove)))))
        (uibox:fill-all "body" user)      
        (when (= (dm:field paste "view") 3)
-         ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password"))))))))))))
+         ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password"))))))))
+       (db:update "plaster" (db:query (:= "_id" (dm:field paste "_id"))) `(("hits" . ,(1+ (dm:field paste "hits")))))))))
 
 (define-page edit #u"plaster./edit" (:lquery (template "plaster/edit.html"))
   (let* ((user (user :authenticate T))
@@ -142,16 +164,21 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       ((not paste)
        ($ "#content" (html "<h2>No such paste found.</h2>")))
       ((or (not user) (not (string-equal (dm:field paste "author") (user:field user "username"))))
-       ($ "#content" (html "<h2>You are not allowed to edit this paste.</h2>")))
+       ($ "#content" (html "<h2>You are not allowed to view this paste.</h2>")))
       (T
-       (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
-         ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme")))))
-       (uibox:fill-foreach (dm:get "plaster-types" :all :sort '(("title" . :ASC))) "#typeselect option")
-       (uibox:fill-all "body" (user:get (dm:field paste "author")))
-       (uibox:fill-all "body" user)
-       ($ "#title" (attr :value (dm:field paste "title")))
-       ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (dm:field paste "type"))) (attr :selected "selected"))
-       ($ (inline (format NIL "#viewselect option[value=\"~a\"]" (dm:field paste "view"))))
-       ($ "#viewpassword" (attr :value (server:get "password")))
-       ($ "#editid" (attr :value (id->hash (dm:field paste "_id"))))
-       ($ ".code" (text (dm:field paste "text")))))))
+       (if (not (paste-accessible-p paste user))
+           (progn
+             ($ "#content" (html-file (template "plaster/passwordprompt.html")))
+             (uibox:fill-all "body" paste))
+           (progn
+             (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
+               ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme")))))
+             (uibox:fill-foreach (dm:get "plaster-types" :all :sort '(("title" . :ASC))) "#typeselect option")
+             (uibox:fill-all "body" (user:get (dm:field paste "author")))
+             (uibox:fill-all "body" user)
+             ($ "#title" (attr :value (dm:field paste "title")))
+             ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (dm:field paste "type"))) (attr :selected "selected"))
+             ($ (inline (format NIL "#viewselect option[value=\"~a\"]" (dm:field paste "view"))))
+             ($ "#viewpassword" (attr :value (server:get "password")))
+             ($ "#editid" (attr :value (id->hash (dm:field paste "_id"))))
+             ($ ".code" (text (dm:field paste "text")))))))))
