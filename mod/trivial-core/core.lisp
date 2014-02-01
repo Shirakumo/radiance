@@ -8,3 +8,4 @@
 
 (define-file-link favicon #u"/favicon.ico" (static "img/favicon.ico") :content-type "image/x-icon")
 (define-file-link robots #u"/robots.txt" (static "txt/robots.txt") :content-type "text/plain")
+(define-file-link humans #u"/humans.txt" (static "txt/humans.txt") :content-type "text/plain")
