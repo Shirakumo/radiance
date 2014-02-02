@@ -329,13 +329,20 @@ body,html{
     padding: 0;
 }
 
-#content form.box input, #content form.box textarea, #content form.box input[type='checkbox']{
+#content .box input, #content .box textarea, #content .box input[type='checkbox'],
+#content .tablebox input, #content .tablebox textarea, #content .tablebox input[type='checkbox']{
     border: 1px solid #0088EE;
     background: #EEF;
     margin: 2px;
+    padding-left: 2px;
 }
 
-#content form.box input[type='checkbox']{
+#content .box input[readonly], #content .box textarea[readonly], #content .box input[type='checkbox'][readonly],
+#content .tablebox input[readonly], #content .tablebox textarea[readonly], #content .tablebox input[type='checkbox'][readonly]{
+    background: #CCC;
+}
+
+#content .box input[type='checkbox'], #content .tablebox input[type='checkbox']{
     -moz-appearance:none;
     -webkit-appearance:none;
     -o-appearance:none;
@@ -344,11 +351,11 @@ body,html{
     position: relative;
 }
 
-#content form.box input[type='checkbox']:checked{
+#content .box input[type='checkbox']:checked, #content .tablebox input[type='checkbox']:checked{
     box-shadow: 0 0 2px #0088EE;
     background: #0088EE;
 }
-#content form.box input[type='checkbox']:checked:after{
+#content .box input[type='checkbox']:checked:after, #content .tablebox input[type='checkbox']:checked:after{
     content: "✓";
     display: block;
     position: absolute;
