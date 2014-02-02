@@ -6,12 +6,12 @@
 
 (in-package :radiance-mod-db-introspect)
 
-(admin:define-panel database database (:access-branch "admin.database.*" :menu-icon "icon-calendar" :menu-tooltip "Show all collections in the database" :lquery (template "db-introspect/database.html"))
+(admin:define-panel database database (:access-branch "admin.database.*" :menu-icon "fa-calendar" :menu-tooltip "Show all collections in the database" :lquery (template "db-introspect/database.html"))
   (uibox:fill-foreach
    (mapcar #'(lambda (collection) `(:name ,collection :records ,(length (db:select collection :all :limit -1)))) (db:collections))
    "tbody tr"))
 
-(admin:define-panel collection database (:access-branch "admin.database.collection.*" :menu-icon "icon-table" :menu-tooltip "View collection contents" :lquery (template "db-introspect/collection.html"))
+(admin:define-panel collection database (:access-branch "admin.database.collection.*" :menu-icon "fa-table" :menu-tooltip "View collection contents" :lquery (template "db-introspect/collection.html"))
   (let ((selected (server:get "name")))
     (if selected
         (if (string= (server:post-or-get "action") "Delete")
@@ -47,7 +47,7 @@
       ($ template (remove))
       ($ "input[name=\"name\"]" (val name)))))
 
-(admin:define-panel record database (:access-branch "admin.database.collection.record.*" :menu-icon "icon-list-alt" :menu-tooltip "View record contents" :lquery (template "db-introspect/record.html"))
+(admin:define-panel record database (:access-branch "admin.database.collection.record.*" :menu-icon "fa-list-alt" :menu-tooltip "View record contents" :lquery (template "db-introspect/record.html"))
   (let* ((selected (or (server:post "selected[]")
                        (server:get "id")))
          (name (server:post-or-get "name"))

@@ -6,13 +6,13 @@
 
 (in-package :radiance-mod-trivial-profile)
 
-(admin:define-panel avatar profile (:access-branch "admin.profile.avatar" :menu-icon "icon-picture" :menu-tooltip "Change avatar settings" :lquery (template "trivial-profile/admin-avatar.html"))
+(admin:define-panel avatar profile (:access-branch "admin.profile.avatar" :menu-icon "fa-picture-o" :menu-tooltip "Change avatar settings" :lquery (template "trivial-profile/admin-avatar.html"))
   )
 
-(admin:define-panel fields profile (:access-branch "admin.profile.fields" :menu-icon "icon-list" :menu-tooltip "Change user profile fields" :lquery (template "trivial-profile/admin-fields.html"))
+(admin:define-panel fields profile (:access-branch "admin.profile.fields" :menu-icon "fa-list" :menu-tooltip "Change user profile fields" :lquery (template "trivial-profile/admin-fields.html"))
   (uibox:fill-foreach (dm:get "trivial-profile-fields" :all :sort '(("field" . :DESC)) :limit -1) "tbody tr"))
 
-(admin:define-panel comments profile (:access-branch "admin.profile.comments" :menu-icon "icon-comment" :menu-tooltip "Manage user profile comments" :lquery (template "trivial-profile/admin-comments.html"))
+(admin:define-panel comments profile (:access-branch "admin.profile.comments" :menu-icon "fa-comment" :menu-tooltip "Manage user profile comments" :lquery (template "trivial-profile/admin-comments.html"))
   (uibox:fill-foreach (dm:get "trivial-profile-comments" :all :sort '(("time" . :DESC)) :limit -1) "tbody tr"))
 
 (define-api fields/add (field type value public) (:method :POST :access-branch "admin.profile.fields")

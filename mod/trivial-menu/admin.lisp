@@ -36,5 +36,5 @@
      (server:redirect "/menu/items"))))
     
 
-(admin:define-panel items menu (:access-branch "admin.menu.*" :menu-icon "icon-external-link-sign" :menu-tooltip "Change menu items." :lquery (template "trivial-menu/admin.html"))
+(admin:define-panel items menu (:access-branch "admin.menu.*" :menu-icon "fa-external-link" :menu-tooltip "Change menu items." :lquery (template "trivial-menu/admin.html"))
   (uibox:fill-foreach (dm:get "trivial-menu" :all :sort '(("sort" . :ASC)) :limit -1) "tbody #template"))

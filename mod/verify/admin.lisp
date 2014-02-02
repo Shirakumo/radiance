@@ -6,7 +6,7 @@
 
 (in-package :radiance-mod-verify)
 
-(admin:define-panel users verify (:access-branch "admin.verify.users.*" :menu-icon "icon-user" :menu-tooltip "View and manage user accounts" :lquery T)
+(admin:define-panel users verify (:access-branch "admin.verify.users.*" :menu-icon "fa-user" :menu-tooltip "View and manage user accounts" :lquery T)
   (if (string= (server:post "form") "user")
       (progn
         ($ (initialize (template "verify/admin-users-edit.html")))
@@ -25,7 +25,7 @@
         ($ (initialize (template "verify/admin-users-overview.html")))
         (uibox:fill-foreach (dm:get "verify-users" :all :limit -1) "tbody tr"))))
 
-(admin:define-panel actions verify (:access-branch "admin.verify.actions.*" :menu-icon "icon-list-ul" :menu-tooltip "View a list of user actions" :lquery (template "verify/admin-actions.html"))
+(admin:define-panel actions verify (:access-branch "admin.verify.actions.*" :menu-icon "fa-list-ul" :menu-tooltip "View a list of user actions" :lquery (template "verify/admin-actions.html"))
   (when (string= (server:post "action") "Delete")
     (let ((ids (or (server:post "selected[]")
                    (list (server:post "id")))))
@@ -34,7 +34,7 @@
       ($ (prepend (format NIL "<div class=\"notice ok\">Action(s) deleted.</div>")))))
   (uibox:fill-foreach (dm:get "verify-actions" :all :sort '(("time" . :DESC)) :limit -1) "tbody tr"))
 
-(admin:define-panel sessions verify (:access-branch "admin.verify.sessions.*" :menu-icon "icon-signin" :menu-tooltip "See currently active sessions" :lquery (template "verify/admin-session.html"))
+(admin:define-panel sessions verify (:access-branch "admin.verify.sessions.*" :menu-icon "fa-sign-in" :menu-tooltip "See currently active sessions" :lquery (template "verify/admin-session.html"))
   (when (string= (server:post "action") "Deactivate")
     (let ((uuids (or (server:post "selected[]")
                      (list (server:post "uuid")))))
@@ -49,7 +49,7 @@
 
   (uibox:fill-foreach (alexandria:hash-table-values *verify-sessions*) "tbody tr"))
 
-(admin:define-panel authentication verify (:access-branch "admin.verify.authentication.*" :menu-icon "icon-key" :menu-tooltip "Manage authentication mechanisms" :lquery (template "verify/admin-auth.html"))
+(admin:define-panel authentication verify (:access-branch "admin.verify.authentication.*" :menu-icon "fa-key" :menu-tooltip "Manage authentication mechanisms" :lquery (template "verify/admin-auth.html"))
   (when (string= (server:post "form") "session")
     (setf (config-tree :verify :session :secret) (server:post "secret")
           (config-tree :verify :session :use-per-user-secret) (string= (server:post "per-user") "yes"))
@@ -63,7 +63,7 @@
      for mechanism being the hash-values of *verify-mechanisms*
      do (show-options mechanism target)))
 
-(admin:define-panel registration verify (:access-branch "admin.verify.registration.*" :menu-icon "icon-edit" :menu-tooltip "Manage registration settings" :lquery (template "verify/admin-register.html"))
+(admin:define-panel registration verify (:access-branch "admin.verify.registration.*" :menu-icon "fa-edit" :menu-tooltip "Manage registration settings" :lquery (template "verify/admin-register.html"))
   (when (string= (server:post "form") "defaults")
     (setf (config-tree :verify :register :endpoint) (server:post "endpoint")
           (config-tree :verify :register :defaultperms) (split-sequence:split-sequence #\Newline (server:post "permissions")))
