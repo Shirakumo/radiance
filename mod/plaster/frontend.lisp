@@ -147,7 +147,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
        (unless (string-equal (dm:field paste "author") (user:field user "username"))
          ($ "#maineditor .editorbar .edit" (remove)))
        (uibox:fill-foreach
-        (dm:get "plaster" (db:query (:= "pid" (dm:field paste "_id"))))
+        (dm:get "plaster" (db:query (:= "pid" (dm:field paste "_id"))) :sort '(("time" . :ASC)))
         "#annotations .annotation"
         :iter-fun #'(lambda (model node)
                       (when (= (dm:field model "view") 3)
