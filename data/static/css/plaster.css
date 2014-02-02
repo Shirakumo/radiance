@@ -88,7 +88,7 @@ header nav ul::after{
     background: #333;
     color: #FFF;
     width: 200px;
-    font-size: 18px;
+    font-size: 14px;
     line-height: 1;
     border: 1px solid #000;
     border-radius: 0;
@@ -292,29 +292,6 @@ h3:after{
     content: "\f023";
 }
 
-.dataTables_filter{
-    background: #0088EE;
-    display: inline-block;
-    float:right;
-    position: relative;
-    height: 20px;
-    color: #FFF;
-}
-
-.dataTables_filter:before{
-    content: "";
-    position: absolute;
-    left:-20px;top:0;
-    width: 0;height: 0; 
-    border-bottom: 20px solid #0088EE;
-    border-left: 20px solid transparent;
-}
-
-.dataTables_filter input{
-    border: 1px solid #005588;
-    background: #FFF;
-}
-
 footer{
     font-size: 8pt;
     text-align: center;
@@ -363,4 +340,53 @@ footer a{
     font-family: Consolas, monospace;    
 }
 
+.selectordiv{display: inline-block;position: relative;}
+.selectordiv:after{
+    content: "\f0d7";
+    font-family: FontAwesome;
+    color: #FFF;
+    position: absolute;
+    right: 5px;top:2px;
+    display: block;
+}
 
+.dataTables_filter{
+    background: #0088EE;
+    display: inline-block;
+    float:right;
+    position: relative;
+    height: 20px;
+    color: #FFF;
+}
+
+.dataTables_filter:before{
+    content: "";
+    position: absolute;
+    left:-20px;top:0;
+    width: 0;height: 0; 
+    border-bottom: 20px solid #0088EE;
+    border-left: 20px solid transparent;
+}
+
+.dataTables_filter input{
+    border: 1px solid #005588;
+    background: #FFF;
+}
+
+.dataTable th{position:relative;}
+.dataTable th.sorting_desc:after, .dataTable th.sorting_asc:after{
+    font-family: FontAwesome;
+    color: #FFF;
+    position: absolute;
+    right: 5px;
+    display: block;
+    text-shadow: 0 0 3px #0088EE;
+}
+.dataTable th.sorting_desc:after{
+    content: "\f0d7";
+    bottom:2px;
+}
+.dataTable th.sorting_asc:after{
+    content: "\f0d8";
+    top:2px;
+}

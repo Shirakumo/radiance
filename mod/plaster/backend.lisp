@@ -6,8 +6,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (in-package :radiance-mod-plaster)
 
-(admin:define-panel general plaster (:lquery (tempalte "plaster/admin-general.html") :menu-icon "" :menu-tooltip "")
-  )
+(admin:define-panel general plaster (:lquery (template "plaster/admin-general.html") :menu-icon "fa-file-text" :menu-tooltip "General plaster settings")
+  (uibox:fill-foreach (dm:get "plaster-types" :all) "#template"))
 
-(profile:define-panel preferences plaster (:lquery (template "plaster/preferences.html") :menu-icon "" :menu-tooltip "")
+(profile:define-panel preferences plaster (:lquery (template "plaster/user-preferences.html") :menu-icon "" :menu-tooltip "")
   )

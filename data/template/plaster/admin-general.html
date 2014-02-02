@@ -1,0 +1,52 @@
+<div>
+  <h2>Plaster Settings</h2>
+  <form method="post" action="#" class="box">
+    <label>Allow anon:</label><input type="checkbox" name="" /><br />
+    <label>Captcha anon:</label><input type="checkbox" name="" /><br />
+    <label>Max pastes per user:</label><input type="number" name="" /><br />
+    <label>Post cooldown:</label><input type="number" name="" /><br />
+    
+    <div class="actionbar">
+      <input type="submit" name="action" value="Submit" />
+    </div>
+  </form>
+
+  <h2>Paste Types</h2>
+  <div class="tablebox">
+    <table class="selectable extendable actions tablesorter">
+      <thead>
+        <tr>
+	  <th><input type="checkbox" class="select-all" /></th>
+	  <th>Title</th>
+	  <th>Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr id="template">
+	  <td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:_id" /></td>
+	  <td><input type="text" style="width:100%" readonly="readonly" data-uibox="value:title" /></td>
+	  <td><input type="text" style="width:100%" readonly="readonly" data-uibox="value:name" /></td>
+	  <td><form action="/api/trivial-menu/admin" method="post">
+              <input type="hidden" name="form" value="menu" />
+	      <input type="hidden" name="id" data-uibox="value:_id" />
+	      <input type="submit" name="action" value="Delete" />
+	  </form></td>
+        </tr>
+        <tr class="tableExtensionRow">
+          <td></td>
+	  <td><input type="text" name="title" form="tableExtensionForm" placeholder="Title" required="required" style="width:100%" /></td>
+	  <td><input type="text" name="name" form="tableExtensionForm" placeholder="CodeMirror Mode Name" required="required" style="width:100%" /></td>
+	  <td><form action="/api/trivial-menu/admin" method="post" id="tableExtensionForm">
+              <input type="hidden" name="form" value="menu" />
+	      <input type="submit" name="action" value="Add" />
+	  </form></td>
+        </tr>
+      </tbody>
+    </table>
+    <form class="table-actions" id="massEditForm" action="/api/trivial-menu/admin" method="post">
+      <input type="hidden" name="form" value="menu" />
+      <input type="submit" name="action" value="Delete" />
+    </form>
+  </div>
+</div>

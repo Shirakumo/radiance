@@ -25,15 +25,15 @@
           <input type="text" id="title" maxlength="64" placeholder="Title" name="title"></input>
           <div class="pasteinfo">
             <span id="annotateinfo"></span>
-            Paste as <select name="type" id="typeselect" title="Select the language or mode to use to display and edit your paste.">
+            Paste as <div class="selectordiv"><select name="type" id="typeselect" title="Select the language or mode to use to display and edit your paste.">
               <option value="VALUE" data-uibox="value:name text:title">NAME</option>
-            </select>.
-            This paste will be <select name="view" id="viewselect" title="Select how your paste will be visible to the internet. Note that encryption passwords are not stored.">
+            </select></div>.
+            This paste will be <div class="selectordiv"><select name="view" id="viewselect" title="Select how your paste will be visible to the internet. Note that encryption passwords are not stored.">
               <option value="0">public</option>
               <option value="1">unlisted</option>
               <option value="2">private</option>
               <option value="3">encrypted with:</option>
-            </select> <input type="password" name="password" placeholder="Password" id="viewpassword" autocomplete="off" maxlength="32" minlength="6"/>.
+            </select></div> <input type="password" name="password" placeholder="Password" id="viewpassword" autocomplete="off" maxlength="32" minlength="6"/>.
           </div>
         </div>
         <div class="editor" method="post">
