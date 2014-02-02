@@ -4,6 +4,7 @@ html,body{
     height: 100%;
     font-family: Arial, sans-serif;
     font-size: 12pt;
+    background: #151515;
 }
 
 span.label{ min-width: 100px; display: inline-block;}
@@ -149,11 +150,11 @@ span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
 }
 
 footer{
-    border-top: 1px solid #CCC;
+    border-top: 2px solid #222;
     padding: 10px;
     font-size: 8pt;
     text-align: center;
-    background: #FFF;
+    background: #151515;
     color: #CCC;
     height: 30px;
 }
