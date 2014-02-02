@@ -21,6 +21,16 @@
     (format out "~a" (s-user session)))
   session)
 
+(define-interface-method session:field ((session verify-session) field &key (value NIL v-p))
+  "Set or get a field of the user. Note that this will not save it to the database!"
+  (if (member field '("uuid" "time" "user" "remote" "active") :test #'string-equal)
+      (if v-p
+          (setf (slot-value session (find-symbol (string-upcase field) :radiance-mod-verify)) value)
+          (slot-value session (find-symbol (string-upcase field) :radiance-mod-verify)))
+      (if v-p
+          (setf (gethash field (fields session)) value)
+          (gethash field (fields session)))))
+
 (define-interface-method session:get ((uuid string))
   "Returns the requested session instance if applicable."
   (gethash uuid *verify-sessions*))
@@ -54,12 +64,6 @@
   (setf (active session) NIL)
   (if (eq *radiance-session* session) (server:set-cookie "token"))
   session)
-
-(define-interface-method session:field ((session verify-session) field &key (value NIL v-p))
-  "Set or get a field of the user. Note that this will not save it to the database!"
-  (if v-p
-      (setf (gethash field (fields session)) value)
-      (gethash field (fields session))))
 
 (define-interface-method session:uuid ((session verify-session))
   "Returns the UUID of the session instance."
