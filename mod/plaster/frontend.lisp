@@ -81,12 +81,18 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
           (progn
             ($ "head title" (text (format NIL "~a's Profile - Plaster" (profile:name viewuser))))
             (uibox:fill-all "#userinfo" viewuser)
-            (if (string= (user:field user "username") (user:field viewuser "username"))
-                (uibox:fill-foreach (dm:get "plaster" (db:query (:= "pid" -1) (:= "author" username))
-                                            :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#pastelist .paste")
-                (uibox:fill-foreach (dm:get "plaster" (db:query (:= "pid" -1) (:= "view" 0) (:= "author" username))
-                                            :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#pastelist .paste"))
-            (uibox:fill-foreach (dm:get "plaster" (db:query (:!= "pid" -1) (:= "view" 0) (:= "author" username))) "#annotatelist .paste")
+            (if (and (string= (user:field user "username") (user:field viewuser "username"))
+                     (not (string= (user:field viewuser "username") "temp")))
+                (progn
+                  (uibox:fill-foreach (dm:get "plaster" (db:query (:= "pid" -1) (:= "author" username))
+                                              :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#pastelist .paste")
+                  (uibox:fill-foreach (dm:get "plaster" (db:query (:!= "pid" -1) (:= "author" username))
+                                              :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#annotatelist .paste"))
+                (progn
+                  (uibox:fill-foreach (dm:get "plaster" (db:query (:= "pid" -1) (:= "view" 0) (:= "author" username))
+                                              :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#pastelist .paste")
+                  (uibox:fill-foreach (dm:get "plaster" (db:query (:!= "pid" -1) (:= "view" 0) (:= "author" username))
+                                              :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#annotatelist .paste")))
             (uibox:fill-all "body" user))
           ($ "#content" (html "<h2>No such user found.</h2>"))))))
 
