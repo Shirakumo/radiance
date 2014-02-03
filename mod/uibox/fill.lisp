@@ -163,3 +163,6 @@ FOREACH    : foreach-SELECTOR"
                      (T (error "Unknown data target directive: ~a" target)))))))))
   ($ node (remove-attr :data-uibox))
   node)
+
+(defmethod dom:create-element ((node cxml-dom::node) tag)
+  (dom:create-element (slot-value node 'cxml-dom::owner) tag))
