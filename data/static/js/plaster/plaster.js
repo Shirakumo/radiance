@@ -116,6 +116,7 @@ $(function(){
 	    "bFilter": true,
 	    "bSort": true,
 	    "bInfo": false,
+            "aaSorting": [[ 4, "desc"]]
         });
     }
 });

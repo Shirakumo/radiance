@@ -390,3 +390,8 @@ footer a{
     content: "\f0d8";
     top:2px;
 }
+
+th.date.sorting_asc:after, th.date.sorting_desc:after{
+    right: auto;
+    left: 5px;
+}
