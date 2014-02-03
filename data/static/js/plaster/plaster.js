@@ -10,6 +10,7 @@ $(function(){
         function setHeight(height){
             $(editor).height(height);
             mirror.setSize(null, height);
+            //$(".editorbar", editor).css({top: height});
         }
 
         function initializeMirror(mode){
@@ -41,8 +42,7 @@ $(function(){
                 $("html").on("mousemove.editorresize"+i, function(e){
                     var offset = e.pageY - $(".editorbar", editor).height()/2;
                     if(offset > $(editor).offset().top){
-                        $(".editorbar", editor).offset({top: offset});
-                        setHeight($(".editorbar", editor).position().top);
+                        setHeight(offset-$(editor).offset().top);
                     }
                 });
                 
@@ -62,6 +62,10 @@ $(function(){
 
         $("button[type=\"submit\"]", editor).click(function(){
             $(".code", editor).text(mirror.getValue());
+        });
+
+        $(".editorresize", editor).dblclick(function(){
+            setHeight($(".CodeMirror-sizer", editor).height()+20);
         });
 
         var mode = $(editor).data("mode");
