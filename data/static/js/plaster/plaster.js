@@ -60,7 +60,7 @@ $(function(){
             });
         }
 
-        $(editor).submit(function(){
+        $("button[type=\"submit\"]", editor).click(function(){
             $(".code", editor).text(mirror.getValue());
         });
 
