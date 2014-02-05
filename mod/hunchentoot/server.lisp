@@ -33,6 +33,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (define-interface-method server:cookie (name &key (request *radiance-request*))
   (hunchentoot:cookie-in name request))
 
+(defmethod (setf server::i-cookie) (value (module (eql :radiance-hunchentoot)) name)
+  (server::i-set-cookie :radiance-hunchentoot name :value value))
+
 (define-interface-method server:cookies (&key (request *radiance-request*))
   (hunchentoot:cookies-in request))
 
@@ -41,6 +44,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (if (and (> (length name) 2) (string= name "[]" :start1 (- (length name) 2)))
       (assoc-all name (server:gets :request request) :val #'cdr :test #'string=)
       (hunchentoot:get-parameter name request)))
+
+(defmethod (setf server::i-get) (value (module (eql :radiance-hunchentoot)) name)
+  (setf (cdr (assoc name (hunchentoot:get-parameters request) :test #'string=)) name))
 
 (define-interface-method server:gets (&key (request *radiance-request*))
   (hunchentoot:get-parameters request))
@@ -51,6 +57,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (assoc-all name (server:posts :request request) :val #'cdr :test #'string=)
       (hunchentoot:post-parameter name request)))
 
+(defmethod (setf server::i-post) (value (module (eql :radiance-hunchentoot)) name)
+  (setf (cdr (assoc name (hunchentoot:post-parameters request) :test #'string=)) name))
+
 (define-interface-method server:posts (&key (request *radiance-request*))
   (hunchentoot:post-parameters request))
 
@@ -58,10 +67,18 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (or (server::i-post :radiance-hunchentoot name :request request)
       (server::i-get :radiance-hunchentoot name :request request)))
 
+(defmethod (setf server::i-post-or-get) (value (module (eql :radiance-hunchentoot)) name)
+  (if (server::i-post :radiance-hunchentoot name)
+      (setf (server::i-post :radiance-hunchentoot name) value)
+      (setf (server::i-get :radiance-hunchentoot name) value)))
+
 (define-interface-method server:header (name &key (request-or-response *radiance-request*))
   (etypecase request-or-response
     (server:request (hunchentoot:header-in name request-or-response))
     (server:response (hunchentoot:header-out name request-or-response))))
+
+(defmethod (setf server::i-header) (value (module (eql :radiance-hunchentoot)) name)
+  (server::i-set-header :radiance-hunchentoot name value))
 
 (define-interface-method server:headers (&key (request-or-response *radiance-request*))
   (etypecase request-or-response
@@ -128,6 +145,13 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (define-interface-method server:redirect ((uri uri) &key (response *radiance-response*))
   (server::i-redirect :radiance-hunchentoot (uri->url uri) :response response))
 
+(define-interface-method server:uploaded-file (post-parameter &key (request *radiance-request*))
+  (let ((param (server:post post-parameter :request *radiance-request*)))
+    (assert (listp param) (param) "Post parameter does not contain a file!")
+    (assert (not (not param)) (param) "Post parameter does not exist!")
+    (destructuring-bind (tempfile origname mimetype) param
+      (values tempfile origname mimetype (file-size tempfile)))))
+
 (define-interface-method server:serve-file (pathname &key content-type (response *radiance-response*))
   (v:debug :radiance.server.hunchentoot "Serving file from ~a (~a)" pathname content-type)
   (let ((hunchentoot:*reply* response))
@@ -138,6 +162,19 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (define-interface-method server:set-handler-function (handler-fun)
   (v:debug :radiance.server.hunchentoot "Setting handler function to: ~a" handler-fun)
   (setf *handler* handler-fun))
+
+(defmacro with-* (interface function)
+  (let ((varsgens (gensym "VARS")) (vargens (gensym "VAR")) (bodygens (gensym "BODY")))
+    `(define-interface-method ,interface (,varsgens &body ,bodygens)
+       `(symbol-macrolet ,(loop for ,vargens in ,varsgens
+                                collect `(,,vargens (,',function :radiance-hunchentoot ,(string-downcase ,vargens))))
+          ,@,bodygens))))
+
+(with-* server:with-gets server::i-get)
+(with-* server:with-posts server::i-post)
+(with-* server:with-posts-or-gets server::i-post-or-get)
+(with-* server:with-headers server::i-header)
+(with-* server:with-cookies server::i-cookie)
 
 (define-hook (:server :init) (:documentation "Set up hunchentoot.")
   (setf hunchentoot:*dispatch-table* (list #'pre-handler)))
