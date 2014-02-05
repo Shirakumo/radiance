@@ -51,7 +51,7 @@
   "Shows data about the current user."
   (core::i-api-return :trivial-core 200 "User data"
                       (plist->hash-table
-                       :authenticated (authenticated-p)
+                       :authenticated (auth:authenticated-p)
                        :session-active (if *radiance-session* T NIL))))
 
 (core::m-define-api :trivial-core error () (:method :GET)

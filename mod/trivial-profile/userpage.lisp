@@ -12,7 +12,7 @@
     (unless (stringp user) (setf user (user:field user "username")))
     (uri->context-url (make-uri (format NIL "user./~a" user)))))
 
-(define-page profile #u"user./" (:lquery T)
+(core:define-page profile #u"user./" (:lquery T)
   (ignore-errors (auth:authenticate))
   (let* ((username (if (= (length (path *radiance-request*)) 0)
                        (user:field (user) "username")

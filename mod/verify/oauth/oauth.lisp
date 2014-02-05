@@ -64,7 +64,7 @@
         (user:get (dm:field model "username"))
         (error 'auth-login-error :text "Account not linked!" :code 15))))
 
-(define-page login #u"auth./login/oauth" ()
+(core:define-page login #u"auth./login/oauth" ()
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (cond
@@ -83,7 +83,7 @@
     
     (T (error 'auth-login-error :text "Nothing to do!" :code 10))))
 
-(define-page register #u"auth./register/oauth" ()
+(core:define-page register #u"auth./register/oauth" ()
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (cond

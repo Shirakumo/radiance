@@ -65,13 +65,13 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 ;; TODO: Take care of error reporting problems of api functions.
 
-(define-page index #u"plaster./" () (server:redirect "/new"))
+(core:define-page index #u"plaster./" () (server:redirect "/new"))
 
-(define-page list #u"plaster./recent" (:lquery (template "plaster/list.html"))
+(core:define-page list #u"plaster./recent" (:lquery (template "plaster/list.html"))
   (uibox:fill-foreach (dm:get "plaster" (db:query (:= "view" 0) (:= "pid" -1)) :sort '(("time" . :DESC)) :limit 20) "#pastelist .paste")
   (uibox:fill-all "body" (user :authenticate T :default (user:get "temp"))))
 
-(define-page user #u"plaster./user" (:lquery (template "plaster/user.html"))
+(core:define-page user #u"plaster./user" (:lquery (template "plaster/user.html"))
   (destructuring-bind (path username &optional (page "0")) (split-sequence:split-sequence #\/ (path *radiance-request*))
     (declare (ignore path))
     (let ((user (user :authenticate T :default (user:get "temp")))
@@ -96,7 +96,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
             (uibox:fill-all "body" user))
           ($ "#content" (html "<h2>No such user found.</h2>"))))))
 
-(define-page new #u"plaster./new" (:lquery (template "plaster/new.html"))
+(core:define-page new #u"plaster./new" (:lquery (template "plaster/new.html"))
   (let* ((user (user :authenticate T :default (user:get "temp")))
          (annotate (when-let ((annotate-id (server:get "annotate")))
                      (dm:get-one "plaster" (db:query (:= "_id" (hash->id annotate-id))
@@ -134,7 +134,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
           ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (or type "text"))) (attr :selected "selected")))
         ($ "#content" (html "<h2>You are not allowed to repaste/annotate this paste.</h2>")))))
 
-(define-page view #u"plaster./view" (:lquery (template "plaster/view.html"))
+(core:define-page view #u"plaster./view" (:lquery (template "plaster/view.html"))
   (let* ((user (user :authenticate T :default (user:get "temp")))
          (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id (server:get "id")))
                                                 (:= "pid" -1)))))
@@ -165,7 +165,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
          ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password"))))))))
        (db:update "plaster" (db:query (:= "_id" (dm:field paste "_id"))) `(("hits" . ,(1+ (dm:field paste "hits")))))))))
 
-(define-page edit #u"plaster./edit" (:lquery (template "plaster/edit.html"))
+(core:define-page edit #u"plaster./edit" (:lquery (template "plaster/edit.html"))
   (let* ((user (user :authenticate T))
          (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id (server:get "id")))))))
     (cond

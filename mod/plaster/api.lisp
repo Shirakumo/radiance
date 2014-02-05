@@ -6,7 +6,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (in-package :radiance-mod-plaster)
 
-(define-api raw (id &optional (password "")) (:method T)
+(core:define-api raw (id &optional (password "")) (:method T)
   "Returns the raw paste text in text/plain format."
   (declare (ignore password))
   (let ((paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id id))))))
@@ -17,7 +17,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
             (error 'api-auth-error :apicall "raw" :module "plaster" :code 403 :text "You are not allowed to view this paste."))
         (error 'api-error :apicall "raw" :module "plaster" :code 404 :text "No such paste found."))))
 
-(define-api paste (id &optional (password "")) (:method :GET)
+(core:define-api paste (id &optional (password "")) (:method :GET)
   "Returns all available information about a paste."
   (declare (ignore password))
   (let ((paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id id))))))
@@ -46,27 +46,27 @@ Each form should be of the following format:
                    `(unless ,(car form) (error 'api-error ,@default-args ,@(cdr form))))
                forms)))
 
-(define-api paste (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method :POST)
+(core:define-api paste (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method :POST)
   "Create a new paste"
   (paste-add text annotate title type view password client))
 
-(define-api paste/add (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method T)
+(core:define-api paste/add (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method T)
   "Create a new paste"
   (paste-add text annotate title type view password client))
 
-(define-api paste (id &optional text title type view password (client "false")) (:method :PATCH)
+(core:define-api paste (id &optional text title type view password (client "false")) (:method :PATCH)
   "Edit an existing paste"
   (paste-edit id text title type view password client))
 
-(define-api paste/edit (id &optional text title type view password (client "false")) (:method T)
+(core:define-api paste/edit (id &optional text title type view password (client "false")) (:method T)
   "Edit an existing paste"
   (paste-edit id text title type view password client))
 
-(define-api paste (id &optional password (client "false")) (:method :DELETE)
+(core:define-api paste (id &optional password (client "false")) (:method :DELETE)
   "Delete an existing paste"
   (paste-delete id password client))
 
-(define-api paste/delete (id &optional password (client "false")) (:method T)
+(core:define-api paste/delete (id &optional password (client "false")) (:method T)
   "Delete an existing paste"
   (paste-delete id password client))
 

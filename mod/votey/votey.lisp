@@ -16,18 +16,18 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                    (acons "title" option ()))))))
   
 
-(define-page vote #u"vote./" (:lquery (template "votey.html"))
+(core:define-page vote #u"vote./" (:lquery (template "votey.html"))
   (let ((options (dm:get "votey-options" :all)))
     (if options
         (uibox:fill-foreach options "#options")
         ($ "#error" (text "No options available!"))))
 
-  (if (not (authenticated-p)) 
+  (if (not (auth:authenticated-p)) 
       ($ "input" (remove)))
   ($ "#error" (text (server:get "error")))
   ($ "#ok" (text (server:get "ok"))))
 
-(define-api vote (option) (:access-branch "*")
+(core:define-api vote (option) (:access-branch "*")
   (let ((option (dm:get-one "votey-options" (:= "id" (parse-integer option)))))
     (if option
         (progn (setf (dm:field option "votes") 

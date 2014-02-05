@@ -9,10 +9,10 @@
 (define-condition auth-login-error (auth-error) ())
 (define-condition auth-register-error (auth-error) ())
 
-(define-page main-login #u"auth./login" (:lquery (template "verify/login.html"))
+(core:define-page main-login #u"auth./login" (:lquery (template "verify/login.html"))
   (ignore-errors (auth:authenticate))
   (if (server:get "errortext") ($ "#error" (html (concatenate 'string "<i class=\"icon-remove-sign\"></i> " (server:get "errortext")))))
-  (when (and *radiance-session* (not (authenticated-p)))
+  (when (and *radiance-session* (not (auth:authenticated-p)))
     (session:end *radiance-session*)
     (setf *radiance-session* NIL))
   (if (or (not *radiance-session*) (session:temp-p *radiance-session*))
@@ -24,14 +24,14 @@
                ($ panel (append (lquery:parse-html (format NIL "<li class=\"~a\"><a>~:*~a</a></li>" name)))))
       ($ "#error" (html "<i class=\"icon-remove-sign\"></i> You are already logged in."))))
         
-(define-page main-logout #u"auth./logout" ()
+(core:define-page main-logout #u"auth./logout" ()
   (ignore-errors (auth:authenticate))
   (when *radiance-session*
     (user:action (session:user *radiance-session*) "Logout")
     (session:end *radiance-session*))
   (server:redirect (get-redirect)))
 
-(define-page main-register #u"auth./register" (:lquery (template "verify/register.html"))
+(core:define-page main-register #u"auth./register" (:lquery (template "verify/register.html"))
   (ignore-errors (auth:authenticate))
   (if (server:get "errortext") ($ "#error" (html (concatenate 'string "<i class=\"icon-remove-sign\"></i> " (server:get "errortext")))))
   (loop with target = ($ "#content")
@@ -58,7 +58,7 @@
       (server:redirect (format NIL "/register?errortext=~a&errorcode=~a&panel=logins" (slot-value c 'radiance::text) (slot-value c 'radiance::code)))))
   (server:redirect "/register"))
 
-(define-page register/finish #u"auth./register/finish"  ()
+(core:define-page register/finish #u"auth./register/finish"  ()
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (if (server:posts)

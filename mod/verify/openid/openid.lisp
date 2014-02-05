@@ -34,7 +34,7 @@
      (server:gets)
      (puri:merge-uris (server:request-uri) (cl-openid:root-uri rp)))))
 
-(define-page login #u"auth./login/openid" ()
+(core:define-page login #u"auth./login/openid" ()
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (cond
@@ -58,7 +58,7 @@
     
     (T (error 'auth-login-error :text "No ID given!" :code 10))))
 
-(define-page register #u"auth./register/openid" ()
+(core:define-page register #u"auth./register/openid" ()
   (ignore-errors (auth:authenticate))
   (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
   (cond

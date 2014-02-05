@@ -9,7 +9,7 @@
 (defvar *menu* ())
 (defvar *categories* (make-hash-table))
 
-(define-page user-settings #u"user./settings" (:lquery (template "trivial-profile/settings.html") :access-branch "user.settings.*")
+(core:define-page user-settings #u"user./settings" (:lquery (template "trivial-profile/settings.html") :access-branch "user.settings.*")
   (uibox:fill-foreach *menu* "#template")
   ($ "#my-profile" (attr :href (concatenate 'string "/" (user:field (user) "username"))))
   (let ((pathparts (cdr (split-sequence:split-sequence #\/ (string-downcase (path *radiance-request*))))))
@@ -63,7 +63,7 @@
                 ,menu-tooltip))
          (build-menu)))))
 
-(define-api profile/edit (displayname email) (:access-branch "user.settings.profile")
+(core:define-api profile/edit (displayname email) (:access-branch "user.settings.profile")
   (let ((username (user:field (user) "username")))
     (db:remove "trivial-profile" (db:query (:= "user" username)) :limit NIL)
     (if (email-p email)
