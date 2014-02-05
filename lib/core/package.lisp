@@ -83,12 +83,7 @@
            #:restart-server
            #:status)
   ;; site.lisp
-  (:export #:get-redirect
-           #:upload-file
-           #:with-post
-           #:with-post-or-get
-           #:with-header
-           #:with-cookie
+  (:export #:upload-file
            #:with-uploaded-file)
   ;; standard-interfaces.lisp
   (:export #:with-fields
