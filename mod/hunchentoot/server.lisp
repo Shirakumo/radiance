@@ -46,7 +46,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (hunchentoot:get-parameter name request)))
 
 (defmethod (setf server::i-get) (value (module (eql :radiance-hunchentoot)) name)
-  (setf (cdr (assoc name (hunchentoot:get-parameters request) :test #'string=)) name))
+  (setf (cdr (assoc name (hunchentoot:get-parameters *radiance-request*) :test #'string=)) name))
 
 (define-interface-method server:gets (&key (request *radiance-request*))
   (hunchentoot:get-parameters request))
@@ -58,7 +58,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (hunchentoot:post-parameter name request)))
 
 (defmethod (setf server::i-post) (value (module (eql :radiance-hunchentoot)) name)
-  (setf (cdr (assoc name (hunchentoot:post-parameters request) :test #'string=)) name))
+  (setf (cdr (assoc name (hunchentoot:post-parameters *radiance-request*) :test #'string=)) name))
 
 (define-interface-method server:posts (&key (request *radiance-request*))
   (hunchentoot:post-parameters request))
@@ -146,7 +146,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (server::i-redirect :radiance-hunchentoot (uri->url uri) :response response))
 
 (define-interface-method server:uploaded-file (post-parameter &key (request *radiance-request*))
-  (let ((param (server:post post-parameter :request *radiance-request*)))
+  (let ((param (server::i-post :radiance-hunchentoot post-parameter :request request)))
     (assert (listp param) (param) "Post parameter does not contain a file!")
     (assert (not (not param)) (param) "Post parameter does not exist!")
     (destructuring-bind (tempfile origname mimetype) param

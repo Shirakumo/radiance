@@ -49,7 +49,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (when (string-equal hashed hash)
         decrypted))))
 
-(defun paste-accessible-p (paste &optional (user (user :authenticate T)))
+(defun paste-accessible-p (paste &optional (user (user:current :authenticate T)))
   (and paste
        (or (not (= (dm:field paste "view") 2))
            (and user (string-equal (user:field user "username") (dm:field paste "author"))))
@@ -69,12 +69,12 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (core:define-page list #u"plaster./recent" (:lquery (template "plaster/list.html"))
   (uibox:fill-foreach (dm:get "plaster" (db:query (:= "view" 0) (:= "pid" -1)) :sort '(("time" . :DESC)) :limit 20) "#pastelist .paste")
-  (uibox:fill-all "body" (user :authenticate T :default (user:get "temp"))))
+  (uibox:fill-all "body" (user:current :authenticate T :default (user:get "temp"))))
 
 (core:define-page user #u"plaster./user" (:lquery (template "plaster/user.html"))
   (destructuring-bind (path username &optional (page "0")) (split-sequence:split-sequence #\/ (path *radiance-request*))
     (declare (ignore path))
-    (let ((user (user :authenticate T :default (user:get "temp")))
+    (let ((user (user:current :authenticate T :default (user:get "temp")))
           (viewuser (user:get username))
           (page (or (parse-integer page :junk-allowed T) 1)))
       (if viewuser
@@ -97,7 +97,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
           ($ "#content" (html "<h2>No such user found.</h2>"))))))
 
 (core:define-page new #u"plaster./new" (:lquery (template "plaster/new.html"))
-  (let* ((user (user :authenticate T :default (user:get "temp")))
+  (let* ((user (user:current :authenticate T :default (user:get "temp")))
          (annotate (when-let ((annotate-id (server:get "annotate")))
                      (dm:get-one "plaster" (db:query (:= "_id" (hash->id annotate-id))
                                                      (:= "pid" -1)))))
@@ -135,7 +135,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
         ($ "#content" (html "<h2>You are not allowed to repaste/annotate this paste.</h2>")))))
 
 (core:define-page view #u"plaster./view" (:lquery (template "plaster/view.html"))
-  (let* ((user (user :authenticate T :default (user:get "temp")))
+  (let* ((user (user:current :authenticate T :default (user:get "temp")))
          (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id (server:get "id")))
                                                 (:= "pid" -1)))))
     (cond
@@ -166,7 +166,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
        (db:update "plaster" (db:query (:= "_id" (dm:field paste "_id"))) `(("hits" . ,(1+ (dm:field paste "hits")))))))))
 
 (core:define-page edit #u"plaster./edit" (:lquery (template "plaster/edit.html"))
-  (let* ((user (user :authenticate T))
+  (let* ((user (user:current :authenticate T))
          (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id (server:get "id")))))))
     (cond
       ((not paste)

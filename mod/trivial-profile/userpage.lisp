@@ -15,14 +15,14 @@
 (core:define-page profile #u"user./" (:lquery T)
   (ignore-errors (auth:authenticate))
   (let* ((username (if (= (length (path *radiance-request*)) 0)
-                       (user:field (user) "username")
+                       (user:field (user:current) "username")
                        (path *radiance-request*)))
          (user (user:get username)))
-    (if (user:saved-p user)
+    (if (user:saved-p :user user)
         (progn
           ($ (initialize (template "trivial-profile/profile.html")))
-          (if (authorized-p "user.comment")
-              ($ "#profile-comments-submit *[data-uibox]" (each #'(lambda (node) (uibox:fill-node node (user)))))
+          (if (user:check "user.comment")
+              ($ "#profile-comments-submit *[data-uibox]" (each #'(lambda (node) (uibox:fill-node node (user:current)))))
               ($ "#profile-comments-submit" (remove)))
 
           (let* ((parent ($ "#profile-details ul"))
@@ -46,7 +46,7 @@
                                     ($ parent (append clone))))))
             ($ "body" (append (lquery:parse-html (format NIL "<script type=\"text/javascript\">customizeProfile(\"~a\", \"~a\");</script>" color (ppcre:regex-replace-all "\"" background "\\"))))))
           
-          (uibox:fill-foreach (user:get-actions user 10 :public T) "#profile-actions ul li")
+          (uibox:fill-foreach (user:actions 10 :public T :user user) "#profile-actions ul li")
           (uibox:fill-foreach (dm:get "trivial-profile-comments" (db:query (:= "user" username)) :limit -1 :sort '(("time" . :DESC))) "#profile-comments ul li")
           ($ "*[data-uibox]" (each #'(lambda (node) (uibox:fill-node node user)))))
         (error-page 404))))

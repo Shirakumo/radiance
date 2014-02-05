@@ -21,7 +21,7 @@
                  (server:redirect "/database/database"))
                (server:redirect "/database/database"))
             (display-collection selected))
-        (server:redirect (get-redirect)))))
+        (server:redirect (server:referer)))))
 
 (defun display-collection (name)
   ($ "h2" (text (concatenate 'string "Manage Collection " name)))
@@ -65,8 +65,8 @@
                       (progn (save-record name selected)
                              (server:redirect return-url))
                       (display-record name (if (listp selected) (first selected) selected))))
-          (T (server:redirect (get-redirect))))
-        (server:redirect (get-redirect)))))
+          (T (server:redirect (server:referer))))
+        (server:redirect (server:referer)))))
 
 (defun display-record (collection id)
   ($ "h2" (text (concatenate 'string "Edit record " id " of " collection)))

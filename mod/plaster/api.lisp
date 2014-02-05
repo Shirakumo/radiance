@@ -23,17 +23,17 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (let ((paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id id))))))
     (if paste
         (if (paste-accessible-p paste)
-            (api-return 200 "Paste information."
-                        (plist->hash-table
-                         :id (id->hash (dm:field paste "_id"))
-                         :pid (id->hash (dm:field paste "pid"))
-                         :title (dm:field paste "title")
-                         :author (dm:field paste "author")
-                         :type (dm:field paste "type")
-                         :time (dm:field paste "time")
-                         :view (dm:field paste "view")
-                         :hits (dm:field paste "hits")
-                         :text (dm:field paste "text")))
+            (core:api-return 200 "Paste information."
+                             :data (plist->hash-table
+                                    :id (id->hash (dm:field paste "_id"))
+                                    :pid (id->hash (dm:field paste "pid"))
+                                    :title (dm:field paste "title")
+                                    :author (dm:field paste "author")
+                                    :type (dm:field paste "type")
+                                    :time (dm:field paste "time")
+                                    :view (dm:field paste "view")
+                                    :hits (dm:field paste "hits")
+                                    :text (dm:field paste "text")))
             (error 'api-auth-error :apicall "raw" :module "plaster" :code 403 :text "You are not allowed to view this paste."))
         (error 'api-error :apicall "raw" :module "plaster" :code 404 :text "No such paste found."))))
 
@@ -71,7 +71,7 @@ Each form should be of the following format:
   (paste-delete id password client))
 
 (defun paste-add (text annotate title type view password client)
-  (let ((user (user :authenticate T))
+  (let ((user (user:current :authenticate T))
         (annotate (hash->id annotate))
         (title (string-or "Untitled" title))
         (type (string-or "text" type))
@@ -122,7 +122,7 @@ Each form should be of the following format:
                                (id->hash (dm:field (or annotate model) "_id")) password)))))
 
 (defun paste-edit (id text title type view password client)
-  (let ((user (user :authenticate T))
+  (let ((user (user:current :authenticate T))
         (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id id)))))
         (client (string-equal client "true")))
     (setf view (if view (parse-integer view) (dm:field paste "view")))
@@ -158,7 +158,7 @@ Each form should be of the following format:
                              (if (= (dm:field paste "pid") -1) id (id->hash (dm:field paste "pid"))) password))))
 
 (defun paste-delete (id password client)
-  (let ((user (user :authenticate T))
+  (let ((user (user:current :authenticate T))
         (paste (dm:get-one "plaster" (db:query (:= "_id" (hash->id id)))))
         (client (string-equal client "true")))
     (assert-api (:apicall "paeste" :module "plaster")

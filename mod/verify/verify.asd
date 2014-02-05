@@ -44,6 +44,7 @@
                :radiance-data-model
                :radiance-dispatcher
                :radiance-admin
+               :radiance-server
                :uibox)
   :implement ((:user :verify)
               (:session :verify)

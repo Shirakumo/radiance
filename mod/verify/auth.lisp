@@ -47,7 +47,7 @@
 (define-condition auth-session-error (auth-error) ())
 
 (define-interface-method auth:authenticated-p (&key (session *radiance-session*))
-  (and session (session:user session) (user:saved-p (session:user session)) (session:active-p session))))
+  (and session (session:user session) (user:saved-p :user (session:user session)) (session:active-p session)))
 
 (define-interface-method auth:authenticate ()
   (let ((token (server:cookie "token")))
@@ -59,7 +59,7 @@
               (let* ((username (subseq token 0 (position #\- token)))
                      (user (user:get username))
                      (token (subseq token (1+ (position #\- token)))))
-                (if (user:saved-p user)
+                (if (user:saved-p :user user)
                     (authenticate-user user token)
                     (error 'auth-session-error :text (format nil "Unknown user: ~a" username) :code 2)))
               (error 'auth-session-error :text (format nil "Malformed token: ~a" token) :code 1))))))

@@ -27,7 +27,7 @@
 (defun handle-initiate (provider)
   (let* ((rt (get-request-token provider))
          (link (cl-oauth:make-authorization-uri (config-tree :verify :oauth provider :auth-endpoint) rt :callback-uri (get-callback))))
-    (session:field *radiance-session* "redirect" :value (get-redirect))
+    (session:field *radiance-session* "redirect" :value (server:referer))
     (session:field *radiance-session* "request-token" :value rt)
     (session:field *radiance-session* "provider" :value provider)
     (v:debug :verify.mechanism.oauth "Initiating OAuth handle: ~a" link)
@@ -79,7 +79,7 @@
        (session:end *radiance-session*)
        (let ((user (get-linked-user id provider)))
          (session:start user)
-         (user:action user "Login (OAuth)"))))
+         (user:action "Login (OAuth)" :user user))))
     
     (T (error 'auth-login-error :text "Nothing to do!" :code 10))))
 

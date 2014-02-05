@@ -16,7 +16,7 @@
 
 (defmethod print-object ((user verify-user) out)
   (print-unreadable-object (user out :type T)
-    (format out "~a~:[ UNSAVED~;~]" (username user) (user:saved-p user)))
+    (format out "~a~:[ UNSAVED~;~]" (username user) (user:saved-p :user user)))
   user)
 
 (define-interface-method user:current (&key default authenticate)
@@ -55,7 +55,7 @@
                 :sort `(("time" . ,(if oldest-first :ASC :DESC))) :limit n :skip 0)))
 
 (define-interface-method user:save (&key (user (user:current)))
-  (if (user:saved-p user)
+  (if (user:saved-p :user user)
       (dm:save (model user))
       (dm:insert (model user)))
   user)

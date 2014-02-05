@@ -8,15 +8,15 @@
 
 (core::m-define-api :trivial-core formats () (:method :GET)
   "Lists all the available API output formats."
-  (core::i-api-return :trivial-core 200 "Available output formats" (alexandria:hash-table-keys *radiance-api-formats*)))
+  (core::i-api-return :trivial-core 200 "Available output formats" :data (alexandria:hash-table-keys *radiance-api-formats*)))
 
 (core::m-define-api :trivial-core version () (:method :GET)
   "Show the current framework version."
-  (core::i-api-return :trivial-core 200 "Radiance Version" (asdf:component-version (context-module))))
+  (core::i-api-return :trivial-core 200 "Radiance Version" :data (asdf:component-version (context-module))))
 
 (core::m-define-api :trivial-core host () (:method :GET)
   "Lists information about the host machine."
-  (core::i-api-return :trivial-core 200 "Host information" 
+  (core::i-api-return :trivial-core 200 "Host information" :data
                       (plist->hash-table
                        :machine-instance (machine-instance)
                        :machine-type (machine-type)
@@ -28,11 +28,11 @@
 
 (core::m-define-api :trivial-core modules () (:method :GET)
   "Lists the currently loaded radiance modules."
-  (core::i-api-return :trivial-core 200 "Module listing" *radiance-modules*))
+  (core::i-api-return :trivial-core 200 "Module listing" :data *radiance-modules*))
 
 (core::m-define-api :trivial-core server () (:method :GET)
   "Returns information about the radiance server."
-  (core::i-api-return :trivial-core 200 "Server information"
+  (core::i-api-return :trivial-core 200 "Server information" :data
                       (plist->hash-table
                        :string (format nil "TyNET-~a-SBCL~a-α" (asdf:component-version (context-module)) (lisp-implementation-version))
                        :ports (config :ports)
@@ -45,11 +45,11 @@
 
 (core::m-define-api :trivial-core echo () (:method T)
   "Returns the map of POST and GET data sent to the server."
-  (core::i-api-return :trivial-core 200 "Echo data" (list :post (server:posts) :get (server:gets))))
+  (core::i-api-return :trivial-core 200 "Echo data" :data (list :post (server:posts) :get (server:gets))))
 
 (core::m-define-api :trivial-core user () (:method :GET)
   "Shows data about the current user."
-  (core::i-api-return :trivial-core 200 "User data"
+  (core::i-api-return :trivial-core 200 "User data" :data
                       (plist->hash-table
                        :authenticated (auth:authenticated-p)
                        :session-active (if *radiance-session* T NIL))))
@@ -68,7 +68,7 @@
 
 (core::m-define-api :trivial-core coffee () (:method :GET)
   "RFC-2324"
-  (core::i-api-return :trivial-core 418 "I'm a teapot."
+  (core::i-api-return :trivial-core 418 "I'm a teapot." :data
                       (plist->hash-table
                        :temperature (+ 65 (random 20))
                        :active T
@@ -80,7 +80,7 @@
 (core::m-define-api :trivial-core request () (:method :GET)
   "Returns information about the current request."
   (with-slots (subdomains domain port path) *radiance-request*
-    (core::i-api-return :trivial-core 200 "Request data"
+    (core::i-api-return :trivial-core 200 "Request data" :data
                         (plist->hash-table
                          :subdomains subdomains
                          :domain domain
@@ -97,7 +97,7 @@
 
 (core::m-define-api :trivial-core continuations () (:method :GET :access-branch "*")
   "Shows information about continuations for the current user."
-  (core::i-api-return :trivial-core 200 "Active continuations"
+  (core::i-api-return :trivial-core 200 "Active continuations" :data
                       (mapcar #'(lambda (cont)
                                   (plist->hash-table
                                    :id (id cont)
@@ -108,7 +108,7 @@
 
 (core::m-define-api :trivial-core index () (:method :GET)
   "Returns a map of all possible API calls and their docstring."
-  (core::i-api-return :trivial-core 200 "Api call index"
+  (core::i-api-return :trivial-core 200 "Api call index" :data
                       (let ((table (make-hash-table)))
                         (mapc #'(lambda (item-name)
                                   (setf (gethash item-name table)
@@ -117,7 +117,7 @@
                                                       (plist->hash-table
                                                        :method (if (string-equal "T" method) "ANY" method)
                                                        :module identifier
-                                                       :description (item-description item))))
+                                                       :description (item-documentation item))))
                                                 (hook-items :api item-name))))
                               (hooks :api))
                         table)))

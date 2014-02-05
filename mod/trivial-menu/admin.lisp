@@ -7,7 +7,7 @@
 (in-package :radiance-mod-trivial-menu)
 
 (core:define-api admin (action) (:access-branch "admin.menu.*")
-  (string-case:string-case ((server:post "action"))
+  (string-case:string-case (action)
     ("Add"
      (with-model (model pid title tooltip link sort) ("trivial-menu" NIL)
        (setf pid (parse-integer (server:post "pid"))

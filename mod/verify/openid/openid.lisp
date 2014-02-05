@@ -22,7 +22,7 @@
 (defun handle-initiate ()
   (let ((rp (get-relying-party)))
     (session:field *radiance-session* "relying-party" :value rp)
-    (session:field *radiance-session* "redirect" :value (radiance-mod-verify::get-redirect))
+    (session:field *radiance-session* "redirect" :value (server:referer))
     (server:redirect (cl-openid:initiate-authentication rp (server:post "openid_identifier")))))
 
 (defun handle-response ()
@@ -50,7 +50,7 @@
                      (let ((user (user:get (dm:field map "username"))))
                        (session:end *radiance-session*)
                        (session:start user)
-                       (user:action user "Login (OpenID)"))
+                       (user:action "Login (OpenID)" :user user))
                      (error 'auth-login-error :text "Account not linked!" :code 13)))
                (error 'auth-login-error :text "Authentication failed!" :code 11)))
        (cl-openid:openid-assertion-error (err)

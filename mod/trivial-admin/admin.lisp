@@ -60,7 +60,8 @@
                 (lambda ()
                   ,(if access-branch
                        `(progn
-                          (if (authorized-p ,access-branch)
+                          (ignore-errors (auth:authenticate))
+                          (if (user:check ,access-branch)
                               ,funcbody
                               (error-page 403)))
                        funcbody))

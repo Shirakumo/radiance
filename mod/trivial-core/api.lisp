@@ -44,7 +44,7 @@ request methods."
                                     () 'api-args-error :module ,identgens :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
            ,(when access-branch
               `(progn (ignore-errors (auth:authenticate))
-                      (assert (authorized-p ,access-branch)
+                      (assert (user:check ,access-branch)
                               () 'api-auth-error :module ,identgens :apicall ',name :text "Not authorized.")))
            ,function)))))
 
@@ -57,7 +57,7 @@ request methods."
         (progn
           (server:set-content-type (second format))
           (funcall (third format) data))
-        (api-format :none NIL))))
+        (core::i-api-format :trivial-core :none NIL))))
 
 (define-interface-method core:define-api-format (name content-type datavar &body body)
   (let ((name (make-keyword name)))
@@ -83,26 +83,26 @@ request methods."
          (format (make-keyword (string-upcase (or (server:get "format") (server:post "format") "json"))))
          (value  (handler-case 
                      (case (length pathparts)
-                       ((1 2) (api-return 200 (format NIL "Radiance API v~a" (asdf:component-version (context-module)))
-                                          (plist->hash-table :VERSION (asdf:component-version (context-module)))))
+                       ((1 2) (core:api-return 200 (format NIL "Radiance API v~a" (asdf:component-version (context-module)))
+                                               :data (plist->hash-table :VERSION (asdf:component-version (context-module)))))
                        (otherwise
                         (let* ((module (cadr pathparts))
                                (trigger (make-keyword (string-upcase (concatenate-strings (cdr pathparts) "/"))))
                                (hooks (hook-items :api trigger)))
                           (or (call-api module hooks)
-                              (api-return 204 "No return data")))))
+                              (core:api-return 204 "No return data")))))
                    (api-args-error (c)
-                     (api-return 400 "Invalid arguments"
-                                 (plist->hash-table :errortype (class-name (class-of c)) 
-                                                    :code (slot-value c 'code)
-                                                    :text (slot-value c 'text))))
+                     (core:api-return 400 "Invalid arguments"
+                                      :data (plist->hash-table :errortype (class-name (class-of c)) 
+                                                               :code (slot-value c 'code)
+                                                               :text (slot-value c 'text))))
                    (api-error (c)
-                     (api-return 500 "Api error"
-                                 (plist->hash-table :errortype (class-name (class-of c))
-                                                    :code (slot-value c 'code)
-                                                    :text (slot-value c 'text)))))))
+                     (core:api-return 500 "Api error"
+                                      :data (plist->hash-table :errortype (class-name (class-of c))
+                                                               :code (slot-value c 'code)
+                                                               :text (slot-value c 'text)))))))
     (if (string-equal (server:content-type) "none")
-        (api-format format value)
+        (core:api-format format value)
         value)))
 
 (defun identifier-and-method (item-identifier)
@@ -129,4 +129,4 @@ request methods."
        (appendf return (funcall (item-function item)))
      finally (return (if accepted
                          return
-                         (api-return 404 "Call not found")))))
+                         (core:api-return 404 "Call not found")))))

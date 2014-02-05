@@ -27,9 +27,9 @@
 (core:define-page main-logout #u"auth./logout" ()
   (ignore-errors (auth:authenticate))
   (when *radiance-session*
-    (user:action (session:user *radiance-session*) "Logout")
+    (user:action "Logout")
     (session:end *radiance-session*))
-  (server:redirect (get-redirect)))
+  (server:redirect (server:referer)))
 
 (core:define-page main-register #u"auth./register" (:lquery (template "verify/register.html"))
   (ignore-errors (auth:authenticate))
@@ -64,13 +64,13 @@
   (if (server:posts)
       (session:field *radiance-session* "post-data" :value (server:posts)))
   (handler-case
-      (with-post (action username displayname email
-                  hidden firstname address)
+      (server:with-posts (action username displayname email
+                          hidden firstname address)
         (if (string= action "Register")
             (if (and username (> (length username) 0)
                      email (> (length email) 0) (email-p email))
                 (let ((user (user:get username)))
-                  (if (not (user:saved-p user))
+                  (if (not (user:saved-p :user user))
                       (if (and (string= hidden "hidden")
                                (string= address "fixed")
                                (string= firstname ""))
@@ -88,7 +88,7 @@
                               (error 'auth-register-error :text "At least one login required!" :code 19))
                             (v:debug :verify.user "Creating new user ~a" username)
                             (dm:insert (model user))
-                            (user:action user "Register" :public T)
+                            (user:action "Register" :public T :user user)
                             (session:end *radiance-session*)
                             (session:start username)
                             (server:redirect (make-uri (config-tree :verify :register :endpoint))))

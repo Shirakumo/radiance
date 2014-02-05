@@ -19,14 +19,14 @@
 
 (core:define-page login #u"auth./login/password" ()
   (let ((user (user:get (server:post "username"))))
-    (if (user:saved-p user)
+    (if (user:saved-p :user user)
         (let ((model (dm:get-one "linked-passwords" (db:query (:= "username" (username user))))))
           (if model
               (let ((hash (make-password-hash (server:post "password") (dm:field model "salt") (dm:field model "hash-type"))))
                 (if (string= hash (dm:field model "hash"))
                     (progn (session:start user)
-                           (user:action user "Login (Password)")
-                           (server:redirect (get-redirect)))
+                           (user:action "Login (Password)" :user user)
+                           (server:redirect (server:referer)))
                     (error 'auth-login-error :text "Invalid username or password." :code 22)))
               (error 'auth-login-error :text "Invalid username or password." :code 21)))
         (error 'auth-login-error :text "Invalid username or password." :code 20))))

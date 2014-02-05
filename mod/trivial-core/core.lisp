@@ -30,7 +30,7 @@ with the hook name NAME."
            ,(if access-branch
                 `(progn
                    (ignore-errors (auth:authenticate))
-                   (if (authorized-p ,access-branch)
+                   (if (user:check ,access-branch)
                        ,funcbody
                        (error-page 403)))
                 funcbody))
