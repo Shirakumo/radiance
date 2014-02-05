@@ -83,28 +83,13 @@
            #:restart-server
            #:status)
   ;; site.lisp
-  (:export #:authenticated-p
-           #:authorized-p
-           #:user
-           #:get-redirect
-           #:static
-           #:template
-           #:read-data-file
-           #:error-page
+  (:export #:get-redirect
            #:upload-file
-           #:api-return
-           #:api-format
            #:with-post
            #:with-post-or-get
            #:with-header
            #:with-cookie
-           #:with-uploaded-file
-           #:define-page
-           #:define-file-link
-           #:define-api
-           #:define-api-format
-           #:save-to-db
-           #:validate-and-save)
+           #:with-uploaded-file)
   ;; standard-interfaces.lisp
   (:export #:with-fields
            #:with-model)
@@ -122,7 +107,11 @@
            #:getdf
            #:file-size
            #:assoc-all
-           #:walk-directory)
+           #:walk-directory
+           #:static
+           #:template
+           #:read-data-file
+           #:error-page)
   ;; trigger.lisp
   (:export #:hook-item
            #:name #:item-namespace #:item-identifier #:item-function #:item-description

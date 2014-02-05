@@ -6,7 +6,57 @@
 
 (in-package :radiance)
 
-(define-interface core)
+(define-interface core
+  (define-page (name uri (&key access-branch lquery identifier) &body body)
+      (:type :macro)
+      (:documentation "Define a new page for a given module.
+NAME has to be a symbol identifying the page call.
+
+URI should be an instance of URI, which will be used to
+identify if a given request matches for the page call. See
+MAKE-URI for more.
+
+ACCESS-BRANCH if supplied performs an automatic 
+AUTH:AUTHENTICATED-P check on the supplied access branch. As a
+consequence it might also invoke AUTH:AUTHENTICATE and modify
+*RADIANCE-SESSION*.
+
+LQUERY can be either a pathname to initialize lQuery with or T. 
+In both cases, the defined page will automatically trigger the 
+ (:user :lquery-post-processing) hook before finally returning
+the result of ($ (serialize)). The return value of the body is
+discarded. Both of these actions are not performed
+if the response's content is not-NIL."))
+  (define-api (name args (&key method access-branch identifier) &body body)
+      (:type :macro)
+      (:documentation "Define a new api function.
+NAME has to be a symbol identifying the api call path:
+ /api/IDENTIFIER/NAME
+
+ARGS should be a lambda-list limited to the &optional, &key
+and &aux operators. Note that due to the nature of HTTP
+requests, the order of arguments and the distinction between
+&optional and &key does not actually matter.
+
+METHOD should be one of T, :GET, :POST, :PUT, :PATCH, :DELETE.
+The same api function can be defined on multiple methods. In
+the case of GET, only GET variables are considered, similarly
+for POST. For all other functions, the POST takes precedence
+over GET, but both are considered.
+
+ACCESS-BRANCH if supplied performs an automatic authenticated-p
+check on the supplied access branch. As a consequence it will
+also invoke AUTH:AUTHENTICATE."))
+  (define-api-format (name content-type datavar &body body)
+      (:type :macro)
+      (:documentation "Define a new API output format function. The body of this should return a string, which is then used as the API response."))
+  (define-file-link (name uri pathspec &key content-type access-branch identifier)
+    (:type :macro)
+    (:documentation "Defines a link of a given URI to a file. Useful for static dispatching on files that cannot be in the static/ directory for one reason or another (e.g. favicon.ico, robots.txt)."))
+  (api-format (format data)
+    (:documentation "Invoke the requested api-format function as defined by DEFINE-API-FORMAT. Expects the data in form of a plist and the format as a keyword."))
+  (api-return (code text &key data)
+    (:documentation "Generates an API response in the proper format (:CODE code :TEXT text :TIME timestamp :DATA data).")))
 
 (define-interface server
   (request ()
@@ -74,10 +124,27 @@ An instance of this will be bound to *radiance-response* during dispatch."))
     (:documentation "Set the main HTTP response body."))
   (redirect (new-address &key response)
     (:documentation "Sets the HTTP Redirect header."))
+  (uploaded-file (post-parameter &key request)
+    (:documentation "Returns four values: 1) pathname of the temporary file that was uploaded 2) a string of the original filename 3) the supplied mime-type of the file 4) the file size in bytes."))
   (serve-file (pathname &key content-type response)
     (:documentation "Send a file from disk. If content-type is NIL, it is attempted to determine it from the file."))
   (set-handler-function (handler-fun)
-    (:documentation "Sets the handler function that the request and response instances are dispatched to. Should default to RADIANCE:HANDLER .")))
+    (:documentation "Sets the handler function that the request and response instances are dispatched to. Should default to RADIANCE:HANDLER ."))
+  (with-gets (vars &body body)
+    (:type :macro)
+    (:documentation "Same as WITH-SLOTS but for GET variables."))
+  (with-posts (vars &body body)
+    (:type :macro)
+    (:documentation "Same as WITH-SLOTS but for POST variables."))
+  (with-posts-or-gets (vars &body body)
+    (:type :macro)
+    (:documentation "Same as WITH-SLOTS but for POST or GET variables."))
+  (with-headers (vars &body body)
+    (:type :macro)
+    (:documentation "Same as WITH-SLOTS but for headers."))
+  (with-cookies (vars &body body)
+    (:type :macro)
+    (:documentation "Same as WITH-SLOTS but for cookies. Note that SETF-ing a variable bound by this will use the default values of SERVER:SET-COOKIE.")))
 
 (define-interface dispatcher
   (dispatch (request)
@@ -93,31 +160,35 @@ An instance of this will be bound to *radiance-response* during dispatch."))
 
 (define-interface user
   (class ()
-   (:documentation "User base class")
-   (:type :class))
+    (:documentation "User base class")
+    (:type :class))
+  (current (&key default authenticate)
+    (:documentation "Returns the currently logged in user or if provided a default value. If authenticate is non-NIL, it will issue an AUTH:AUTHENTICATE call first."))
   (get (username)
     (:documentation "Returns the user object of an existing user or creates a new hull instance."))
   (field (user field &key value)
     (:documentation "Set or get a user data field.")
     (:type :accessor) (:class class))
-  (save (user)
-    (:documentation "Save the user to the database."))
-  (saved-p (user)
-    (:documentation "Returns T if the user is not a hull instance, otherwise NIL."))
-  (check (user branch)
-    (:documentation "Checks if the user has access to that permissions branch"))
-  (grant (user branch)
-    (:documentation "Give permission to a certain branch."))
+  (save (&key user)
+    (:documentation "Save the user to the database. USER defaults to USER:CURRENT."))
+  (saved-p (&key user)
+    (:documentation "Returns T if the user is not a hull instance, otherwise NIL. USER defaults to USER:CURRENT."))
+  (check (branch &key user)
+    (:documentation "Checks if the user has access to that permissions branch. USER defaults to USER:CURRENT."))
+  (grant (branch &key user)
+    (:documentation "Give permission to a certain branch. USER defaults to USER:CURRENT."))
   (prohibit (user branch)
     (:documentation "Reclaim/Prohibit permission to a certain branch."))
-  (action (user action &key public)
-    (:documentation "Record an action for the user. If public is NIL, the action should not be visible to anyone else.."))
-  (get-actions (user n &key public oldest-first)
-    (:documentation "Returns a list of n cons cells, with the car being the action and the cdr being the time of the action.")))
+  (action (action &key user public)
+    (:documentation "Record an action for the user. If PUBLIC is NIL, the action should not be visible to anyone else. USER defaults to USER:CURRENT."))
+  (actions (n &key user public oldest-first)
+    (:documentation "Returns a list of N cons cells, with the car being the action and the cdr being the time of the action. USER defaults to USER:CURRENT.")))
 
 (define-interface auth
   (authenticate ()
     (:documentation "Authenticate the current user using whatever method applicable. Returns the user object."))
+  (authenticated-p (&key session)
+    (:documentation "Returns T if the current user is using an authenticated session, NIL otherwise."))
   (page-login (&key redirect)
     (:documentation "Returns an URL to the login page of the auth system. If redirect is provided, the user will be taken to that page afterwards."))
   (page-logout (&key redirect)
@@ -256,7 +327,7 @@ of this is always the last statement in the body, even if save is non-NIL."
 
 (define-interface admin
   (define-panel (name category (&key lquery access-branch menu-icon menu-tooltip) &body body)
-    (:type :MACRO)))
+      (:type :MACRO)))
 
 (define-interface parser
   (parse (text)

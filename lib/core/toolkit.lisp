@@ -227,3 +227,27 @@ If if-does-not-exist is :error, an error is thrown in case the directory cannot 
         collect (if (and (symbolp element) (not (keywordp element)) (not (null element)))
                     (intern (string-upcase element) package)
                     element)))
+
+(declaim (inline static))
+(defun static (path)
+  "Create pathname to static resource."
+  (merge-pathnames path (merge-pathnames "data/static/" (pathname (config :root)))))
+
+(declaim (inline template))
+(defun template (path)
+  "Create pathname to template."
+  (merge-pathnames path (merge-pathnames "data/template/" (pathname (config :root)))))
+
+(defun read-data-file (pathspec &key (if-does-not-exist :ERROR))
+  "Returns the file contents in string format. Any path is relative to the radiance data directory."
+  (v:trace :radiance.server.site "Reading data file: ~a" pathspec)
+  (with-open-file (stream (merge-pathnames pathspec (merge-pathnames "data/" (pathname (config :root)))) :if-does-not-exist if-does-not-exist)
+    (let ((seq (make-array (file-length stream) :element-type 'character :fill-pointer t)))
+      (setf (fill-pointer seq) (read-sequence seq stream))
+      seq)))
+
+(declaim (inline error-page))
+(defun error-page (errorcode)
+  "Signals a condition that provokes the requested error page."
+  (v:debug :radiance.server.request "Erroring out to ~a" errorcode)
+  (error 'error-page :code errorcode :text "Requested error page."))
