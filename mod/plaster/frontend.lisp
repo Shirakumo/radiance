@@ -127,7 +127,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
             ($ "#viewselect option[value=2]" (remove)))
           (when annotate
             ($ "#annotateinfo" (text (format NIL "Annotating paste ~a." (id->hash (dm:field annotate "_id")))))
-            ($ "#viewselect" (replace-with "public/private depending on its parent"))
+            ($ "#viewselect" (parent) (replace-with "public/private depending on its parent"))
             ($ "#annotateid" (attr :value (id->hash (dm:field annotate "_id"))))
             (when (= (dm:field annotate "view") 3)
               ($ "#viewpassword" (attr :value (server:get "password")))))
