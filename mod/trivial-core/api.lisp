@@ -6,7 +6,7 @@
 
 (in-package :radiance)
 
-(define-interface-method core:define-api (name args (&key (method T) access-branch (identifier `(context-module-identifier))) &body body)
+(define-interface-method core:define-api (name args options &body body)
   "Define a new api function.
 See interface definition for a description of the arguments.
 
@@ -15,37 +15,38 @@ with the hook name format of IDENTIFIER/NAME. The module
 identifier is modified into the form of IDENTIFIER:METHOD to 
 account for the possibility of multiple-dispatch on different
 request methods."
-  (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
+  
   (assert (symbolp name) () "Name has to be a symbol.")
   (assert (listp args) () "Args has to be a list.")
   (assert (not (find-any '(&allow-other-keys &body &environment &rest &whole) args))
           () "Only &optional, &key and &aux operators are allowed here.")
-
-  (let* ((argsgens (gensym "ARGUMENTS"))
-         (arggens (gensym "ARG"))
-         (identgens (gensym "IDENTIFIER"))
-         (args (cons '&key (remove-if #'(lambda (a) (find a '(&key &optional))) args)))
-         (documentation (if (stringp (car body)) NIL))
-         (methodfun (case method (:POST 'server:post) (:GET 'server:get) (otherwise 'server:post-or-get)))
-         (function `(apply #'(lambda ,args ,@body)
-                           (let ((,argsgens ()))
-                             ,@(mapcar #'(lambda (arg)
-                                           `(when-let (,arggens (,methodfun ,(string-downcase arg)))
-                                              (push ,arggens ,argsgens)
-                                              (push ,(make-keyword arg) ,argsgens)))
-                                       (extract-lambda-vars args))
-                             ,argsgens))))
-    `(let ((,identgens ,identifier))
-       (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,identgens)
-       (define-hook (:api (make-keyword (format NIL "~a/~a" ,identgens ',name))) (:identifier (make-keyword (format NIL "~a:~a" ,identgens ,method)) :documentation ,documentation)
-         ,@(loop for arg in args until (lambda-keyword-p arg)
-                 collect `(assert (not (null (,methodfun ,(string-downcase arg))))
-                                  () 'api-args-error :module ,identgens :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
-         ,(when access-branch
-            `(progn (ignore-errors (auth:authenticate))
-                    (assert (authorized-p ,access-branch)
-                            () 'api-auth-error :module ,identgens :apicall ',name :text "Not authorized.")))
-         ,function))))
+  (destructuring-bind (&key (method T) access-branch (identifier `(context-module-identifier))) options
+    (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
+    (let* ((argsgens (gensym "ARGUMENTS"))
+           (arggens (gensym "ARG"))
+           (identgens (gensym "IDENTIFIER"))
+           (args (cons '&key (remove-if #'(lambda (a) (find a '(&key &optional))) args)))
+           (documentation (if (stringp (car body)) NIL))
+           (methodfun (case method (:POST 'server:post) (:GET 'server:get) (otherwise 'server:post-or-get)))
+           (function `(apply #'(lambda ,args ,@body)
+                             (let ((,argsgens ()))
+                               ,@(mapcar #'(lambda (arg)
+                                             `(when-let (,arggens (,methodfun ,(string-downcase arg)))
+                                                (push ,arggens ,argsgens)
+                                                (push ,(make-keyword arg) ,argsgens)))
+                                         (extract-lambda-vars args))
+                               ,argsgens))))
+      `(let ((,identgens ,identifier))
+         (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,identgens)
+         (define-hook (:api (make-keyword (format NIL "~a/~a" ,identgens ',name))) (:identifier (make-keyword (format NIL "~a:~a" ,identgens ,method)) :documentation ,documentation)
+           ,@(loop for arg in args until (lambda-keyword-p arg)
+                   collect `(assert (not (null (,methodfun ,(string-downcase arg))))
+                                    () 'api-args-error :module ,identgens :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
+           ,(when access-branch
+              `(progn (ignore-errors (auth:authenticate))
+                      (assert (authorized-p ,access-branch)
+                              () 'api-auth-error :module ,identgens :apicall ',name :text "Not authorized.")))
+           ,function)))))
 
 (define-interface-method core:api-return (code text &key data)
   (plist->hash-table :CODE code :TEXT text :TIME (get-unix-time) :DATA data))
