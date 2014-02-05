@@ -6,7 +6,77 @@
 
 (in-package :radiance)
 
-(define-page api #u"/api/" ()
+(define-interface-method core:define-api (name args (&key (method T) access-branch (identifier `(context-module-identifier))) &body body)
+  "Define a new api function.
+See interface definition for a description of the arguments.
+
+DEFINE-API works by creating a new hook on the :API namespace
+with the hook name format of IDENTIFIER/NAME. The module
+identifier is modified into the form of IDENTIFIER:METHOD to 
+account for the possibility of multiple-dispatch on different
+request methods."
+  (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
+  (assert (symbolp name) () "Name has to be a symbol.")
+  (assert (listp args) () "Args has to be a list.")
+  (assert (not (find-any '(&allow-other-keys &body &environment &rest &whole) args))
+          () "Only &optional, &key and &aux operators are allowed here.")
+
+  (let* ((argsgens (gensym "ARGUMENTS"))
+         (arggens (gensym "ARG"))
+         (identgens (gensym "IDENTIFIER"))
+         (args (cons '&key (remove-if #'(lambda (a) (find a '(&key &optional))) args)))
+         (documentation (if (stringp (car body)) NIL))
+         (methodfun (case method (:POST 'server:post) (:GET 'server:get) (otherwise 'server:post-or-get)))
+         (function `(apply #'(lambda ,args ,@body)
+                           (let ((,argsgens ()))
+                             ,@(mapcar #'(lambda (arg)
+                                           `(when-let (,arggens (,methodfun ,(string-downcase arg)))
+                                              (push ,arggens ,argsgens)
+                                              (push ,(make-keyword arg) ,argsgens)))
+                                       (extract-lambda-vars args))
+                             ,argsgens))))
+    `(let ((,identgens ,identifier))
+       (v:debug :radiance.server.site "Defining API page ~a for ~a" ',name ,identgens)
+       (define-hook (:api (make-keyword (format NIL "~a/~a" ,identgens ',name))) (:identifier (make-keyword (format NIL "~a:~a" ,identgens ,method)) :documentation ,documentation)
+         ,@(loop for arg in args until (lambda-keyword-p arg)
+                 collect `(assert (not (null (,methodfun ,(string-downcase arg))))
+                                  () 'api-args-error :module ,identgens :apicall ',name :text (format NIL "Argument ~a required." ',arg)))
+         ,(when access-branch
+            `(progn (ignore-errors (auth:authenticate))
+                    (assert (authorized-p ,access-branch)
+                            () 'api-auth-error :module ,identgens :apicall ',name :text "Not authorized.")))
+         ,function))))
+
+(define-interface-method core:api-return (code text &key data)
+  (plist->hash-table :CODE code :TEXT text :TIME (get-unix-time) :DATA data))
+
+(define-interface-method core:api-format (format data)
+  (let ((format (gethash format *radiance-api-formats*)))
+    (if format
+        (progn
+          (server:set-content-type (second format))
+          (funcall (third format) data))
+        (api-format :none NIL))))
+
+(define-interface-method core:define-api-format (name content-type datavar &body body)
+  (let ((name (make-keyword name)))
+    `(progn
+       (v:debug :radiance.server.site "Defining new api format ~a, ~a" ,name ,content-type)
+       (setf (gethash ,name *radiance-api-formats*)
+             (list ,name ,content-type
+                   (lambda (,datavar) ,@body))))))
+
+(core::m-define-api-format :trivial-core none "text/plain; charset=utf-8" data
+  (declare (ignore data))
+  "Unknown format.")
+
+(core::m-define-api-format :trivial-core json "application/json" data
+  (cl-json:encode-json-to-string data))
+
+(core::m-define-api-format :trivial-core plist "text/x-lisp-plist" data
+  (write-to-string data))
+
+(core::m-define-page :trivial-core api #u"/api/" ()
   (server:set-content-type "none")
   (let* ((pathparts (split-sequence:split-sequence #\/ (path *radiance-request*)))
          (format (make-keyword (string-upcase (or (server:get "format") (server:post "format") "json"))))
@@ -59,122 +129,3 @@
      finally (return (if accepted
                          return
                          (api-return 404 "Call not found")))))
-
-(define-api-format json "application/json" data
-  (cl-json:encode-json-to-string data))
-
-(define-api formats () (:method :GET)
-  "Lists all the available API output formats."
-  (api-return 200 "Available output formats" (alexandria:hash-table-keys *radiance-api-formats*)))
-
-(define-api version () (:method :GET)
-  "Show the current framework version."
-  (api-return 200 "Radiance Version" (asdf:component-version (context-module))))
-
-(define-api host () (:method :GET)
-  "Lists information about the host machine."
-  (api-return 200 "Host information" 
-              (plist->hash-table
-               :machine-instance (machine-instance)
-               :machine-type (machine-type)
-               :machine-version (machine-version)
-               :software-type (software-type)
-               :software-version (software-version)
-               :lisp-implementation-type (lisp-implementation-type)
-               :lisp-implementation-version (lisp-implementation-version))))
-
-(define-api modules () (:method :GET)
-  "Lists the currently loaded radiance modules."
-  (api-return 200 "Module listing" *radiance-modules*))
-
-(define-api server () (:method :GET)
-  "Returns information about the radiance server."
-  (api-return 200 "Server information"
-              (plist->hash-table
-               :string (format nil "TyNET-~a-SBCL~a-α" (asdf:component-version (context-module)) (lisp-implementation-version))
-               :ports (config :ports)
-               :uptime (- (get-unix-time) *radiance-startup-time*)
-               :request-count *radiance-request-count*
-               :request-total *radiance-request-total*)))
-
-(define-api noop () (:method :GET)
-  "Returns a NOOP page.")
-
-(define-api echo () (:method T)
-  "Returns the map of POST and GET data sent to the server."
-  (api-return 200 "Echo data" (list :post (server:posts) :get (server:gets))))
-
-(define-api user () (:method :GET)
-  "Shows data about the current user."
-  (api-return 200 "User data"
-              (plist->hash-table
-               :authenticated (authenticated-p)
-               :session-active (if *radiance-session* T NIL))))
-
-(define-api error () (:method :GET)
-  "Generates an api-error page."
-  (error 'api-error :text "Api error as requested" :code -42))
-
-(define-api internal-error () (:method :GET)
-  "Generates an internal-error page."
-  (error 'radiance-error :text "Internal error as requested" :code -42))
-
-(define-api unexpected-error () (:method :GET)
-  "Generates an unexpected error page."
-  (error "Unexpected error as requested"))
-
-(define-api coffee () (:method :GET)
-  "RFC-2324"
-  (api-return 418 "I'm a teapot."
-              (plist->hash-table
-               :temperature (+ 65 (random 20))
-               :active T
-               :capacity 1
-               :content (/ (+ (random 60) 40) 100)
-               :flavour (random-elt '("rose hip" "peppermint" "english breakfast" "green tea" "roiboos"))
-               :additives (random-elt '("none" "none" "none" "none" "none" "sugar" "sugar" "sugar" "lemon" "cream" "milk")))))
-
-(define-api request () (:method :GET)
-  "Returns information about the current request."
-  (with-slots (subdomains domain port path) *radiance-request*
-    (api-return 200 "Request data"
-                (plist->hash-table
-                 :subdomains subdomains
-                 :domain domain
-                 :port port
-                 :path path
-                 :remote-addr (server:remote-address)
-                 :remote-port (server:remote-port)
-                 :referer (server:referer)
-                 :method (server:request-method)
-                 :post (server:posts)
-                 :get (server:gets)
-                 :cookie (server:cookies)
-                 :header (server:headers)))))
-
-(define-api continuations () (:method :GET :access-branch "*")
-  "Shows information about continuations for the current user."
-  (api-return 200 "Active continuations"
-              (mapcar #'(lambda (cont)
-                          (plist->hash-table
-                           :id (id cont)
-                           :name (name cont)
-                           :timeout (timeout cont)
-                           :request (format NIL "~a" (request cont))))
-                      (continuations))))
-
-(define-api index () (:method :GET)
-  "Returns a map of all possible API calls and their docstring."
-  (api-return 200 "Api call index"
-              (let ((table (make-hash-table)))
-                (mapc #'(lambda (item-name)
-                          (setf (gethash item-name table)
-                                (mapcar #'(lambda (item)
-                                            (multiple-value-bind (identifier method) (identifier-and-method (item-identifier item))
-                                              (plist->hash-table
-                                               :method (if (string-equal "T" method) "ANY" method)
-                                               :module identifier
-                                               :description (item-description item))))
-                                        (hook-items :api item-name))))
-                        (hooks :api))
-                table)))

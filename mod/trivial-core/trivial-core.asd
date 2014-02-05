@@ -17,5 +17,6 @@
   :defsystem-depends-on (:radiance)
   :implement ((:core :trivial-core))
   :depends-on (:radiance-dispatcher)
-  :components ((:file "api")
-               (:file "core")))
+  :components ((:file "core")
+               (:file "api")
+               (:file "api-calls")))
