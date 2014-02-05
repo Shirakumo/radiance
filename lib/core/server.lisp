@@ -114,7 +114,7 @@
         (trigger :server :init)
 
         (if (user:implementation)
-            (user:action (user:get "sys") "INIT" :public T)
+            (user:action "INIT" :public T :user (user:get "sys"))
             (v:warn :radiance.server.status "No user implementation defined!"))
 
         (v:info :radiance.server.status "Starting listeners...")
@@ -134,7 +134,7 @@
         (trigger :server :shutdown)
         
         (when (user:implementation)
-          (user:action (user:get "sys") "SHUTDOWN" :public T))
+          (user:action "SHUTDOWN" :public T :user (user:get "sys")))
 
         (when (db:implementation)
           (v:info :radiance.server.status "Disconnecting Database...")
