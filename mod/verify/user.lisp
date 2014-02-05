@@ -19,6 +19,11 @@
     (format out "~a~:[ UNSAVED~;~]" (username user) (user:saved-p user)))
   user)
 
+(define-interface-method user:current (&key default authenticate)
+  (when authenticate (ignore-errors (auth:authenticate)))
+  (or (when *radiance-session* (session:user *radiance-session*))
+      default))
+
 (define-interface-method user:get ((username symbol))
   (user:get (string-downcase (symbol-name username))))
 
@@ -37,10 +42,10 @@
       (setf (getdf (model user) field) value)
       (dm:field (model user) field)))
 
-(define-interface-method user:action ((user verify-user) action &key public)
+(define-interface-method user:action (action &key (user (user:current)) public)
   (db:insert "verify-actions" `(("username" . ,(username user)) ("action" . ,action) ("public" . ,(format NIL "~a" public)) ("time" . ,(get-unix-time)))))
 
-(define-interface-method user:get-actions ((user verify-user) n &key public oldest-first)
+(define-interface-method user:actions (n &key (user (user:current)) public oldest-first)
   (let ((query (if public 
                    (db:query (:= "username" (username user)) (:= "public" "T"))
                    (db:query (:= "username" (username user))))))
@@ -49,16 +54,16 @@
                                          (assoc "time" column :test #'string=)))
                 :sort `(("time" . ,(if oldest-first :ASC :DESC))) :limit n :skip 0)))
 
-(define-interface-method user:save ((user verify-user))
+(define-interface-method user:save (&key (user (user:current)))
   (if (user:saved-p user)
       (dm:save (model user))
       (dm:insert (model user)))
   user)
 
-(define-interface-method user:saved-p ((user verify-user))
+(define-interface-method user:saved-p (&key (user (user:current)))
   (not (dm:hull-p (model user))))
 
-(define-interface-method user:check ((user verify-user) branch)
+(define-interface-method user:check (branch &key (user (user:current)))
   (v:trace :verify.user "Checking permissions of ~a for ~a" user branch)
   (or
    (block user-check
@@ -76,12 +81,12 @@
                                   (return-from user-check branch)))))))
    NIL))
 
-(define-interface-method user:grant ((user verify-user) branch)
+(define-interface-method user:grant (branch &key (user (user:current)))
   (v:debug :verify.user "Granting permissions for ~a: ~a" user branch)
   (setf (getdf user "perms")
         (format nil "~:[~;~:*~a~%~]~a" (user:field user "perms") branch)))
 
-(define-interface-method user:prohibit ((user verify-user) branch)
+(define-interface-method user:prohibit (branch &key (user (user:current)))
   (let ((perms (user:field user "perms"))
         (branch (split-sequence:split-sequence #\. branch))
         (to-remove ()))

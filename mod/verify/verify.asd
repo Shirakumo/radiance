@@ -29,13 +29,14 @@
   :author "Nicolas Hafner" 
   :version "0.0.1"
   :license "Artistic" 
-  :homepage "http://tymoon.eu"  
+  :homepage "http://tymoon.eu"
+  :serial T
   :components ((:file "user")
-               (:file "auth" :depends-on ("user"))
-               (:file "session" :depends-on ("user"))
-               (:file "sites" :depends-on ("auth" "session"))
-               (:file "admin" :depends-on ("user" "session"))
-               (:file "api" :depends-on ("user" "session")))
+               (:file "session")
+               (:file "auth")
+               (:file "sites")
+               (:file "admin")
+               (:file "api"))
   :depends-on (:split-sequence
                :radiance-crypto
                :uuid

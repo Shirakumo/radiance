@@ -46,6 +46,9 @@
 
 (define-condition auth-session-error (auth-error) ())
 
+(define-interface-method auth:authenticated-p (&key (session *radiance-session*))
+  (and session (session:user session) (user:saved-p (session:user session)) (session:active-p session))))
+
 (define-interface-method auth:authenticate ()
   (let ((token (server:cookie "token")))
     (if (and token (> (length token) 0) (not *radiance-session*))
