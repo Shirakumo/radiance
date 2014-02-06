@@ -41,7 +41,9 @@
 *** TODO Start concept phase.
 ** Reader
 *** TODO Start concept phase.
-    
+** Verify
+*** TODO Rewrite mechanisms.
+*** TODO Add Google Authenticator mechanism.
 * lQuery
   Todo list for improvements related to lQuery.
 ** TODO Add fast saving and loding mechanisms.
