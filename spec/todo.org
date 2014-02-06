@@ -18,24 +18,27 @@
     - State "DONE"       from "TODO"       [2014-01-15 Wed 23:24]
 *** DONE Fix all other modules for the new system.
     - State "DONE"       from "TODO"       [2014-01-20 Mon 11:00]
-*** TODO Test all modules and fix potential problems.
+*** DONE Test all modules and fix potential problems.
+    - State "DONE"       from "TODO"       [2014-01-31 Fri 09:11]
+*** TODO Fix issue with SETF-ing the interface macros that expand to FUNCALL/APPLY.
 *** TODO Add automated caching system.
-    
+*** TODO Write documentation and specification for standard interfaces.
+** Plaster
+*** TODO Finish admin panel
+*** TODO Finish user panel
+*** TODO Add timeout / limits / captcha
+*** TODO Add pastebin import
 ** Trivial-Menu
 *** TODO Add ability to use auth tests ore even arbitrary code snippets on menu display.
-    
 ** Verify
 *** TODO Add API pages for users, sessions, etc.
-    
 ** Kanji
 *** TODO Start the layouting process.
 *** TODO Implement easy to use back-end for adding and manipulating the sequence.
 *** TODO Add sequence generation tool.
 *** TODO Add compound-tree generation tool.
-    
 ** Purplish
 *** TODO Start concept phase.
-    
 ** Reader
 *** TODO Start concept phase.
     
