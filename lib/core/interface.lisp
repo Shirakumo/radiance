@@ -32,21 +32,16 @@ BODY         --- forms."
   (hash-table-keys *radiance-component-expanders*))
 
 (define-interface-component-expander class (classname slots options package-name)
-    (let ((slotsgens (gensym "SLOTS"))
-          (tmpgens (gensym "TEMP"))
-          (pkg-class (gensym "PKG-CLASS"))
-          (superclasses (second (assoc :superclasses options))))
-      `(let ((,pkg-class (find-symbol ,(format NIL "~a" classname) ',package-name))
-             (,slotsgens (loop for ,tmpgens in ',slots
-                               collect (intern-list-symbols ,tmpgens ',package-name))))
-         `(defclass ,,pkg-class ,',superclasses ,,slotsgens ,',@(remove-if #'(lambda (a) (find a '(:type :superclasses))) options :key #'car)))))
+    (let ((superclasses (second (assoc :superclasses options)))
+          (pkg-class (find-symbol (format NIL "~a" classname) package-name))
+          (slots (loop for tmp in slots collect (intern-list-symbols tmp package-name))))
+      `(defclass ,pkg-class ,superclasses ,slots ,@(remove-if #'(lambda (a) (find a '(:type :superclasses))) options :key #'car))))
 
 (define-interface-component-expander function (funcname args options package-name)
   (with-gensyms ((wholegens "WHOLE"))
     (let* ((documentation (second (assoc :documentation options)))
            (args (make-key-extensible args))
            (argsgeneric (flatten-lambda-list args))
-           (call-function (if (or (find '&rest args)) 'apply 'funcall))
            (pkg-function (find-symbol (string funcname) package-name))
            (pkg-method (intern (format NIL "I-~a" funcname) package-name))
            (pkg-impl-var (find-symbol "*IMPLEMENTATION*" package-name)))
@@ -55,7 +50,7 @@ BODY         --- forms."
          (defmacro ,pkg-function (&whole ,wholegens ,@args)
            ,@(when documentation (list documentation))
            (declare (ignore ,@(extract-macro-lambda-vars args)))
-           `(,',call-function #',',pkg-method ,',pkg-impl-var ,@(cdr ,wholegens)))))))
+           `(,',pkg-method ,',pkg-impl-var ,@(cdr ,wholegens)))))))
 
 (define-interface-component-expander macro (funcname args options package-name)
   (with-gensyms ((wholegens "WHOLE") (modulegens "MODULE"))
@@ -81,7 +76,7 @@ BODY         --- forms."
     (let* ((class-name (second (assoc :CLASS options)))
            (pkg-class (find-symbol (string-upcase class-name) package-name))
            (pkg-function (find-symbol (string funcname) package-name))
-           (pkg-method (find-symbol (format NIL "I-~a" funcname) package-name)))
+           (pkg-method (intern (format NIL "I-~a" funcname) package-name)))
       (assert class-name () "Class-name required for accessor definition.")
       `(progn
          ,(funcall (get-interface-component-expander :function) funcname args options package-name)
