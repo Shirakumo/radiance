@@ -7,8 +7,8 @@
 (in-package :radiance)
 
 (define-condition radiance-error (error)
-  ((text :initarg :text :initform "Undefined Error")
-   (code :initarg :code :initform -1))
+  ((text :initarg :text :initform "Undefined Error" :accessor text)
+   (code :initarg :code :initform -1 :accessor code))
   (:report (lambda (c s) (format s "~a: ~a (E~4d)" 
                                  (class-name (class-of c))
                                  (slot-value c 'text)
