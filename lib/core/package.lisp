@@ -59,6 +59,7 @@
            #:+unix-epoch-difference+)
   ;; interface.lisp
   (:export #:define-interface
+           #:define-interface-extension
            #:define-interface-method
            #:define-interface-component-expander
            #:get-interface-component-expander

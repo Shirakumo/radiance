@@ -88,6 +88,17 @@ BODY         --- forms."
          (defmethod (setf ,pkg-method) (,valuegens ,identifiergens (,instancegens ,pkg-class) ,fieldgens)
            (,pkg-method ,identifiergens ,instancegens ,fieldgens :value ,valuegens))))))
 
+(defun generate-component-expansions (name component-declarations)
+  (loop for declaration in component-declarations
+        collect (destructuring-bind (specified-name args &rest options) declaration
+                  (let* ((component-type (or (second (assoc :type options)) :function))
+                         (function (get-interface-component-expander component-type)))
+                    (if function
+                        (funcall function specified-name args options name)
+                        (error 'no-such-interface-component-error
+                               :interface-component component-type
+                               :interface name))))))
+
 (defmacro interface-expander (name component-declarations)
   (with-gensyms ((new-impl-gens "NEW-IMPL") (provided-gens "PROVIDED"))
     (let ((pkg-impl-var (find-symbol "*IMPLEMENTATION*" name))
@@ -99,15 +110,7 @@ BODY         --- forms."
            (if ,provided-gens
                (setf ,pkg-impl-var ,new-impl-gens)
                ,pkg-impl-var))
-         ,@(loop for declaration in component-declarations
-                 collect (destructuring-bind (specified-name args &rest options) declaration
-                           (let* ((component-type (or (second (assoc :type options)) :function))
-                                  (function (get-interface-component-expander component-type)))
-                             (if function
-                                 (funcall function specified-name args options name)
-                                 (error 'no-such-interface-component-error
-                                        :interface-component component-type
-                                        :interface name)))))))))
+         ,@(generate-component-expansions name component-declarations)))))
 
 (defmacro define-interface (name &body component-declarations)
   "Define a new implementation mechanism.
@@ -149,6 +152,17 @@ depends on the component-expander."
          :class :interface  :interface-name ,(find-symbol (string-upcase name) :KEYWORD))
        (interface-expander ,name ,component-declarations)
        (find-package ',name))))
+
+(defmacro define-interface-extension (name &body component-declarations)
+  "Define an extension to an existing interface, adding components.
+See DEFINE-INTERFACE for options."
+  (assert (symbolp name) () "Name has to be a symbol.")
+  (let ((package (find-package name)))
+    (assert package () "Name does not designate any package.")
+    (assert (find-symbol "*IMPLEMENTATION*" package) () "Supplied package does not appear to be an interface.")
+    `(progn
+       ,@(generate-component-expansions name component-declarations)
+       ,package)))
 
 (defmacro define-interface-method (function argslist &body body)
   "Defines a new implementation of an interface function.
