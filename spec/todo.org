@@ -22,7 +22,8 @@
     - State "DONE"       from "TODO"       [2014-01-31 Fri 09:11]
 *** DONE Rewrite interface macro to not be a mess of backquotes.
     - State "DONE"       from "TODO"       [2014-02-07 Fri 11:16]
-*** TODO Fix issue with SETF-ing the interface macros that expand to FUNCALL/APPLY.
+*** DONE Fix issue with SETF-ing the interface macros that expand to FUNCALL/APPLY.
+    - State "DONE"       from "TODO"       [2014-02-07 Fri 14:07]
 *** TODO Add automated caching system.
 *** TODO Write documentation and specification for standard interfaces.
 ** Plaster
