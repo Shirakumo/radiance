@@ -6,20 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.verify
   (:nicknames :radiance-mod-verify)
-  (:use :cl :radiance :lquery :alexandria)
-  (:export :username
-           :verify-auth 
-           :verify-user 
-           :verify-session
-           :defmechanism 
-           :show-login 
-           :show-register
-           :show-options
-           :handle-register
-           :page-login
-           :page-register
-           :auth-login-error
-           :auth-register-error))
+  (:use :cl :radiance :lquery :alexandria))
 (in-package :radiance-mod-verify)
 
 (asdf:defsystem verify
@@ -34,18 +21,20 @@
   :components ((:file "user")
                (:file "session")
                (:file "auth")
+               (:file "mechanism")
                (:file "sites")
                (:file "admin")
                (:file "api"))
-  :depends-on (:split-sequence
-               :radiance-crypto
-               :uuid
-               :radiance-database
+  :depends-on (:radiance-database
                :radiance-data-model
                :radiance-dispatcher
                :radiance-admin
                :radiance-server
-               :uibox)
+               :split-sequence
+               :radiance-crypto
+               :uuid
+               :uibox
+               :closer-mop)
   :implement ((:user :verify)
               (:session :verify)
               (:auth :verify)))
