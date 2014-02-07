@@ -15,4 +15,5 @@
         t))))
 
 (define-indentation 'define-interface '(4 &rest (&whole 2 2 &lambda &body)))
+(define-indentation 'define-interface-extension '(4 &rest (&whole 2 2 &lambda &body)))
 (initialize-slime)

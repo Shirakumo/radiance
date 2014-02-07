@@ -42,7 +42,7 @@ BODY         --- forms."
     (let* ((documentation (second (assoc :documentation options)))
            (args (make-key-extensible args))
            (argsgeneric (flatten-lambda-list args))
-           (pkg-function (find-symbol (string funcname) package-name))
+           (pkg-function (intern (string funcname) package-name))
            (pkg-method (intern (format NIL "I-~a" funcname) package-name))
            (pkg-impl-var (find-symbol "*IMPLEMENTATION*" package-name)))
       `(progn
@@ -57,7 +57,7 @@ BODY         --- forms."
     (let* ((documentation (second (assoc :documentation options)))
            (args (make-key-extensible args))
            (argsgeneric (macro-lambda-list->generic-list args))
-           (pkg-function (find-symbol (string funcname) package-name))
+           (pkg-function (intern (string funcname) package-name))
            (pkg-method (intern (format NIL "I-~a" funcname) package-name))
            (pkg-mmethod (intern (format NIL "M-~a" funcname) package-name))
            (pkg-impl-var (find-symbol "*IMPLEMENTATION*" package-name)))
@@ -75,7 +75,7 @@ BODY         --- forms."
   (with-gensyms ((valuegens "VALUE") (fieldgens "FIELD") (instancegens "INSTANCE") (identifiergens "IDENTIFIER"))
     (let* ((class-name (second (assoc :CLASS options)))
            (pkg-class (find-symbol (string-upcase class-name) package-name))
-           (pkg-function (find-symbol (string funcname) package-name))
+           (pkg-function (intern (string funcname) package-name))
            (pkg-method (intern (format NIL "I-~a" funcname) package-name)))
       (assert class-name () "Class-name required for accessor definition.")
       `(progn
@@ -162,6 +162,7 @@ See DEFINE-INTERFACE for options."
     (assert (find-symbol "*IMPLEMENTATION*" package) () "Supplied package does not appear to be an interface.")
     `(progn
        ,@(generate-component-expansions name component-declarations)
+       ,@(mapcar #'(lambda (a) `(export ',(find-symbol (string-upcase (car a)) name) ',name)) component-declarations)
        ,package)))
 
 (defmacro define-interface-method (function argslist &body body)
