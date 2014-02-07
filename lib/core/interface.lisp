@@ -253,10 +253,11 @@ requested interface will be properly implemented after the load of this system."
     (let ((package (find-package name)))
       (if package
           (let ((module (second (assoc name (implementation-map system)))))
-            (if module
-                (setf (symbol-value (find-symbol "*IMPLEMENTATION*" package))
-                      (etypecase module
-                        (function (funcall module))
-                        (symbol module)
-                        (standard-object module)))))
+            (when module
+              (setf (symbol-value (find-symbol "*IMPLEMENTATION*" package))
+                    (etypecase module
+                      (function (funcall module))
+                      (symbol module)
+                      (standard-object module)))
+              (trigger :interface name)))
           (error 'no-such-interface-error :interface name)))))

@@ -113,3 +113,4 @@
 (unless (namespace :page :ignore-undefined T) (define-namespace :page))
 (unless (namespace :api :ignore-undefined T) (define-namespace :api))
 (unless (namespace :user :ignore-undefined T) (define-namespace :user))
+(unless (namespace :interface :ignore-undefined T) (define-namespace :interface))
