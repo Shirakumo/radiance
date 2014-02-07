@@ -143,7 +143,7 @@ depends on the component-expander."
   (let* ((nicknames (if (listp name) name (list name)))
          (name (if (listp name) (car name) name))
          (fqpn (intern (format NIL "ORG.TYMOONNEXT.RADIANCE.INTERFACE.~a" name) :KEYWORD)))
-    `(progn
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
        (defpackage ,fqpn
          (:nicknames ,@(mapcar #'(lambda (name) (intern (string-upcase name) :KEYWORD)) nicknames))
          (:export ,@(append '(#:*implementation* #:implementation)
@@ -160,7 +160,7 @@ See DEFINE-INTERFACE for options."
   (let ((package (find-package name)))
     (assert package () "Name does not designate any package.")
     (assert (find-symbol "*IMPLEMENTATION*" package) () "Supplied package does not appear to be an interface.")
-    `(progn
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
        ,@(generate-component-expansions name component-declarations)
        ,@(mapcar #'(lambda (a) `(export ',(find-symbol (string-upcase (car a)) name) ',name)) component-declarations)
        ,package)))
