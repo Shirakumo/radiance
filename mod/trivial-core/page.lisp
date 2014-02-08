@@ -15,7 +15,7 @@
        (v:debug :flash-dispatch "Dispatching to hook: ~a" hook)
        (funcall (item-function hook))))
    (trigger :server :dispatch-default)
-   (core:dispatch-default request)))
+   (core::i-dispatch-default :trivial-core request)))
 
 (define-interface-method core:effective-trigger (request)
   (loop for (hook identifier uri) in *hooks*
@@ -77,7 +77,7 @@ with the hook name NAME."
                        ,funcbody
                        (error-page 403)))
                 funcbody))
-         (core:register ',name ,modgens ,urigens)))))
+         (core::i-register :trivial-core ',name ,modgens ,urigens)))))
 
 (define-interface-method core:define-file-link (name uri pathspec &key access-branch (identifier `(context-module-identifier)) content-type)
   `(core::m-define-page :trivial-core ,name ,uri (:identifier ,identifier :access-branch ,access-branch)
