@@ -8,7 +8,11 @@
 
 (define-hook (:server :init) (:documentation "Initialize verify user database.")
   (db:create "verify-users" '(("username" :varchar 32) ("displayname" :varchar 32) ("secret" :varchar 16) ("email" :varchar 64) ("register-date" :integer) ("perms" :text)) :indices '("username"))
-  (db:create "verify-actions" '(("username" :varchar 32) ("action" :text) ("public" :varchar 3) ("time" :integer)) :indices '("username")))
+  (db:create "verify-actions" '(("username" :varchar 32) ("action" :text) ("public" :varchar 3) ("time" :integer)) :indices '("username"))
+  (unless (db:select "verify-users" (db:query (:or (:= "username" "sys")
+                                                   (:= "username" "temp"))))
+    (db:insert "verify-users" `(("username" . "temp") ("displayname" . "Anonymous") ("secret" . ,(make-random-string 16)) ("email" . "none") ("register-date" . ,(get-unix-time)) ("perms" . "")))
+    (db:insert "verify-users" `(("username" . "sys") ("displayname" . "System") ("secret" . ,(make-random-string 16)) ("email" . "none") ("register-date" . ,(get-unix-time)) ("perms" . "")))))
 
 (defclass verify-user (user:class)
   ((username :initarg :name :initform (error "Username required.") :reader username)
