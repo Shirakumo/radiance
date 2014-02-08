@@ -88,7 +88,8 @@
 (define-interface-method user:grant (branch &key (user (user:current)))
   (v:debug :verify.user "Granting permissions for ~a: ~a" user branch)
   (setf (getdf user "perms")
-        (format nil "~:[~;~:*~a~%~]~a" (user:field user "perms") branch)))
+        (format nil "~:[~;~:*~a~%~]~a" (user:field user "perms") branch))
+  user)
 
 (define-interface-method user:prohibit (branch &key (user (user:current)))
   (let ((perms (user:field user "perms"))
@@ -106,4 +107,5 @@
                     ((not (string= leaf-a leaf-b)) (return)))
                finally (if (string= leaf-a leaf-b) (appendf to-remove (list line)))))
       (setf (getdf user "perms")
-            (concatenate-strings (remove-if (lambda (item) (find item to-remove :test #'string=)) perms) #\newline)))))
+            (concatenate-strings (remove-if (lambda (item) (find item to-remove :test #'string=)) perms) #\newline))))
+  user)
