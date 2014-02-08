@@ -151,4 +151,4 @@
   (:finalize (mechanism user)
     (let ((links (session:field *radiance-session* "oauth-links")))
       (loop for link in links
-            do (db:insert "linked-oauths" `(("provider" . ,(car link) ("claimed-id" . ,(cdr link)) ("username" . ,(user:field user "username")))))))))
+            do (db:insert "linked-oauths" `(("provider" . ,(car link)) ("claimed-id" . ,(cdr link)) ("username" . ,(user:field user "username"))))))))
