@@ -56,8 +56,15 @@
 (defun uri->url (uri &optional (absolute T))
   "Turns the URI into a string URL."
   (if absolute 
-      (format NIL "http://~{~a.~}~a~:[~;:~:*~a~]/~a"
-              (subdomains uri) (domain uri) (port uri) (path uri))
+      (format NIL "http://~{~a.~}~a~@[:~a~]/~@[~a~]"
+              (subdomains uri)
+              (or (domain uri)
+                  (when *radiance-request* (domain *radiance-request*))
+                  (config :domain))
+              (or (port uri)
+                  (when *radiance-request* (domain *radiance-request*))
+                  (first (config :ports)))
+              (path uri))
       (concatenate 'string "/" (path uri))))
 
 (defun uri->server-url (uri)
@@ -76,14 +83,14 @@ If a part of the URI is not given, it is defaulted to \"*\", which
 matches to anything. make-uri has a read-macro for easier use: #u
 Note that the PATH part is always a regex, excluding the start slash."
   (cl-ppcre:register-groups-bind (subdomains NIL domain NIL port path) (*uri-matcher* uristring)
-    (setf path (if (= (length path) 0) ".*" path))
+    (setf path (if (= (length path) 0) NIL path))
     (setf subdomains (if (= (length subdomains) 0) NIL (split-sequence:split-sequence #\. (string-trim "." subdomains))))
     (make-instance 'uri 
                    :path path
                    :subdomains subdomains
                    :port (if port (parse-integer (subseq port 1)))
                    :domain domain
-                   :regex (cl-ppcre:create-scanner path))))
+                   :regex (cl-ppcre:create-scanner (or path ".*")))))
 
 (defun %make-uri (stream subchar arg)
   (declare (ignore subchar arg))
