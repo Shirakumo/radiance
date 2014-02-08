@@ -14,6 +14,6 @@
         (set tables (cons *indentation-hints* (remove *indentation-hints* (symbol-value tables))))
         t))))
 
-(define-indentation 'define-interface '(4 &rest (&whole 2 2 &lambda &body)))
-(define-indentation 'define-interface-extension '(4 &rest (&whole 2 2 &lambda &body)))
+(define-indentation 'define-interface '(4 &rest (&whole 2 &lambda 4 &body)))
+(define-indentation 'define-interface-extension '(4 &rest (&whole 2 &lambda 4 &body)))
 (initialize-slime)
