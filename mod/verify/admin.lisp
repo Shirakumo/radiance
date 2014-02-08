@@ -60,8 +60,8 @@
       ($ "input[name=\"per-user\"]" (attr :checked "checked")))
 
   (loop with target = ($ "#mechanisms") 
-     for mechanism being the hash-values of *verify-mechanisms*
-     do (show-options mechanism target)))
+        for mechanism in (get-mechanisms)
+        do ($ target (append (page-settings mechanism)))))
 
 (admin:define-panel registration verify (:access-branch "admin.verify.registration.*" :menu-icon "fa-edit" :menu-tooltip "Manage registration settings" :lquery (template "verify/admin-register.html"))
   (when (string= (server:post "form") "defaults")
