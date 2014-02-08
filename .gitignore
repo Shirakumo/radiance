@@ -4,4 +4,5 @@
 /lib/piping
 /lib/verbose
 .directory
+/data/db-dev
 radiance.json
