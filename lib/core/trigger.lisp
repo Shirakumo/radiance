@@ -91,9 +91,11 @@
 (defun trigger (space hook)
   "Trigger a certain hook and collect all return values."
   (v:trace :radiance.server.hook "Triggering hook ~a/~a" space hook)
-  (loop for item in (hook-items space hook)
-     if (funcall (item-function item))
-     collect it))
+  (with-simple-restart (abort "Abort triggering (~s ~s)" space hook)
+    (loop for item in (hook-items space hook)
+          if (with-simple-restart (skip "Skip triggering hook-item ~a" item)
+               (funcall (item-function item)))
+            collect it)))
 
 (defmacro define-hook ((space name) (&key (identifier `(context-module-identifier)) documentation) &body body)
   (with-gensyms ((identifiergens "IDENTIFIER"))
