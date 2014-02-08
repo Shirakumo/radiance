@@ -27,13 +27,16 @@
 *** TODO Add automated caching system.
 *** TODO Write documentation and specification for standard interfaces.
 ** Plaster
-*** TODO Finish admin panel
-*** TODO Finish user panel
-*** TODO Add timeout / limits / captcha
-*** TODO Add pastebin import
+*** TODO Finish admin panel.
+*** TODO Finish user panel.
+*** TODO Fix error reporting on client.
+*** TODO Add timeout / limits / captcha.
+*** TODO Add pastebin import.
 ** Trivial-Menu
 *** TODO Add ability to use auth tests ore even arbitrary code snippets on menu display.
 ** Verify
+*** TODO Rewrite mechanisms.
+*** TODO Add Google Authenticator mechanism.
 *** TODO Add API pages for users, sessions, etc.
 ** Kanji
 *** TODO Start the layouting process.
@@ -44,9 +47,6 @@
 *** TODO Start concept phase.
 ** Reader
 *** TODO Start concept phase.
-** Verify
-*** TODO Rewrite mechanisms.
-*** TODO Add Google Authenticator mechanism.
 * lQuery
   Todo list for improvements related to lQuery.
 ** TODO Add fast saving and loding mechanisms.

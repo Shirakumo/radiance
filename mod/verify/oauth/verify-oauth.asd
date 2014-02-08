@@ -6,8 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.verify.oauth
   (:nicknames :radiance-mod-verify-oauth)
-  (:use :cl :radiance :lquery :radiance-mod-verify :alexandria)
-  (:export))
+  (:use :cl :radiance :lquery :radiance-mod-verify :alexandria))
 (in-package :radiance-mod-verify-oauth)
 
 (asdf:defsystem verify-oauth
