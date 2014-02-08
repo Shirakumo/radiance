@@ -69,7 +69,8 @@
   (destructuring-bind (process) options
     (assert (find process '(:login :register)) () "PROCESS has to be one of (:LOGIN :REGISTER).")
     `(handler-case
-         (progn ,@body)
+         (progn ,@body
+                (server:redirect ,(format NIL "/~a" (string-downcase process))))
        (radiance-error (err)
          (auth:error-out ,process (code err) (text err))))))
 
