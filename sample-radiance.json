@@ -26,7 +26,7 @@
             "algorithm": "PBKDF2",
             "salt": "Sf6RL6AqHrZ3Qy7n",
             "use-per-user-salt": true
-        },
+        }
     },
     "interface": {
         "server": "radiance-hunchentoot",
@@ -45,8 +45,6 @@
         "radiance-core",
         "radiance-admin",
         "radiance-profile",
-        "verify-oauth",
-        "verify-openid",
         "verify-password",
         "db-introspect",
         "trivial-menu",
