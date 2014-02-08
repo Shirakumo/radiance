@@ -101,33 +101,32 @@
     (T (error 'auth-register-error :text "Nothing to do!" :code 10))))
     
 
-(defmechanism oauth
-    "Mechanism for OpenID-Supporting sites."
-  (show-login ()
+(auth:define-mechanism oauth
+  (:login (mechanism)
     (lquery:parse-html (read-data-file "template/verify/login-oauth.html")))
-
-  (show-register ()
+  
+  (:register (mechanism)
     (let ((element (lquery:parse-html (read-data-file "template/verify/register-oauth.html"))))
       (when *radiance-session*
         (loop for link in (session:field *radiance-session* "oauth-links")
-           do ($ element (find (format nil "li.~a" (car link))) (add-class "linked")))
+              do ($ element (find (format nil "li.~a" (car link))) (add-class "linked")))
         (if (> (length (session:field *radiance-session* "oauth-links")) 0)
             ($ element (find "h2") (html "<i class=\"icon-ok-sign\"></i> Account linked."))))
       element))
   
-  (show-options (target)
+  (:settings (mechanism)
     (when (string= (server:post "form") "oauth")
       (loop for name in (server:post "name[]")
-         for key in (server:post "key[]")
-         for secret in (server:post "secret[]")
-         for request in (server:post "request[]")
-         for auth in (server:post "auth[]")
-         for access in (server:post "access[]")
-         do (setf (config-tree :verify :oauth (make-keyword name))
-                  `((:key . ,key) (:secret . ,secret)
-                    (:request-endpoint . ,request) (:auth-endpoint . ,auth) (:access-endpoint . ,access))))
+            for key in (server:post "key[]")
+            for secret in (server:post "secret[]")
+            for request in (server:post "request[]")
+            for auth in (server:post "auth[]")
+            for access in (server:post "access[]")
+            do (setf (config-tree :verify :oauth (make-keyword name))
+                     `((:key . ,key) (:secret . ,secret)
+                       (:request-endpoint . ,request) (:auth-endpoint . ,auth) (:access-endpoint . ,access))))
       (uibox:notice "OAuth providers updated."))
-
+    
     (let ((form (lquery:parse-html (read-data-file "template/verify/admin-auth-oauth.html"))))
       (loop with template = ($ form "#providers li" (node))
             for node = (dom:clone-node template T)
@@ -142,15 +141,17 @@
                ($ node "input[name=\"access[]\"]" (val (cdr (assoc :access-endpoint vals))))
             collect node into nodes
             finally ($ form "#providers" (empty) (append nodes)))
-      ($ target 
-        (append form))))
+      form))
+
+  (:linked-p (mechanism user)
+    (or (db:select "linked-oauths" (db:query (:= "username" (user:field user "username"))))
+        (session:field *radiance-session* "oauth-links")))
   
-  (handle-register (user)
+  (:finalize (mechanism user)
     (let ((links (session:field *radiance-session* "oauth-links")))
       (loop for link in links
             do (db:insert "linked-oauths" 
                           (acons "provider" (car link)
                                  (acons "claimed-id" (cdr link)
                                         (acons "username" (user:field user "username") 
-                                               ())))))
-      (if links T))))
+                                               ()))))))))

@@ -19,8 +19,7 @@
       (loop with target = ($ "#content")
             with panel = ($ "#panel ul")
             for mechanism in (get-mechanisms)
-            do (let ((lquery:*lquery-master-document*))
-                 ($ target (append (page-login mechanism))))
+            do ($ target (append (page-login mechanism)))
                ($ panel (append (lquery:parse-html (format NIL "<li class=\"~a\"><a>~:*~a</a></li>" (name mechanism))))))
       ($ "#error" (html "<i class=\"icon-remove-sign\"></i> You are already logged in."))))
 
@@ -38,7 +37,7 @@
   (loop with target = ($ "#content")
         with panel = ($ "#panel .logins ul")
         for mechanism in (get-mechanisms)
-        do (let ((lquery:*lquery-master-document*))
+        do (let ((lquery:*lquery-master-document* target))
              ($ target (append (page-register mechanism))))
            ($ panel (append (lquery:parse-html (format NIL "<li class=\"~a\"><a>~:*~a</a></li>" (name mechanism))))))
   (trigger :user :register-page))
