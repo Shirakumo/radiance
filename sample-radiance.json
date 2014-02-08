@@ -30,7 +30,6 @@
     },
     "interface": {
         "server": "radiance-hunchentoot",
-        "dispatcher": "flash-dispatch",
         "core": "trivial-core",
         "parser": "markdown",
         "admin": "trivial-admin",

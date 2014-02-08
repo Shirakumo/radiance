@@ -18,7 +18,7 @@
           (let ((result (funcall function)))
             (remhash id (session:field *radiance-session* 'CONTINUATIONS))
             result))
-        (dispatcher:dispatch request))))
+        (core:dispatch request))))
 
 ;;(declaim (inline static-handler))
 (defun file-handler (request)
