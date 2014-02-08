@@ -17,4 +17,4 @@
   :license "Artistic" 
   :homepage "http://tymoon.eu"
   :components ((:file "sysinfo") (:file "debug"))
-  :depends-on (:closer-mop :radiance-dispatcher :lquery :hunchentoot))
+  :depends-on (:closer-mop :radiance-core :lquery :hunchentoot))

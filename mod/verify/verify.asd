@@ -27,7 +27,7 @@
                (:file "api"))
   :depends-on (:radiance-database
                :radiance-data-model
-               :radiance-dispatcher
+               :radiance-core
                :radiance-admin
                :radiance-server
                :split-sequence

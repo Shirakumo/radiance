@@ -17,6 +17,6 @@
   :version "0.0.1"
   :license "Artistic"
   :homepage "http://tymoon.eu"
-  :depends-on (:radiance-dispatcher)
+  :depends-on (:radiance-core)
   :components ((:file "api")
                (:file "")))
