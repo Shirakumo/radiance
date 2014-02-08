@@ -29,7 +29,7 @@ BODY         --- forms."
 
 (defun interface-component-types ()
   "Returns a list of supported component-types as their keyword names."
-  (hash-table-keys *radiance-component-expanders*))
+  (hash-table-keys *radiance-interface-expanders*))
 
 (define-interface-component-expander class (classname slots options package-name)
     (let ((superclasses (second (assoc :superclasses options)))
@@ -197,8 +197,12 @@ method on the respective INTERFACE::I-PUBLIC-FUNCTION-NAME generic."
           (setf argslist (make-key-extensible argslist))
           (let ((restpos (position '&body argslist)))
             (if restpos (setf (nth restpos argslist) '&rest)))
-          `(defmethod ,pkg-method ,argslist
-             ,@body))
+          (if (find-symbol (format NIL "M-~a" function) (symbol-package function)) ; If this is a macro, wrap it in eval-when to assure compile-time-readiness.
+              `(eval-when (:compile-toplevel :load-toplevel :execute)
+                 (defmethod ,pkg-method ,argslist
+                   ,@body))
+              `(defmethod ,pkg-method ,argslist
+                 ,@body)))
         (error 'no-such-interface-function-error :interface (package-name (symbol-package function)) :interface-function function))))
 
 (defclass interface (asdf:system)
