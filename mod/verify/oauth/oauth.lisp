@@ -6,6 +6,8 @@
 
 (in-package :radiance-mod-verify-oauth)
 
+(define-condition oauth-error (radiance-error) ())
+
 (define-hook (:server :init) (:documentation "Initialize verify-oauth table.")
   (db:create "linked-oauths" '(("provider" :varchar 32) ("claimed-id" :varchar 128) ("username" :varchar 32))))
 
@@ -35,7 +37,7 @@
 
 (defun handle-response ()
   (if (or (not *radiance-session*) (not (session:temp-p *radiance-session*)))
-      (error 'auth-login-error :text "No temporary session active!" :code 12))
+      (error 'oauth-error :text "No temporary session active!" :code 12))
   (let ((rt (session:field *radiance-session* "request-token"))
         (provider (session:field *radiance-session* "provider")))
     (session:field *radiance-session* "link-in-progress" :value NIL)
@@ -46,60 +48,59 @@
            (assert (equal (cl-oauth:url-encode rt-key) (cl-oauth:token-key rt)) () "Keys do not match!")
            rt))
       (error (err)
-        (error 'auth-login-error :text (format nil "Failed to verify: ~a" err) :code 13)))
+        (error 'oauth-error :text (format nil "Failed to verify: ~a" err) :code 13)))
     (when (cl-oauth:request-token-authorized-p rt)
       (v:debug :verify.mechanism.oauth "Successfully authorized with token ~a" (cl-oauth:token-key rt))
       (process-response provider (get-access-token provider rt)))))
 
 (defgeneric process-response (provider access-token))
 (defmethod process-response ((provider (eql :twitter)) access-token)
-  (let* ((data (babel:octets-to-string (cl-oauth:access-protected-resource "http://api.twitter.com/1.1/account/verify_credentials.json" access-token)))
-         (credentials (json:decode-json-from-string data)))
-    (v:debug :verify.mechanism.oauth "Claimed ID: ~a" (cdr (assoc :id credentials)))
-    (values (format nil "~a" (cdr (assoc :id credentials))) "twitter")))
+  (let ((data (cl-oauth:access-protected-resource "http://api.twitter.com/1.1/account/verify_credentials.json" access-token :version :1.1)))
+    (unless data
+      (error 'oauth-error :text "Failed to access credentials!" :code 16))
+    (let ((credentials (json:decode-json-from-string (babel:octets-to-string data))))
+      (v:debug :verify.mechanism.oauth "Claimed ID: ~a" (cdr (assoc :id credentials)))
+      (values (format nil "~a" (cdr (assoc :id credentials))) "twitter"))))
 
 (defun get-linked-user (id provider)
   (let ((model (dm:get-one "linked-oauths" (db:query (:and (:= "claimed-id" id) (:= "provider" provider))))))
     (if model
         (user:get (dm:field model "username"))
-        (error 'auth-login-error :text "Account not linked!" :code 15))))
+        (error 'oauth-error :text "Account not linked!" :code 15))))
 
 (core:define-page login #u"auth./login/oauth" ()
-  (ignore-errors (auth:authenticate))
-  (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
-  (cond
-    ((server:post "provider")
-     (let ((provider (make-keyword (server:post "provider"))))
-       (if (config-tree :verify :oauth provider)
-           (handle-initiate provider)
-           (error 'auth-login-error :text "Unknown provider!" :code 11))))
-    
-    ((and *radiance-session* (session:field *radiance-session* "request-token"))
-     (multiple-value-bind (id provider) (handle-response)
-       (session:end *radiance-session*)
-       (let ((user (get-linked-user id provider)))
-         (session:start user)
-         (user:action "Login (OAuth)" :user user))))
-    
-    (T (error 'auth-login-error :text "Nothing to do!" :code 10))))
+  (auth:with-redirecting (:login)
+    (ignore-errors (auth:authenticate))
+    (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
+    (cond
+      ((server:post "provider")
+       (let ((provider (make-keyword (string-upcase (server:post "provider")))))
+         (unless (config-tree :verify :oauth provider)
+           (error 'oauth-error :text "Unknown provider!" :code 11))
+         (handle-initiate provider)))
+      ((and *radiance-session* (session:field *radiance-session* "request-token"))
+       (multiple-value-bind (id provider) (handle-response)
+         (session:end *radiance-session*)
+         (let ((user (get-linked-user id provider)))
+           (session:start user)
+           (user:action "Login (OAuth)" :user user))))
+      (T (error 'oauth-error :text "Nothing to do!" :code 10)))))
 
 (core:define-page register #u"auth./register/oauth" ()
-  (ignore-errors (auth:authenticate))
-  (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
-  (cond
-    ((server:post "provider")
-     (let ((provider (make-keyword (server:post "provider"))))
-       (if (config-tree :verify :oauth provider)
-           (handle-initiate provider)
-           (error 'auth-register-error :text "Unknown provider!" :code 11))))
-    
-    ((and *radiance-session* (session:field *radiance-session* "request-token"))
-     (multiple-value-bind (id provider) (handle-response)
-       (v:debug :verify.mechanism.oauth "Linking: ~a/~a" id provider)
-       (appendf (getdf *radiance-session* "oauth-links") (list (cons provider id)))))
-
-    (T (error 'auth-register-error :text "Nothing to do!" :code 10))))
-    
+  (auth:with-redirecting (:register)
+    (ignore-errors (auth:authenticate))
+    (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
+    (cond
+      ((server:post "provider")
+       (let ((provider (make-keyword (string-upcase (server:post "provider")))))
+         (unless (config-tree :verify :oauth provider)
+           (error 'oauth-error :text "Unknown provider!" :code 11))
+         (handle-initiate provider)))
+      ((and *radiance-session* (session:field *radiance-session* "request-token"))
+       (multiple-value-bind (id provider) (handle-response)
+         (v:debug :verify.mechanism.oauth "Linking: ~a/~a" id provider)
+         (appendf (getdf *radiance-session* "oauth-links") (list (cons provider id)))))
+      (T (error 'oauth-error :text "Nothing to do!" :code 10)))))
 
 (auth:define-mechanism oauth
   (:login (mechanism)
@@ -150,8 +151,4 @@
   (:finalize (mechanism user)
     (let ((links (session:field *radiance-session* "oauth-links")))
       (loop for link in links
-            do (db:insert "linked-oauths" 
-                          (acons "provider" (car link)
-                                 (acons "claimed-id" (cdr link)
-                                        (acons "username" (user:field user "username") 
-                                               ()))))))))
+            do (db:insert "linked-oauths" `(("provider" . ,(car link) ("claimed-id" . ,(cdr link)) ("username" . ,(user:field user "username")))))))))

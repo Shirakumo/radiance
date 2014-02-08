@@ -6,6 +6,8 @@
 
 (in-package :radiance-mod-verify-openid)
 
+(define-condition openid-error (radiance-error) ())
+
 (define-hook (:server :init) (:documentation "Initialize verify-openid link table.")
   (db:create "linked-openids" '(("claimed-id" :varchar 128) ("username" :varchar 32))))
 
@@ -27,7 +29,7 @@
 
 (defun handle-response ()
   (if (or (not *radiance-session*) (not (session:temp-p *radiance-session*)))
-      (error 'auth-login-error :text "No temporary session active!" :code 12))
+      (error 'openid-error :text "No temporary session active!" :code 12))
   (let ((rp (session:field *radiance-session* "relying-party")))
     (cl-openid:handle-indirect-response 
      rp 
@@ -35,56 +37,53 @@
      (puri:merge-uris (server:request-uri) (cl-openid:root-uri rp)))))
 
 (core:define-page login #u"auth./login/openid" ()
-  (ignore-errors (auth:authenticate))
-  (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
-  (cond
-    ((server:post "openid_identifier")
-     (handle-initiate))
-    
-    ((server:get cl-openid:+authproc-handle-parameter+)
-     (handler-case
-         (multiple-value-bind (id authproc) (handle-response)
-           (if id
-               (let ((map (dm:get-one "linked-openids" (db:query (:= "claimed-id" (format nil "~a" (cl-openid:claimed-id authproc)))))))
-                 (if map
-                     (let ((user (user:get (dm:field map "username"))))
-                       (session:end *radiance-session*)
-                       (session:start user)
-                       (user:action "Login (OpenID)" :user user))
-                     (error 'auth-login-error :text "Account not linked!" :code 13)))
-               (error 'auth-login-error :text "Authentication failed!" :code 11)))
-       (cl-openid:openid-assertion-error (err)
-         (error 'auth-login-error :text err :code 12))))
-    
-    (T (error 'auth-login-error :text "No ID given!" :code 10))))
-
-(core:define-page register #u"auth./register/openid" ()
-  (ignore-errors (auth:authenticate))
-  (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
-  (cond
-    ((server:post "openid_identifier")
-     (handle-initiate))
-    
-    ((server:get cl-openid:+authproc-handle-parameter+)
+  (auth:with-redirecting (:login)
+    (ignore-errors (auth:authenticate))
+    (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
+    (cond
+      ((server:post "openid_identifier")
+       (handle-initiate))
+      
+      ((server:get cl-openid:+authproc-handle-parameter+)
        (handler-case
            (multiple-value-bind (id authproc) (handle-response)
-             (if id
-                 (let ((id (format nil "~a" (cl-openid:claimed-id authproc))))
-                   (v:debug :verify.mechanism.openid "Linking: ~a" id)
-                   (appendf (getdf *radiance-session* "openid-links") (list id)))
-                 (error 'auth-register-error :text "Authentication failed!" :code 11)))
+             (unless id (error 'openid-error :text "Authentication failed!" :code 11))
+             (let ((map (dm:get-one "linked-openids" (db:query (:= "claimed-id" (format nil "~a" (cl-openid:claimed-id authproc)))))))
+               (unless map
+                 (error 'openid-error :text "Account not linked!" :code 13))
+               (let ((user (user:get (dm:field map "username"))))
+                 (session:end *radiance-session*)
+                 (session:start user)
+                 (user:action "Login (OpenID)" :user user))))
          (cl-openid:openid-assertion-error (err)
-           (error 'auth-register-error :text err :code 12))))
-    
-    (T (error 'auth-register-error :text "No ID given!" :code 10))))
+           (error 'openid-error :text err :code 12))))
+      (T (error 'openid-error :text "No ID given!" :code 10)))))
+
+(core:define-page register #u"auth./register/openid" ()
+  (auth:with-redirecting (:register)
+    (ignore-errors (auth:authenticate))
+    (if (not *radiance-session*) (setf *radiance-session* (session:start-temp)))
+    (cond
+      ((server:post "openid_identifier")
+       (handle-initiate))
+      ((server:get cl-openid:+authproc-handle-parameter+)
+       (handler-case
+           (multiple-value-bind (id authproc) (handle-response)
+             (unless id
+               (error 'openid-error :text "Authentication failed!" :code 11))
+             (let ((id (format nil "~a" (cl-openid:claimed-id authproc))))
+               (v:debug :verify.mechanism.openid "Linking: ~a" id)
+               (appendf (getdf *radiance-session* "openid-links") (list id))))
+         (cl-openid:openid-assertion-error (err)
+           (error 'openid-error :text err :code 12))))
+      (T (error 'openid-error :text "No ID given!" :code 10)))))
 
 
-(defmechanism openid
-    "Mechanism for OpenID-Supporting sites."
-  (show-login ()
+(auth:define-mechanism openid
+  (:login (mechanism)
     (lquery:parse-html (read-data-file "template/verify/login-openid.html")))
 
-  (show-register ()
+  (:register (mechanism)
     (let ((element (lquery:parse-html (read-data-file "template/verify/register-openid.html"))))
       (when *radiance-session*
         (loop for link in (session:field *radiance-session* "openid-links")
@@ -95,14 +94,14 @@
             ($ element (find "h2") (html "<i class=\"icon-ok-sign\"></i> Account linked."))))
       element))
   
-  (show-options (target)
+  (:settings (mechanism)
     )
   
-  (handle-register (user)
+  (:finalize (mechanism user)
     (let ((links (session:field *radiance-session* "openid-links")))
       (loop for link in links
-            do (db:insert "linked-openids" 
-                          (acons "claimed-id" link
-                                 (acons "username" (user:field user "username") 
-                                        ()))))
-      (if links T))))
+            do (db:insert "linked-openids" `(("claimed-id" . ,link) ("username" . ,(user:field user "username")))))))
+
+  (:linked-p (mechanism user)
+    (or (db:select "linked-openids" (db:query (:= "username" (user:field user "username"))))
+        (session:field *radiance-session* "openid-links"))))
