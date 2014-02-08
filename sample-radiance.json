@@ -1,0 +1,55 @@
+{
+    "host": "localhost",
+    "ports": [4545],
+    "domain": "linuz.com",
+    "use-subdomains": true,
+    "root": "autodetect",
+    "database": "db-dev",
+    "upload": {
+        "max-file-size": 8192,
+        "max-name-length": 64,
+        "allowed-mimes": "*",
+        "replace-files": false,
+        "use-uuids": true,
+        "append-extension": true
+    },
+    "verify": {
+        "register": {
+            "defaultperms": [""],
+            "endpoint": "/"
+        },
+        "session": {
+            "secret": "xcsKv35RGvG25od7dpagz58y5aRSeqVR",
+            "use-per-user-secret": true
+        },
+        "password": {
+            "algorithm": "PBKDF2",
+            "salt": "Sf6RL6AqHrZ3Qy7n",
+            "use-per-user-salt": true
+        },
+    },
+    "interface": {
+        "server": "radiance-hunchentoot",
+        "dispatcher": "flash-dispatch",
+        "core": "trivial-core",
+        "parser": "markdown",
+        "admin": "trivial-admin",
+        "user": "verify",
+        "session": "verify",
+        "auth": "verify",
+        "profile": "trivial-profile",
+        "database": "radiance-sqlite",
+        "data-model": "radiance-sqlite"
+    },
+    "modules": [
+        "radiance-core",
+        "radiance-admin",
+        "radiance-profile",
+        "verify-oauth",
+        "verify-openid",
+        "verify-password",
+        "db-introspect",
+        "trivial-menu",
+        "plaster"
+    ]
+}

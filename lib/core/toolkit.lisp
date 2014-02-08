@@ -25,6 +25,9 @@
     (v:warn :radiance.server.status "Config-file or *radiance-config-file* are NIL, automatically choosing path through ASDF.")
     (setf config-file (merge-pathnames "radiance.json" (asdf:system-source-directory :radiance))))
 
+  (unless (probe-file *radiance-config-file*)
+    (v:warn :radiance.server.status "Configuration file ~a not found, loading from sample instead.")
+    (setf config-file *radiance-config-sample-file*))
   (v:debug :radiance.server.status "Reloading radiance config file from ~a" config-file)
   (with-open-file (file config-file :if-does-not-exist :ERROR)
     (setf *radiance-config* (json:decode-json file))
