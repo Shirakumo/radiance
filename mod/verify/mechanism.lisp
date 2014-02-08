@@ -83,12 +83,10 @@
        (defclass ,name (mechanism) ((name :initform ,(string name) :accessor name)))
        ,(when login
           `(defmethod page-login ((,(caar login) ,name) ,@(cdar login))
-             (auth:with-redirecting (:login)
-               ,@(cdr login))))
+             ,@(cdr login)))
        ,(when register
           `(defmethod page-register ((,(caar register) ,name) ,@(cdar register))
-             (auth:with-redirecting (:register)
-               ,@(cdr register))))
+             ,@(cdr register)))
        ,(when settings
           `(defmethod page-settings ((,(caar settings) ,name) ,@(cdar settings))
              ,@(cdr settings)))
