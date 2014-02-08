@@ -44,5 +44,5 @@
               session)))))))
 
 (define-hook (:interface :profile) (:documentation "Create verify user panel.")
-  (eval (profile:define-panel accounts authentication (:menu-icon "fa-" :lquery (template "verify/user-accounts.html"))
+  (eval '(profile:define-panel accounts authentication (:menu-icon "fa-" :lquery (template "verify/user-accounts.html"))
           )))
