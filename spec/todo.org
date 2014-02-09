@@ -24,6 +24,7 @@
     - State "DONE"       from "TODO"       [2014-02-07 Fri 11:16]
 *** DONE Fix issue with SETF-ing the interface macros that expand to FUNCALL/APPLY.
     - State "DONE"       from "TODO"       [2014-02-07 Fri 14:07]
+*** TODO Fix fast page reload leak issue WTF
 *** TODO Add automated caching system.
 *** TODO Write documentation and specification for standard interfaces.
 ** Plaster
@@ -35,7 +36,8 @@
 ** Trivial-Menu
 *** TODO Add ability to use auth tests ore even arbitrary code snippets on menu display.
 ** Verify
-*** TODO Rewrite mechanisms.
+*** DONE Rewrite mechanisms.
+    - State "DONE"       from "TODO"       [2014-02-09 Sun 20:52]
 *** TODO Add Google Authenticator mechanism.
 *** TODO Add API pages for users, sessions, etc.
 ** Kanji
