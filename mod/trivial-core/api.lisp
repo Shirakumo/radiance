@@ -67,6 +67,16 @@ request methods."
              (list ,name ,content-type
                    (lambda (,datavar) ,@body))))))
 
+;;; REFACTOR ALL THIS SHIT
+(define-interface-method core:api-call (apicall method &key post get)
+  
+  (let* ((pathparts (split-sequence:split-sequence #\/ (path *radiance-request*)))
+         (module (cadr pathparts))
+         (trigger (make-keyword (string-upcase (concatenate-strings (cdr pathparts) "/"))))
+         (hooks (hook-items :api trigger)))
+    (or (call-api module hooks)
+        (core:api-return 204 "No return data"))))
+
 (core::m-define-api-format :trivial-core none "text/plain; charset=utf-8" data
   (declare (ignore data))
   "Unknown format.")
