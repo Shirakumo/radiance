@@ -348,6 +348,7 @@ footer a{
     position: absolute;
     right: 5px;top:2px;
     display: block;
+    pointer-events:none;
 }
 
 .dataTables_filter{
