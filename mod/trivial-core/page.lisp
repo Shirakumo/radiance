@@ -58,7 +58,7 @@ with the hook name NAME."
   (destructuring-bind (&key access-branch lquery (identifier `(context-module-identifier))) options
     (let ((urigens (gensym "URI")) (modgens (gensym "MODULE"))
           (funcbody (if lquery 
-                        `(progn 
+                        `(let ((lquery:*lquery-master-document* NIL))
                            ,(if (and lquery (not (eq lquery T)))
                                 `($ (initialize ,lquery)))
                            ,@body
