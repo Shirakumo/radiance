@@ -97,8 +97,6 @@
         (setf *radiance-startup-time* (get-unix-time))
         (v:info :radiance.server.status "Loading config...")
         (load-config)
-        (when (string-equal (config :root) "autodetect") 
-          (config :root (directory-namestring (asdf:system-source-directory :radiance))))
 
         (v:info :radiance.server.status "Loading modules...")
         (load-modules)

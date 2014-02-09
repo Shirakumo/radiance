@@ -31,7 +31,9 @@
   (v:debug :radiance.server.status "Reloading radiance config file from ~a" config-file)
   (with-open-file (file config-file :if-does-not-exist :ERROR)
     (setf *radiance-config* (json:decode-json file))
-    (setf *radiance-config-file* config-file)))
+    (setf *radiance-config-file* config-file)
+    (when (string-equal (config :root) "autodetect") 
+      (config :root (directory-namestring (asdf:system-source-directory :radiance))))))
 
 (defun config (setting &optional new-value)
   "Get or set configuration values."
