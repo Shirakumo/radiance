@@ -71,6 +71,7 @@
   (v:trace :verify.user "Checking permissions of ~a for ~a" user branch)
   (or
    (block user-check
+     (unless user (return-from user-check NIL))
      (let ((perms (user:field user "perms"))
            (branch (split-sequence:split-sequence #\. branch)))
        (when perms
