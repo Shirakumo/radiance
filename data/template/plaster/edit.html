@@ -26,7 +26,7 @@
           <div class="pasteinfo">
             <span id="annotateinfo"></span>
             Paste as <div class="selectordiv"><select name="type" id="typeselect" title="Select the language or mode to use to display and edit your paste.">
-              <option value="VALUE" data-uibox="value:name text:title">NAME</option>
+              <option value="VALUE" data-mode="MODE" data-uibox="value:mime text:title attr-data-mode:name">TITLE</option>
             </select></div>.
             This paste will be <div class="selectordiv"><select name="view" id="viewselect" title="Select how your paste will be visible to the internet. Note that encryption passwords are not stored.">
               <option value="0">public</option>
@@ -42,7 +42,7 @@
               <button type="submit" name="action" value="edit" class="paste" title="Save your changes!" formaction="/api/plaster/paste/edit">
                 <i class="fa fa-check"></i> Save!</button></li>
             <li>
-              <button type="submit" name="action" value="delete" class="delete" title="Delete this paste!" formaction="/api/plaster/paste/edit">
+              <button type="submit" name="action" value="delete" class="delete" title="Delete this paste!" formaction="/api/plaster/paste/delete">
                 <i class="fa fa-warning"></i> Delete!</button></li>
             <li class="editorwrapping" title="Toggle line wrap">
               <i class="fa fa-arrows-h"></i></li>

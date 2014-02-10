@@ -26,10 +26,10 @@
           <div class="pasteinfo">
             Posted by <a href="/user/USERNAME" data-uibox="text:(name author) attr-href:(make-uri (concat &quot;user/&quot; author))">DISPLAYNAME</a>
             on <span class="label date unixtime" data-uibox="text:(datetime time)">DATE-POST</span>
-            as <span class="language commonlisp" data-uibox="text:type">TYPE</span>.
+            as <span class="language commonlisp" data-uibox="text:(type->title type)">TYPE</span>.
           </div>
         </div>
-        <form class="editor" method="post" data-mode="MODE" data-uibox="attr-data-mode:type">
+        <form class="editor" method="post" data-mode="MODE" data-mime="MIME" data-uibox="attr-data-mode:(type->mode type) attr-data-mime:type">
           <ul class="editorbar buttonbar">
             <li>
               <button type="submit" name="action" value="repaste" class="repaste" formaction="/new?repaste=ID" title="Submit as a new paste" data-uibox="attr-formaction:(concat &quot;/new?repaste=&quot; (id->hash _id))">
@@ -64,10 +64,10 @@
             <div class="pasteinfo">
               Posted by <a href="/user/USERNAME" data-uibox="text:(name author) attr-href:(make-uri (concat &quot;user/&quot; author))">DISPLAYNAME</a>
               on <span class="label date unixtime" data-uibox="text:(datetime time)">DATE-POST</span>
-              as <span class="language commonlisp" data-uibox="text:type">TYPE</span>.
+              as <span class="language commonlisp" data-uibox="text:(type->title type)">TYPE</span>.
             </div>
           </div>
-          <form class="editor" method="post" data-mode="text" data-uibox="attr-data-mode:type">
+          <form class="editor" method="post" data-mode="MODE" data-mime="MIME" data-uibox="attr-data-mode:(type->mode type) attr-data-mime:type">
             <ul class="editorbar buttonbar">
             <li>
               <button type="submit" name="action" value="repaste" class="repaste" formaction="/new?repaste=ID" title="Submit as a new paste" data-uibox="attr-formaction:(concat &quot;/new?repaste=&quot; (id->hash _id))">

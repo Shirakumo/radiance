@@ -28,11 +28,14 @@
 *** TODO Add automated caching system.
 *** TODO Write documentation and specification for standard interfaces.
 ** Plaster
-*** TODO Finish admin panel.
-*** TODO Finish user panel.
+*** DONE Finish admin panel.
+    - State "DONE"       from "TODO"       [2014-02-10 Mon 16:42]
+*** DONE Finish user panel.
+    - State "DONE"       from "TODO"       [2014-02-10 Mon 16:43]
 *** TODO Fix error reporting on client.
 *** TODO Add timeout / limits / captcha.
-*** TODO Add pastebin import.
+*** DONE Add pastebin import.
+    - State "DONE"       from "TODO"       [2014-02-10 Mon 16:43]
 ** Trivial-Menu
 *** TODO Add ability to use auth tests ore even arbitrary code snippets on menu display.
 ** Verify

@@ -13,7 +13,49 @@
 
   <h2>Paste Types</h2>
   <div class="tablebox">
-    <table class="selectable extendable actions tablesorter">
+    <table class="selectable extendable actions tablesorter" id="types">
+      <thead>
+        <tr>
+	  <th><input type="checkbox" class="select-all" /></th>
+	  <th>Title</th>
+	  <th>Mode Name</th>
+          <th>MIME Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+	  <td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:_id" /></td>
+	  <td><input type="text" style="width:100%" readonly="readonly" data-uibox="value:title" /></td>
+	  <td><input type="text" style="width:100%" readonly="readonly" data-uibox="value:name" /></td>
+	  <td><input type="text" style="width:100%" readonly="readonly" data-uibox="value:mime" /></td>
+	  <td><form action="#types" method="post">
+              <input type="hidden" name="form" value="types" />
+	      <input type="hidden" name="id" data-uibox="value:_id" />
+	      <input type="submit" name="action" value="Delete" />
+	  </form></td>
+        </tr>
+        <tr class="tableExtensionRow">
+          <td></td>
+	  <td><input type="text" name="title" form="typesTableExtensionForm" placeholder="Title" required="required" style="width:100%" autofocus="autofocus" /></td>
+	  <td><input type="text" name="name" form="typesTableExtensionForm" placeholder="CodeMirror Mode Name" required="required" style="width:100%" /></td>
+	  <td><input type="text" name="mime" form="typesTableExtensionForm" placeholder="Mime Type" required="required" style="width:100%" /></td>
+	  <td><form action="#typesTableExtensionForm" method="post" id="typesTableExtensionForm">
+              <input type="hidden" name="form" value="types" />
+	      <input type="submit" name="action" value="Add" />
+	  </form></td>
+        </tr>
+      </tbody>
+    </table>
+    <form class="table-actions" id="massEditForm" action="#types" method="post">
+      <input type="hidden" name="form" value="types" />
+      <input type="submit" name="action" value="Delete" />
+    </form>
+  </div>
+
+  <h2>Editor Themes</h2>
+  <div class="tablebox">
+    <table class="selectable extendable actions tablesorter" id="themes">
       <thead>
         <tr>
 	  <th><input type="checkbox" class="select-all" /></th>
@@ -23,28 +65,29 @@
         </tr>
       </thead>
       <tbody>
-        <tr id="template">
+        <tr>
 	  <td><input type="checkbox" name="selected[]" form="massEditForm" data-uibox="value:_id" /></td>
 	  <td><input type="text" style="width:100%" readonly="readonly" data-uibox="value:title" /></td>
 	  <td><input type="text" style="width:100%" readonly="readonly" data-uibox="value:name" /></td>
-	  <td><form action="#" method="post">
-              <input type="hidden" name="form" value="menu" />
+	  <td><form action="#themes" method="post">
+              <input type="hidden" name="form" value="themes" />
 	      <input type="hidden" name="id" data-uibox="value:_id" />
 	      <input type="submit" name="action" value="Delete" />
 	  </form></td>
         </tr>
         <tr class="tableExtensionRow">
           <td></td>
-	  <td><input type="text" name="title" form="tableExtensionForm" placeholder="Title" required="required" style="width:100%" autofocus="autofocus" /></td>
-	  <td><input type="text" name="name" form="tableExtensionForm" placeholder="CodeMirror Mode Name" required="required" style="width:100%" /></td>
-	  <td><form action="#" method="post" id="tableExtensionForm">
+	  <td><input type="text" name="title" form="themesTableExtensionForm" placeholder="Title" required="required" style="width:100%" autofocus="autofocus" /></td>
+	  <td><input type="text" name="name" form="themesTableExtensionForm" placeholder="CodeMirror Mode Name" required="required" style="width:100%" /></td>
+	  <td><form action="#themes" method="post" id="themesTableExtensionForm">
+              <input type="hidden" name="form" value="themes" />
 	      <input type="submit" name="action" value="Add" />
 	  </form></td>
         </tr>
       </tbody>
     </table>
-    <form class="table-actions" id="massEditForm" action="#" method="post">
-      <input type="hidden" name="form" value="menu" />
+    <form class="table-actions" id="massEditForm" action="#themes" method="post">
+      <input type="hidden" name="form" value="themes" />
       <input type="submit" name="action" value="Delete" />
     </form>
   </div>

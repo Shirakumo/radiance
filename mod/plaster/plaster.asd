@@ -19,6 +19,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   :implement ()
   :components ((:file "frontend")
                (:file "backend")
+               (:file "pastebin-type-map")
                (:file "api"))
   :depends-on (:radiance-database
                :radiance-data-model
@@ -28,4 +29,5 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                :radiance-profile
                :uibox
                :alexandria
-               :radiance-crypto))
+               :radiance-crypto
+               :drakma))

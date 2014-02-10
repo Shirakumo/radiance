@@ -11,8 +11,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   ;; Type: Has to be a type-name in plaster-types.
   ;; View: 0 Public, 1 Unlisted, 2 Private, 3 Encrypted
   (db:create "plaster" '(("pid" :integer) ("title" :varchar 64) ("author" :varchar 32) ("type" :varchar 16) ("time" :integer) ("text" :text) ("view" :integer) ("hits" :integer)) :indices '("pid" "author"))
-  (db:create "plaster-types" '(("title" :varchar 16) ("name" :varchar 16)))
-  (db:create "plaster-user" '(("user" :varchar 32) ("theme" :varchar 32) ("default-type" :varchar 16)) :indices '("user")))
+  (db:create "plaster-types" '(("title" :varchar 16) ("name" :varchar 64) ("mime" :varchar 16)))
+  (db:create "plaster-user" '(("user" :varchar 32) ("theme" :varchar 32) ("default-type" :varchar 16)) :indices '("user"))
+  (db:create "plaster-themes" '(("title" :varchar 32) ("name" :varchar 32))))
 
 (defun id->hash (id) (write-to-string id :base 36))
 
@@ -20,6 +21,12 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (uibox:define-fill-function id->hash (model field)
   (id->hash (uibox:parse-data field model)))
+
+(uibox:define-fill-function type->mode (model field)
+  (cdr (assoc "name" (first (db:select "plaster-types" (db:query (:= "mime" (uibox:parse-data field model))) :limit 1)) :test #'string-equal)))
+
+(uibox:define-fill-function type->title (model field)
+  (cdr (assoc "title" (first (db:select "plaster-types" (db:query (:= "mime" (uibox:parse-data field model))) :limit 1)) :test #'string-equal)))
 
 (defmacro string-or (default &rest values)
   (let ((var (gensym)) (def (gensym)))
@@ -85,9 +92,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                      (not (string= (user:field viewuser "username") "temp")))
                 (progn
                   (uibox:fill-foreach (dm:get "plaster" (db:query (:= "pid" -1) (:= "author" username))
-                                              :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#pastelist .paste")
+                                              :sort '(("time" . :DESC))) "#pastelist .paste")
                   (uibox:fill-foreach (dm:get "plaster" (db:query (:!= "pid" -1) (:= "author" username))
-                                              :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#annotatelist .paste"))
+                                              :sort '(("time" . :DESC))) "#annotatelist .paste"))
                 (progn
                   (uibox:fill-foreach (dm:get "plaster" (db:query (:= "pid" -1) (:= "view" 0) (:= "author" username))
                                               :sort '(("time" . :DESC)) :limit 20 :skip (* 20 (1- page))) "#pastelist .paste")
@@ -131,7 +138,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
             ($ "#annotateid" (attr :value (id->hash (dm:field annotate "_id"))))
             (when (= (dm:field annotate "view") 3)
               ($ "#viewpassword" (attr :value (server:get "password")))))
-          ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (or type "text"))) (attr :selected "selected")))
+          ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (or type "text/plain"))) (attr :selected "selected")))
         ($ "#content" (html "<h2>You are not allowed to repaste/annotate this paste.</h2>")))))
 
 (core:define-page view #u"plaster./view" (:lquery (template "plaster/view.html"))
@@ -163,6 +170,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
        (uibox:fill-all "body" user)      
        (when (= (dm:field paste "view") 3)
          ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password"))))))))
+       (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
+         ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme")))))
        (db:update "plaster" (db:query (:= "_id" (dm:field paste "_id"))) `(("hits" . ,(1+ (dm:field paste "hits")))))))))
 
 (core:define-page edit #u"plaster./edit" (:lquery (template "plaster/edit.html"))

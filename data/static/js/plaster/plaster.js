@@ -34,6 +34,8 @@ $(function(){
             else
                 setHeight(Math.max(mirrorsize, 150));
         }
+        
+        initializeMirror(null);
 
         function initializeResize(){
             $(".editorresize", editor).on("mousedown.editorresize"+i, function(e){
@@ -60,6 +62,22 @@ $(function(){
             });
         }
 
+        mirror.setEditorMode = function(modes, mime, failfunc){
+            //Use first class functions to delegate editor mode set until all modes are loaded.
+            var funcs = [ function(){$("#maineditor .editor").data("mirror").setOption("mode", mime);} ];
+            var modes = modes.split(",");
+            for(var i=0; i<modes.length; i++){
+                (function(mode, prevfunc){
+                    funcs.push(function(){
+                        console.log("Loading mode "+mode);
+                        $.getScript("/static/js/plaster/codemirror-3.21/mode/"+mode+"/"+mode+".js")
+                            .done(function(){prevfunc();})
+                            .fail(function(){console.log("Failed to load mode "+mode); failfunc();});});
+                })(modes[i], funcs[i]);
+            }
+            funcs[modes.length]();
+        }
+
         $("button[type=\"submit\"]", editor).click(function(){
             $(".code", editor).text(mirror.getValue());
         });
@@ -69,15 +87,13 @@ $(function(){
         });
 
         var mode = $(editor).data("mode");
-        if(mode == undefined) mode = $("#typeselect")[0].value;
-        if(mode != undefined && mode != "raw" && mode != "text"){
-            $.getScript("/static/js/plaster/codemirror-3.21/mode/"+mode+"/"+mode+".js")
-                .done(function(){ initializeMirror(mode); })
-                .fail(function(){ initializeMirror(null); }); 
-        }else{
-            $(editor).data("mode", null);
-            initializeMirror();
+        var mime = $(editor).data("mime");
+        if(mode == undefined) mode = $("#typeselect option:selected").data("mode");
+        if(mime == undefined) mime = $("#typeselect option:selected").val();
+        if(mode != undefined && mode != "text"){
+            mirror.setEditorMode(mode, mime, function(){});
         }
+        $(editor).data("mode", null);
 
         initializeResize();
     }
@@ -87,12 +103,10 @@ $(function(){
     });
 
     $("#typeselect").change(function(){
-        var mode = this.value;
-        if(mode != "raw" && mode != "text"){
-            $.getScript("/static/js/plaster/codemirror-3.21/mode/"+mode+"/"+mode+".js")
-                .done(function(){
-                    $("#maineditor .editor").data("mirror").setOption("mode", mode);
-                });
+        var mime = this.value;
+        var mode = $("option:selected", this).data("mode");
+        if(mode != "default"){
+            $("#maineditor .editor").data("mirror").setEditorMode(mode, mime, function(){});
         }else{
             $("#maineditor .editor").data("mirror").setOption("mode", "default");
         }

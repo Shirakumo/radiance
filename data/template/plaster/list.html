@@ -27,7 +27,7 @@
         <tbody>
           <tr class="paste">
             <td class="title"><a href="/view?id=ID" data-uibox="text:title attr-href:(concat &quot;/view?id=&quot; (id->hash _id))"></a></td>
-            <td class="type" data-uibox="text:type"></td>
+            <td class="type" data-uibox="text:(type->title type)"></td>
             <td class="author"><a href="/user/USER" data-uibox="text:(name author) attr-href:(concat &quot;/user/&quot; author)"></a></td>
             <td data-uibox="text:(datetime time)" class="label unixtime date"></td>
           </tr>
