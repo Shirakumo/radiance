@@ -99,6 +99,11 @@
   (v:trace :sqlite "Retrieving apropos of ~a" collection)
   (mapcar #'second (sqlite:execute-to-list *db* (format NIL "PRAGMA table_info(`~a`);" collection))))
 
+(define-interface-method db:count (collection query)
+  (multiple-value-bind (where-part values) (query-to-where-part query)
+    (v:trace :sqlite "Counting data from ~a with query ~a" collection query)
+    (cdaar (get-data *db* (format NIL "SELECT COUNT(*) FROM `~a` ~a" collection where-part) values))))
+
 (defun query-to-where-part (query)
   (if (eq query :all) 
       (values "" ())
