@@ -48,6 +48,14 @@ header nav ul::after{
     /*padding: 20px 0 20px 0;*/
 }
 
+#content>h2{
+    margin:0;
+}
+
+#content>p{
+    margin:5px 10px 5px 10px;
+}
+
 .editorarea{
     background: #FFF;
 }
@@ -100,7 +108,11 @@ header nav ul::after{
     clear: both;
     position: relative;
     margin-bottom: 20px;
-    height: 300px;
+    height: 150px;
+}
+
+#maineditor.edit .editor{
+    height: 500px;
 }
 
 .editor .code{
@@ -334,6 +346,20 @@ footer a{
 
 .buttonbar li a:hover, .buttonbar li input:hover, .buttonbar li button:hover{
     background: #00EEFF;
+}
+
+.buttonbar li input[type="text"]{
+    background: #FFF;
+    color: #000;
+    height: 16px;
+    margin: 1px 0 1px 0;
+    padding: 0 2px 0 2px;
+    border: 1px solid #000;
+}
+
+.buttonbar label{
+    font-size: 10pt;
+    color: #FFF;
 }
 
 .label.date{

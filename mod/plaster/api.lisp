@@ -46,13 +46,13 @@ Each form should be of the following format:
                    `(unless ,(car form) (error 'api-error ,@default-args ,@(cdr form))))
                forms)))
 
-(core:define-api paste (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method :POST)
+(core:define-api paste (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (captcha "") (client "false")) (:method :POST)
   "Create a new paste"
-  (paste-add text annotate title type view password client))
+  (paste-add text annotate title type view password captcha client))
 
-(core:define-api paste/add (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (client "false")) (:method T)
+(core:define-api paste/add (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (captcha "") (client "false")) (:method T)
   "Create a new paste"
-  (paste-add text annotate title type view password client))
+  (paste-add text annotate title type view password captcha client))
 
 (core:define-api paste (id &optional text title type view password (client "false")) (:method :PATCH)
   "Edit an existing paste"
@@ -70,34 +70,42 @@ Each form should be of the following format:
   "Delete an existing paste"
   (paste-delete id password client))
 
-(defun paste-add (text annotate title type view password client)
+(defun paste-add (text annotate title type view password captcha client)
   (let ((user (user:current :authenticate T))
         (annotate (hash->id annotate))
         (title (string-or "Untitled" title))
         (type (string-or "text" type))
         (view (parse-integer (string-or "0" view)))
-        (client (string-equal client "true")))
+        (client (string-equal client "true"))
+        (maxpastes (config-tree :plaster :maxpastes))
+        (cooldown (config-tree :plaster :cooldown)))
     (when (= annotate -1) (setf annotate NIL))
     
-    (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
+    (assert-api (:apicall "paste" :module "plaster" :code)
       ((< 0 (length text))
-       "Text must be at least one character long.")
+       400 :text "Text must be at least one character long.")
       ((and (< -1 view) (< view 4))
-       "View must be between 0 and 3.")
+       400 :text "View must be between 0 and 3.")
+      ((or user (config-tree :plaster :anon))
+       403 :text"Anonymous pasting is not permitted.")
       ((or (not (= 2 view)) user)
-       "Anonymous users cannot create private pastes.")
+       403 :text "Anonymous users cannot create private pastes.")
       ((db:select "plaster-types" (db:query (:= "mime" type)))
-       "Invalid type specified."))
+       400 :text "Invalid type specified.")
+      ((or (not maxpastes) (< maxpastes 0) (< (db:count "plaster" (db:query (:= "author" (user:field user "username")))) maxpastes))
+       400 :text(format NIL "Max paste limit of ~a exceeded." maxpastes))
+      ((or (not cooldown) (< cooldown (- (get-unix-time) (cdr (assoc "time" (first (db:select "plaster" (db:query (:= "author" (user:field user "username"))) :limit 1 :sort '(("time" . :DESC)))) :test #'string=)))))
+       429 :text(format NIL "Please wait ~d seconds between pastes." cooldown)))
     
     (when annotate
       (setf annotate (dm:get-one "plaster" (db:query (:= "_id" annotate)
                                                      (:= "pid" -1))))
       (setf view (dm:field annotate "view"))
-      (assert-api (:apicall "paste" :module "plaster")
+      (assert-api (:apicall "paste" :module "plaster" :code)
         ((not (null annotate))
-         :code 404 :text "No such paste to annotate found.")
+         404 :text "No such paste to annotate found.")
         ((paste-accessible-p annotate user)
-         :code 403 :text "You are not allowed to repaste/annotate this paste.")))
+         403 :text "You are not allowed to repaste/annotate this paste.")))
 
     (when (= view 3)
       (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
@@ -174,7 +182,7 @@ Each form should be of the following format:
     (dm:delete paste)
     (if client
         (server:redirect (format NIL "/view?id=~a~@[&password=~a~]"
-                                 (id->hash (if (= (dm:field paste "pid") -1) id (dm:field paste "pid"))) password))
+                                 (if (= (dm:field paste "pid") -1) id (id->hash (dm:field paste "pid"))) password))
         (core:api-return 200 "Paste deleted."))))
 
 (core:define-api user/settings () (:method :GET :access-branch "*")
