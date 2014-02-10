@@ -62,7 +62,7 @@
                   (when *radiance-request* (domain *radiance-request*))
                   (config :domain))
               (or (port uri)
-                  (when *radiance-request* (domain *radiance-request*))
+                  (when *radiance-request* (port *radiance-request*))
                   (first (config :ports)))
               (path uri))
       (concatenate 'string "/" (path uri))))
