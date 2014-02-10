@@ -16,9 +16,9 @@
     (if (< (length pathparts) 2) (setf pathparts (list "user" "profile")))
     ($ (find (format NIL "a[href=\"/settings/~a/~a\"]" (first pathparts) (second pathparts))) (parent) (add-class "active"))
     
-    (let ((category (gethash (make-keyword (first pathparts)) *categories*)))
+    (let ((category (gethash (make-keyword (string-upcase (first pathparts))) *categories*)))
       (if category 
-          (let ((inf (gethash (make-keyword (second pathparts)) category)))
+          (let ((inf (gethash (make-keyword (string-upcase (second pathparts))) category)))
             (if (and inf (first inf))
                 ($ "#content" (append (funcall (first inf))))))))))
 
