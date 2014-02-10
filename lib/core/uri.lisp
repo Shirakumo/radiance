@@ -90,7 +90,7 @@ Note that the PATH part is always a regex, excluding the start slash."
                    :subdomains subdomains
                    :port (if port (parse-integer (subseq port 1)))
                    :domain domain
-                   :regex (cl-ppcre:create-scanner (or path ".*")))))
+                   :regex (cl-ppcre:create-scanner (format NIL "^~a" (or path ".*"))))))
 
 (defun %make-uri (stream subchar arg)
   (declare (ignore subchar arg))
