@@ -87,7 +87,9 @@ Each form should be of the following format:
       ((and (< -1 view) (< view 4))
        "View must be between 0 and 3.")
       ((or (not (= 2 view)) user)
-       "Anonymous users cannot create private pastes."))
+       "Anonymous users cannot create private pastes.")
+      ((db:select "plaster-types" (db:query (:= "name" type)))
+       "Invalid type specified."))
     
     (when annotate
       (setf annotate (dm:get-one "plaster" (db:query (:= "_id" annotate)
@@ -137,7 +139,9 @@ Each form should be of the following format:
       ((or (not type) (not (null (dm:get-one "plaster-types" (db:query (:= "name" type))))))
        :code 400 :text (format NIL "Type ~a not valid." type))
       ((or (not view) (and (< -1 view) (< view 4)))
-       :code 400 :text "View must be between 0 and 3."))
+       :code 400 :text "View must be between 0 and 3.")
+      ((db:select "plaster-types" (db:query (:= "name" type)))
+       :code 400 :text "Invalid type specified."))
 
     (when (= view 3)
       (assert-api (:apicall "paste" :module "plaster" :code 400 :text)
