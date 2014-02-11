@@ -94,7 +94,7 @@ Each form should be of the following format:
        400 :text "Invalid type specified.")
       ((or (not user) (not maxpastes) (< maxpastes 0) (< (db:count "plaster" (db:query (:= "author" (user:field user "username")))) maxpastes))
        400 :text(format NIL "Max paste limit of ~a exceeded." maxpastes))
-      ((or (not user) (not cooldown) (< cooldown (- (get-unix-time) (cdr (assoc "time" (first (db:select "plaster" (db:query (:= "author" (user:field user "username"))) :limit 1 :sort '(("time" . :DESC)))) :test #'string=)))))
+      ((or (not user) (not cooldown) (< cooldown (- (get-unix-time) (cdr (assoc "time" (first (db:select "plaster" (db:query (:= "ip" (server:remote-address))) :limit 1 :sort '(("time" . :DESC)))) :test #'string=)))))
        429 :text(format NIL "Please wait ~d seconds between pastes." cooldown)))
 
     (when (config-tree :plaster :captcha)
@@ -124,14 +124,15 @@ Each form should be of the following format:
     
     (when (and password (= (length password) 0)) (setf password NIL))
     (with-model model ("plaster" NIL)
-      (setf (getdf model "pid") (or (when annotate (dm:field annotate "_id")) -1)
-            (getdf model "title") title
-            (getdf model "author") (or (and user (user:field user "username")) "temp")
-            (getdf model "time") (get-unix-time)
-            (getdf model "view") view
-            (getdf model "type") type
-            (getdf model "hits") 0
-            (getdf model "text") text)
+      (setf (dm:field model "pid") (or (when annotate (dm:field annotate "_id")) -1)
+            (dm:field model "title") title
+            (dm:field model "author") (or (and user (user:field user "username")) "temp")
+            (dm:field model "time") (get-unix-time)
+            (dm:field model "text") text
+            (dm:field model "view") view
+            (dm:field model "type") type
+            (dm:field model "hits") 0
+            (dm:field model "ip") (server:remote-address))
       (dm:insert model)
       (if client
           (server:redirect (format NIL "/view?id=~a~@[&password=~a~]"

@@ -35,7 +35,8 @@
 *** TODO Fix error reporting on client.
 *** DONE Add timeout / limits / captcha.
     - State "DONE"       from "TODO"       [2014-02-11 Tue 15:23]
-*** TODO Change timeout model to be based on IPs rather than user accounts.
+*** DONE Change timeout model to be based on IPs rather than user accounts.
+    - State "DONE"       from "TODO"       [2014-02-11 Tue 16:46]
 *** DONE Add pastebin import.
     - State "DONE"       from "TODO"       [2014-02-10 Mon 16:43]
 ** Trivial-Menu

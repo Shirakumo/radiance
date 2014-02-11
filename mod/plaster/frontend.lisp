@@ -10,7 +10,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   ;; PID: -1 or _id of annotated parent.
   ;; Type: Has to be a type-name in plaster-types.
   ;; View: 0 Public, 1 Unlisted, 2 Private, 3 Encrypted
-  (db:create "plaster" '(("pid" :integer) ("title" :varchar 64) ("author" :varchar 32) ("type" :varchar 16) ("time" :integer) ("text" :text) ("view" :integer) ("hits" :integer)) :indices '("pid" "author"))
+  (db:create "plaster" '(("pid" :integer) ("title" :varchar 64) ("author" :varchar 32) ("type" :varchar 16)
+                         ("time" :integer) ("text" :text) ("view" :integer) ("hits" :integer) ("ip" :varchar 4)) :indices '("pid" "author" "ip"))
   (db:create "plaster-types" '(("title" :varchar 16) ("name" :varchar 64) ("mime" :varchar 16)))
   (db:create "plaster-user" '(("user" :varchar 32) ("theme" :varchar 32) ("default-type" :varchar 16)) :indices '("user"))
   (db:create "plaster-themes" '(("title" :varchar 32) ("name" :varchar 32))))
@@ -71,17 +72,16 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
            (paste-accessible-p (dm:get-one "plaster" (db:query (:= "_id" (dm:field paste "pid")))) user))))
 
 (defparameter *captcha-salt* (make-random-string))
-(defparameter *captchas* '("divisible" "determined" "questionable" "difficult" "simplistic" "always" "never" "however" "occasionaly" "certainly"
-                           "creative" "video" "games" "whatever" "realistic" "severe" "explosion" "wizard" "witch" "confederation" "united"
-                           "guess" "estimate" "uncertainty" "forgetful" "loathing" "nevermind" "incorrect" "detective" "deduction" "reasoning"
-                           "evidence" "incident" "curiosity" "thoughtful" "assemble" "story" "conclusion" "possibility" "culprit" "solved"))
+(defparameter *captchas* '("divisible" "determined" "questionable" "difficult" "simplistic" "always" "never" "however" "occasionally" "certainly"
+                           "creative" "video" "games" "whatever" "realistic" "severe" "explosion" "wizard" "witch" "confederation"
+                           "united" "guess" "estimate" "uncertainty" "forgetful" "loathing" "nevermind" "incorrect" "detective" "deduction"
+                           "reasoning" "evidence" "incident" "curiosity" "thoughtful" "assemble" "story" "conclusion" "possibility" "culprit"
+                           "solved" "probability" "equation" "careful" "consider" "detail" "problematic" "complication" "comparison" "doubt"))
 (defun generate-captcha ()
   (let* ((el (random-elt *captchas*))
          (elmix (copy-seq el)))
-    (loop with max = 2
-          for i from 1 below (- (length el) 1)
-          while (< 0 max)
-          if (< 3 (random 10)) do (setf (elt elmix i) #\-) (decf max))
+    (loop for i from 0 below 2
+          do (setf (elt elmix (+ (random (- (length el) 2)) 1)) #\-))
     (values
      elmix
      (radiance-crypto:pbkdf2-hash el *captcha-salt*))))
@@ -192,7 +192,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                       (when (= (dm:field model "view") 3)
                         (setf (getdf model "text") (decrypt (dm:field model "text") (server:get "password"))))
                       (unless (string-equal (dm:field model "author") (user:field user "username"))
-                        ($ node ".editorbar .edit" (remove)))))      
+                        ($ node ".editorbar .edit" (remove)))))
        (when (= (dm:field paste "view") 3)
          ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password"))))))))
        (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
