@@ -33,7 +33,9 @@
 *** DONE Finish user panel.
     - State "DONE"       from "TODO"       [2014-02-10 Mon 16:43]
 *** TODO Fix error reporting on client.
-*** TODO Add timeout / limits / captcha.
+*** DONE Add timeout / limits / captcha.
+    - State "DONE"       from "TODO"       [2014-02-11 Tue 15:23]
+*** TODO Change timeout model to be based on IPs rather than user accounts.
 *** DONE Add pastebin import.
     - State "DONE"       from "TODO"       [2014-02-10 Mon 16:43]
 ** Trivial-Menu

@@ -38,9 +38,10 @@
         </div>
         <div class="editor">
           <ul class="editorbar buttonbar">
-            <li>
-              <label>Captcha: </label>
-              <input type="text" name="captcha" value="dicks" /></li>
+            <li id="captcha">
+              <label>Finish the word: </label>
+              <input type="hidden" name="hash" value="HASH" />
+              <input type="text" name="captcha" value="CAPTCHA" /></li>
             <li>
               <button type="submit" name="action" value="paste" class="paste" title="Save your paste!">
                 <i class="fa fa-check"></i> Paste!</button></li>

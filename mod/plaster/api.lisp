@@ -46,13 +46,13 @@ Each form should be of the following format:
                    `(unless ,(car form) (error 'api-error ,@default-args ,@(cdr form))))
                forms)))
 
-(core:define-api paste (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (captcha "") (client "false")) (:method :POST)
+(core:define-api paste (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (captcha "") (hash "") (client "false")) (:method :POST)
   "Create a new paste"
-  (paste-add text annotate title type view password captcha client))
+  (paste-add text annotate title type view password captcha hash client))
 
-(core:define-api paste/add (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (captcha "") (client "false")) (:method T)
+(core:define-api paste/add (text &optional (annotate "-1") (title "") (type "text") (view "0") (password "") (captcha "") (hash "") (client "false")) (:method T)
   "Create a new paste"
-  (paste-add text annotate title type view password captcha client))
+  (paste-add text annotate title type view password captcha hash client))
 
 (core:define-api paste (id &optional text title type view password (client "false")) (:method :PATCH)
   "Edit an existing paste"
@@ -70,7 +70,7 @@ Each form should be of the following format:
   "Delete an existing paste"
   (paste-delete id password client))
 
-(defun paste-add (text annotate title type view password captcha client)
+(defun paste-add (text annotate title type view password captcha hash client)
   (let ((user (user:current :authenticate T))
         (annotate (hash->id annotate))
         (title (string-or "Untitled" title))
@@ -92,10 +92,17 @@ Each form should be of the following format:
        403 :text "Anonymous users cannot create private pastes.")
       ((db:select "plaster-types" (db:query (:= "mime" type)))
        400 :text "Invalid type specified.")
-      ((or (not maxpastes) (< maxpastes 0) (< (db:count "plaster" (db:query (:= "author" (user:field user "username")))) maxpastes))
+      ((or (not user) (not maxpastes) (< maxpastes 0) (< (db:count "plaster" (db:query (:= "author" (user:field user "username")))) maxpastes))
        400 :text(format NIL "Max paste limit of ~a exceeded." maxpastes))
-      ((or (not cooldown) (< cooldown (- (get-unix-time) (cdr (assoc "time" (first (db:select "plaster" (db:query (:= "author" (user:field user "username"))) :limit 1 :sort '(("time" . :DESC)))) :test #'string=)))))
+      ((or (not user) (not cooldown) (< cooldown (- (get-unix-time) (cdr (assoc "time" (first (db:select "plaster" (db:query (:= "author" (user:field user "username"))) :limit 1 :sort '(("time" . :DESC)))) :test #'string=)))))
        429 :text(format NIL "Please wait ~d seconds between pastes." cooldown)))
+
+    (when (config-tree :plaster :captcha)
+      (assert-api (:apicall "paste" :module "plaster" :code)
+        ((< 0 (length hash))
+         400 :text "Captcha hash is missing.")
+        ((string= hash (radiance-crypto:pbkdf2-hash captcha *captcha-salt*))
+         403 :text "Incorrect captcha.")))
     
     (when annotate
       (setf annotate (dm:get-one "plaster" (db:query (:= "_id" annotate)

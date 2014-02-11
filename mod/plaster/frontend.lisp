@@ -70,6 +70,22 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
        (or (= (dm:field paste "pid") -1)
            (paste-accessible-p (dm:get-one "plaster" (db:query (:= "_id" (dm:field paste "pid")))) user))))
 
+(defparameter *captcha-salt* (make-random-string))
+(defparameter *captchas* '("divisible" "determined" "questionable" "difficult" "simplistic" "always" "never" "however" "occasionaly" "certainly"
+                           "creative" "video" "games" "whatever" "realistic" "severe" "explosion" "wizard" "witch" "confederation" "united"
+                           "guess" "estimate" "uncertainty" "forgetful" "loathing" "nevermind" "incorrect" "detective" "deduction" "reasoning"
+                           "evidence" "incident" "curiosity" "thoughtful" "assemble" "story" "conclusion" "possibility" "culprit" "solved"))
+(defun generate-captcha ()
+  (let* ((el (random-elt *captchas*))
+         (elmix (copy-seq el)))
+    (loop with max = 2
+          for i from 1 below (- (length el) 1)
+          while (< 0 max)
+          if (< 3 (random 10)) do (setf (elt elmix i) #\-) (decf max))
+    (values
+     elmix
+     (radiance-crypto:pbkdf2-hash el *captcha-salt*))))
+
 ;; TODO: Take care of error reporting problems of api functions.
 
 (core:define-page index #u"plaster./" () (server:redirect "/new"))
@@ -122,22 +138,31 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                    (when repaste (dm:field repaste "type")))))
 
     (if accessible
-        (progn
-          (uibox:fill-foreach (dm:get "plaster-types" :all :sort '(("title" . :ASC))) "#typeselect option")
-          ($ ".code" (text text))
-          (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
-            ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme"))))
-            (unless type
-              (setf type (dm:field model "default-type"))))
-          (when (string-equal (user:field user "username") "temp")
-            ($ "#viewselect option[value=2]" (remove)))
-          (when annotate
-            ($ "#annotateinfo" (text (format NIL "Annotating paste ~a." (id->hash (dm:field annotate "_id")))))
-            ($ "#viewselect" (parent) (replace-with "public/private depending on its parent"))
-            ($ "#annotateid" (attr :value (id->hash (dm:field annotate "_id"))))
-            (when (= (dm:field annotate "view") 3)
-              ($ "#viewpassword" (attr :value (server:get "password")))))
-          ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (or type "text/plain"))) (attr :selected "selected")))
+        (if (or (config-tree :plaster :anon) (not (string-equal (user:field user "username") "temp")))
+            (progn
+              (uibox:fill-foreach (dm:get "plaster-types" :all :sort '(("title" . :ASC))) "#typeselect option")
+              ($ ".code" (text text))
+              (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
+                ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme"))))
+                (unless type
+                  (setf type (dm:field model "default-type"))))
+              (if (string-equal (user:field user "username") "temp")
+                  (progn
+                    (if (config-tree :plaster :captcha) 
+                        (multiple-value-bind (captcha hash) (generate-captcha)
+                          ($ "#captcha input[name=\"captcha\"]" (val captcha))
+                          ($ "#captcha input[name=\"hash\"]" (val hash)))
+                        ($ "#captcha" (remove)))
+                    ($ "#viewselect option[value=2]" (remove)))
+                  ($ "#captcha" (remove)))
+              (when annotate
+                ($ "#annotateinfo" (text (format NIL "Annotating paste ~a." (id->hash (dm:field annotate "_id")))))
+                ($ "#viewselect" (parent) (replace-with "public/private depending on its parent"))
+                ($ "#annotateid" (attr :value (id->hash (dm:field annotate "_id"))))
+                (when (= (dm:field annotate "view") 3)
+                  ($ "#viewpassword" (attr :value (server:get "password")))))
+              ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (or type "text/plain"))) (attr :selected "selected")))
+            ($ "#content" (html "<h2>Anonymous pasting is not permitted. Please log in first.</h2>")))
         ($ "#content" (html "<h2>You are not allowed to repaste/annotate this paste.</h2>")))
     (uibox:fill-all "body" user)))
 
@@ -157,7 +182,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (T
        ($ "head title" (text (format NIL "~a - Paste #~a - Plaster" (dm:field paste "title") (id->hash (dm:field paste "_id")))))
        (uibox:fill-all "#maineditor" paste)
-       (unless (string-equal (dm:field paste "author") (user:field user "username"))
+       (unless (and (string-equal (dm:field paste "author") (user:field user "username"))
+                    (not (string-equal (user:field user "username") "temp")))
          ($ "#maineditor .editorbar .edit" (remove)))
        (uibox:fill-foreach
         (dm:get "plaster" (db:query (:= "pid" (dm:field paste "_id"))) :sort '(("time" . :ASC)))
