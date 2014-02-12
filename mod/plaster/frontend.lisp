@@ -59,17 +59,18 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (defun paste-accessible-p (paste &optional (user (user:current :authenticate T)))
   (and paste
-       (or (not (= (dm:field paste "view") 2))
-           (and user (string-equal (user:field user "username") (dm:field paste "author"))))
-       (or (not (= (dm:field paste "view") 3))
-           (and (server:post-or-get "password")
-                (< 0 (length (server:post-or-get "password")))
-                ;; We've come this far, decrypt it and set it so we don't have to do it twice.
-                (setf (getdf paste "text")
-                      (decrypt (dm:field paste "text") (server:post-or-get "password")))))
-       ;; View permissions cascade from parent, so check it.
-       (or (= (dm:field paste "pid") -1)
-           (paste-accessible-p (dm:get-one "plaster" (db:query (:= "_id" (dm:field paste "pid")))) user))))
+       (or (and user (user:check "plaster.admin.*" :user user))
+           (and (or (not (= (dm:field paste "view") 2))
+                    (and user (string-equal (user:field user "username") (dm:field paste "author"))))
+                (or (not (= (dm:field paste "view") 3))
+                    (and (server:post-or-get "password")
+                         (< 0 (length (server:post-or-get "password")))
+                         ;; We've come this far, decrypt it and set it so we don't have to do it twice.
+                         (setf (getdf paste "text")
+                               (decrypt (dm:field paste "text") (server:post-or-get "password")))))
+                ;; View permissions cascade from parent, so check it.
+                (or (= (dm:field paste "pid") -1)
+                    (paste-accessible-p (dm:get-one "plaster" (db:query (:= "_id" (dm:field paste "pid")))) user))))))
 
 (defparameter *captcha-salt* (make-random-string))
 (defparameter *captchas* '("divisible" "determined" "questionable" "difficult" "simplistic" "always" "never" "however" "occasionally" "certainly"
@@ -135,13 +136,21 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                              "")))
          (type (or (server:post "type")
                    (when annotate (dm:field annotate "type"))
-                   (when repaste (dm:field repaste "type")))))
+                   (when repaste (dm:field repaste "type"))))
+         (title (or (server:post "title") ""))
+         (view (server:post "view"))
+         (err (when (string= (server:post "action") "paste")
+                (handler-case (core:api-call "plaster/paste" :POST text :annotate (server:post "annotate") :title title :type type
+                                                             :view view :captcha (server:post "captcha") :hash (server:post "hash") :client "true")
+                  (radiance-error (err) (text err))))))
 
     (if accessible
         (if (or (config-tree :plaster :anon) (not (string-equal (user:field user "username") "temp")))
             (progn
               (uibox:fill-foreach (dm:get "plaster-types" :all :sort '(("title" . :ASC))) "#typeselect option")
               ($ ".code" (text text))
+              ($ (inline (format NIL "#viewselect option[value=\"~a\"]" view)) (attr :selected "selected"))
+              ($ "#title" (val title))
               (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
                 ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme"))))
                 (unless type
@@ -164,7 +173,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
               ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (or type "text/plain"))) (attr :selected "selected")))
             ($ "#content" (html "<h2>Anonymous pasting is not permitted. Please log in first.</h2>")))
         ($ "#content" (html "<h2>You are not allowed to repaste/annotate this paste.</h2>")))
-    (uibox:fill-all "body" user)))
+    (uibox:fill-all "body" user)
+    (when err (uibox:notice err :type :error :prepend "#content"))))
 
 (core:define-page view #u"plaster./view" (:lquery (template "plaster/view.html"))
   (let* ((user (user:current :authenticate T :default (user:get "temp")))
@@ -182,8 +192,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (T
        ($ "head title" (text (format NIL "~a - Paste #~a - Plaster" (dm:field paste "title") (id->hash (dm:field paste "_id")))))
        (uibox:fill-all "#maineditor" paste)
-       (unless (and (string-equal (dm:field paste "author") (user:field user "username"))
-                    (not (string-equal (user:field user "username") "temp")))
+       (unless (or (user:check "plaster.admin.*" :user user)
+                   (and (string-equal (dm:field paste "author") (user:field user "username"))
+                        (not (string-equal (user:field user "username") "temp"))))
          ($ "#maineditor .editorbar .edit" (remove)))
        (uibox:fill-foreach
         (dm:get "plaster" (db:query (:= "pid" (dm:field paste "_id"))) :sort '(("time" . :ASC)))
@@ -206,22 +217,35 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
     (cond
       ((not paste)
        ($ "#content" (html "<h2>No such paste found.</h2>")))
-      ((or (not user) (not (string-equal (dm:field paste "author") (user:field user "username"))))
+      ((or (not user) (and (not (string-equal (dm:field paste "author") (user:field user "username")))
+                           (not (user:check "plaster.admin.*" :user user))))
        ($ "#content" (html "<h2>You are not allowed to view this paste.</h2>")))
       (T
        (if (not (paste-accessible-p paste user))
            (progn
              ($ "#content" (html-file (template "plaster/passwordprompt.html")))
              (uibox:fill-all "body" paste))
-           (progn
+           (let* ((text (or (server:post "text") (dm:field paste "text")))
+                  (title (or (server:post "title") (dm:field paste "title")))
+                  (type (or (server:post "type") (dm:field paste "type")))
+                  (view (or (server:post "view") (dm:field paste "view")))
+                  (password (or (server:post "password") (server:get "password")))
+                  (err (handler-case
+                           (cond ((string= (server:post "action") "edit")
+                                  (core:api-call "plaster/paste" :PATCH (server:get "id") :text text :title title :type type
+                                                                 :view view :password password :client "true"))
+                                 ((string= (server:post "action") "delete")
+                                  (core:api-call "plaster/paste" :DELETE (server:get "id") :password password :client "true")))
+                         (radiance-error (err) (text err)))))
              (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
                ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme")))))
              (uibox:fill-foreach (dm:get "plaster-types" :all :sort '(("title" . :ASC))) "#typeselect option")
              (uibox:fill-all "body" (user:get (dm:field paste "author")))
-             ($ "#title" (attr :value (dm:field paste "title")))
-             ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (dm:field paste "type"))) (attr :selected "selected"))
-             ($ (inline (format NIL "#viewselect option[value=\"~a\"]" (dm:field paste "view"))))
-             ($ "#viewpassword" (attr :value (server:get "password")))
+             ($ "#title" (attr :value title))
+             ($ (inline (format NIL "#typeselect option[value=\"~a\"]" type)) (attr :selected "selected"))
+             ($ (inline (format NIL "#viewselect option[value=\"~a\"]" view)) (attr :selected "selected"))
+             ($ "#viewpassword" (attr :value password))
              ($ "#editid" (attr :value (id->hash (dm:field paste "_id"))))
-             ($ ".code" (text (dm:field paste "text")))))))
+             ($ ".code" (text text))
+             (when err (uibox:notice err :type :error :prepend "#content"))))))
     (uibox:fill-all "body" user)))

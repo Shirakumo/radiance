@@ -24,6 +24,8 @@
     - State "DONE"       from "TODO"       [2014-02-07 Fri 11:16]
 *** DONE Fix issue with SETF-ing the interface macros that expand to FUNCALL/APPLY.
     - State "DONE"       from "TODO"       [2014-02-07 Fri 14:07]
+*** DONE Rewrite core api and page systems.
+    - State "DONE"       from "TODO"       [2014-02-12 Wed 15:21]
 *** TODO Fix fast page reload leak issue WTF
 *** TODO Add automated caching system.
 *** TODO Write documentation and specification for standard interfaces.
@@ -32,7 +34,8 @@
     - State "DONE"       from "TODO"       [2014-02-10 Mon 16:42]
 *** DONE Finish user panel.
     - State "DONE"       from "TODO"       [2014-02-10 Mon 16:43]
-*** TODO Fix error reporting on client.
+*** DONE Fix error reporting on client.
+    - State "DONE"       from "TODO"       [2014-02-12 Wed 17:01]
 *** DONE Add timeout / limits / captcha.
     - State "DONE"       from "TODO"       [2014-02-11 Tue 15:23]
 *** DONE Change timeout model to be based on IPs rather than user accounts.

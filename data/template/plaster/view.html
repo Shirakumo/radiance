@@ -32,16 +32,16 @@
         <form class="editor" method="post" data-mode="MODE" data-mime="MIME" data-uibox="attr-data-mode:(type->mode type) attr-data-mime:type">
           <ul class="editorbar buttonbar">
             <li>
-              <button type="submit" name="action" value="repaste" class="repaste" formaction="/new?repaste=ID" title="Submit as a new paste" data-uibox="attr-formaction:(concat &quot;/new?repaste=&quot; (id->hash _id))">
+              <button type="submit" name="action" class="repaste" formaction="/new?repaste=ID" title="Submit as a new paste" data-uibox="attr-formaction:(concat &quot;/new?repaste=&quot; (id->hash _id))">
                 <i class="fa fa-retweet"></i> Repaste</button></li>
             <li>
-              <button type="submit" name="action" value="annotate" class="annotate" formaction="/new?annotate=ID" title="Annotate this paste" data-uibox="attr-formaction:(concat &quot;/new?annotate=&quot; (id->hash _id))">
+              <button type="submit" name="action" class="annotate" formaction="/new?annotate=ID" title="Annotate this paste" data-uibox="attr-formaction:(concat &quot;/new?annotate=&quot; (id->hash _id))">
                 <i class="fa fa-quote-left"></i> Annotate</button></li>
             <li>
-              <button type="submit" name="action" value="raw" class="raw" formaction="/api/plaster/raw?id=ID" title="View the code in raw form" data-uibox="attr-formaction:(concat &quot;/api/plaster/raw?id=&quot; (id->hash _id))">
+              <button type="submit" name="action" class="raw" formaction="/api/plaster/raw?id=ID" title="View the code in raw form" data-uibox="attr-formaction:(concat &quot;/api/plaster/raw?id=&quot; (id->hash _id))">
                 <i class="fa fa-file-text"></i> Raw</button></li>
             <li>
-              <button type="submit" name="action" value="edit" class="edit" formaction="/edit?id=ID" title="Edit this paste" data-uibox="attr-formaction:(concat &quot;/edit?id=&quot; (id->hash _id))">
+              <button type="submit" name="action" class="edit" formaction="/edit?id=ID" title="Edit this paste" data-uibox="attr-formaction:(concat &quot;/edit?id=&quot; (id->hash _id))">
                 <i class="fa fa-edit"></i> Edit</button></li>
             <li class="editorwrapping" title="Toggle line wrap">
               <i class="fa fa-arrows-h"></i></li>
@@ -70,13 +70,13 @@
           <form class="editor" method="post" data-mode="MODE" data-mime="MIME" data-uibox="attr-data-mode:(type->mode type) attr-data-mime:type">
             <ul class="editorbar buttonbar">
             <li>
-              <button type="submit" name="action" value="repaste" class="repaste" formaction="/new?repaste=ID" title="Submit as a new paste" data-uibox="attr-formaction:(concat &quot;/new?repaste=&quot; (id->hash _id))">
+              <button type="submit" name="action" class="repaste" formaction="/new?repaste=ID" title="Submit as a new paste" data-uibox="attr-formaction:(concat &quot;/new?repaste=&quot; (id->hash _id))">
                 <i class="fa fa-retweet"></i> Repaste</button></li>
             <li>
-              <button type="submit" name="action" value="raw" class="raw" formaction="/api/plaster/raw?id=ID" title="View the code in raw form" data-uibox="attr-formaction:(concat &quot;/api/plaster/raw?id=&quot; (id->hash _id))">
+              <button type="submit" name="action" class="raw" formaction="/api/plaster/raw?id=ID" title="View the code in raw form" data-uibox="attr-formaction:(concat &quot;/api/plaster/raw?id=&quot; (id->hash _id))">
                 <i class="fa fa-file-text"></i> Raw</button></li>
             <li>
-              <button type="submit" name="action" value="edit" class="edit" formaction="/edit?id=ID" title="Edit this paste" data-uibox="attr-formaction:(concat &quot;/edit?id=&quot; (id->hash _id))">
+              <button type="submit" name="action" class="edit" formaction="/edit?id=ID" title="Edit this paste" data-uibox="attr-formaction:(concat &quot;/edit?id=&quot; (id->hash _id))">
                 <i class="fa fa-edit"></i> Edit</button></li>
             <li class="editorwrapping" title="Toggle line wrap">
               <i class="fa fa-arrows-h"></i></li>
