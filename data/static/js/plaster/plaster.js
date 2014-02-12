@@ -125,12 +125,14 @@ $(function(){
     });
 
     if($(".pastelist").length > 0){
-        $(".pastelist").dataTable({
-	    "bPaginate": false,
-	    "bFilter": true,
-	    "bSort": true,
-	    "bInfo": false,
-            "aaSorting": [[ 4, "desc"]]
+        $(".pastelist").each(function(){
+            $(this).dataTable({
+	        "bPaginate": false,
+	        "bFilter": true,
+	        "bSort": true,
+	        "bInfo": false,
+                "aaSorting": [[ $("thead th", this).length-1, "desc"]]
+            });
         });
     }
 });
