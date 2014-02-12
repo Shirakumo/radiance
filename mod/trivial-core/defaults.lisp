@@ -9,7 +9,9 @@
 (core::m-define-file-link :trivial-core favicon #u"/favicon.ico" (static "img/favicon.ico") :content-type "image/x-icon")
 (core::m-define-file-link :trivial-core robots #u"/robots.txt" (static "txt/robots.txt") :content-type "text/plain")
 (core::m-define-file-link :trivial-core humans #u"/humans.txt" (static "txt/humans.txt") :content-type "text/plain")
-(core::m-define-file-link :trivial-core index #u"/" (static "html/hello.html") :content-type "application/xhtml+xml")
+
+(core::m-define-page :trivial-core index #u"/" (:lquery (static "html/hello.html"))
+  )
 
 (core::m-define-api :trivial-core formats () (:method :GET)
   "Lists all the available API output formats."
