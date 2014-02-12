@@ -37,12 +37,15 @@
       (progn
         (when (server:get "errortext")
           ($ "#error" (html (concatenate 'string "<i class=\"icon-remove-sign\"></i> " (server:get "errortext")))))
-        (loop with target = ($ "#content")
-              with panel = ($ "#panel .logins ul")
-              for mechanism in (get-mechanisms)
-              do ($ target (append (page-register mechanism)))
-                 ($ panel (append (lquery:parse-html (format NIL "<li class=\"~a\"><a>~:*~a</a></li>" (name mechanism))))))
-        (trigger :user :register-page))
+        (if (config-tree :verify :register :open)
+            (progn
+              (loop with target = ($ "#content")
+                    with panel = ($ "#panel .logins ul")
+                    for mechanism in (get-mechanisms)
+                    do ($ target (append (page-register mechanism)))
+                       ($ panel (append (lquery:parse-html (format NIL "<li class=\"~a\"><a>~:*~a</a></li>" (name mechanism))))))
+              (trigger :user :register-page))
+            ($ "#content" (html "<h2>Registration is closed.</h2>") (inline ($ "ul")) (remove))))
       (server:redirect (make-uri (or (config-tree :verify :register :endpoint)
                                      "/")))))
 
@@ -54,7 +57,9 @@
     (session:field *radiance-session* "post-data" :value (server:posts)))
   (handler-case
       (server:with-posts (action username displayname email
-                          hidden firstname address)
+                                 hidden firstname address)
+        (unless (config-tree :verify :register :open)
+          (error 'auth-register-error :text "Registration is closed" :code 14))
         (unless (string= action "Register")
           (error 'auth-register-error :text "Nothing to do!" :code 15))
         (unless (and username (> (length username) 0)
