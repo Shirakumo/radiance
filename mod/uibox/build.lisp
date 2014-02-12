@@ -34,7 +34,8 @@ If prepend is NIL, the notice node is returned instead."
     ($ node (text message))
     ($ node (attr :class (format NIL "notice ~a ~{~a~^ ~}" (string-downcase type) classes)))
     (if id ($ node (attr :id id)))
-    (if prepend ($ (prepend node)))
+    (cond ((eql prepend T) ($ (prepend node)))
+          (prepend ($ prepend (prepend node))))
     (first node)))
 
 (defmacro confirm ((message &key (yes "Yes") (no "No") (type :question) classes (confirm-field (gensym "CONFIRM"))) yes-block no-block)
