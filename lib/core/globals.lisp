@@ -20,7 +20,6 @@
 (defvar *radiance-package-map*           (make-hash-table) "Reverse lookup for packages to modules.")
 (defvar *radiance-interface-expanders*   (make-hash-table) "Map for the radiance interface component expanders.")
 (defvar *radiance-hooks*                 (make-hash-table) "Map of all registered triggers.")
-(defvar *radiance-api-formats*           (make-hash-table) "Map of all API output formats.")
 (defvar *radiance-continuation-lifetime* (* 60 60 24) "The amount of seconds until a continuation can be garbage collected.")
 
 (defvar *random-string-characters*       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789" "Default random characters appearing in make-random-string.")
