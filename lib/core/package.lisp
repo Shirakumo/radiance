@@ -26,6 +26,7 @@
            #:var #:validator
            #:api-error
            #:module #:apicall
+           #:api-no-call-error
            #:api-args-error
            #:api-auth-error
            #:hook-error
@@ -51,7 +52,6 @@
            #:*radiance-modules*
            #:*radiance-package-map*
            #:*radiance-hooks*
-           #:*radiance-api-formats*
            #:*radiance-continuation-lifetime*
            #:*uri-matcher*
            #:*random-string-characters*
