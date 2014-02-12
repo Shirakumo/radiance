@@ -12,7 +12,7 @@
 
 (core::m-define-api :trivial-core formats () (:method :GET)
   "Lists all the available API output formats."
-  (core::i-api-return :trivial-core 200 "Available output formats" :data (alexandria:hash-table-keys *radiance-api-formats*)))
+  (core::i-api-return :trivial-core 200 "Available output formats" :data (alexandria:hash-table-keys *formats*)))
 
 (core::m-define-api :trivial-core version () (:method :GET)
   "Show the current framework version."
@@ -114,14 +114,24 @@
   "Returns a map of all possible API calls and their docstring."
   (core::i-api-return :trivial-core 200 "Api call index" :data
                       (let ((table (make-hash-table)))
-                        (mapc #'(lambda (item-name)
-                                  (setf (gethash item-name table)
-                                        (mapcar #'(lambda (item)
-                                                    (multiple-value-bind (identifier method) (identifier-and-method (item-identifier item))
-                                                      (plist->hash-table
-                                                       :method (if (string-equal "T" method) "ANY" method)
-                                                       :module identifier
-                                                       :description (item-documentation item))))
-                                                (hook-items :api item-name))))
-                              (hooks :api))
+                        (loop for path being the hash-keys of *apis*
+                              for calls being the hash-values of *apis*
+                              do (setf (gethash path table)
+                                       (mapcar #'(lambda (call)
+                                                   (destructuring-bind (method function access) call
+                                                     (plist->hash-table
+                                                      :method (if (eql method T) "ANY" method)
+                                                      :arguments (let ((vars (split-sequence '&key (sb-introspect:function-lambda-list function))))
+                                                                   (plist->hash-table
+                                                                    :required (first vars)
+                                                                    :optional (when (second vars)
+                                                                                (loop with table = (make-hash-table)
+                                                                                      for var in (second vars)
+                                                                                      do (if (listp var)
+                                                                                             (setf (gethash (first var) table) (second var))
+                                                                                             (setf (gethash var table) NIL))
+                                                                                      finally (return table)))))
+                                                      :authorization (not (null access))
+                                                      :description (documentation function 'function))))
+                                               calls)))
                         table)))
