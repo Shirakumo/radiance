@@ -11,6 +11,9 @@
 (defvar *formats* (make-hash-table) "Map of all API output formats.")
 
 (defun add-api-function (path method function access)
+  (assert (functionp function) () "Function has to be a function object.")
+  (assert (or (null access) (stringp access)) () "Access has to be a string or NIL.")
+  (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
   (setf path (string-downcase path))
   (let ((methodlist (or (gethash path *apis*) (setf (gethash path *apis*) ()))))
     (let ((position (position method methodlist :key #'first))
