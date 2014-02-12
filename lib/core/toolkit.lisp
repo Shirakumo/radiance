@@ -191,6 +191,13 @@ If if-does-not-exist is :error, an error is thrown in case the directory cannot 
 (defun extract-lambda-vars (lambda-list)
   (remove-if #'lambda-keyword-p (flatten-lambda-list (remove-aux-part lambda-list))))
 
+(defun required-lambda-vars (lambda-list)
+  (loop for i in (if (eql '&whole (first lambda-list))
+                     (cddr lambda-list)
+                     lambda-list)
+        until (lambda-keyword-p i)
+        collect i))
+
 (defun extract-macro-lambda-vars (macro-lambda-list)
   (loop with varlist = ()
         for i from 0 below (length macro-lambda-list)
