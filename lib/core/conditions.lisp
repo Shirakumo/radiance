@@ -60,6 +60,8 @@
                                  (slot-value c 'apicall)
                                  (slot-value c 'text)))))
 
+(define-condition api-no-call-error (api-error) ())
+
 (define-condition api-args-error (api-error) ())
 (define-condition api-auth-error (api-error) ())
 
