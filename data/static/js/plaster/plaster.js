@@ -32,7 +32,9 @@ $(function(){
             if($(editor).parent().hasClass("annotation"))
                 setHeight(Math.max(Math.min(editorsize, mirrorsize), 50));
             else
-                setHeight(Math.max(mirrorsize, editorsize));
+                setHeight(Math.min(Math.max(mirrorsize, editorsize),
+                                   //Estimate size to fill window
+                                   $(window).height() - $(editor).offset().top - $("footer").height()*2 - ($(".editorbar", editor).offset().top - $("#content").height())));
         }
         
         initializeMirror(null);
