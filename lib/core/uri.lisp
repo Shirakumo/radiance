@@ -55,7 +55,7 @@
 
 (defun uri->url (uri &optional (absolute T))
   "Turns the URI into a string URL."
-  (drakma:url-encode
+  (hunchentoot:url-encode
    (if absolute 
        (format NIL "http://~{~a.~}~a~@[:~a~]/~@[~a~]"
                (subdomains uri)
