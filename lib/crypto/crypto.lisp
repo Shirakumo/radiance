@@ -25,10 +25,11 @@
   (ironclad:make-cipher 'ironclad:aes :key key :mode mode :initialization-vector IV))
 
 (defmethod encrypt ((text string) key &key (mode 'ironclad:ecb) (IV (ironclad:make-random-salt)))
-  (encrypt (ironclad:ascii-string-to-byte-array text) key :mode mode :IV IV))
+  (encrypt (flexi-streams:string-to-octets text :external-format :utf-8) key :mode mode :IV IV))
 
 (defmethod encrypt ((text vector) key &key (mode 'ironclad:ecb) (IV (ironclad:make-random-salt)))
-  (let ((cipher (get-cipher key :mode mode :IV IV)))
+  (let ((text (ironclad:ascii-string-to-byte-array (base64:usb8-array-to-base64-string text)))
+        (cipher (get-cipher key :mode mode :IV IV)))
     (ironclad:encrypt-in-place cipher text)
     (values (ironclad:octets-to-integer text)
             key mode IV)))
@@ -42,8 +43,7 @@
 (defmethod decrypt ((text vector) key &key (mode 'ironclad:ecb) IV)
   (let ((cipher (get-cipher key :mode mode :IV IV)))
     (ironclad:decrypt-in-place cipher text)
-    (values (byte-array-to-ascii-string text) key mode IV)))
-
+    (values (flexi-streams:octets-to-string (base64:base64-string-to-usb8-array (byte-array-to-ascii-string text)) :external-format :utf-8) key mode IV)))
 
 (defgeneric make-salt (salt)
   (:documentation "Create a salt."))
@@ -55,7 +55,7 @@
 
 (defun pbkdf2-key (password salt &key (digest 'ironclad:sha512) (iterations 1000))
   (setf salt (make-salt salt))
-  (values (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array password)
+  (values (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array (base64:string-to-base64-string password))
                                          :salt salt :digest digest :iterations iterations)
           (byte-array-to-ascii-string salt)
           digest iterations))
@@ -63,7 +63,7 @@
 (defun pbkdf2-hash (password salt &key (digest 'ironclad:sha512) (iterations 1000))
   (setf salt (make-salt salt))
   (values (ironclad:byte-array-to-hex-string
-           (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array password)
+           (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array (base64:string-to-base64-string password))
                                           :salt salt :digest digest :iterations iterations))
           (byte-array-to-ascii-string salt)
           digest iterations))
@@ -73,7 +73,7 @@
   (values (ironclad:byte-array-to-hex-string
            (let ((hash (ironclad:make-digest digest)))
              (ironclad:update-digest hash salt)
-             (ironclad:update-digest hash (ironclad:ascii-string-to-byte-array password))
+             (ironclad:update-digest hash (ironclad:ascii-string-to-byte-array (base64:string-to-base64-string password)))
              (dotimes (x iterations)
                (ironclad:update-digest hash (ironclad:produce-digest hash)))
              (ironclad:produce-digest hash)))
