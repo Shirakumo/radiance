@@ -31,6 +31,10 @@ header#topmenu ul li{
     margin-top: 2px;
 }
 
+header#topmenu ul li:hover{
+    background: rgba(255,255,255,0.5);
+}
+
 header#topmenu>ul>li:first-child{
     color: #0088EE;
     font-weight: bold;
@@ -51,6 +55,10 @@ header#topmenu ul li ul{
 header#topmenu>ul>li>ul{
     position: absolute;
     top: 30px;
+}
+
+header#topmenu>ul>li>ul>li{
+    display: block;
 }
 
 header#topmenu>ul>li>ul>li>ul{

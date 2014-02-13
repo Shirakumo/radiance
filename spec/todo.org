@@ -42,6 +42,7 @@
     - State "DONE"       from "TODO"       [2014-02-11 Tue 16:46]
 *** DONE Add pastebin import.
     - State "DONE"       from "TODO"       [2014-02-10 Mon 16:43]
+*** TODO Bug/Usability test.
 ** Trivial-Menu
 *** TODO Add ability to use auth tests ore even arbitrary code snippets on menu display.
 ** Verify
