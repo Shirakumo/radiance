@@ -78,7 +78,8 @@ Each form should be of the following format:
         (view (parse-integer (string-or "0" view)))
         (client (string-equal client "true"))
         (maxpastes (config-tree :plaster :maxpastes))
-        (cooldown (config-tree :plaster :cooldown)))
+        (cooldown (config-tree :plaster :cooldown))
+        (last-time (cdr (assoc "time" (first (db:select "plaster" (db:query (:= "ip" (server:remote-address))) :limit 1 :sort '(("time" . :DESC)))) :test #'string=))))
     (when (= annotate -1) (setf annotate NIL))
     
     (assert-api (:apicall "paste" :module "plaster" :code)
@@ -94,7 +95,7 @@ Each form should be of the following format:
        400 :text "Invalid type specified.")
       ((or (not user) (not maxpastes) (< maxpastes 0) (< (db:count "plaster" (db:query (:= "author" (user:field user "username")))) maxpastes))
        400 :text(format NIL "Max paste limit of ~a exceeded." maxpastes))
-      ((or (not cooldown) (< cooldown (- (get-unix-time) (cdr (assoc "time" (first (db:select "plaster" (db:query (:= "ip" (server:remote-address))) :limit 1 :sort '(("time" . :DESC)))) :test #'string=)))))
+      ((or (not cooldown) (not last-time) (< cooldown (- (get-unix-time) last-time)))
        429 :text(format NIL "Please wait ~d seconds between pastes." cooldown)))
 
     (when (and (not user) (config-tree :plaster :captcha))
