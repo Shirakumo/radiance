@@ -139,9 +139,12 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                    (when repaste (dm:field repaste "type"))))
          (title (or (server:post "title") ""))
          (view (server:post "view"))
+         (password (or (server:post-or-get "password")
+                       ""))
          (err (when (string= (server:post "action") "paste")
                 (handler-case (core:api-call "plaster/paste" :POST text :annotate (server:post "annotate") :title title :type type
-                                                             :view view :captcha (server:post "captcha") :hash (server:post "hash") :client "true")
+                                                             :view view :captcha (server:post "captcha") :hash (server:post "hash")
+                                                             :password password :client "true")
                   (radiance-error (err) (text err))))))
 
     (if accessible
@@ -151,6 +154,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
               ($ ".code" (text text))
               ($ (inline (format NIL "#viewselect option[value=\"~a\"]" view)) (attr :selected "selected"))
               ($ "#title" (val title))
+              ($ "#viewpassword" (val password))
               (when-let ((model (dm:get-one "plaster-user" (db:query (:= "user" (user:field user "username"))))))
                 ($ "#editorthemescript" (text (format NIL "window.mirrorTheme=\"~a\";" (dm:field model "theme"))))
                 (unless type
@@ -167,9 +171,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
               (when annotate
                 ($ "#annotateinfo" (text (format NIL "Annotating paste ~a." (id->hash (dm:field annotate "_id")))))
                 ($ "#viewselect" (parent) (replace-with "public/private depending on its parent"))
-                ($ "#annotateid" (attr :value (id->hash (dm:field annotate "_id"))))
-                (when (= (dm:field annotate "view") 3)
-                  ($ "#viewpassword" (attr :value (server:get "password")))))
+                ($ "#annotateid" (attr :value (id->hash (dm:field annotate "_id")))))
               ($ (inline (format NIL "#typeselect option[value=\"~a\"]" (or type "text/plain"))) (attr :selected "selected")))
             ($ "#content" (html "<h2>Anonymous pasting is not permitted. Please log in first.</h2>")))
         ($ "#content" (html "<h2>You are not allowed to repaste/annotate this paste.</h2>")))
@@ -202,7 +204,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
         :iter-fun #'(lambda (model node)
                       (when (= (dm:field model "view") 3)
                         (setf (getdf model "text") (decrypt (dm:field model "text") (server:get "password"))))
-                      (unless (string-equal (dm:field model "author") (user:field user "username"))
+                      (unless (and (string-equal (dm:field model "author") (user:field user "username"))
+                                   (not (string-equal (user:field user "username") "temp")))
                         ($ node ".editorbar .edit" (remove)))))
        (when (= (dm:field paste "view") 3)
          ($ ".editorbar button" (each #'(lambda (node) ($ node (attr :formaction (format NIL "~a&password=~a" ($ node (attr :formaction) (node)) (server:get "password"))))))))
@@ -229,7 +232,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                   (title (or (server:post "title") (dm:field paste "title")))
                   (type (or (server:post "type") (dm:field paste "type")))
                   (view (or (server:post "view") (dm:field paste "view")))
-                  (password (or (server:post "password") (server:get "password")))
+                  (password (server:post-or-get "password"))
                   (err (handler-case
                            (cond ((string= (server:post "action") "edit")
                                   (core:api-call "plaster/paste" :PATCH (server:get "id") :text text :title title :type type
