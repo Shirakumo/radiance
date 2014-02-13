@@ -38,6 +38,10 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (defun crlf->lf (string)
   (cl-ppcre:regex-replace-all (format NIL "~C~C" #\return #\linefeed) string (string #\linefeed)))
 
+(defparameter *zalgo-regex* "[^\x20-\x7E]")
+(defun purify-ascii (string)
+  (cl-ppcre:regex-replace-all *zalgo-regex* string ""))
+
 (defun encrypt (text password)
   (let ((salt (or (config-tree :plaster :encrypt-salt)
                   "gHjjaL213adjz9AC")))
@@ -45,7 +49,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (setf text (concatenate 'string text (make-string (- 16 (length text)) :initial-element #\Space))))
     (concatenate
      'string
-     (radiance-crypto:simple-hash text salt :iterations 1) "-"
+     (radiance-crypto:simple-hash text salt :iterations 1 :digest 'ironclad:sha1) "-"
      (write-to-string (radiance-crypto:encrypt text (radiance-crypto:pbkdf2-key password salt :digest :sha256)) :base 36))))
 
 (defun decrypt (text password)
@@ -53,7 +57,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
     (let* ((salt (or (config-tree :plaster :encrypt-salt)
                      "gHjjaL213adjz9AC"))
            (decrypted (radiance-crypto:decrypt (parse-integer text :radix 36) (radiance-crypto:pbkdf2-key password salt :digest :sha256)))
-           (hashed (radiance-crypto:simple-hash decrypted salt :iterations 1)))
+           (hashed (radiance-crypto:simple-hash decrypted salt :iterations 1 :digest 'ironclad:sha1)))
       (when (string-equal hashed hash)
         decrypted))))
 
