@@ -15,7 +15,7 @@
 (core:define-page profile #u"user./" (:lquery T)
   (ignore-errors (auth:authenticate))
   (let* ((username (if (= (length (path *radiance-request*)) 0)
-                       (user:field (user:current) "username")
+                       (user:field (user:current :default (user:get "temp")) "username")
                        (path *radiance-request*)))
          (user (user:get username)))
     (if (user:saved-p :user user)
