@@ -128,6 +128,9 @@ See fill-node for more information."
 (define-fill-function datetime (model field)
   (timestamp-to-datetime (parse-data field model)))
 
+(define-fill-function date-input (model field)
+  (timestamp-to-input-date (parse-data field model)))
+
 (define-fill-function parse (model field)
   (with-interface "parser"
     (parser:parse (parse-data field model))))
