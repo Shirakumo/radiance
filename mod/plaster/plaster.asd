@@ -30,4 +30,5 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                :uibox
                :alexandria
                :radiance-crypto
-               :drakma))
+               :drakma
+               :cl-ppcre))

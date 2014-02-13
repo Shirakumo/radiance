@@ -73,7 +73,7 @@ Each form should be of the following format:
 (defun paste-add (text annotate title type view password captcha hash client)
   (let ((user (user:current :authenticate T))
         (annotate (hash->id annotate))
-        (title (string-or "Untitled" title))
+        (title (string-or "Untitled" (purify-ascii title)))
         (type (string-or "text" type))
         (view (parse-integer (string-or "0" view)))
         (client (string-equal client "true"))
@@ -169,7 +169,7 @@ Each form should be of the following format:
          "Text to encrypt is required."))
       (setf text (encrypt text password)))
 
-    (setf (getdf paste "title") (or title (dm:field paste "title"))
+    (setf (getdf paste "title") (string-or (dm:field paste "title") (purify-ascii title))
           (getdf paste "view") view
           (getdf paste "type") (or type (dm:field paste "type"))
           (getdf paste "text") (or text (dm:field paste "text")))
