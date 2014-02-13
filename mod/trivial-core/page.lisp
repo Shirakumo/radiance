@@ -46,7 +46,9 @@
     (or (> (count #\/ (path a))
            (count #\/ (path b)))
         (> (length (path a))
-           (length (path b))))))
+           (length (path b)))
+        (> (length (subdomains (third a)))
+           (length (subdomains (third b)))))))
 
 (define-interface-method core:define-page (name uri options &body body)
   "Define a new page for a given module.
