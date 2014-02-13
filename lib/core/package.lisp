@@ -147,5 +147,6 @@
            #:date-p
            #:date-to-timestamp
            #:timestamp-to-date
-           #:timestamp-to-datetime))
+           #:timestamp-to-datetime
+           #:timestamp-to-input-date))
 
