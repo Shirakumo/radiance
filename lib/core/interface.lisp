@@ -242,19 +242,19 @@ requested interface will be properly implemented after the load of this system."
 ;; Hack into ASDF to delegate to the chosen implementation for the interface.
 (defmethod asdf::plan-action-status ((plan null) (op asdf:operation) (interface interface))
   (with-asdf-system (interface system)
-    (v:debug :radiance.framework.interface "Delegating (ASDF::PLAN-ACTION-STATUS ~s ~s ~s) to ~s" plan op interface system)
+    (v:trace :radiance.framework.interface "Delegating (ASDF::PLAN-ACTION-STATUS ~s ~s ~s) to ~s" plan op interface system)
     (asdf::plan-action-status plan op system)))
 
 (defmethod asdf:needed-in-image-p ((op asdf:operation) (interface interface))
   (with-asdf-system (interface system name)
-    (v:debug :radiance.framework.interface "Delegating (ASDF:NEEDED-IN-IMAGE-P ~s ~s) to ~s" op interface system)
+    (v:trace :radiance.framework.interface "Delegating (ASDF:NEEDED-IN-IMAGE-P ~s ~s) to ~s" op interface system)
     (or (asdf:needed-in-image-p op system)
         (not (eq (second (assoc name (implementation-map system)))
                  (symbol-value (find-symbol "*IMPLEMENTATION*" (find-package name))))))))
 
 (defmethod asdf::compute-action-stamp (plan (op asdf:operation) (interface interface) &key just-done)
   (with-asdf-system (interface system name)
-    (v:debug :radiance.framework.interface "Delegating (ASDF::COMPUTE-ACTION-STAMP ~s ~s ~s :JUST-DONE ~s) to ~s" plan op interface just-done system)
+    (v:trace :radiance.framework.interface "Delegating (ASDF::COMPUTE-ACTION-STAMP ~s ~s ~s :JUST-DONE ~s) to ~s" plan op interface just-done system)
     (if (not (eq (second (assoc name (implementation-map system)))
                  (symbol-value (find-symbol "*IMPLEMENTATION*" (find-package name)))))
         (values T NIL)
