@@ -90,7 +90,7 @@ $(function(){
         var mime = $(editor).data("mime");
         if(mode == undefined) mode = $("#typeselect option:selected").data("mode");
         if(mime == undefined) mime = $("#typeselect option:selected").val();
-        if(mode != undefined && mode != "text"){
+        if(mode != undefined && mode != "text" && mode != "default"){
             mirror.setEditorMode(mode, mime, function(){});
         }
         $(editor).data("mode", null);

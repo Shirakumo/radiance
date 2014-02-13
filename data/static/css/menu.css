@@ -35,6 +35,10 @@ header#topmenu ul li:hover{
     background: rgba(255,255,255,0.5);
 }
 
+header#topmenu>ul>li:first-child:hover{
+    background: #003388;
+}
+
 header#topmenu>ul>li:first-child{
     color: #0088EE;
     font-weight: bold;
