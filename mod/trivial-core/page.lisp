@@ -42,13 +42,14 @@
   (error-page 404))
 
 (defun sort-core-hooks (a b)
-  (flet ((path (hook) (path (third hook))))
-    (or (> (count #\/ (path a))
-           (count #\/ (path b)))
-        (> (length (path a))
-           (length (path b)))
-        (> (length (subdomains (third a)))
-           (length (subdomains (third b)))))))
+  (flet ((uri (hook) (third hook)))
+    (let ((sda (length (subdomains (uri a))))
+          (sdb (length (subdomains (uri b))))
+          (paa (count #\/ (path (uri a))))
+          (pab (count #\/ (path (uri b)))))
+      (or (and (= sda 0) (> paa pab))
+          (> sda sdb)
+          (and (= sda sdb) (> paa pab))))))
 
 (define-interface-method core:define-page (name uri options &body body)
   "Define a new page for a given module.
