@@ -90,4 +90,4 @@
          (data (format NIL "~a:~a:~a" timestamp random uuid)))
     (if (config-tree :verify :session :use-per-user-secret)
         (setf data (rad-crypto:encrypt data (user:field (s-user session) "secret"))))
-    (write-to-string (rad-crypto:encrypt (format NIL "~a-~a" username data) (config-tree :verify :session :secret)) :base 36)))
+    (rad-crypto:encrypt (format NIL "~a-~a" username data) (config-tree :verify :session :secret))))
