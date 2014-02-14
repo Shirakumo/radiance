@@ -24,8 +24,10 @@
   user)
 
 (define-interface-method user:current (&key default authenticate)
-  (when authenticate (ignore-errors (auth:authenticate)))
-  (or (when *radiance-session* (session:user *radiance-session*))
+  (when (and authenticate (not *radiance-session*))
+    (ignore-errors (auth:authenticate)))
+  (if *radiance-session*
+      (session:user *radiance-session*)
       default))
 
 (define-interface-method user:get ((username symbol))
