@@ -23,5 +23,5 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   :version "0.0.1"
   :license "Artistic"
   :homepage "http://tymoon.eu"
-  :depends-on (:ironclad :base64)
+  :depends-on (:ironclad :cl-base64)
   :components ((:file "crypto")))
