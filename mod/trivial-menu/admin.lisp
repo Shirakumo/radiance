@@ -9,10 +9,11 @@
 (core:define-api admin (action) (:access-branch "admin.menu.*")
   (string-case:string-case (action)
     ("Add"
-     (with-model (model pid title tooltip link sort) ("trivial-menu" NIL)
+     (with-model (model pid title tooltip access link sort) ("trivial-menu" NIL)
        (setf pid (parse-integer (server:post "pid"))
              title (server:post "title")
              tooltip (server:post "tooltip")
+             access (server:post "access")
              link (server:post "link")
              sort (parse-integer (server:post "sort")))
        (dm:insert model))
@@ -26,15 +27,15 @@
      (server:redirect "/menu/items"))
     ("Edit"
      (assert (not (null (server:post "id"))) () 'api-args-error :text "ID argument required.")
-     (with-model (model pid title tooltip link sort) ("trivial-menu" (db:query (:= "_id" (server:post "id"))) :save T)
+     (with-model (model pid title tooltip access link sort) ("trivial-menu" (db:query (:= "_id" (server:post "id"))) :save T)
        (setf pid (parse-integer (server:post "pid"))
              title (server:post "title")
              tooltip (server:post "tooltip")
+             access (server:post "access")
              link (server:post "link")
              sort (parse-integer (server:post "sort"))))
      (init-menu)
      (server:redirect "/menu/items"))))
-    
 
 (admin:define-panel items menu (:access-branch "admin.menu.*" :menu-icon "fa-external-link" :menu-tooltip "Change menu items." :lquery (template "trivial-menu/admin.html"))
   (uibox:fill-foreach (dm:get "trivial-menu" :all :sort '(("sort" . :ASC)) :limit -1) "tbody #template"))
