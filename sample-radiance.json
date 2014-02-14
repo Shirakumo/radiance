@@ -5,6 +5,7 @@
     "use-subdomains": true,
     "root": "autodetect",
     "database": "db-dev",
+    "debugger": false,
     "upload": {
         "max-file-size": 8192,
         "max-name-length": 64,

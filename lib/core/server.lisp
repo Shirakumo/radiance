@@ -42,7 +42,7 @@
     ($ "head title" (text "Unexpected Internal Eerror"))
     ($ "html" (add-class :unexpected)))
   (server:set-response-content ($ (serialize) (node)))
-  (if unexpected
+  (if (and unexpected (config-tree :debugger))
       (invoke-debugger err)
       (invoke-restart 'skip-request)))
 
