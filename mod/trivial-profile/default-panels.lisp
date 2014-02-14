@@ -16,7 +16,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       #'(lambda (row)
           (let ((field (cdr (assoc "field" row :test #'string=)))
                 (type (cdr (assoc "type" row :test #'string=)))
-                (value (cdr (assoc "balue" row :test #'string=)))
+                (value (cdr (assoc "value" row :test #'string=)))
                 (clone ($ template (clone) (node))))
             ($ clone ".key" (text field))
             ($ clone ".value" (attr :type type :name field) (val value))
