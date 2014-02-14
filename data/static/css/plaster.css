@@ -10,7 +10,7 @@ html{
 
 body{
     margin: 0 10% 0 10%;
-    min-width: 600px;
+    min-width: 700px;
 }
 
 header{
@@ -94,7 +94,7 @@ header nav ul::after{
 #maineditor #typeselect, #maineditor #viewselect, #maineditor #viewpassword{
     background: #333;
     color: #FFF;
-    width: 200px;
+    width: 150px;
     font-size: 14px;
     line-height: 1;
     border: 1px solid #000;
