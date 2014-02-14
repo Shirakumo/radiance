@@ -63,8 +63,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (defun paste-accessible-p (paste &optional (user (user:current :authenticate T)))
   (and paste
-       (or (and user (user:check "plaster.admin.*" :user user))
-           (and (or (not (= (dm:field paste "view") 2))
+       (or (and (or (not (= (dm:field paste "view") 2))
                     (and user (string-equal (user:field user "username") (dm:field paste "author"))))
                 (or (not (= (dm:field paste "view") 3))
                     (and (server:post-or-get "password")
@@ -74,7 +73,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                                (decrypt (dm:field paste "text") (server:post-or-get "password")))))
                 ;; View permissions cascade from parent, so check it.
                 (or (= (dm:field paste "pid") -1)
-                    (paste-accessible-p (dm:get-one "plaster" (db:query (:= "_id" (dm:field paste "pid")))) user))))))
+                    (paste-accessible-p (dm:get-one "plaster" (db:query (:= "_id" (dm:field paste "pid")))) user)))
+           (and user (user:check "plaster.admin.*" :user user)))))
 
 (defparameter *captcha-salt* (make-random-string))
 (defparameter *captchas* '("divisible" "determined" "questionable" "difficult" "simplistic" "always" "never" "however" "occasionally" "certainly"
