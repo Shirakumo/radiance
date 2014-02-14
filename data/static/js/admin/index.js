@@ -16,7 +16,7 @@ $(function(){
 
     // Table checkboxes
     $(".select-all").click(function(){
-	var checkboxes = $('input[type="checkbox"]', $(this).parent().parent().parent().parent());
+	var checkboxes = $('td:first-child input[type="checkbox"]', $(this).parent().parent().parent().parent());
 	checkboxes.prop("checked", $(this).is(":checked"));
     });
 
