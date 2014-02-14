@@ -1,7 +1,6 @@
 html,body{
     margin: 0;
     padding: 0;
-    height: 100%;
     font-family: Arial, sans-serif;
     font-size: 12pt;
     background: #151515;
@@ -23,7 +22,7 @@ span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
 #profile{
     background: #000 url("/static/img/TyNET-logo-david-dark-256.png") no-repeat no-repeat bottom right;
     padding: 50px 0 50px 0;
-    min-height: 700px;
+    min-height: 900px;
 }
 
 #profile>header{
@@ -126,6 +125,11 @@ span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
 
 #profile-comments .text{
     margin: 5px 5px 5px 57px;
+}
+
+#profile-comments .text img{
+    max-width:100%;
+    max-height:100%;
 }
 
 #profile-comments p:first-child{margin-top: 0;}
