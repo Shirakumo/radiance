@@ -271,7 +271,7 @@ If if-does-not-exist is :error, an error is thrown in case the directory cannot 
           do (cond ((or (char<= #\0 char #\9)
                         (char<= #\a char #\z)
                         (char<= #\A char #\Z)
-                        (find char "$-_.!*'()," :test #'char=))
+                        (find char "$-_.!*'(),/?=:&" :test #'char=))
                     (write-char char out))
                    ((char= char #\Space)
                     (write-char #\+ out))
