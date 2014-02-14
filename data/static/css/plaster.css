@@ -301,6 +301,7 @@ h3:after{
 }
 .pastelist td.view i.view-3:before{
     content: "\f023";
+    color: #000;
 }
 
 footer{
