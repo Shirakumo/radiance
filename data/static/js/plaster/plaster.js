@@ -114,7 +114,9 @@ $(function(){
         }
     });
 
-    $("#viewpassword").hide();
+    if($("#viewselect option:selected").val() != "3")
+        $("#viewpassword").hide();
+    
     $("#viewselect").change(function(){
         if(this.value == "3")
             $("#viewpassword").show();
