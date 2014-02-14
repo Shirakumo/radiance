@@ -193,6 +193,7 @@ Each form should be of the following format:
        :code 403 :text "You are not allowed to edit this paste."))
 
     (dm:delete paste)
+    (db:remove "plaster" (db:query (:= "pid" id)))
     (if client
         (server:redirect (format NIL "/view?id=~a~@[&password=~a~]"
                                  (if (= (dm:field paste "pid") -1) id (id->hash (dm:field paste "pid"))) password))
