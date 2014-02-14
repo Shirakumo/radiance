@@ -27,6 +27,7 @@
 *** DONE Rewrite core api and page systems.
     - State "DONE"       from "TODO"       [2014-02-12 Wed 15:21]
 *** TODO Fix fast page reload leak issue WTF
+*** TODO Merge AUTH and SESSION interfaces.
 *** TODO Add automated caching system.
 *** TODO Write documentation and specification for standard interfaces.
 ** Plaster
@@ -42,13 +43,15 @@
     - State "DONE"       from "TODO"       [2014-02-11 Tue 16:46]
 *** DONE Add pastebin import.
     - State "DONE"       from "TODO"       [2014-02-10 Mon 16:43]
-*** TODO Bug/Usability test.
+*** DONE Bug/Usability test.
+    - State "DONE"       from "TODO"       [2014-02-14 Fri 17:52]
 *** TODO Think about encryption performance.
 ** Trivial-Menu
 *** DONE Add ability to use auth tests ore even arbitrary code snippets on menu display.
     - State "DONE"       from "TODO"       [2014-02-14 Fri 12:54]
 ** Trivial-Profile
 *** TODO Add hover texts to custom fields.
+*** TODO Add user field verification.
 ** Verify
 *** DONE Rewrite mechanisms.
     - State "DONE"       from "TODO"       [2014-02-09 Sun 20:52]
