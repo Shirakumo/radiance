@@ -50,13 +50,13 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
     (concatenate
      'string
      (radiance-crypto:simple-hash text salt :iterations 1 :digest 'ironclad:md5) "-"
-     (write-to-string (radiance-crypto:encrypt text (radiance-crypto:pbkdf2-key password salt :digest :sha256 :iterations 1)) :base 36))))
+     (radiance-crypto:encrypt text (radiance-crypto:pbkdf2-key password salt :digest :sha256 :iterations 1)))))
 
 (defun decrypt (text password)
   (destructuring-bind (hash text) (split-sequence:split-sequence #\- text)
     (let* ((salt (or (config-tree :plaster :encrypt-salt)
                      "gHjjaL213adjz9AC"))
-           (decrypted (radiance-crypto:decrypt (parse-integer text :radix 36) (radiance-crypto:pbkdf2-key password salt :digest :sha256 :iterations 1)))
+           (decrypted (radiance-crypto:decrypt text (radiance-crypto:pbkdf2-key password salt :digest :sha256 :iterations 1)))
            (hashed (radiance-crypto:simple-hash decrypted salt :iterations 1 :digest 'ironclad:md5)))
       (when (string-equal hashed hash)
         decrypted))))
