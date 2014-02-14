@@ -16,7 +16,7 @@
 
 (defmethod print-object ((uri uri) stream)
   (with-slots (subdomains domain port path) uri
-    (format stream "~:[*~;~:*~{~a~^.~}~].~:[*~;~:*~a~]:~:[*~;~:*~a~]/~a" subdomains domain port path))
+    (format stream "~:[*~;~:*~{~a~^.~}~].~:[*~;~:*~a~]:~:[*~;~:*~a~]/~@[~a~]" subdomains domain port path))
   uri)
 
 (defgeneric uri-matches (uri b) (:documentation "Checks if a URI matches."))
