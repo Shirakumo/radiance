@@ -9,6 +9,31 @@
 (defun byte-array-to-ascii-string (array)
   (coerce (mapcar #'code-char (coerce array 'list)) 'string))
 
+(defgeneric to-base64 (sequence)
+  (:documentation "Turns a sequence into a base64-encoded string using UTF-8 encoding."))
+
+(defgeneric from-base64 (sequence)
+  (:documentation "Turns a base64-encoded sequence into an UTF-8 string."))
+
+(defmethod to-base64 ((integer integer))
+  (base64:integer-to-base64-string integer))
+
+(defmethod to-base64 ((array array))
+  (base64:usb8-array-to-base64-string array))
+
+(defmethod to-base64 ((string string))
+  (to-base64
+   (flexi-streams:string-to-octets string :external-format :utf-8)))
+
+(defmethod from-base64 ((string string))
+  (flexi-streams:octets-to-string
+   (base64:base64-string-to-usb8-array string)
+   :external-format :utf-8))
+
+(defmethod from-base64 ((vector vector))
+  (from-base64
+   (byte-array-to-ascii-string vector)))
+
 (defgeneric get-cipher (key &key mode IV)
   (:documentation "Return the corresponding cipher."))
 
@@ -31,11 +56,11 @@
   (let ((text (ironclad:ascii-string-to-byte-array (base64:usb8-array-to-base64-string text)))
         (cipher (get-cipher key :mode mode :IV IV)))
     (ironclad:encrypt-in-place cipher text)
-    (values (ironclad:octets-to-integer text)
+    (values (to-base64 text)
             key mode IV)))
 
 (defmethod decrypt ((text string) key &key (mode 'ironclad:ecb) IV)
-  (decrypt (parse-integer text) key :mode mode :IV IV))
+  (decrypt (base64:base64-string-to-usb8-array text) key :mode mode :IV IV))
 
 (defmethod decrypt ((text integer) key &key (mode 'ironclad:ecb) IV)
   (decrypt (ironclad:integer-to-octets text) key :mode mode :IV IV))
@@ -43,7 +68,7 @@
 (defmethod decrypt ((text vector) key &key (mode 'ironclad:ecb) IV)
   (let ((cipher (get-cipher key :mode mode :IV IV)))
     (ironclad:decrypt-in-place cipher text)
-    (values (flexi-streams:octets-to-string (base64:base64-string-to-usb8-array (byte-array-to-ascii-string text)) :external-format :utf-8) key mode IV)))
+    (values (from-base64 text) key mode IV)))
 
 (defgeneric make-salt (salt)
   (:documentation "Create a salt."))
@@ -55,7 +80,7 @@
 
 (defun pbkdf2-key (password salt &key (digest 'ironclad:sha512) (iterations 1000))
   (setf salt (make-salt salt))
-  (values (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array (base64:string-to-base64-string password))
+  (values (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array (to-base64 password))
                                          :salt salt :digest digest :iterations iterations)
           (byte-array-to-ascii-string salt)
           digest iterations))
@@ -63,7 +88,7 @@
 (defun pbkdf2-hash (password salt &key (digest 'ironclad:sha512) (iterations 1000))
   (setf salt (make-salt salt))
   (values (ironclad:byte-array-to-hex-string
-           (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array (base64:string-to-base64-string password))
+           (ironclad:pbkdf2-hash-password (ironclad:ascii-string-to-byte-array (to-base64 password))
                                           :salt salt :digest digest :iterations iterations))
           (byte-array-to-ascii-string salt)
           digest iterations))
@@ -73,7 +98,7 @@
   (values (ironclad:byte-array-to-hex-string
            (let ((hash (ironclad:make-digest digest)))
              (ironclad:update-digest hash salt)
-             (ironclad:update-digest hash (ironclad:ascii-string-to-byte-array (base64:string-to-base64-string password)))
+             (ironclad:update-digest hash (ironclad:ascii-string-to-byte-array (to-base64 password)))
              (dotimes (x iterations)
                (ironclad:update-digest hash (ironclad:produce-digest hash)))
              (ironclad:produce-digest hash)))

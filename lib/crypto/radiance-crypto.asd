@@ -9,6 +9,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (:use :cl)
   (:export
    :get-cipher
+   :to-base64
+   :from-base64
    :encrypt
    :decrypt
    :make-salt
