@@ -45,12 +45,17 @@
 *** TODO Bug/Usability test.
 *** TODO Think about encryption performance.
 ** Trivial-Menu
-*** TODO Add ability to use auth tests ore even arbitrary code snippets on menu display.
+*** DONE Add ability to use auth tests ore even arbitrary code snippets on menu display.
+    - State "DONE"       from "TODO"       [2014-02-14 Fri 12:54]
+** Trivial-Profile
+*** TODO Add hover texts to custom fields.
 ** Verify
 *** DONE Rewrite mechanisms.
     - State "DONE"       from "TODO"       [2014-02-09 Sun 20:52]
 *** TODO Add Google Authenticator mechanism.
 *** TODO Add API pages for users, sessions, etc.
+*** TODO Add check for already past authentication attempt to eliminate subsequent tries.
+*** TODO Remake registration screen to not be confusing as shit.
 ** Kanji
 *** TODO Start the layouting process.
 *** TODO Implement easy to use back-end for adding and manipulating the sequence.
