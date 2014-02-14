@@ -135,6 +135,11 @@ See fill-node for more information."
   (with-interface "parser"
     (parser:parse (parse-data field model))))
 
+(define-fill-function checked (model field)
+  (let ((val (parse-data field model)))
+    (when (and val (< 0 (length val)))
+      "checked")))
+
 (defun fill-node (node model)
   "Fills data into the node according to uibox constants. Syntax:
 DATA-UIBOX : TARGET:field*
