@@ -71,22 +71,22 @@
 
 (define-interface-method user:check (branch &key (user (user:current)))
   (v:trace :verify.user "Checking permissions of ~a for ~a" user branch)
-  (or
-   (block user-check
-     (unless user (return-from user-check NIL))
-     (let ((perms (user:field user "perms"))
-           (branch (split-sequence:split-sequence #\. branch)))
-       (when perms
-         (loop for line in (split-sequence:split-sequence #\newline perms)
-               do (loop for leaf-a in branch
-                        for leaf-b in (split-sequence:split-sequence #\. line)
-                        do (cond
-                             ((string= leaf-a "*") (return-from user-check branch))
-                             ((string= leaf-b "*") (return-from user-check branch))
-                             ((not (string= leaf-a leaf-b)) (return)))
-                        finally (when (and (string= leaf-a leaf-b) (<= (length line) (length branch)))
-                                  (return-from user-check branch)))))))
-   NIL))
+  (let ((negate (char= (elt branch 0) #\!)))
+    (when negate (setf branch (subseq branch 1)))
+    (block user-check
+      (unless user (return-from user-check negate))
+      (let ((perms (user:field user "perms"))
+            (branch (split-sequence:split-sequence #\. branch)))
+        (when perms
+          (loop for line in (split-sequence:split-sequence #\newline perms)
+                do (loop for leaf-a in branch
+                         for leaf-b in (split-sequence:split-sequence #\. line)
+                         do (cond
+                              ((string= leaf-a "*") (return-from user-check (not negate)))
+                              ((string= leaf-b "*") (return-from user-check (not negate)))
+                              ((not (string= leaf-a leaf-b)) (return)))
+                         finally (when (and (string= leaf-a leaf-b) (<= (length line) (length branch)))
+                                   (return-from user-check (not negate))))))))))
 
 (define-interface-method user:grant (branch &key (user (user:current)))
   (v:debug :verify.user "Granting permissions for ~a: ~a" user branch)
