@@ -35,6 +35,7 @@
                :cl-json
                :cl-fad
                :cl-ppcre
+               :flexi-streams
                :uuid
                :trivial-backtrace
                :local-time

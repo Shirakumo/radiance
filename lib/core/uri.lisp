@@ -55,7 +55,7 @@
 
 (defun uri->url (uri &optional (absolute T))
   "Turns the URI into a string URL."
-  (hunchentoot:url-encode
+  (url-encode
    (if absolute 
        (format NIL "http://~{~a.~}~a~@[:~a~]/~@[~a~]"
                (subdomains uri)
@@ -66,8 +66,7 @@
                    (when *radiance-request* (port *radiance-request*))
                    (first (config :ports)))
                (path uri))
-       (concatenate 'string "/" (path uri)))
-   :utf-8))
+       (concatenate 'string "/" (path uri)))))
 
 (defun uri->server-url (uri)
   (format NIL "http://~{~a.~}~:[~a~;~:*~a~*~]~:[:~a~;:~:*~a~*~]/~a"

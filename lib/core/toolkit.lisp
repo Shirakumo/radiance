@@ -263,3 +263,16 @@ If if-does-not-exist is :error, an error is thrown in case the directory cannot 
   "Signals a condition that provokes the requested error page."
   (v:debug :radiance.server.request "Erroring out to ~a" errorcode)
   (error 'error-page :code errorcode :text "Requested error page."))
+
+(defun url-encode (string)
+  (with-output-to-string (out)
+    (loop for octet across (flexi-streams:string-to-octets (or string "") :external-format :utf-8)
+          for char = (code-char octet)
+          do (cond ((or (char<= #\0 char #\9)
+                        (char<= #\a char #\z)
+                        (char<= #\A char #\Z)
+                        (find char "$-_.!*'()," :test #'char=))
+                    (write-char char out))
+                   ((char= char #\Space)
+                    (write-char #\+ out))
+                   (t (format out "%~2,'0x" (char-code char)))))))
