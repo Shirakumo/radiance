@@ -87,6 +87,8 @@ Each form should be of the following format:
        400 :text "Text must be at least one character long.")
       ((and (< -1 view) (< view 4))
        400 :text "View must be between 0 and 3.")
+      ((<= (length title) 64)
+       400 :text "Title must be less than 65 characters long.")
       ((or user (config-tree :plaster :anon))
        403 :text"Anonymous pasting is not permitted.")
       ((or (not (= 2 view)) user)
@@ -233,12 +235,13 @@ Each form should be of the following format:
           (dm:save prefs)))
     
     (when (and nuke (string= nuke "nuke"))
-      (db:remove "plaster" (db:query (:= "author" username)))
-      (when client
-        (server:redirect (make-uri "user./settings/plaster/preferences?notice=All%20pastes%20deleted."))))
+      (let ((count (db:count "plaster" (db:query (:= "author" username)))))
+        (db:remove "plaster" (db:query (:= "author" username)))
+        (when client
+          (server:redirect (make-uri (format NIL "user./settings/plaster/preferences?notice=~a pastes deleted." count))))))
 
     (if client
-        (server:redirect (make-uri "user./settings/plaster/preferences?notice=Preferences%20updated."))
+        (server:redirect (make-uri "user./settings/plaster/preferences?notice=Preferences updated."))
         (core:api-return 200 "Preferences saved."))))
 
 (core:define-api user/import (&optional service) (:method T :access-branch "*")
@@ -309,7 +312,7 @@ Each form should be of the following format:
                       (dm:insert model)))
                   (push ($ node "paste_key" (text) (node)) failed))))
           (if client
-              (server:redirect (make-uri (format NIL "user./settings/plaster/preferences?notice=~a%20pastes%20imported,%20~a%20type%20adapted,%20~a%20failed."
+              (server:redirect (make-uri (format NIL "user./settings/plaster/preferences?notice=~a pastes imported, ~a type adapted, ~a failed."
                                                  (length success) (length adapted) (length failed))))
               (core:api-return 200 "A"
                                :data (plist->hash-table
