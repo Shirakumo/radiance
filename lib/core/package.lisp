@@ -44,6 +44,7 @@
   (:export #:*radiance-startup-time*
            #:*radiance-config-file*
            #:*radiance-config*
+           #:*radiance-log-directory*
            #:*radiance-request*
            #:*radiance-response*
            #:*radiance-session*
