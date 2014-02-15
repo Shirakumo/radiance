@@ -98,6 +98,9 @@
         (v:info :radiance.server.status "Loading config...")
         (load-config)
 
+        (v:info :radiance.server.status "Setting up logging...")
+        (start-logging)
+
         (v:info :radiance.server.status "Loading modules...")
         (load-modules)
         (asdf:load-system "radiance-server")

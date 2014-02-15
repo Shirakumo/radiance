@@ -52,6 +52,16 @@
 
 (defsetf config config)
 
+(defun start-logging ()
+  (ensure-directories-exist *radiance-log-directory*)
+  (loop for (name . options) in (config-tree :logging)
+        do (v:attach-to (find-symbol (string-upcase (cdr (assoc :level options))) :KEYWORD)
+                        (make-instance 'v:rotating-log-faucet
+                                       :name name
+                                       :interval (cdr (assoc :interval options))
+                                       :file (merge-pathnames (cdr (assoc :file options)) *radiance-log-directory*))
+                        :category (cdr (assoc :category options)))))
+
 (declaim (inline concatenate-strings))
 (defun concatenate-strings (list &optional (delim ""))
   "Joins a list of strings into one string using format."
