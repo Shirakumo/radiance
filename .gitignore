@@ -1,4 +1,5 @@
 *.fasl
+/log/
 /lib/lQuery
 /lib/lQuery-Doc
 /lib/piping
