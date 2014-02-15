@@ -6,6 +6,20 @@
     "root": "autodetect",
     "database": "db-dev",
     "debugger": false,
+    "logging": {
+        "infolog": {
+            "level": "info",
+            "file": "info/info.log",
+            "interval": "0 0 * * 0",
+            "category": null
+        },
+        "warnlog": {
+            "level": "warn",
+            "file": "warn/warn.log",
+            "interval": "0 0 * * 0",
+            "category": null
+        }
+    },
     "upload": {
         "max-file-size": 8192,
         "max-name-length": 64,
@@ -47,7 +61,6 @@
         "radiance-profile",
         "verify-password",
         "db-introspect",
-        "trivial-menu",
-        "plaster"
+        "trivial-menu"
     ]
 }
