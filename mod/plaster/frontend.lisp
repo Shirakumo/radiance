@@ -102,6 +102,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (core:define-page user #u"plaster./user" (:lquery (template "plaster/user.html"))
   (destructuring-bind (path username &optional (page "0")) (split-sequence:split-sequence #\/ (path *radiance-request*))
     (declare (ignore path))
+    (setf username (string-downcase username))
     (let ((user (user:current :authenticate T :default (user:get "temp")))
           (viewuser (user:get username))
           (page (or (parse-integer page :junk-allowed T) 1)))
