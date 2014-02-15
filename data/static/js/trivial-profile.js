@@ -37,7 +37,8 @@ function customizeProfile(color, background){
 
 $(function(){
     $("#profile-comments-submit textarea").css("min-height", "10px").click(function(){
-        $(this).css("height", "100px");
+        if($(this).height()<100)
+            $(this).css("height", "100px");
     });
 
     /*$("#profile-comments-submit input[type=\"submit\"]").click(function(){
