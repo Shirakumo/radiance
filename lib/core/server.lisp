@@ -147,6 +147,9 @@
               *radiance-request-total* 0
               *radiance-startup-time* 0)
 
+        (v:info :radiance.server.status "Stopping logging...")
+        (stop-logging)
+
         (v:info :radiance.server.status "SHUTDOWN finished."))
       (v:fatal :radiance.server.status "Server isn't running!")))
 

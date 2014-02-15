@@ -94,6 +94,10 @@
   (:export #:load-config
            #:config
            #:config-tree
+           #:start-logging
+           #:stop-logging
+           #:start-file-logger
+           #:stop-file-logger
            #:concatenate-strings
            #:plist->hash-table
            #:package-symbol

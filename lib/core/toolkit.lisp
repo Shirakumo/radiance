@@ -55,12 +55,28 @@
 (defun start-logging ()
   (ensure-directories-exist *radiance-log-directory*)
   (loop for (name . options) in (config-tree :logging)
-        do (v:attach-to (find-symbol (string-upcase (cdr (assoc :level options))) :KEYWORD)
-                        (make-instance 'v:rotating-log-faucet
-                                       :name name
-                                       :interval (cdr (assoc :interval options))
-                                       :file (merge-pathnames (cdr (assoc :file options)) *radiance-log-directory*))
-                        :category (cdr (assoc :category options)))))
+        do (start-file-logger name
+                              (find-symbol (string-upcase (cdr (assoc :level options))) :KEYWORD)
+                              (cdr (assoc :interval options))
+                              (merge-pathnames (cdr (assoc :file options)) *radiance-log-directory*)
+                              (cdr (assoc :category options)))))
+
+(defun start-file-logger (name level interval file &optional category)
+  (setf (gethash name *radiance-file-loggers*)
+        (v:attach-to level (make-instance 'v:rotating-log-faucet :name name :interval interval :file file)
+                     :category category)))
+
+(defun stop-file-logger (name)
+  (let ((pipe (gethash name *radiance-file-loggers*)))
+    (when pipe
+      (v:stop-rotation (piping:get-pipe v:*global-controller* name))
+      (piping:disconnect (prev pipe) pipe)
+      (piping:remove-pipe v:*global-controller* pipe)
+      (remhash name *radiance-file-loggers*))))
+
+(defun stop-logging ()
+  (loop for name being the hash-keys of *radiance-file-loggers*
+        do (stop-file-logger name)))
 
 (declaim (inline concatenate-strings))
 (defun concatenate-strings (list &optional (delim ""))

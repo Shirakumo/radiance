@@ -10,6 +10,7 @@
 (defvar *radiance-config-file*           NIL "Radiance's main JSON configuration file.")
 (defvar *radiance-config-sample-file*    (merge-pathnames "sample-radiance.json" (asdf:system-source-directory :radiance)) "Radiance's sample JSON configuration file.")
 (defvar *radiance-log-directory*         (merge-pathnames "log/" (asdf:system-source-directory :radiance)) "Root directory for log files.")
+(defvar *radiance-file-loggers*          (make-hash-table :test 'equal))
 (defvar *radiance-config*                NIL "Radiance's main static configuration.")
 (defvar *radiance-request*               NIL "Current request object.")
 (defvar *radiance-response*              NIL "Current reply object.")
