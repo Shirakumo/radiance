@@ -38,7 +38,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (defun crlf->lf (string)
   (cl-ppcre:regex-replace-all (format NIL "~C~C" #\return #\linefeed) string (string #\linefeed)))
 
-(defparameter *zalgo-regex* "[^\x20-\x7E]")
+(defparameter *zalgo-regex* "[\xCC\xCD]")
 (defun purify-ascii (string)
   (cl-ppcre:regex-replace-all *zalgo-regex* string ""))
 
