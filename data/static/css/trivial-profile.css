@@ -30,13 +30,13 @@ span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
     clear: left;
     color: #FFF;
     border-bottom: 3px solid #0088EE;
-    padding: 5px 100px 5px 100px;
+    padding: 5px 20% 5px 20%;
 }
 
 #profile>header img{
     vertical-align: middle;
     float: left;
-    margin: 0 10px 0 10px;
+    margin: 0 10px 0 -80px;
     border: 5px solid #0088EE;
     background: #151515;
     width: 128px;
@@ -55,10 +55,9 @@ span.date{ font-family: Consolas, monospace; font-size: 10pt; min-width: 80px;}
 }
 
 #profile-content{
-    margin: 0 200px 0 200px;
+    margin: 0 20% 0 20%;
     padding: 10px 0 10px 70px;
-    min-width: 710px;
-    max-width: 1024px;
+    min-width: 500px;
     background: #EEE;
     border: 1px solid #0088EE;
     border-top: none;
