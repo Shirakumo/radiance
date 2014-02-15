@@ -8,6 +8,9 @@
 
 (defvar *db* NIL)
 
+(define-condition pcre-not-found (error) ()
+  (:report (lambda (c s) (declare (ignore c)) (format s "Could not find sqlite3 pcre extension library."))))
+
 (cffi:defcfun sqlite3-enable-load-extension :int
   (*db* sqlite-ffi:p-sqlite3)
   (onoff :int))
@@ -20,9 +23,13 @@
 
 (define-interface-method db:connect (dbname &key (root-path (merge-pathnames "data/" (pathname (config :root)))))
   (v:info :sqlite "Connecting to SQLite database ~a on ~a" dbname root-path)
-  (setf *db*
-        (sqlite:connect (merge-pathnames dbname root-path)))
-  (load-extension *db* "/usr/lib/sqlite3/pcre"))
+  (setf *db* (sqlite:connect (merge-pathnames dbname root-path)))
+  (loop for path in (list #p"/usr/lib/sqlite3/pcre.so" #p"/usr/lib/sqlite3/pcre"
+                          (merge-pathnames "data/sqlite3-pcre.so" (asdf:system-source-directory :radiance)))
+        if (cl-fad:file-exists-p path)
+          do (progn (load-extension *db* (namestring path))
+                    (return T))
+        finally (error 'pcre-not-found)))
 
 (define-interface-method db:disconnect ()
   (v:info :sqlite "Disconnecting...")
