@@ -57,6 +57,6 @@ If prepend is NIL, the notice node is returned instead."
          ($ (initialize (template "uibox/confirm.html")))
          ($ "#message" (text ,message))
          ($ ".rcid" (attr :value ,rcidsym))
-         ($ ".confirm" (attr :class ,(format NIL "~a ~{~a~^ ~}" (string-downcase type) classes)))
+         ($ ".confirm" (add-class ,(format NIL "~a ~{~a~^ ~}" (string-downcase type) classes)))
          ($ ".yes" (attr :name ,confirm-field :value ,yes))
          ($ ".no" (attr :name ,confirm-field :value ,no))))))
