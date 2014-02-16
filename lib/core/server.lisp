@@ -70,8 +70,7 @@
     (v:trace :radiance.server.request "~a ~a" (server:remote-address) request)
     (incf *radiance-request-total*)
     (incf *radiance-request-count*)
-
-    (server:set-header "Access-Control-Allow-Origin" "*" :response *radiance-response*)
+    
     (error-handler request)
     
     (decf *radiance-request-count*)))
