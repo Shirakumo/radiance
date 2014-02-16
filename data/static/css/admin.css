@@ -142,6 +142,36 @@ body,html{
 }
 #panel>ul>li>ul>li>a:hover::before{border-right-color: #00EEFF;border-bottom-color: #00EEFF;}
 
+#panel #manage{
+    position: fixed;
+    bottom:0;left:0;
+    background: #AA0000;
+    font-size: 0pt;
+}
+
+#panel #manage:after{
+    content: "";
+    position: absolute;
+    bottom: 0;right:-25px;
+    width: 0;height: 0; 
+    border-top: 25px solid transparent;
+    border-left: 25px solid #AA0000;
+}
+
+#panel #manage button{
+    border: none;
+    width: 25px;
+    height: 25px;
+    margin: 0;
+    text-align: center;
+    background: transparent;
+    color: #FFF;
+    font-size: 10pt;
+}
+
+#panel #manage button:hover{
+    background: #FF0000;
+}
 
 
 #content{

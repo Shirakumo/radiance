@@ -9,7 +9,7 @@
   <body>
     <div id="panel">
       <h1><i class="fa fa-gear"></i>Admin</h1>
-      <ul>
+      <ul id="menu">
         <li>
           <a data-uibox="text:category"><i class="fa fa-folder" data-uibox="attr-class:icon"></i>?</a>
           <ul data-uibox="foreach-li:panels">
@@ -19,6 +19,10 @@
           </ul>
         </li>
       </ul>
+      <form id="manage" action="#" method="post">
+        <button type="submit" name="manage" value="shutdown" title="Shut down the server"><i class="fa fa-power-off"></i></button>
+        <button type="submit" name="manage" value="restart" title="Restart the server"><i class="fa fa-repeat"></i></button>
+      </form>
     </div>
     <div id="content">
     </div>

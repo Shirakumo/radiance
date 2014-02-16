@@ -24,7 +24,16 @@
       (if category 
           (let ((inf (gethash (make-keyword (second pathparts)) category)))
             (if (and inf (first inf))
-                ($ "#content" (append (funcall (first inf))))))))))
+                ($ "#content" (append (funcall (first inf))))))))
+
+    (when-let ((action (server:post "manage"))
+               (current-path (path *radiance-request*)))
+      (when (user:check (format NIL "radiance.manage.~a" action))
+        (uibox:confirm ((format NIL "Do you really want to ~a?" action))
+                       (progn (user:action (format NIL "Radiance server manage action: ~a" action))
+                              (radiance:manage action)
+                              (server:redirect (format NIL "/~a" current-path)))
+                       (server:redirect (format NIL "/~a" current-path)))))))
 
 (defun build-menu ()
   (setf *menu*
