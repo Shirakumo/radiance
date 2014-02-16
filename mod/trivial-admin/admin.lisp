@@ -9,20 +9,15 @@
 (defvar *menu* ())
 (defvar *categories* (make-hash-table))
 
-(defun make-keyword (name)
-  (setf name (string-upcase name))
-  (or (find-symbol name :keyword)
-      (intern name :keyword)))
-
 (core:define-page admin #u"admin./" (:lquery (template "admin/index.html") :access-branch "admin.*")
   (uibox:fill-foreach *menu* "#panel>ul>li")
   (let ((pathparts (split-sequence:split-sequence #\/ (string-downcase (path *radiance-request*)))))
     (if (< (length pathparts) 2) (setf pathparts (list "core" "index")))
     ($ (find (format NIL "a[href=\"/~a/~a\"]" (first pathparts) (second pathparts))) (parent) (add-class "active"))
     
-    (let ((category (gethash (make-keyword (first pathparts)) *categories*)))
+    (let ((category (gethash (make-keyword (string-upcase (first pathparts))) *categories*)))
       (if category 
-          (let ((inf (gethash (make-keyword (second pathparts)) category)))
+          (let ((inf (gethash (make-keyword (string-upcase (second pathparts))) category)))
             (if (and inf (first inf))
                 ($ "#content" (append (funcall (first inf))))))))
 
@@ -50,8 +45,8 @@
 
 (define-interface-method admin:define-panel (name category options &rest body)
   (destructuring-bind (&key lquery access-branch menu-icon menu-tooltip) options
-    (let* ((name (make-keyword name))
-           (category (make-keyword category))
+    (let* ((name (make-keyword (string-upcase name)))
+           (category (make-keyword (string-upcase category)))
            (categorygens (gensym "ADMINCAT"))
            (getcategory `(gethash ,category ,categorygens))
            (funcbody (if lquery 

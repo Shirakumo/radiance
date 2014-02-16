@@ -6,8 +6,7 @@
 
 (defpackage org.tymoonnext.radiance.mod.admin
   (:nicknames :radiance-mod-admin)
-  (:use :cl :radiance :lquery :alexandria)
-  (:shadowing-import-from :alexandria :make-keyword))
+  (:use :cl :radiance :lquery :alexandria))
 (in-package :radiance-mod-admin)
 
 (asdf:defsystem trivial-admin
