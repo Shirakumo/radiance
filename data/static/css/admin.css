@@ -217,7 +217,7 @@ body,html{
     white-space: nowrap;
 }
 
-#content .tablebox table input{
+#content .tablebox table input, #content .tablebox table button{
     box-sizing: border-box;
     border: 1px solid #0088EE;
     background: #EEF;
@@ -227,18 +227,18 @@ body,html{
     display: inline;
 }
 
-#content .tablebox table input[type="submit"]{
+#content .tablebox table input[type="submit"], #content .tablebox table button{
     border: none;
     background: #0088EE;
     color: #FFF;
     font-weight: bold;
 }
 
-#content .tablebox table input[type="submit"]:hover{
+#content .tablebox table input[type="submit"]:hover, #content .tablebox table button:hover{
     background: #00EEFF;
 }
 
-#content .tablebox table input[type="submit"]:active{
+#content .tablebox table input[type="submit"]:active, #content .tablebox table button:active{
     background: #00EEFF;
 }
 

@@ -6,8 +6,8 @@
 
 (defpackage org.tymoonnext.radiance.mod.admin
   (:nicknames :radiance-mod-admin)
-  (:use :cl :radiance :lquery)
-  (:export ))
+  (:use :cl :radiance :lquery :alexandria)
+  (:shadowing-import-from :alexandria :make-keyword))
 (in-package :radiance-mod-admin)
 
 (asdf:defsystem trivial-admin
@@ -18,7 +18,7 @@
   :license "Artistic"
   :homepage "http://tymoon.eu"
   :defsystem-depends-on (:radiance)
-  :depends-on (:uibox :radiance-core)
+  :depends-on (:uibox :radiance-core :alexandria)
   :implement ((:admin :trivial-admin))
   :serial T
   :components ((:file "admin")

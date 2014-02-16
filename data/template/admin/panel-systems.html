@@ -1,0 +1,27 @@
+<div>
+<h2>ASDF Systems</h2>
+<div class="tablebox">
+	<table class="tablesorter">
+	  <thead>
+	    <tr>
+	      <th style="width:200px;">Name</th>
+	      <th style="width:70px;">Version</th>
+	      <th>Description</th>
+              <th>Actions</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <tr>
+	      <td data-uibox="text:name"></td>
+	      <td data-uibox="text:version"></td>
+	      <td data-uibox="text:description"></td>
+              <td style="white-space:nowrap;"><form action="#" method="post">
+                  <input type="hidden" name="system" data-uibox="value:name" />
+                  <button type="submit" name="op" value="compile-op">Compile</button>
+                  <button type="submit" name="op" value="load-op">Load</button>
+              </form></td>
+	    </tr>
+	  </tbody>
+	</table>
+</div>
+</div>
