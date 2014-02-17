@@ -104,5 +104,6 @@ Defaults to the module-identifier linked to the one active in the current *packa
 
 (defun load-modules ()
   "Load all systems specified in the configuration."
-  (mapc #'asdf:load-system (config :modules)))
+  (mapc #'(lambda (system)
+            (asdf:load-system system :verbose (config-tree :debugger))) (config :modules)))
  
