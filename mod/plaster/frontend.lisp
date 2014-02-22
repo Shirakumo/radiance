@@ -40,7 +40,8 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (defparameter *zalgo-regex* "[\xCC\xCD]")
 (defun purify-ascii (string)
-  (cl-ppcre:regex-replace-all *zalgo-regex* string ""))
+  ;;(cl-ppcre:regex-replace-all *zalgo-regex* string "")
+  string)
 
 (defun encrypt (text password)
   (let ((salt (or (config-tree :plaster :encrypt-salt)
