@@ -21,7 +21,8 @@
            (declare (ignore result))
            (incf realt real)
            (incf runt run))
-      finally (format T "Total real time: ~f~%~
+      finally (format T "Iterations: ~d~%~
+                         Total real time: ~f~%~
                          Total run time:  ~f~%~
                          Avg. real time:  ~f~%~
-                         Avg. run time:   ~f" realt runt (/ realt i) (/ runt i))))
+                         Avg. run time:   ~f" ,iterations realt runt (/ realt i) (/ runt i))))
