@@ -187,7 +187,8 @@ EQL form.
 If you want to manually implement an interface function to get hold
 of all of the CLOS functionality, you can always define your own
 method on the respective INTERFACE::I-PUBLIC-FUNCTION-NAME generic."
-  (let ((pkg-method (find-symbol (format NIL "I-~a" function) (symbol-package function))))
+  (let ((pkg-method (find-symbol (format NIL "I-~a" function) (symbol-package function)))
+        (macrop (find-symbol (format NIL "M-~a" function) (symbol-package function))))
     (if pkg-method
         (progn
           (if (and (listp (first argslist)) (eq (caar argslist) :MODULE))
@@ -195,12 +196,23 @@ method on the respective INTERFACE::I-PUBLIC-FUNCTION-NAME generic."
                                          (cadar argslist)))
               (push (list (gensym "MODULE") `(eql (context-module-identifier))) argslist))
           (setf argslist (make-key-extensible argslist))
-          (let ((restpos (position '&body argslist)))
-            (if restpos (setf (nth restpos argslist) '&rest)))
-          (if (find-symbol (format NIL "M-~a" function) (symbol-package function)) ; If this is a macro, wrap it in eval-when to assure compile-time-readiness.
-              `(eval-when (:compile-toplevel :load-toplevel :execute)
-                 (defmethod ,pkg-method ,argslist
-                   ,@body))
+          (let ((bodypos (position '&body argslist)))
+            (if bodypos (setf (nth bodypos argslist) '&rest)))
+          (if macrop ; If this is a macro, wrap it in eval-when to assure compile-time-readiness.
+              (progn
+                ;; Since macros can have sublists in their lambda-lists, we have to extract
+                ;; those and wrap the body in destructuring-binds to resolve them later.
+                (loop for el in (cdr argslist)
+                      for i from 1 below (length argslist)
+                      until (lambda-keyword-p el)
+                      do (when (listp el)
+                           (with-gensyms ((sublistgens "SUBLIST"))
+                             (setf (nth i argslist) sublistgens
+                                   body `((destructuring-bind ,el ,sublistgens
+                                            ,@body))))))
+                `(eval-when (:compile-toplevel :load-toplevel :execute)
+                   (defmethod ,pkg-method ,argslist
+                     ,@body)))
               `(defmethod ,pkg-method ,argslist
                  ,@body)))
         (error 'no-such-interface-function-error :interface (package-name (symbol-package function)) :interface-function function))))
