@@ -32,7 +32,7 @@
     (or (find method methodlist :key #'car)
         (find T methodlist :key #'car))))
 
-(define-interface-method core:define-api (name args options &body body)
+(define-interface-method core:define-api (name args (&key (method T) access-branch (identifier `(context-module-identifier))) &body body)
   "Define a new api function.
 See interface definition for a description of the arguments.
 
@@ -46,11 +46,10 @@ request methods."
   (assert (listp args) () "Args has to be a list.")
   (assert (not (find-any '(&allow-other-keys &body &environment &rest &whole) args))
           () "Only &optional, &key and &aux operators are allowed here.")
-  (destructuring-bind (&key (method T) access-branch (identifier `(context-module-identifier))) options
-    (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
-    (when-let ((position (position '&optional args)))
-      (setf (nth position args) '&key))
-    `(add-api-function (format NIL "~a/~a" ,identifier ',name) ,method #'(lambda ,args ,@body) ,access-branch)))
+  (assert (find method '(T :GET :POST :PUT :PATCH :DELETE)) () "Method has to be one of T :GET :POST :PUT :PATCH :DELETE")
+  (when-let ((position (position '&optional args)))
+    (setf (nth position args) '&key))
+  `(add-api-function (format NIL "~a/~a" ,identifier ',name) ,method #'(lambda ,args ,@body) ,access-branch))
 
 (define-interface-method core:api-return (code text &key data)
   (plist->hash-table :CODE code :TEXT text :TIME (get-unix-time) :DATA data))

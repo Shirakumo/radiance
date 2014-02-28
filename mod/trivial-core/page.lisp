@@ -65,36 +65,35 @@
                (> paa pab)))
           (T (> sda sdb)))))))
 
-(define-interface-method core:define-page (name uri options &body body)
+(define-interface-method core:define-page (name uri (&key access-branch lquery (identifier `(context-module-identifier))) &body body)
   "Define a new page for a given module.
 See interface definition for a description of the arguments.
 
 DEFINE-PAGE works by creating a new hook on the :PAGE namespace
 with the hook name NAME."
   (assert (symbolp name) () "The name has to be a symbol.")
-  (destructuring-bind (&key access-branch lquery (identifier `(context-module-identifier))) options
-    (let ((urigens (gensym "URI")) (modgens (gensym "MODULE"))
-          (funcbody (if lquery 
-                        `(let ((lquery:*lquery-master-document* NIL))
-                           ,(if (and lquery (not (eq lquery T)))
-                                `($ (initialize ,lquery)))
-                           ,@body
-                           (unless (server::content *radiance-response*)
-                             (trigger :user :lquery-post-processing)
-                             (concatenate-strings ($ (serialize)))))
-                        `(progn ,@body))))
-      `(let ((,urigens ,uri)
-             (,modgens ,identifier))
-         (v:debug :radiance.server.site "Defining new site ~a on ~a for ~a" ',name ,urigens ,modgens)
-         (define-hook (:page ',name) (:identifier ,modgens :documentation (format nil "Page call for ~a" ,modgens))
-           ,(if access-branch
-                `(progn
-                   (ignore-errors (auth:authenticate))
-                   (if (user:check ,access-branch)
-                       ,funcbody
-                       (error-page 403)))
-                funcbody))
-         (core::i-register :trivial-core ',name ,modgens ,urigens)))))
+  (let ((urigens (gensym "URI")) (modgens (gensym "MODULE"))
+        (funcbody (if lquery 
+                      `(let ((lquery:*lquery-master-document* NIL))
+                         ,(if (and lquery (not (eq lquery T)))
+                              `($ (initialize ,lquery)))
+                         ,@body
+                         (unless (server::content *radiance-response*)
+                           (trigger :user :lquery-post-processing)
+                           (concatenate-strings ($ (serialize)))))
+                      `(progn ,@body))))
+    `(let ((,urigens ,uri)
+           (,modgens ,identifier))
+       (v:debug :radiance.server.site "Defining new site ~a on ~a for ~a" ',name ,urigens ,modgens)
+       (define-hook (:page ',name) (:identifier ,modgens :documentation (format nil "Page call for ~a" ,modgens))
+         ,(if access-branch
+              `(progn
+                 (ignore-errors (auth:authenticate))
+                 (if (user:check ,access-branch)
+                     ,funcbody
+                     (error-page 403)))
+              funcbody))
+       (core::i-register :trivial-core ',name ,modgens ,urigens))))
 
 (define-interface-method core:define-file-link (name uri pathspec &key access-branch (identifier `(context-module-identifier)) content-type)
   `(core::m-define-page :trivial-core ,name ,uri (:identifier ,identifier :access-branch ,access-branch)

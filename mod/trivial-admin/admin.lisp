@@ -43,32 +43,31 @@
      for link = (string-downcase (format NIL "/~a/~a" module panel))
      collect (list :panel (string-upcase (string-downcase panel) :end 1) :link link :icon (or icon "") :title (or tooltip ""))))
 
-(define-interface-method admin:define-panel (name category options &rest body)
-  (destructuring-bind (&key lquery access-branch menu-icon menu-tooltip) options
-    (let* ((name (make-keyword (string-upcase name)))
-           (category (make-keyword (string-upcase category)))
-           (categorygens (gensym "ADMINCAT"))
-           (getcategory `(gethash ,category ,categorygens))
-           (funcbody (if lquery 
-                         `(let ((lquery:*lquery-master-document* NIL))
-                            ,(if (and lquery (not (eq lquery T)))
-                                 `(lquery:$ (initialize ,lquery)))
-                            ,@body
-                            (concatenate-strings (lquery:$ (serialize :doctype NIL))))
-                         `(progn ,@body))))
-      `(let ((,categorygens *categories*))
-         (unless ,getcategory
-           (setf ,getcategory (make-hash-table)))
-         (setf (gethash ',name ,getcategory)
-               (list 
-                (lambda ()
-                  ,(if access-branch
-                       `(progn
-                          (ignore-errors (auth:authenticate))
-                          (if (user:check ,access-branch)
-                              ,funcbody
-                              (error-page 403)))
-                       funcbody))
-                ,menu-icon
-                ,menu-tooltip))
-         (build-menu)))))  
+(define-interface-method admin:define-panel (name category (&key lquery access-branch menu-icon menu-tooltip) &rest body)
+  (let* ((name (make-keyword (string-upcase name)))
+         (category (make-keyword (string-upcase category)))
+         (categorygens (gensym "ADMINCAT"))
+         (getcategory `(gethash ,category ,categorygens))
+         (funcbody (if lquery 
+                       `(let ((lquery:*lquery-master-document* NIL))
+                          ,(if (and lquery (not (eq lquery T)))
+                               `(lquery:$ (initialize ,lquery)))
+                          ,@body
+                          (concatenate-strings (lquery:$ (serialize :doctype NIL))))
+                       `(progn ,@body))))
+    `(let ((,categorygens *categories*))
+       (unless ,getcategory
+         (setf ,getcategory (make-hash-table)))
+       (setf (gethash ',name ,getcategory)
+             (list 
+              (lambda ()
+                ,(if access-branch
+                     `(progn
+                        (ignore-errors (auth:authenticate))
+                        (if (user:check ,access-branch)
+                            ,funcbody
+                            (error-page 403)))
+                     funcbody))
+              ,menu-icon
+              ,menu-tooltip))
+       (build-menu))))  
