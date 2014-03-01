@@ -1,0 +1,242 @@
+Radiance Specification (1.0)
+============================
+
+Quickstart
+ - Installing
+   - Configuration
+   - Starting
+ - Writing New Modules
+
+Goals
+ - Framework Library
+ - Interfaces
+ - Modules
+ - Applications
+
+Framework Library
+ - Modules
+   - ASDF System
+   - Module Identifiers
+ - Interfaces
+   - Definition
+   - Interface Extensions
+   - Component Expanders
+   - Method Definition
+   - ASDF Loading
+ - Triggers
+   - Namespaces
+   - Hooks
+   - Triggering
+ - URI
+   - Properties
+   - Matching
+ - Request Continuations
+   - Purpose
+   - Invocation
+   - Extent of Use
+ - Server
+   - Interface
+   - Management
+     - Startup
+     - Shutdown
+   - Request Handling
+
+Standard Interfaces
+ - Core
+   - Pages
+     - Dispatching
+   - APIs
+     - Definition
+     - Invocation
+     - Formats
+     - Metadata
+ - Server
+   - Request
+     - Request Data
+     - File Upload
+   - Response
+     - Response Data
+     - Defaults
+   - Listeners
+   - Handler Function
+ - User
+   - User Object
+     - Fields
+     - Actions
+   - Permissions
+   - Special Users
+ - Session
+   - Session Object
+     - Fields
+     - User
+   - Lifetime
+   - Authentication
+ - Profile
+   - User Extension
+   - Frontend
+   - User Panels
+     - Default Panels
+ - Database
+   - Connection
+     - Concurrency
+   - Collections
+     - Structure
+     - Data Types
+     - Listing
+     - Apropos
+     - Creating
+     - Emptying
+     - Dropping
+     - Modifying
+       - Extensions
+       - Type Change Handling
+   - Records
+     - Selecting
+     - Iterating
+     - Inserting
+     - Updating
+     - Removing
+     - Counting
+   - Query Construct
+     - Operators
+     - Extensions
+ - Data-Model
+   - Fields
+   - ID
+   - Hulls
+   - Inserting
+   - Saving
+   - Deleting
+   - Macros
+ - Admin
+   - Frontend
+   - Admin Panels
+     - Default Panels
+ - Parser
+   - Text Parsing
+   - Parse Rule Access Control
+ - Cache
+   - Creation
+   - Expiration
+   - Rendering
+   - Mixin
+
+Radiance Library Offsprings
+===========================
+
+Verbose & Piping (1.0)
+ - Piping
+   - Pipe Constructs
+   - Pipelines
+ - Verbose
+   - Logging Mechanisms
+   - Concurrency
+   - Log Targets
+
+lQuery (3.0)
+ - Aim
+ - Coverage
+ - Parsing Support
+   - XML/XHTML
+   - HTML
+   - HTML5
+ - CSS Selectors
+   - Selector Engines
+   - Speed and Efficiency
+ - Quick Loading
+ - Fragments
+   - Control Constructs
+   - Rendering
+ - Extension
+
+Radiance Application Offsprings
+===============================
+
+DB-Introspect
+ - Quick Info
+
+Hunchentoot
+ - Quick Info
+
+Kana
+ - Kanji Order
+ - Dependency Graphing
+ - Metadata
+
+Mongo
+ - Quick Info
+
+Plaster
+ - Editor Capabilities
+ - Customization
+ - Importing
+ - Limits
+ - Encryption
+
+Purplish
+ - Structure
+   - Frontpage
+   - Boards
+   - Threads
+   - Posts
+ - Caching
+ - Themes
+ - Images
+ - Markup
+ - Banning and Probation
+ - User Metadata
+
+Reader
+ - Categorization
+ - Collaboration
+ - Markup
+ - Commentary System
+
+SQLite
+ - Quick Info
+ - PCRE Requirement
+
+Ticker
+ - Teams
+ - Projects
+ - Tickets
+ - Changelog and Comments
+ - Repository Connection
+
+Toot
+ - Quick Info
+
+Trivial-Admin
+ - Quick Info
+ - Standard Panels
+
+Trivial-Core
+ - Quick Info
+ - Implementation Details
+
+Trivial-Menu
+ - Quick Info
+ - Menu Injection
+
+Trivial-Profile
+ - Quick Info
+ - User Backend
+ - Profile Pages
+ - Comments
+ - Custom Fields
+
+UIBox
+ - Notice
+ - Confirm
+ - Filling
+   - Fill Foreach
+   - Standard Fill Functions
+   - Extending
+
+Verify
+ - Session Verification
+ - Mechanisms
+   - OAuth
+   - OpenID
+   - Password
+   - Google Authenticator
