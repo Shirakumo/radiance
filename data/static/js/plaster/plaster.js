@@ -66,7 +66,7 @@ $(function(){
 
         mirror.setEditorMode = function(modes, mime, failfunc){
             //Use first class functions to delegate editor mode set until all modes are loaded.
-            var funcs = [ function(){$("#maineditor .editor").data("mirror").setOption("mode", mime);} ];
+            var funcs = [ function(){mirror.setOption("mode", mime);} ];
             var modes = modes.split(",");
             for(var i=0; i<modes.length; i++){
                 (function(mode, prevfunc){
