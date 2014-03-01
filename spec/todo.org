@@ -82,5 +82,8 @@
 * Verbose & Piping
 ** DONE Add simple constructs to filter output.
    - State "DONE"       from "TODO"       [2013-12-30 Mon 12:02]
-** TODO Add simple constructs to start logging to a file.
+** DONE Add simple constructs to start logging to a file.
+   - State "DONE"       from "TODO"       [2014-03-01 Sat 10:11]
+** TODO Generally revamp the system to not be a huge pain in the butt to handle.
+   Gotta come up with something smart for this one, buster.
 ** TODO Maybe see about adding emacs support.
