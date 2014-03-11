@@ -45,6 +45,8 @@
     - State "DONE"       from "TODO"       [2014-02-10 Mon 16:43]
 *** DONE Bug/Usability test.
     - State "DONE"       from "TODO"       [2014-02-14 Fri 17:52]
+*** DONE Fix issue with different modes on the same view.
+    - State "DONE"       from "TODO"       [2014-03-11 Tue 16:00]
 *** TODO Think about encryption performance.
 ** Trivial-Menu
 *** DONE Add ability to use auth tests ore even arbitrary code snippets on menu display.
