@@ -1,18 +1,6 @@
 Radiance Specification (1.0)
 ============================
 
-Quickstart
- - Installing
-   - Configuration
-   - Starting
- - Writing New Modules
-
-Goals
- - Framework Library
- - Interfaces
- - Modules
- - Applications
-
 Framework Library
  - Modules
    - ASDF System
@@ -45,6 +33,7 @@ Standard Interfaces
  - Core
    - Pages
      - Dispatching
+     - Routing
    - APIs
      - Definition
      - Invocation
@@ -121,122 +110,102 @@ Standard Interfaces
    - Rendering
    - Mixin
 
-Radiance Library Offsprings
-===========================
-
-Verbose & Piping (1.0)
+Radiance Libraries
  - Piping
-   - Pipe Constructs
    - Pipelines
+   - Segments
+   - Places
  - Verbose
    - Logging Mechanisms
    - Concurrency
    - Log Targets
+ - Plump
+   - Handling of Invalid Markup
+   - Extension
+ - CLSS
+   - Language
+   - Pseudo Selectors
+   - Search Engine
+ - lQuery (3.0)
+   - Coverage
+   - Parsing and Searching
+   - Quick Loading
+   - Fragments
+     - Control Constructs
+     - Rendering
+   - Extension
 
-lQuery (3.0)
- - Aim
- - Coverage
- - Parsing Support
-   - XML/XHTML
-   - HTML
-   - HTML5
- - CSS Selectors
-   - Selector Engines
-   - Speed and Efficiency
- - Quick Loading
- - Fragments
-   - Control Constructs
-   - Rendering
- - Extension
-
-Radiance Application Offsprings
-===============================
-
-DB-Introspect
- - Quick Info
-
-Hunchentoot
- - Quick Info
-
-Kana
- - Kanji Order
- - Dependency Graphing
- - Metadata
-
-Mongo
- - Quick Info
-
-Plaster
- - Editor Capabilities
- - Customization
- - Importing
- - Limits
- - Encryption
-
-Purplish
- - Structure
-   - Frontpage
-   - Boards
-   - Threads
-   - Posts
- - Caching
- - Themes
- - Images
- - Markup
- - Banning and Probation
- - User Metadata
-
-Reader
- - Categorization
- - Collaboration
- - Markup
- - Commentary System
-
-SQLite
- - Quick Info
- - PCRE Requirement
-
-Ticker
- - Teams
- - Projects
- - Tickets
- - Changelog and Comments
- - Repository Connection
-
-Toot
- - Quick Info
-
-Trivial-Admin
- - Quick Info
- - Standard Panels
-
-Trivial-Core
- - Quick Info
- - Implementation Details
-
-Trivial-Menu
- - Quick Info
- - Menu Injection
-
-Trivial-Profile
- - Quick Info
- - User Backend
- - Profile Pages
- - Comments
- - Custom Fields
-
-UIBox
- - Notice
- - Confirm
- - Filling
-   - Fill Foreach
-   - Standard Fill Functions
-   - Extending
-
-Verify
- - Session Verification
- - Mechanisms
-   - OAuth
-   - OpenID
-   - Password
-   - Google Authenticator
+Radiance Applications
+ - DB-Introspect
+   - Quick Info
+ - Hunchentoot
+   - Quick Info
+ - Kana
+   - Kanji Order
+   - Dependency Graphing
+   - Metadata
+ - Mongo
+   - Quick Info
+ - Plaster
+   - Editor Capabilities
+   - Customization
+   - Importing
+   - Limits
+   - Encryption
+ - Purplish
+   - Structure
+     - Frontpage
+     - Boards
+     - Threads
+     - Posts
+   - Caching
+   - Themes
+   - Images
+   - Markup
+   - Banning and Probation
+   - User Metadata
+ - Reader
+   - Categorization
+   - Collaboration
+   - Markup
+   - Commentary System
+ - SQLite
+   - Quick Info
+   - PCRE Requirement
+ - Ticker
+   - Teams
+   - Projects
+   - Tickets
+   - Changelog and Comments
+   - Repository Connection
+ - Toot
+   - Quick Info
+ - Trivial-Admin
+   - Quick Info
+   - Standard Panels
+ - Trivial-Core
+   - Quick Info
+   - Implementation Details
+ - Trivial-Menu
+   - Quick Info
+   - Menu Injection
+ - Trivial-Profile
+   - Quick Info
+   - User Backend
+   - Profile Pages
+   - Comments
+   - Custom Fields
+ - UIBox
+   - Notice
+   - Confirm
+   - Filling
+     - Fill Foreach
+     - Standard Fill Functions
+     - Extending
+ - Verify
+   - Session Verification
+   - Mechanisms
+     - OAuth
+     - OpenID
+     - Password
+     - Google Authenticator
