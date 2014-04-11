@@ -1,0 +1,49 @@
+\documentclass[12pt,a4paper,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[top=3cm, bottom=3cm, left=2cm, right=2cm]{geometry}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{fix-cm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{mdwlist}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{datetime}
+\usepackage[perpage,para,bottom,marginal]{footmisc}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{enumitem}
+\newdateformat{dmny}{\monthname[\THEMONTH] \THEYEAR}
+\newdateformat{dyo}{\THEYEAR}
+\setlength{\headheight}{30pt}
+\pagestyle{fancy}
+
+\title{Radiance Specification}
+\author{Nicolas Hafner}
+\date{\d_mny\today}
+
+\fancyhf{}
+\lhead{}
+\chead{\rightmark}
+\rhead{}
+\lfoot{\copyright \dyo\today\; TymoonNET/NexT}
+\cfoot{\thepage\ / \pageref{LastPage}}
+\rfoot{}
+
+\begin{document}	
+
+\input{0-title}
+
+\include{1-framework}
+
+\end{document}
