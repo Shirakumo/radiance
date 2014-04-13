@@ -1,0 +1,27 @@
+\chapter{Preamble}\label{sec:preamble}
+This specification fulfills two purposes. It is both an informal document to give users an idea behind the reasoning in the decisions and to make comprehension of the architecture of the project easier, as well as a strict specification on a per-function basis that can be used as a documentation and implementation reference. Each chapter includes sections for more technical explanations of the parts, as well as a section for the definitions of all the functions associated with the part.
+
+\section{Project Aim}\label{sec:project aim}
+Radiance aims to be many things and covers a lot of areas, mostly due to \hyperref[sec:history]{history}. At the most stripped down level it is a library that provides an encapsulation and interaction layer with some special parts related to webservices. Building on top of this framework library it includes a \hyperref[sec:standard interfaces]{standard definition} for a framework in itself, while keeping the actual implementation open to the user. \\
+
+Further, Radiance as a project provides basic implementations of all defined standard interfaces. This should give a good base if you want to use Radiance as a framework, rather than a framework library and are content with the abilities it provides out of the box. One of the major focuses of the project is on proper encapsulation, which should allow the user to change or replace any parts of the framework without having other modules breaking. This was mainly put in place to allow the user of the finished web application to choose between databases, authentication mechanisms, servers and so on. \\
+
+Finally, the project even offers actual web applications or content management systems that should be instantly ready to be deployed onto an active system. Thanks to the other qualities of Radiance, its strength lies in offering many different kinds of CMSs at the same time, making it easily possible to run a forum, blog, gallery and other similar parts on a single instance. Due to the sharing of resources, this also reduces the necessary effort and confusion on part of the end user of the website, as they only need a single account for everything and have a shared environment to administer everything. \\
+
+In summary, Radiance's aim is to provide and support the full range of web development, from the most basic interaction library up to fully-fledged applications and systems.
+
+\section{History}\label{sec:history}
+Version five of the TyNET\footnote{TyNET being the short form of TymoonNET, named for being the NETwork component of the Tymoon webcomic it was initially made for. This webcomic does not exist anymore.} framework was dubbed Radiance, in line with the ``light'' naming scheme. It is the first version to be written in Common Lisp, previous versions being in PHP. \\
+
+Initially the idea for TyNET was born out of the frustration of not being able to combine different content management systems into a single entity to reduce the work of having to register multiple accounts. Seeing as systems like Wordpress or Joomla only provided less than stellar alternatives, it was simply decided to hack something together quickly. \\
+
+From there on out TyNET was rewritten from scratch three times, leading up to version four, which included a blog, gallery, wiki, imageboard, forum, markup system, unified comments system, user profiles and more. Each version took about a year to build, usually starting development rather soon after release of the predecessor. Each time adding more and more components. \\
+
+Each version before this was never in any part specified and every component had more or less intimate knowledge of other parts. As such it was a very finicky process to change things and thinking about deploying it to other servers with different configurations was scary. This effect became less and less of a problem with each version, but it was never deemed good enough for public release. \\
+
+In order to change this and to provide a system that actually might be useful to the community, everything was scratched once more, this time with the goal of providing a framework that could be easily deployed, extended and adapted. 
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "master"
+%%% End: 

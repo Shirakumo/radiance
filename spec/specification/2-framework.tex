@@ -1,0 +1,45 @@
+\chapter{Framework}\label{sec:framework}
+The Radiance framework is the core component that keeps everything tied together. It should be seen as a library that provides an interaction layer for modules that are made by third-parties and don't necessarily belong to Radiance itself. In its essence it deals with providing a form to encapsulate functionality into modules and to allow for a generic interaction layer between them. \\
+
+Interaction between modules happens through the interface and triggers system, each providing one way of interaction: Interfaces provide functions to be called on demand from a module out and triggers allow modules to hook into existing processes to add functionality or adapt data according to certain actions. \\
+
+Being a web framework, Radiance also handles the primary dispatch and analyzing of web calls. While the web server itself is a module loaded in through the interface system, further delegation of the call happens through the framework. For this purpose, Radiance also specifies a system for dealing with requests, URLs and dispatch. \\
+
+This section specifies the functionality grouped under the name of the radiance framework library. The specification of the necessary interfaces to complete it to a full framework follows in \nameref{sec:standard interfaces}.
+
+\section{Modules}\label{sec:modules}
+To offer a way to allow extension of the framework itself as well as web applications in a unified way, Radiance uses a system of modules that encapsulates functionality. Each module is defined in the context of a package, an ASDF system and a unique identifier. Each of these components is linked to each other and should allow for identification, loading and extension of a module. In particular the unique identifier is of importance to the interface system and its dispatch mechanism.
+\subsection{Overview}
+\subsection{ASDF}\label{sec:mod asdf}
+\subsection{Module Identifiers}\label{sec:mod module identifiers}
+
+\section{Interfaces}\label{sec:int interfaces}
+\subsection{Definition}\label{sec:int definition}
+\subsection{Interface Extensions}\label{sec:int interface extensions}
+\subsection{Component Expanders}\label{sec:int component expanders}
+\subsection{Method Definition}\label{sec:int method definition}
+\subsection{ASDF Loading}\label{sec:int asdf loading}
+
+\section{Triggers}\label{sec:triggers}
+\subsection{Namespaces}\label{sec:trig namespaces}
+\subsection{Hooks}\label{sec:trig hooks}
+\subsection{Triggers}\label{sec:trig triggers}
+
+\section{URI}\label{sec:uri}
+\subsection{Properties}\label{sec:uri properties}
+\subsection{Matching}\label{sec:uri matching}
+
+\section{Request Continuations}\label{sec:request continuations}
+\subsection{Purpose}\label{sec:req purpose}
+\subsection{Invocation}\label{sec:req invocation}
+\subsection{Extent of Use}\label{sec:req extent of use}
+
+\section{Server}\label{sec:server}
+\subsection{Interface}\label{sec:ser interface}
+\subsection{Management}\label{sec:ser management}
+\subsection{Request Handling}\label{sec:ser request handling}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "master"
+%%% End: 
