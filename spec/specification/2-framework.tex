@@ -8,36 +8,113 @@ Being a web framework, Radiance also handles the primary dispatch and analyzing 
 This section specifies the functionality grouped under the name of the radiance framework library. The specification of the necessary interfaces to complete it to a full framework follows in \nameref{sec:standard interfaces}.
 
 \section{Modules}\label{sec:modules}
-To offer a way to allow extension of the framework itself as well as web applications in a unified way, Radiance uses a system of modules that encapsulates functionality. Each module is defined in the context of a package, an ASDF system and a unique identifier. Each of these components is linked to each other and should allow for identification, loading and extension of a module. In particular the unique identifier is of importance to the interface system and its dispatch mechanism.
-\subsection{Overview}
-\subsection{ASDF}\label{sec:mod asdf}
-\subsection{Module Identifiers}\label{sec:mod module identifiers}
+To offer a way to allow extension of the framework itself as well as web applications in a unified way, Radiance uses a system of modules that encapsulates functionality. Each module is defined in the context of a package, an ASDF system and a unique identifier. Each of these components is linked to each other and should allow for identification, loading and extension of a module. In particular the unique identifier is of importance to the interface system and its dispatch mechanism. \\
 
+By default, all the module code needs to reside in the same package. If you need to split up your module into multiple packages for one reason or another, you have to call \inline{bind-to-module}. This sets up the link from the package to the module identifier, which is necessary for a couple of framework macros. Do note that when using multiple packages, resolving with \inline{module-package} will always only refer to the package defined by your system. 
+\subsection{ASDF}\label{sec:mod asdf}
+In order to make linking into the radiance framework as simple as possible, an ASDF extension is deployed. This was seen as the best solution since any kind of project will most likely be using ASDF anyway, so by hooking into it we can automatically perform the necessary actions to prepare an external system to fit into the framework. All a module writer has to do is add \inline{:defsystem-depends-on (:radiance) :class :radiance-module} to their ASDF system definition. \\
+
+Of course this has a few side effects, since the framework tries to autodetect package and module identifier. If you want to have separate packages for your ASDF system and your main module, you can also manually set the \inline{:module-package} option in your system definition. Similarly, the module identifier can be chosen manually with \inline{:module-identifier}. By default it is set to the name of the ASDF system. \\
+
+If you want to completely avoid automatic setup and ASDF radiance-module integration, you can manually establish a module context with \inline{define-module}.
+\subsection{Module Identifiers}\label{sec:mod module identifiers}
+\newpage
 \section{Interfaces}\label{sec:int interfaces}
 \subsection{Definition}\label{sec:int definition}
 \subsection{Interface Extensions}\label{sec:int interface extensions}
 \subsection{Component Expanders}\label{sec:int component expanders}
 \subsection{Method Definition}\label{sec:int method definition}
 \subsection{ASDF Loading}\label{sec:int asdf loading}
-
+\newpage
 \section{Triggers}\label{sec:triggers}
 \subsection{Namespaces}\label{sec:trig namespaces}
 \subsection{Hooks}\label{sec:trig hooks}
 \subsection{Triggers}\label{sec:trig triggers}
-
+\newpage
 \section{URI}\label{sec:uri}
 \subsection{Properties}\label{sec:uri properties}
 \subsection{Matching}\label{sec:uri matching}
-
+\newpage
 \section{Request Continuations}\label{sec:request continuations}
 \subsection{Purpose}\label{sec:req purpose}
 \subsection{Invocation}\label{sec:req invocation}
 \subsection{Extent of Use}\label{sec:req extent of use}
-
+\newpage
 \section{Server}\label{sec:server}
 \subsection{Interface}\label{sec:ser interface}
 \subsection{Management}\label{sec:ser management}
 \subsection{Request Handling}\label{sec:ser request handling}
+\newpage
+\section{Library}\label{sec:library}
+\subsection{Modules}\label{sec:lib modules}
+\subsubsection{radiance-module}
+\subsubsection{define-module}
+\subsubsection{module-name}
+\subsubsection{module-package}
+\subsubsection{module-identifier}
+\subsubsection{module-system}
+\subsubsection{context-module-identifier}
+\newpage
+\subsection{Interfaces}\label{sec:lib interfaces}
+\subsubsection{define-interface}
+\subsubsection{define-interface-extension}
+\subsubsection{define-interface-method}
+\subsubsection{define-interface-component-expander}
+\subsubsection{interface-component-expander}
+\subsubsection{interface-component-types}
+\subsubsection{effective-system}
+\subsubsection{with-interface}
+\newpage
+\subsection{Triggers}\label{sec:lib triggers}
+\subsubsection{hook-item}
+\subsubsection{name}
+\subsubsection{item-namespace}
+\subsubsection{item-identifier}
+\subsubsection{item-function}
+\subsubsection{item-description}
+\subsubsection{hook-equal}
+\subsubsection{hook-equalp}
+\subsubsection{namespace-map}
+\subsubsection{define-namespace}
+\subsubsection{add-hook-item}
+\subsubsection{namespace}
+\subsubsection{remove-namespace}
+\subsubsection{hooks}
+\subsubsection{hook-items}
+\subsubsection{trigger}
+\subsubsection{define-hook}
+\subsubsection{remove-hook}
+\subsubsection{clear-hook-items}
+\newpage
+\subsection{URI}\label{sec:lib uri}
+\subsubsection{uri}
+\subsubsection{subdomain}
+\subsubsection{domain}
+\subsubsection{port}
+\subsubsection{path}
+\subsubsection{regex}
+\subsubsection{uri-matches}
+\subsubsection{uri-same}
+\subsubsection{uri->url}
+\subsubsection{uri->server-url}
+\subsubsection{uri->context-url}
+\subsubsection{make-uri}
+\newpage
+\subsection{Request Continuations}\label{sec:lib request continuations}
+\subsubsection{request-continuation}
+\subsubsection{id}
+\subsubsection{name}
+\subsubsection{timeout}
+\subsubsection{request}
+\subsubsection{continuation-function}
+\subsubsection{continuation}
+\subsubsection{continuations}
+\subsubsection{make-continuation}
+\subsubsection{clean-continuations}
+\subsubsection{clean-continuations-globally}
+\subsubsection{with-request-continuation}
+\newpage
+\subsection{Server}\label{sec:lib server}
 
 %%% Local Variables: 
 %%% mode: latex
