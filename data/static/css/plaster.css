@@ -201,6 +201,7 @@ h3:after{
 .annotation .posterinfo img{
     width: 32px; height: 32px;
     margin: 0;
+    background: #000;
 }
 
 .annotation .posterinfo>a{
@@ -233,6 +234,7 @@ h3:after{
 #userinfo img{
     float: left;
     border: 5px solid #0088EE;
+    background: #000;
     margin-right: 10px;
 }
 
