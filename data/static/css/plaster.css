@@ -70,6 +70,7 @@ header nav ul::after{
     width: 64px;
     height: 64px;
     border: 5px solid #0088EE;
+    background: #000;
     float: left;
     margin: 0 10px 0 0;
 }
