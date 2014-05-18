@@ -10,13 +10,13 @@ This section specifies the functionality grouped under the name of the radiance 
 \section{Modules}\label{sec:modules}
 To offer a way to allow extension of the framework itself as well as web applications in a unified way, Radiance uses a system of modules that encapsulates functionality. Each module is defined in the context of a package, an ASDF system and a unique identifier. Each of these components is linked to each other and should allow for identification, loading and extension of a module. In particular the unique identifier is of importance to the interface system and its dispatch mechanism. \\
 
-By default, all the module code needs to reside in the same package. If you need to split up your module into multiple packages for one reason or another, you have to call \inline{bind-to-module}. This sets up the link from the package to the module identifier, which is necessary for a couple of framework macros. Do note that when using multiple packages, resolving with \inline{module-package} will always only refer to the package defined by your system. 
+By default, all the module code needs to reside in the same package. If you need to split up your module into multiple packages for one reason or another, you have to call \inline{BIND-TO-MODULE}. This sets up the link from the package to the module identifier, which is necessary for a couple of framework macros. Do note that when using multiple packages, resolving with \inline{MODULE-PACKAGE} will always only refer to the package defined by your system. 
 \subsection{ASDF}\label{sec:mod asdf}
-In order to make linking into the radiance framework as simple as possible, an ASDF extension is deployed. This was seen as the best solution since any kind of project will most likely be using ASDF anyway, so by hooking into it we can automatically perform the necessary actions to prepare an external system to fit into the framework. All a module writer has to do is add \inline{:defsystem-depends-on (:radiance) :class :radiance-module} to their ASDF system definition. \\
+In order to make linking into the radiance framework as simple as possible, an ASDF extension is deployed. This was seen as the best solution since any kind of project will most likely be using ASDF anyway, so by hooking into it we can automatically perform the necessary actions to prepare an external system to fit into the framework. All a module writer has to do is add \inline{:DEFSYSTEM-DEPENDS-ON (:radiance) :class :radiance-module} to their ASDF system definition. \\
 
-Of course this has a few side effects, since the framework tries to autodetect package and module identifier. If you want to have separate packages for your ASDF system and your main module, you can also manually set the \inline{:module-package} option in your system definition. Similarly, the module identifier can be chosen manually with \inline{:module-identifier}. By default it is set to the name of the ASDF system. \\
+Of course this has a few side effects, since the framework tries to autodetect package and module identifier. If you want to have separate packages for your ASDF system and your main module, you can also manually set the \inline{:MODULE-PACKAGE} option in your system definition. Similarly, the module identifier can be chosen manually with \inline{:MODULE-IDENTIFIER}. By default it is set to the name of the ASDF system. \\
 
-If you want to completely avoid automatic setup and ASDF radiance-module integration, you can manually establish a module context with \inline{define-module}.
+If you want to completely avoid automatic setup and ASDF radiance-module integration, you can manually establish a module context with \inline{DEFINE-MODULE}.
 \subsection{Module Identifiers}\label{sec:mod module identifiers}
 \newpage
 \section{Interfaces}\label{sec:int interfaces}
@@ -47,72 +47,72 @@ If you want to completely avoid automatic setup and ASDF radiance-module integra
 \newpage
 \section{Library}\label{sec:library}
 \subsection{Modules}\label{sec:lib modules}
-\subsubsection{radiance-module}
-\subsubsection{define-module}
-\subsubsection{module-name}
-\subsubsection{module-package}
-\subsubsection{module-identifier}
-\subsubsection{module-system}
-\subsubsection{context-module-identifier}
+\subsubsection{Class \inline{RADIANCE-MODULE}}
+\subsubsection{Macro \inline{DEFINE-MODULE}}
+\subsubsection{Generic Function \inline{MODULE-NAME}}
+\subsubsection{Generic Function \inline{MODULE-PACKAGE}}
+\subsubsection{Generic Function \inline{MODULE-IDENTIFIER}}
+\subsubsection{Generic Function \inline{MODULE-SYSTEM}}
+\subsubsection{Macro \inline{CONTEXT-MODULE-IDENTIFIER}}
 \newpage
 \subsection{Interfaces}\label{sec:lib interfaces}
-\subsubsection{define-interface}
-\subsubsection{define-interface-extension}
-\subsubsection{define-interface-method}
-\subsubsection{define-interface-component-expander}
-\subsubsection{interface-component-expander}
-\subsubsection{interface-component-types}
-\subsubsection{effective-system}
-\subsubsection{with-interface}
+\subsubsection{Macro \inline{DEFINE-INTERFACE}}
+\subsubsection{Macro \inline{DEFINE-INTERFACE-EXTENSION}}
+\subsubsection{Macro \inline{DEFINE-INTERFACE-METHOD}}
+\subsubsection{Macro \inline{DEFINE-INTERFACE-COMPONENT-EXPANDER}}
+\subsubsection{Function \inline{INTERFACE-COMPONENT-EXPANDER}}
+\subsubsection{Function \inline{INTERFACE-COMPONENT-TYPES}}
+\subsubsection{Generic Function \inline{EFFECTIVE-SYSTEM}}
+\subsubsection{Macro \inline{WITH-INTERFACE}}
 \newpage
 \subsection{Triggers}\label{sec:lib triggers}
-\subsubsection{hook-item}
-\subsubsection{name}
-\subsubsection{item-namespace}
-\subsubsection{item-identifier}
-\subsubsection{item-function}
-\subsubsection{item-description}
-\subsubsection{hook-equal}
-\subsubsection{hook-equalp}
-\subsubsection{namespace-map}
-\subsubsection{define-namespace}
-\subsubsection{add-hook-item}
-\subsubsection{namespace}
-\subsubsection{remove-namespace}
-\subsubsection{hooks}
-\subsubsection{hook-items}
-\subsubsection{trigger}
-\subsubsection{define-hook}
-\subsubsection{remove-hook}
-\subsubsection{clear-hook-items}
+\subsubsection{Class \inline{HOOK-ITEM}}
+\subsubsection{Accessor \inline{NAME}}
+\subsubsection{Accessor \inline{ITEM-NAMESPACE}}
+\subsubsection{Accessor \inline{ITEM-IDENTIFIER}}
+\subsubsection{Accessor \inline{ITEM-FUNCTION}}
+\subsubsection{Accessor \inline{ITEM-DESCRIPTION}}
+\subsubsection{Function \inline{HOOK-EQUAL}}
+\subsubsection{Function \inline{HOOK-EQUALP}}
+\subsubsection{Function \inline{NAMESPACE-MAP}}
+\subsubsection{Function \inline{DEFINE-NAMESPACE}}
+\subsubsection{Function \inline{ADD-HOOK-ITEM}}
+\subsubsection{Function \inline{NAMESPACE}}
+\subsubsection{Function \inline{REMOVE-NAMESPACE}}
+\subsubsection{Function \inline{HOOKS}}
+\subsubsection{Function \inline{HOOK-ITEMS}}
+\subsubsection{Function \inline{TRIGGER}}
+\subsubsection{Macro \inline{DEFINE-HOOK}}
+\subsubsection{Function \inline{REMOVE-HOOK}}
+\subsubsection{Function \inline{CLEAR-HOOK-ITEMS}}
 \newpage
 \subsection{URI}\label{sec:lib uri}
-\subsubsection{uri}
-\subsubsection{subdomain}
-\subsubsection{domain}
-\subsubsection{port}
-\subsubsection{path}
-\subsubsection{regex}
-\subsubsection{uri-matches}
-\subsubsection{uri-same}
-\subsubsection{uri->url}
-\subsubsection{uri->server-url}
-\subsubsection{uri->context-url}
-\subsubsection{make-uri}
+\subsubsection{Class \inline{URI}}
+\subsubsection{Accessor \inline{SUBDOMAIN}}
+\subsubsection{Accessor \inline{DOMAIN}}
+\subsubsection{Accessor \inline{PORT}}
+\subsubsection{Accessor \inline{PATH}}
+\subsubsection{Accessor \inline{REGEX}}
+\subsubsection{Function \inline{URI-MATCHES}}
+\subsubsection{Function \inline{URI-SAME}}
+\subsubsection{Function \inline{URI->URL}}
+\subsubsection{Function \inline{URI->SERVER-URL}}
+\subsubsection{Function \inline{URI->CONTEXT-URL}}
+\subsubsection{Function \inline{MAKE-URI}}
 \newpage
 \subsection{Request Continuations}\label{sec:lib request continuations}
-\subsubsection{request-continuation}
-\subsubsection{id}
-\subsubsection{name}
-\subsubsection{timeout}
-\subsubsection{request}
-\subsubsection{continuation-function}
-\subsubsection{continuation}
-\subsubsection{continuations}
-\subsubsection{make-continuation}
-\subsubsection{clean-continuations}
-\subsubsection{clean-continuations-globally}
-\subsubsection{with-request-continuation}
+\subsubsection{Class \inline{REQUEST-CONTINUATION}}
+\subsubsection{Accessor \inline{ID}}
+\subsubsection{Accessor \inline{NAME}}
+\subsubsection{Accessor \inline{TIMEOUT}}
+\subsubsection{Accessor \inline{REQUEST}}
+\subsubsection{Accessor \inline{CONTINUATION-FUNCTION}}
+\subsubsection{Function \inline{CONTINUATION}}
+\subsubsection{Function \inline{CONTINUATIONS}}
+\subsubsection{Function \inline{MAKE-CONTINUATION}}
+\subsubsection{Function \inline{CLEAN-CONTINUATIONS}}
+\subsubsection{Function \inline{CLEAN-CONTINUATIONS-GLOBALLY}}
+\subsubsection{Macro \inline{WITH-REQUEST-CONTINUATION}}
 \newpage
 \subsection{Server}\label{sec:lib server}
 
