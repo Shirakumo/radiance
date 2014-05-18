@@ -23,6 +23,8 @@
 \usepackage{listings}
 \usepackage{caption}
 \usepackage{enumitem}
+\usepackage{pbox}
+\usepackage{ifmtarg}
 \pagestyle{fancy}
 
 \newdateformat{dmny}{\monthname[\THEMONTH] \THEYEAR}
@@ -52,8 +54,19 @@
 \titleformat{\chapter}[hang]{\bfseries\huge}{\thechapter}{2pc}{}
 \titlelabel{\thetitle\quad}   % For consistency in all headings
 
-\lstset{language=Lisp}
+\lstset{language=Lisp,basicstyle=\ttfamily}
 \def\inline{\lstinline[basicstyle=\ttfamily]}
+
+\newcommand{\funcdef}[3]{
+  \par\noindent
+  \makebox{
+    {\bfseries Syntax:} \inline{(#1 #2)}
+    \ifx#3\empty
+    \else{$\Rightarrow$ \pbox[t]{\textwidth}{#3}}
+    \fi
+  }
+  \par\noindent\\
+}
 
 \title{Radiance Specification}
 \author{Nicolas Hafner}
