@@ -1,5 +1,49 @@
 \chapter{Standard Interfaces} \label{sec:standard interfaces}
+\section{Database}
+\subsection{Query Construct}
+The database interface exposes a query macro that is required to properly translate expressions into database queries. A database operation only ever affects those records that match the given query (the query evaluates to true). Instead of a query, the \inline{:ALL} keyword may be used if all records should be affected.
 
+\subsubsection{Macro \inline{QUERY}}
+\funcdef{query}{query-form}{compiled query}
+Compiles a query form into a format suitable for the database. \\
+
+The query macro will code-walk and inspect the different arguments. Each query-form may expect either further query-forms or arguments. Arguments will always be evaluated at run-time, with the exception of quoted symbols which will be interpreted as the field of a collection (see the \inline{QUOTE} query-form). An argument can either be a form or an atom. Depending on the evaluated type of the argument the database may perform transformations or signal an error if the type is not supported. Any database implementation has to support in the very least the following types: \inline{string}, \inline{character}, \inline{real} \\
+
+The return value of this macro is completely implementation dependant.
+\subsubsection{Query Form \inline{:=}}
+\funcdef{:=}{a b}{}
+Compares tokens \inline{a} and \inline{b} with each other. This comparison should be the same as \inline{cl:=} for numerical values or \inline{cl:string=} for strings. \inline{a} and \inline{b} must be arguments.
+\subsubsection{Query Form \inline{:!=}}
+\funcdef{:!=}{a b}{}
+Inequality comparison. This is functionally the same as inverting the \inline{=} operator. \inline{a} and \inline{b} must be arguments.
+\subsubsection{Query Form \inline{:>}, \inline{:<}, \inline{:<=}, \inline{:>=}}
+\funcdef{:>/:</:<=/:>=}{a b}{}
+Numerical comparison, same as their \inline{cl} equivalents. \inline{a} and \inline{b} must be arguments.
+\subsubsection{Query Form \inline{:MATCHES}}
+\funcdef{:MATCHES}{a b}{}
+Matches \inline{a} against a regex form \inline{b}. The precise regular expression capabilities depend on the implementation, but basic PCRE should be supported.
+\inline{a} and \inline{b} must be arguments.
+\subsubsection{Query Form \inline{:IN}}
+\funcdef{:IN}{a \&rest arguments}{}
+Checks if \inline{a} is \inline{=} to one of the provided \inline{arguments}.
+\inline{a} and \inline{arguments} must be arguments.
+\subsubsection{Query Form \inline{:AND}}
+\funcdef{:AND}{\&rest query-forms}{}
+Evaluates to true if every sub-form is true.
+\inline{query-forms} must be query forms.
+\subsubsection{Query Form \inline{:OR}}
+\funcdef{:OR}{\&rest query-forms}{}
+Evaluates to true if one of the sub-forms is true.
+\inline{query-forms} must be query forms.
+\subsubsection{Query Form \inline{:NOT}}
+\funcdef{:NOT}{query-form}{}
+Evaluates to true if the sub-form evaluates to false and vice-versa.
+\inline{query-form} must be a query form.
+\subsubsection{Query Form \inline{QUOTE}, \inline{:FIELD}}
+\funcdef{QUOTE/:FIELD}{value}{}
+Translates to a reference to the collection's field, rather than a literal argument value. The \inline{value} may either be a \inline{symbol} or a \inline{string}; in the case of a symbol the symbol's name is used. The field name is forced to lowercase.
+\subsubsection{Keyword \inline{:ALL}}
+Translates into ``no query restriction'' or simply ``all records''.
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "master"
