@@ -25,7 +25,9 @@
 \usepackage{enumitem}
 \usepackage{pbox}
 \usepackage{ifmtarg}
-\usepackage{xstring}
+\usepackage{array}
+\usepackage{etoolbox}
+\usepackage{collcell}
 \pagestyle{fancy}
 
 \newdateformat{dmny}{\monthname[\THEMONTH] \THEYEAR}
@@ -69,6 +71,8 @@
   \par\noindent\\
 }
 
+\newcommand*{\extfuncdefcell}[1]{\inline{#1}}
+\newcolumntype{A}{>{\collectcell\extfuncdefcell}l<{\endcollectcell}}
 \newcommand{\extfuncdef}[4]{
   \par\noindent
   \makebox{
@@ -79,10 +83,10 @@
   } \\
   \ifx#4\empty
   \else{
-    \begin{tabular}{lll}
+    \begin{tabular}{AAl}
       #4
     \end{tabular}
-  }
+  }\fi
   \par\noindent\\
 }
 

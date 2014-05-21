@@ -1,7 +1,7 @@
 \chapter{Standard Interfaces} \label{sec:standard interfaces}
 \section{Database}
 \subsection{Connection}
-The central database has a single, continuous, main connection. While it is possible for implementations to provide mechanisms to allow for multiple simultaneous connections, the way this is done is not specified.
+The central database has a single, continuous, main connection. While it is possible for implementations to provide mechanisms to allow for multiple simultaneous connections, the way this is done is not specified. The database connection must be stable under concurrency conditions; that is to say, database operations from multiple threads must be supported.
 
 \subsubsection{Function \inline{db:connect}}
 \funcdef{db:connect}{database-name}{}
@@ -25,6 +25,8 @@ A database has a set of collections, each of which is identified by a unique, ex
 A collection is made up of a structure that describes the collection's data layout and the actual data, which comes in records. The implementation is not required to enforce a collection's structure on the data, but may at any time signal an error if operations were to occur that conflict the structure. \\
 
 Additionally, an implementation may support to add indexes on certain fields of the structure. Indexing is not required to be supported, but if it is it may make query operations on the affected fields faster. \\
+
+Each collection has a field called \inline{_id}, which is unique for each record as well as sortable according to sequence of record insertion. More specifically, the \inline{_id} field is sortable in the way that ascending sorting begins with the oldest record first and vice versa. The type used for the field is implementation dependant. \\
 
 Most databases only support a specific range of limited data types, which can be more or less properly matched up with CL types. If they cannot be properly matched, the implementation is required to transform the value as specified. Any implementation is required to support or allow the structure type declarations below. An implementation may or may not support any number of additional data types. 
 
@@ -50,19 +52,53 @@ Returns a list of strings, each of which is the name of a collection in the data
 \subsubsection{Function \inline{db:create}}
 \extfuncdef{db:create}{collection structure \&key indices if-exists}{}{
   collection &---& A string naming the collection. Only a-z,- and \_ are allowed. \\
-  structure &::=& (field*) \\
-  field &::=& (field-name type) \\
-  type &::=& type-name | (type-name parameter) \\
-  structure &---& A list of field-names to be indexed. \\
-  if-exists &::=& :error | :ignore
+  structure &::=& \inline{(field*)} \\
+  field &::=& \inline{(field-name type)} \\
+  type &::=& \inline{type-name | (type-name parameter)} \\
+  indices &---& A list of field-names to be indexed. \\
+  if-exists &::=& \inline{:error | :ignore}
 }
-Creates a new collection in the database. If the implementation supports structure, it should define it according to the given \inline{structure} list.
+Creates a new collection in the database. If the implementation supports structure, it should define it according to the given \inline{structure} list. The implementation must guarantee that the collection includes a record-unique \inline{_id} field as specified above. \\
 
-\subsubsection{Function \inline{db:empty}}
-\funcdef{db:empty}{collection}{}
+\noindent If \inline{if-exists} is set to \inline{:error} and the table exists already, an error of type \\\inline{DATABASE-COLLECTION-ALREADY-EXISTS} is signalled, otherwise the function will silently return.
+
+\subsubsection{Function \inline{db:structure}}
+\funcdef{db:structure}{collection}{list}
+Returns the structure definition of the collection in the format described in \inline{CREATE}. If the implementation does not support structure, NIL is returned. \\
+
+\noindent If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled.
 
 \subsubsection{Function \inline{db:drop}}
 \funcdef{db:drop}{collection}{}
+Removes the collection completely, including data, structure, indexes and name. \\
+
+\noindent If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled.
+
+\subsubsection{Function \inline{db:empty}}
+\funcdef{db:empty}{collection}{}
+Removes all records from the collection. \\
+
+\noindent If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled.
+
+\subsection{Records}
+
+\subsubsection{Function \inline{db:iterate}}
+\funcdef{db:iterate}{collection query function \&key fields skip amount sort accumulate}{list or NIL}
+
+\subsubsection{Function \inline{db:select}}
+\funcdef{db:select}{collection query \&key fields skip amount sort}{list}
+
+\subsubsection{Function \inline{db:count}}
+\funcdef{db:count}{collection query}{integer}
+
+\subsubsection{Function \inline{db:insert}}
+\funcdef{db:insert}{collection data}{}
+
+\subsubsection{Function \inline{db:remove}}
+\funcdef{db:remove}{collection query \&key skip amount sort}{}
+
+\subsubsection{Function \inline{db:update}}
+\funcdef{db:update}{collection query data \&key skip amount sort replace}{}
 
 \subsection{Query Construct}
 The database interface exposes a query macro that is required to properly translate expressions into database queries. A database operation only ever affects those records that match the given query (the query evaluates to true). Instead of a query, the \inline{:ALL} keyword may be used if all records should be affected.
