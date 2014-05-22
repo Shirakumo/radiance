@@ -4,16 +4,18 @@
 The central database has a single, continuous, main connection. While it is possible for implementations to provide mechanisms to allow for multiple simultaneous connections, the way this is done is not specified. The database connection must be stable under concurrency conditions; that is to say, database operations from multiple threads must be supported.
 
 \subsubsection{Function \inline{db:connect}}
-\funcdef{db:connect}{database-name}{}
+\extfuncdef{db:connect}{database-name}{}{
+  database-name &---& A string naming the database.
+}
 Initiates the database connection to the specified database name. Potentially additional information such as host, user and so on are required. These are implementation dependant and will have to be specified through the radiance configuration or some other method unique to the implementation. If the connection should be lost at any point, the implementation is required to re-establish it automatically and silently. Thus the connection must be maintained in one form or another until \inline{CONNECT} is called again or \inline{DISCONNECT} is called. \\
 
-\noindent If the connection fails, an error of type \inline{DATABASE-CONNECTION-FAILED} has to be signalled.
+\noindent If the connection fails, an error of type \inline{DATABASE-CONNECTION-FAILED} is signalled. If a connection is already open, the previous connection is closed automatically and a warning of type \inline{DATABASE-CONNECTION-ALREADY-OPEN} is signalled.
 
 \subsubsection{Function \inline{db:disconnect}}
 \funcdef{db:disconnect}{}{}
 Terminates the database connection if one is already established. \\
 
-\noindent The implementation may signal a warning of type \inline{DATABASE-CONNECTION-NOT-OPEN} if the connection was already closed at the time of the call.
+\noindent A warning of type \inline{DATABASE-CONNECTION-NOT-OPEN} is signalled if the connection was already closed.
 
 \subsubsection{Function \inline{db:connected-p}}
 \funcdef{db:connected-p}{}{boolean}
@@ -22,16 +24,18 @@ Returns \inline{T} if the database is connected, \inline{NIL} otherwise.
 \subsection{Collections}
 A database has a set of collections, each of which is identified by a unique, extended alphanumeric (a-z,-,\_) name. This name is case-insensitive. \\
 
-A collection is made up of a structure that describes the collection's data layout and the actual data, which comes in records. The implementation is not required to enforce a collection's structure on the data, but may at any time signal an error if operations were to occur that conflict the structure. \\
+A collection is made up of a structure that describes the collection's data layout and the actual data, which comes in records. The implementation is not required to enforce a collection's structure on the data, but may at any time signal an error if operations were to occur that conflict the structure. A structure is made up of field declarations, each field consisting of a collection-unique, extended alphanumeric name and a type.\\
 
-Additionally, an implementation may support to add indexes on certain fields of the structure. Indexing is not required to be supported, but if it is it may make query operations on the affected fields faster. \\
+An implementation may support to add indexes on certain fields of the structure. Indexing is not required to be supported, but if it is it may make query operations on the affected fields faster. \\
 
 Each collection has a field called \inline{_id}, which is unique for each record as well as sortable according to sequence of record insertion. More specifically, the \inline{_id} field is sortable in the way that ascending sorting begins with the oldest record first and vice versa. The type used for the field is implementation dependant. \\
 
 Most databases only support a specific range of limited data types, which can be more or less properly matched up with CL types. If they cannot be properly matched, the implementation is required to transform the value as specified. Any implementation is required to support or allow the structure type declarations below. An implementation may or may not support any number of additional data types. 
 
 \subsubsection{Database Structure Type \inline{:INTEGER}}
-Stores an object of the CL type \inline{INTEGER}. This type supports an optional extra argument that specifies the amount of bytes used to store the integer. It defaults to 4 and must range between 1-8. If the implementation doesn't support the specified amount of bytes, the type is expected to be upgraded to the next bigger one that contains the range.
+Stores an object of the CL type \inline{INTEGER}. This type supports an optional extra argument that specifies the amount of bytes used to store the integer. It defaults to 4 and must range between 1-8. If the implementation doesn't support the specified amount of bytes, the type is expected to be upgraded to the next bigger one that contains the range. \\
+
+\noindent If the database cannot store a value because it exceeds the range, an error of type \inline{DATABASE-INVALID-VALUE} is signalled. It is not guaranteed that this error occurs if a value exceeds the specified range since the implementation may have had to upgrade it.
 
 \subsubsection{Database Structure Type \inline{:FLOAT}}
 Stores an object of the CL type \inline{FLOAT}. The database should always store it as a double-precision floating-point number, according to IEEE. If the precision of the value should exceed that of a double, the value is expected to be truncated.
@@ -40,7 +44,9 @@ Stores an object of the CL type \inline{FLOAT}. The database should always store
 Stores an object of the CL type \inline{CHARACTER}. The stored character when retrieved has to be translated into a character of the exact same \inline{CHAR-CODE}.
 
 \subsubsection{Database Structure Type \inline{:VARCHAR}}
-Stores an object of the CL type \inline{STRING}. This type requires an extra argument which specifies the maximum number of characters stored. It maps from and to the CL type \inline{STRING}. The same character requirements as for \inline{:CHARACTER} apply.
+Stores an object of the CL type \inline{STRING}. This type requires an extra argument which specifies the maximum number of characters stored. It maps from and to the CL type \inline{STRING}. The same character requirements as for \inline{:CHARACTER} apply. \\
+
+\noindent If an attempt is made to store a string that exceeds the specified length, an error of type \inline{DATABASE-INVALID-VALUE} is signalled.
 
 \subsubsection{Database Structure Type \inline{:TEXT}}
 Stores an object of the CL type \inline{STRING}. The string may be of arbitrary length. The same character requirements as for \inline{:CHARACTER} apply.
@@ -58,47 +64,115 @@ Returns a list of strings, each of which is the name of a collection in the data
   indices &---& A list of field-names to be indexed. \\
   if-exists &::=& \inline{:error | :ignore}
 }
-Creates a new collection in the database. If the implementation supports structure, it should define it according to the given \inline{structure} list. The implementation must guarantee that the collection includes a record-unique \inline{_id} field as specified above. \\
+Creates a new collection in the database. If the implementation supports structure, it is defined according to the given \inline{structure} list. Every collection automatically adds an \inline{_id} field as specified above. \\
 
-\noindent If \inline{if-exists} is set to \inline{:error} and the table exists already, an error of type \\\inline{DATABASE-COLLECTION-ALREADY-EXISTS} is signalled, otherwise the function will silently return.
+\noindent If the \inline{collection} name is not extended alphanumeric, an error of type \inline{DATABASE-INVALID-COLLECTION} is signalled. If an additional \inline{_id} field is declared in the \inline{structure} definition, the name of a field is not extended alphanumeric, or a field's type declaration is invalid or unsupported, an error of type \inline{DATABASE-INVALID-FIELD} is signalled. If \inline{if-exists} is set to \inline{:error} and the table exists already, an error of type \\\inline{DATABASE-COLLECTION-ALREADY-EXISTS} is signalled.
 
 \subsubsection{Function \inline{db:structure}}
-\funcdef{db:structure}{collection}{list}
+\extfuncdef{db:structure}{collection}{list}{
+  collection &---& A string naming the collection.\\
+}
 Returns the structure definition of the collection in the format described in \inline{CREATE}. If the implementation does not support structure, NIL is returned. \\
 
 \noindent If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled.
 
 \subsubsection{Function \inline{db:drop}}
-\funcdef{db:drop}{collection}{}
+\extfuncdef{db:drop}{collection}{}{
+  collection &---& A string naming the collection.\\
+}
 Removes the collection completely, including data, structure, indexes and name. \\
 
 \noindent If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled.
 
 \subsubsection{Function \inline{db:empty}}
-\funcdef{db:empty}{collection}{}
+\extfuncdef{db:empty}{collection}{}{
+  collection &---& A string naming the collection.\\
+}
 Removes all records from the collection. \\
 
 \noindent If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled.
 
 \subsection{Records}
+A collection stores data in the form of records, each record being a map of fields to their values. Each record contains an \inline{_id} value that uniquely identifies the record within its collection.
 
 \subsubsection{Function \inline{db:iterate}}
-\funcdef{db:iterate}{collection query function \&key fields skip amount sort accumulate}{list or NIL}
+\extfuncdef{db:iterate}{collection query function \&key fields skip amount sort accumulate}{list}{
+  collection &---& A string naming the collection.\\
+  query &---& A query object, usually generated by \inline{db:query}\\
+  function &---& A function to pass the records to.\\
+  fields &---& A list of field names that should be returned.\\
+  skip &---& The amount of records to skip.\\
+  amount &---& The amount of records to select.\\
+  sort &::=& \inline{(sorting*)}\\
+  sorting &::=& \inline{(field-name sort-order)} \\
+  sort-order &::=& \inline{:ASC | :DESC} \\
+  accumulate &---& Generalized boolean.\\
+}
+Selects records with \inline{fields} from \inline{collection} that match the \inline{query}, sorting them by \inline{sort}, skipping over the first \inline{skip} entries, limiting the set by \inline{amount} and finally calling \inline{function} on each record. If \inline{accumulate} is non-NIL, the values of the function calls are collected into a list and returned. \\
+
+Each record is passed to the function in the form of a hash-map with the field names as keys. If \inline{fields} is NIL, all fields are included. If \inline{sort} is NIL, the order of the records is not specified and may be completely random.\\
+
+\noindent If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled. 
 
 \subsubsection{Function \inline{db:select}}
-\funcdef{db:select}{collection query \&key fields skip amount sort}{list}
+\extfuncdef{db:select}{collection query \&key fields skip amount sort}{list}{
+  collection &---& A string naming the collection.\\
+  query &---& A query object, usually generated by \inline{db:query}\\
+  fields &---& A list of field names that should be returned.\\
+  skip &---& The amount of records to skip.\\
+  amount &---& The amount of records to select.\\
+  sort &::=& \inline{(sorting*)}\\
+  sorting &::=& \inline{(field-name sort-order)} \\
+  sort-order &::=& \inline{:ASC | :DESC} \\
+}
+Returns the records as a list of hash-maps. See \inline{iterate}.
 
 \subsubsection{Function \inline{db:count}}
-\funcdef{db:count}{collection query}{integer}
+\extfuncdef{db:count}{collection query}{integer}{
+  collection &---& A string naming the collection.\\
+  query &---& A query object, usually generated by \inline{db:query}\\
+}
+Returns the number of records in the \inline{collection} that match the \inline{query}.\\
+
+\noindent If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled. 
 
 \subsubsection{Function \inline{db:insert}}
-\funcdef{db:insert}{collection data}{}
+\extfuncdef{db:insert}{collection data}{\inline{_id}}{
+  collection &---& A string naming the collection.\\
+  data &---& A hash-map or an alist of the data for the new record.\\
+}
+Inserts the \inline{data} as a new record into the \inline{collection}. Returns the value of the \inline{_id} field of the newly generated record. \\
+
+\noindent If the \inline{data} contains an \inline{_id} field or an inexistent field, an error of type \inline{DATABASE-INVALID-FIELD} is signalled. If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled. 
 
 \subsubsection{Function \inline{db:remove}}
-\funcdef{db:remove}{collection query \&key skip amount sort}{}
+\extfuncdef{db:remove}{collection query \&key skip amount sort}{}{ 
+  collection &---& A string naming the collection.\\
+  query &---& A query object, usually generated by \inline{db:query}\\
+  skip &---& The amount of records to skip.\\
+  amount &---& The amount of records to select.\\
+  sort &::=& \inline{(sorting*)}\\
+  sorting &::=& \inline{(field-name sort-order)} \\
+  sort-order &::=& \inline{:ASC | :DESC} \\
+}
+Removes all records from the \inline{collection} that match the \inline{query}, sorted by \inline{sort}, skipping the first \inline{skip} and only removing a maximum of \inline{amount} of records. \\
+
+\noindent If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled. 
 
 \subsubsection{Function \inline{db:update}}
-\funcdef{db:update}{collection query data \&key skip amount sort replace}{}
+\extfuncdef{db:update}{collection query data \&key skip amount sort}{}{
+  collection &---& A string naming the collection.\\
+  query &---& A query object, usually generated by \inline{db:query}\\
+  data &---& A hash-map or an alist of fields to update.\\
+  skip &---& The amount of records to skip.\\
+  amount &---& The amount of records to select.\\
+  sort &::=& \inline{(sorting*)}\\
+  sorting &::=& \inline{(field-name sort-order)} \\
+  sort-order &::=& \inline{:ASC | :DESC} \\
+}
+Changes all records from the \inline{collection} that match the \inline{query}, sorted by \inline{sort}, skipping the first \inline{skip} and only changing a maximum of \inline{amount} of records by setting all fields contained in \inline{data} to the values in \inline{data}. \\
+
+\noindent If the \inline{data} contains an \inline{_id} field or an inexistent field, an error of type \inline{DATABASE-INVALID-FIELD} is signalled. If the collection does not exist, an error of type \inline{INEXISTENT-DATABASE-COLLECTION} is signalled. 
 
 \subsection{Query Construct}
 The database interface exposes a query macro that is required to properly translate expressions into database queries. A database operation only ever affects those records that match the given query (the query evaluates to true). Instead of a query, the \inline{:ALL} keyword may be used if all records should be affected.
