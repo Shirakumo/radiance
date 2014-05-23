@@ -28,6 +28,7 @@
 \usepackage{array}
 \usepackage{etoolbox}
 \usepackage{collcell}
+\usepackage{mfirstuc}
 \pagestyle{fancy}
 
 \newdateformat{dmny}{\monthname[\THEMONTH] \THEYEAR}
@@ -53,6 +54,12 @@
 \cfoot{\thepage\ / \pageref{LastPage}}
 \rfoot{}
 
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  breaklinks=true
+}
+
 \setlength\aftertitleunit{\baselineskip}
 \titleformat{\chapter}[hang]{\bfseries\huge}{\thechapter}{2pc}{}
 \titlelabel{\thetitle\quad}   % For consistency in all headings
@@ -60,33 +67,40 @@
 \lstset{language=Lisp,basicstyle=\ttfamily}
 \def\inline{\lstinline[basicstyle=\ttfamily]}
 
-\newcommand{\funcdef}[3]{
-  \par\noindent
-  \makebox{
-    {\bfseries Syntax:} \inline{(#1 #2)}
-    \ifx#3\empty
-    \else{$\Rightarrow$ \pbox[t]{\textwidth}{#3}}
-    \fi
-  }
+\newcommand{\symbolref}[1]{%
+  \MakeUppercase{\gdef\noexpand\WORD{#1}}%
+  \hyperref[symbol:#1]{\expandafter\inline\expandafter{\WORD}}%
+}
+\newcommand{\symboldef}[1]{\inline{#1}\label{symbol:#1}}
+\newcommand{\symbolsection}[2]{\subsubsection{\capitalisewords{#1} \symboldef{#2}}\label{#1:#2}}
+
+\newcommand{\funcdef}[3]{%
+  \par\noindent%
+  \makebox{%
+    {\bfseries Syntax:} \inline{(#1 #2)}%
+    \ifx#3\empty%
+    \else{$\Rightarrow$ \pbox[t]{\textwidth}{#3}}%
+    \fi%
+  }%
   \par\noindent\\
 }
 
 \newcommand*{\extfuncdefcell}[1]{\inline{#1}}
 \newcolumntype{A}{>{\collectcell\extfuncdefcell}l<{\endcollectcell}}
-\newcommand{\extfuncdef}[4]{
-  \par\noindent
-  \makebox{
-    {\bfseries Syntax:} \inline{(#1 #2)}
-    \ifx#3\empty
-    \else{$\Rightarrow$ \pbox[t]{\textwidth}{#3}}
-    \fi
+\newcommand{\extfuncdef}[4]{%
+  \par\noindent%
+  \makebox{%
+    {\bfseries Syntax:} \inline{(#1 #2)}%
+    \ifx#3\empty%
+    \else{$\Rightarrow$ \pbox[t]{\textwidth}{#3}}%
+    \fi%
   } \\
-  \ifx#4\empty
-  \else{
-    \begin{tabular}{AAl}
-      #4
-    \end{tabular}
-  }\fi
+  \ifx#4\empty%
+  \else{%
+    \begin{tabular}{AAl}%
+      #4%
+    \end{tabular}%
+  }\fi%
   \par\noindent\\
 }
 
