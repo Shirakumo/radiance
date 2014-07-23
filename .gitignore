@@ -1,9 +1,5 @@
 *.fasl
 /log/
-/lib/lQuery
-/lib/lQuery-Doc
-/lib/piping
-/lib/verbose
 .directory
 /data/db-dev
 radiance.json
