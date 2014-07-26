@@ -28,3 +28,9 @@
 [submodule "lib/clip"]
 	path = lib/clip
 	url = https://github.com/Shinmera/clip.git
+[submodule "lib/modularize-interfaces"]
+	path = lib/modularize-interfaces
+	url = https://github.com/Shinmera/modularize-interfaces.git
+[submodule "lib/modularize-hooks"]
+	path = lib/modularize-hooks
+	url = https://github.com/Shinmera/modularize-hooks.git
