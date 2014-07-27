@@ -20,7 +20,8 @@
   :long-description ""
   :serial T
   :components ((:file "module")
-               (:file "toolkit"))
+               (:file "toolkit")
+               (:file "interfaces"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
                :universal-config))
