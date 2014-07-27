@@ -21,7 +21,8 @@
   :serial T
   :components ((:file "module")
                (:file "toolkit")
-               (:file "interfaces"))
+               (:file "interfaces")
+               (:file "init"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
                :universal-config))
