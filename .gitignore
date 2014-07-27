@@ -3,3 +3,4 @@
 .directory
 /data/db-dev
 radiance.json
+/lib/radiance-core
