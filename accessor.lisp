@@ -46,7 +46,7 @@
   (let ((field (find-symbol (string-upcase field) :ASDF)))
     (if field (slot-value model field))))
 
-(define-component-expander accessor (interface class &key documentation)
+(define-component-expander (defield deffield field df) (interface class &optional documentation)
   (let ((class (or (find-symbol (string class) interface)
                    (intern (string class) interface))))
     `(progn
