@@ -47,12 +47,8 @@
                (and (= (length (domains a)) (length (domains b)))
                     (< (length (path a)) (length (path b))))))))
 
-(defun uri> (b a)
-  (or (and (not (port a)) (port b))
-      (and (not (port a))
-           (or (< (length (domains a)) (length (domains b)))
-               (and (= (length (domains a)) (length (domains b)))
-                    (< (length (path a)) (length (path b))))))))
+(defun uri> (a b)
+  (uri< b a))
 
 (defun uri= (a b)
   (and (eql (port a) (port b))
