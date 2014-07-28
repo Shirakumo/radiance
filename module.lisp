@@ -6,7 +6,7 @@
 
 (in-package #:modularize-user)
 (define-module radiance-core
-  (:use #:cl #:modularize #:modularize-interfaces #:modularize-hooks #:universal-config)
+  (:use #:cl #:modularize #:modularize-interfaces #:modularize-hooks)
   (:nicknames #:radiance #:org.tymoonnext.radiance.lib.radiance.core)
   ;; re-export from modularize
   (:export
@@ -39,5 +39,30 @@
    #:i-defun
    #:i-defmacro
    #:i-defmethod)
+  ;; accessor.lisp
+  (:export
+   #:field)
+  ;; init.lisp
+  (:export
+   #:startup
+   #:shutdown)
+  ;; interfaces.lisp
+  (:export
+   #:interface-implementation-not-set)
   ;; toolkit.lisp
-  (:export))
+  (:export
+   #:*config-type*
+   #:*root*
+   #:*config-path*
+   #:*data-path*
+   #:load-config
+   #:save-config
+   #:config-tree
+   #:make-keyword
+   #:concatenate-strings
+   #:universal-to-unix-time
+   #:unix-to-universal-time
+   #:get-unix-time
+   #:make-random-string
+   #:file-size
+   #:read-data-file))
