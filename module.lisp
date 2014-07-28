@@ -7,5 +7,17 @@
 (in-package #:modularize-user)
 (define-module-extension (radiance radiance-web)
   (:nicknames #:org.tymoonnext.radiance.lib.radiance.web)
-  ;;
-  (:export))
+  ;; uri.lisp
+  (:export
+   #:uri
+   #:domains
+   #:port
+   #:path
+   #:matcher
+   
+   #:make-uri
+   #:parse-uri
+   #:uri<
+   #:uri>
+   #:uri=
+   #:uri-matches))
