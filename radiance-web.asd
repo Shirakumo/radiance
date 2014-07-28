@@ -10,7 +10,7 @@
 
 (defsystem radiance-web
   :class "radiance:module"
-  :defsystem-depends-on (:radiance) 
+  :defsystem-depends-on (:radiance-core)
   :name "Radiance-Web"
   :version "0.0.1"
   :license "Artistic"
