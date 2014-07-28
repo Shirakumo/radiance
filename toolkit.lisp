@@ -11,6 +11,8 @@
 (defvar *root* (asdf:system-source-directory :radiance))
 (defvar *config-path* (merge-pathnames (make-pathname :name "radiance.uc" :type "lisp") *root*))
 (defvar *data-path* (merge-pathnames (make-pathname :directory '(:relative "data")) *root*))
+(defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789")
+(defconstant +unix-epoch-difference+ (encode-universal-time 0 0 0 1 1 1970 0))
 
 (defun load-config (&optional (path *config-path*))
   (setf *config* (uc:load-configuration path :format *config-type*)
