@@ -20,4 +20,5 @@
    #:uri<
    #:uri>
    #:uri=
-   #:uri-matches))
+   #:uri-matches
+   #:merge-uris))

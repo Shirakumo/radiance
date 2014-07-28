@@ -38,6 +38,8 @@
      (declare (ignore char arg))
      (parse-uri (read stream))))
 
+(defvar *default-uri-defaults* (parse-uri "/"))
+
 (defun uri< (a b)
   (or (and (not (port a)) (port b))
       (and (not (port a))
@@ -69,3 +71,10 @@
              for b in (reverse (domains pattern-uri))
              always (string-equal a b))
        (cl-ppcre:scan (matcher pattern-uri) (or (path uri) ""))))
+
+(defun merge-uris (uri &optional (defaults *default-uri-defaults*))
+  (make-uri
+   :domains (append (domains uri) (domains defaults))
+   :port (or (port uri) (port defaults))
+   :path (format NIL "~@[~a/~]~@[~a~]"
+                 (path defaults) (path uri))))
