@@ -20,5 +20,7 @@
   :long-description ""
   :serial T
   :components ((:file "module")
-               (:file "uri"))
+               (:file "uri")
+
+               (:file "interfaces"))
   :depends-on (:cl-ppcre))
