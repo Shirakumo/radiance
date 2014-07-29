@@ -14,11 +14,15 @@
 
 (defmethod initialize-instance :after ((uri uri) &key)
   (unless (slot-boundp uri 'matcher)
-    (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "") :case-insensitive-mode T))))
+    (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
 (defmethod print-object ((uri uri) stream)
   (format stream "#U\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
           (domains uri) (port uri) (path uri)))
+
+(defmethod (setf path) (val (uri uri))
+  (when (matcher uri)
+    (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
 (defun make-uri (&key domains port path (matcher NIL m-p))
   (if m-p
