@@ -6,6 +6,34 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
+;;; Route spec
+;; (DOMAINS PORT PATHS)
+;; DOMAINS   ::= LIST-SPEC | *
+;; PORT      ::= fixnum | symbol | *
+;; PATHS     ::= LIST-SPEC | *
+;; LIST-SPEC ::= VAR* [&optional OPT*] [&rest symbol]
+;; VAR       ::= symbol | string
+;; OPT       ::= symbol | string | (symbol value)
+;;
+;; The * symbol at any part means that no test is
+;; made.
+;;
+;; Ports are either skipped, bound to the symbol
+;; or tested for = equality with the given fixnum.
+;;
+;; Domains are matched via a pseudo lambda-list
+;; destructuring that supports &OPTIONAL, &REST and
+;; string restraints.
+;;
+;; Paths are split by / and then matched the same way
+;; as domains.
+;;
+;; A symbol in this context means that the corresponding
+;; part will be bound to that symbol and passed to the
+;; transformer. A string means that the URI only matches
+;; the route if the corresponding part is string= to the
+;; string.
+
 (defvar *routes* (make-hash-table :test 'eql))
 
 (defclass route (uri)
@@ -161,16 +189,3 @@
         when match
           do (return (resolve-route match))
         finally (return uri)))
-
-(define-route static (* * ("static" &rest path))
-  (setf (path uri) (format NIL "data/static/~{~a~^/~}" path))
-  uri)
-
-(define-route module (() * ("m" module &rest path))
-  (push module (domains uri))
-  (setf (path uri) (format NIL "~{~a~^/~}" path))
-  uri)
-
-(define-route admin (() 10000 *)
-  (push "admin" (domains uri))
-  uri)
