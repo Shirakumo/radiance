@@ -15,5 +15,5 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Version 5 of TyNET, an extensible framework library and multi-application CMS."
-  :components ()
-  :depends-on (:radiance-lib-core))
+  :depends-on (:radiance-core
+               :radiance-web))
