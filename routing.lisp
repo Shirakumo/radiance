@@ -36,13 +36,15 @@
 
 (defvar *routes* (make-hash-table :test 'eql))
 
-(defclass route (uri)
-  ((matcher :initform NIL :accessor matcher)
-   (compiled-matcher :initarg :compiled-matcher :accessor compiled-matcher)
+(defclass route ()
+  ((domains :initarg :domains :accessor domains)
+   (port :initarg :port :accessor port)
+   (path :initarg :path :accessor path)
+   (matcher :initarg :matcher :accessor matcher)
    (transformer :initarg :transformer :initform (error "TRANSFORMER required.") :accessor transformer)))
 
 (defmethod initialize-instance :after ((route route) &key)
-  (setf (compiled-matcher route) (compile-route-matcher route)))
+  (setf (matcher route) (compile-route-matcher route)))
 
 (defmethod print-object ((route route) stream)
   (print-unreadable-object (route stream :type T)
@@ -58,7 +60,7 @@
   (setf (gethash name *routes*) route))
 
 (defun route-uri (route uri)
-  (funcall (compiled-matcher route) uri))
+  (funcall (matcher route) uri))
 
 (defun extract-symbols (list)
   (when (listp list)
