@@ -21,6 +21,6 @@
   :serial T
   :components ((:file "module")
                (:file "uri")
-
+               (:file "routing")
                (:file "interfaces"))
   :depends-on (:cl-ppcre))
