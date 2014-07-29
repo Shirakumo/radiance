@@ -29,6 +29,11 @@
       (make-instance 'uri :domains domains :port port :path path :matcher matcher)
       (make-instance 'uri :domains domains :port port :path path)))
 
+(defun copy-uri (uri)
+  (make-uri :domains (copy-seq (domains uri))
+            :port (port uri)
+            :path (path uri)))
+
 (defvar *uri-regex* (cl-ppcre:create-scanner "^(([a-z0-9\\-]+\\.)*[a-z0-9\\-]+)?(:(\\d{1,5}))?/(.*)" :case-insensitive-mode T))
 (defun parse-uri (uri-string)
   (or (cl-ppcre:register-groups-bind (domains NIL NIL port path) (*uri-regex* uri-string)
