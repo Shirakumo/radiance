@@ -6,7 +6,7 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.core)
 
-(defvar *config* NIL)
+(defvar *config* (make-hash-table :test 'eql))
 (defvar *config-type* :lisp)
 (defvar *root* (asdf:system-source-directory :radiance))
 (defvar *config-path* (merge-pathnames (make-pathname :name "radiance.uc" :type "lisp") *root*))
