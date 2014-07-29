@@ -22,5 +22,6 @@
   :components ((:file "module")
                (:file "uri")
                (:file "routing")
+               (:file "dispatch")
                (:file "interfaces"))
   :depends-on (:cl-ppcre))
