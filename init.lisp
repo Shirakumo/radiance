@@ -9,12 +9,10 @@
 (define-hook startup ())
 (define-hook shutdown ())
 
-(define-trigger startup ()
-  (loop for module in (config-tree :startup)
-        do (asdf:load-system module)))
-
 (defun startup ()
   (load-config)
+  (loop for module in (config-tree :startup)
+        do (asdf:load-system module))
   (trigger 'startup))
 
 (defun shutdown ()
