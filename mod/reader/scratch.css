@@ -60,15 +60,14 @@ article header #tags ul li a{
 }
 
 article header #tags ul li a:hover{
-    background-color: #00EEFF;
-    
+    background-color: #004499;
 }
 
 #article-body{
     max-width: 800px;
     margin: 0 auto 0 auto;
     background: #EEE;
-    padding: 5px 15% 10px 20px;
+    padding: 5px 150px 10px 20px;
     box-sizing: border-box;
     text-align: justify;
     border: 1px solid #0088EE;
@@ -77,6 +76,55 @@ article header #tags ul li a:hover{
     font-family: Georgia,Serif;
     font-size: 12pt;
     line-height: 120%;
+    position: relative;
+}
+
+#article-body .series{
+    text-align: center;
+    background: #333;
+    color: #FFF;
+    font-family: Arial, sans-serif;
+    padding: 5px;
+    position: relative;
+    margin-top: 10px;
+}
+
+#article-body .series::before{
+    content: "";
+    position: absolute;
+    left: -40px; top: 0; bottom: 0;
+    width: 40px;
+    background: #333;
+}
+
+#article-body .series::after{
+    content: "";
+    position: absolute;
+    left: -40px; bottom: -10px;
+    border-style: solid;
+    border-width: 0 19px 10px 0;
+    border-color: transparent #151515 transparent transparent;
+}
+    
+#article-body .series .description{
+    font-size: 12pt;
+    margin-bottom: 5px;
+}
+
+#article-body .series .description .series-title{
+    font-weight: bold;
+}
+
+#article-body .series a{
+    display: inline-block;
+    padding: 0 10px 0 10px;
+    color: #FFF;
+    background: #151515;
+    text-decoration: none;
+}
+
+#article-body .series a:hover{
+    background: #0088EE;
 }
 
 #article-body h1{
@@ -127,6 +175,7 @@ article footer{
 
 article footer #default-linkage ul{
     margin: 0; padding: 0;
+    margin-top: 5px;
     list-style: none;
     text-align: center;
 }
@@ -150,7 +199,6 @@ article footer #default-linkage ul li a:hover{
 }
 
 article footer #move{
-    margin-top: 10px;
     display: table;
     width: 100%;
     display: flex;
@@ -167,7 +215,7 @@ article footer #move a{
     font-weight: bold;
 }
 
-article footer #move #prev{
+article footer #move .prev{
     text-align: left;
     background: -moz-linear-gradient(left,  rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
     background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,1)), color-stop(100%,rgba(0,0,0,0)));
@@ -178,7 +226,7 @@ article footer #move #prev{
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#00000000',GradientType=1 );
 }
 
-article footer #move #next{
+article footer #move .next{
     text-align: right;
     background: -moz-linear-gradient(left,  rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%);
     background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,1)));
