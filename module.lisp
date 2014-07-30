@@ -7,6 +7,49 @@
 (in-package #:modularize-user)
 (define-module-extension (radiance radiance-web)
   (:nicknames #:org.tymoonnext.radiance.lib.radiance.web)
+  ;; dispatch.lisp
+  (:export
+   #:uri-dispatcher
+   #:dispatch-function
+   
+   #:uri-dispatcher
+   #:make-uri-dispatcher
+   #:define-uri-dispatcher
+   #:dispatch)
+  ;; request.lisp
+  (:export
+   #:*request*
+   #:*response*
+   #:*default-external-format*
+   
+   #:request
+   #:headers
+   #:http-method
+   #:post-data
+   #:get-data
+   #:cookies
+   #:remote
+   
+   #:response
+   #:data
+   #:headers
+   #:content-type
+   #:return-code
+   #:external-format
+   
+   #:request)
+  ;; routing.lisp
+  (:export
+   #:route
+   #:domains
+   #:port
+   #:path
+   #:transformer
+   
+   #:route
+   #:route-uri
+   #:define-route
+   #:resolve-route)
   ;; uri.lisp
   (:export
    #:uri
