@@ -23,5 +23,6 @@
                (:file "uri")
                (:file "routing")
                (:file "dispatch")
+               (:file "request")
                (:file "interfaces"))
   :depends-on (:cl-ppcre))
