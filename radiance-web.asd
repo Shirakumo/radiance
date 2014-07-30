@@ -24,5 +24,6 @@
                (:file "routing")
                (:file "dispatch")
                (:file "request")
-               (:file "interfaces"))
+               (:file "interfaces")
+               (:file "page"))
   :depends-on (:cl-ppcre))
