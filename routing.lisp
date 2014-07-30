@@ -69,6 +69,9 @@
             collect (if (listp item) (car item) item))))
 
 (defvar *matched-vars*)
+(defun put-key (key val)
+  (push val *matched-vars*)
+  (push (make-keyword key) *matched-vars*))
 
 (defun compile-port-test (port-matcher)
   (cond
@@ -79,14 +82,9 @@
          (and (port uri) (= (port uri) port-matcher))))
     ((symbolp port-matcher)
      #'(lambda (uri)
-         (push (port uri) *matched-vars*)
-         (push (make-keyword port-matcher) *matched-vars*)
+         (put-key port-matcher (port uri))
          T))
     (T (error "Invalid port matcher ~s, should be a symbol, '* or fixnum." port-matcher))))
-
-(defun put-key (key val)
-  (push val *matched-vars*)
-  (push (make-keyword key) *matched-vars*))
 
 (defun compile-list-test (list)
   ;; check for conformity and compile tests
