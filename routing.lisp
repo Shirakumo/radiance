@@ -50,6 +50,14 @@
   (print-unreadable-object (route stream :type T)
     (format stream "(~a ~a ~a)" (domains route) (port route) (path route))))
 
+(defmacro %setf-wrapper (slot)
+  `(defmethod (setf ,slot) (val (route route))
+     (setf (slot-value route ',slot) val
+           (matcher route) (compile-route-matcher route))))
+(%setf-wrapper domains)
+(%setf-wrapper port)
+(%setf-wrapper path)
+
 (defun route (name)
   (assert (symbolp name))
   (gethash name *routes*))
