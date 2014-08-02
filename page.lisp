@@ -6,13 +6,14 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
-(defvar *page-options* (make-hash-table))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defvar *page-options* (make-hash-table))
 
-(defun page-option (name)
-  (gethash name *page-options*))
+  (defun page-option (name)
+    (gethash name *page-options*))
 
-(defun (setf page-option) (option name)
-  (setf (gethash name *page-options*) option))
+  (defun (setf page-option) (option name)
+    (setf (gethash name *page-options*) option)))
 
 (defmacro define-page-option (name (namevar urivar &rest rest) &body body)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
