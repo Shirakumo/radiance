@@ -7,6 +7,17 @@
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
 ;; As per spec
+(define-interface (logger l)
+  (defun log (level category log-string &rest format-args))
+  (defun trace (category log-string &rest format-args))
+  (defun debug (category log-string &rest format-args))
+  (defun info (category log-string &rest format-args))
+  (defun warn (category log-string &rest format-args))
+  (defun error (category log-string &rest format-args))
+  (defun severe (category log-string &rest format-args))
+  (defun fatal (category log-string &rest format-args)))
+
+;; As per spec
 (define-interface (database db)
   (defun connect (database-name))
   (defun disconnect ())
