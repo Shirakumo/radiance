@@ -6,6 +6,45 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
+;;; Formats
+(defvar *api-formats* (make-hash-table :test 'equalp))
+(defvar *default-api-format* "lisp")
+
+(defun api-format (name)
+  (gethash name *api-formats*))
+
+(defun (setf api-format) (parse-func name)
+  (setf (gethash name *api-formats*) parse-func))
+
+(defmacro define-api-format (name (argsvar) &body body)
+  `(setf (api-format ,(string name))
+         #'(lambda (,argsvar) ,@body)))
+
+(defun api-output (data)
+  (unless data (error 'api-response-empty))
+  (let ((format (or (server:get "format") *default-api-format*)))
+    (funcall (or (api-format format)
+                 (error 'api-unknown-format :format format))
+             data)))
+
+(defgeneric api-serialize (object))
+
+;;; Options
+(defvar *api-options* (make-hash-table))
+
+(defun api-option (name)
+  (gethash name *api-options*))
+
+(defun (setf api-option) (option name)
+  (setf (gethash name *api-options*) option))
+
+(defmacro define-api-option (name (namevar argsvar &rest rest) &body body)
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+     (setf (api-option ,(make-keyword name))
+           #'(lambda (,namevar ,argsvar ,@rest)
+               ,@body))))
+
+;;; Pages
 (defvar *api-pages* (make-hash-table :test 'equalp))
 
 (defun api-page (path)
@@ -36,42 +75,6 @@
                 (if val (push val args) (error 'api-argument-missing :argument arg)))))
         finally (apply (handler api-page) (nreverse args))))
 
-(defvar *api-formats* (make-hash-table :test 'equalp))
-(defvar *default-api-format* "lisp")
-
-(defun api-format (name)
-  (gethash name *api-formats*))
-
-(defun (setf api-format) (parse-func name)
-  (setf (gethash name *api-formats*) parse-func))
-
-(defmacro define-api-format (name (argsvar) &body body)
-  `(setf (api-format ,(string name))
-         #'(lambda (,argsvar) ,@body)))
-
-(defun api-output (data)
-  (unless data (error 'api-response-empty))
-  (let ((format (or (server:get "format") *default-api-format*)))
-    (funcall (or (api-format format)
-                 (error 'api-unknown-format :format format))
-             data)))
-
-(defgeneric api-serialize (object))
-
-(defvar *api-options* (make-hash-table))
-
-(defun api-option (name)
-  (gethash name *api-options*))
-
-(defun (setf api-option) (option name)
-  (setf (gethash name *api-options*) option))
-
-(defmacro define-api-option (name (namevar argsvar &rest rest) &body body)
-  `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (setf (api-option ,(make-keyword name))
-           #'(lambda (,namevar ,argsvar ,@rest)
-               ,@body))))
-
 (defvar *api-body*)
 (defmacro define-api (name args options &body body)
   (let ((*api-body* body)
@@ -92,7 +95,7 @@
               :handler #'(lambda ,(extract-lambda-vars args) ,@*api-body*)
               :docstring ,(getf options :documentation))))))
 
-
+;;; Actual page handler
 (define-page api #u"/api/.*" ()
   (let* ((slashpos (position #\/ (path *request*)))
          (subpath (subseq (path *request*) (1+ slashpos)))
