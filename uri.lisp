@@ -44,7 +44,7 @@
  #\# #\U
  #'(lambda (stream char arg)
      (declare (ignore char arg))
-     (parse-uri (read stream))))
+     `(parse-uri ,(read stream))))
 
 (defvar *default-uri-defaults* (parse-uri "/"))
 
