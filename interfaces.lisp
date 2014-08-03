@@ -8,13 +8,9 @@
 
 ;; To be specced
 (define-interface server
-  (defclass request (radiance:request) ())
-  (defclass response (radiance:response) ())
-  (defun start ())
-  (defun stop ())
-  (defun listeners ())
-  (defun file (post-parameter &optional request))
-  (defun serve-file (pathname &optional content-type response)))
+  (defun start (port &optional address))
+  (defun stop (port &optional address))
+  (defun listeners ()))
 
 ;; To be specced
 (define-interface (logger l)
