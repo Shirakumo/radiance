@@ -6,14 +6,13 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defvar *page-options* (make-hash-table))
+(defvar *page-options* (make-hash-table))
 
-  (defun page-option (name)
-    (gethash name *page-options*))
+(defun page-option (name)
+  (gethash name *page-options*))
 
-  (defun (setf page-option) (option name)
-    (setf (gethash name *page-options*) option)))
+(defun (setf page-option) (option name)
+  (setf (gethash name *page-options*) option))
 
 (defmacro define-page-option (name (namevar urivar &rest rest) &body body)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
@@ -36,12 +35,3 @@
                  collect result)
        (define-uri-dispatcher ,name (,uri ,(gensym "REQUEST"))
          ,@*page-body*))))
-
-;; Sets up a default trigger
-(define-page-option with-trigger (name uri &optional (value T))
-  (declare (ignore uri))
-  (assert (symbolp value))
-  (when value
-    (let ((name (if (eql value T) name value)))
-      (push `(trigger ',name) *page-body*)
-      `(define-hook ,name ()))))
