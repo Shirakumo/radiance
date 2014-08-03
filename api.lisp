@@ -22,7 +22,7 @@
 
 (defun api-output (data)
   (unless data (error 'api-response-empty))
-  (let ((format (or (server:get "format") *default-api-format*)))
+  (let ((format (or (get-var "format") *default-api-format*)))
     (funcall (or (api-format format)
                  (error 'api-unknown-format :format format))
              data)))
@@ -66,12 +66,12 @@
              ((eql arg '&optional)
               (setf in-optional T))
              ((and in-optional (listp arg))
-              (let ((val (server:post-or-get (string (first arg)) request)))
+              (let ((val (post/get (string (first arg)) request)))
                 (push (or val (second arg)) args)))
              (in-optional
-              (push (server:post-or-get (string arg) request) args))
+              (push (post/get (string arg) request) args))
              (T
-              (let ((val (server:post-or-get (string arg) request)))
+              (let ((val (post/get (string arg) request)))
                 (if val (push val args) (error 'api-argument-missing :argument arg)))))
         finally (apply (handler api-page) (nreverse args))))
 
