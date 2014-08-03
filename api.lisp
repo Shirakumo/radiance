@@ -49,7 +49,7 @@
   `(setf (api-format ,(string name))
          #'(lambda (,argsvar) ,@body)))
 
-(defun api-convert (data)
+(defun api-output (data)
   (unless data (error 'api-response-empty))
   (let ((format (or (server:get "format") *default-api-format*)))
     (funcall (or (api-format format)
@@ -98,8 +98,8 @@
          (subpath (subseq (path *request*) (1+ slashpos)))
          (api-page (or (api-page subpath) (api-page ""))))
     (handler-case
-        (api-convert (api-call api-page *request*))
+        (api-output (api-call api-page *request*))
       (api-error (err)
-        (api-convert err))
+        (api-output err))
       (error (err)
         ))))
