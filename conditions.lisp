@@ -37,6 +37,6 @@
   (:report (lambda (c s) (format s "The API response was empty.~@[ ~a~]" (message c)))))
 
 (define-condition api-unknown-format (api-error)
-  ((api-format :initarg :format :initform (error "FORMAT required.") :accessor api-format))
+  ((requested-format :initarg :format :initform (error "FORMAT required.") :accessor requested-format))
   (:report (lambda (c s) (format s "The requested format ~s is not known.~@[ ~a~]"
-                                 (api-format c) (message c)))))
+                                 (requested-format c) (message c)))))
