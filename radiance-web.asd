@@ -25,5 +25,6 @@
                (:file "dispatch")
                (:file "request")
                (:file "interfaces")
-               (:file "page"))
+               (:file "page")
+               (:file "init"))
   :depends-on (:cl-ppcre))
