@@ -24,6 +24,7 @@
                (:file "routing")
                (:file "dispatch")
                (:file "request")
+               (:file "continuation")
                (:file "interfaces")
                (:file "toolkit")
                (:file "conditions")
@@ -31,4 +32,6 @@
                (:file "api")
                (:file "defaults")
                (:file "init"))
-  :depends-on (:cl-ppcre))
+  :depends-on (:cl-ppcre
+               :bordeaux-threads
+               :trivial-mimes))

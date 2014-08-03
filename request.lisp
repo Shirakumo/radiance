@@ -62,6 +62,13 @@
 (defun header (name &optional (request/response *request*))
   (gethash name (headers request/response)))
 
+(defun file (name &optional (request *request*))
+  (let ((var (post-var name request)))
+    (cond
+      ((null var) (error "No such post parameter."))
+      ((listp var) var)
+      (T (error "Post parameter is not a file.")))))
+
 (defun (setf cookie) (value name &key domain path expires http-only secure (response *response*))
   (setf (gethash name (cookies response))
         (make-instance 'cookie :name name :value value :domain domain :path path :expires expires :http-only http-only :secure secure)))
@@ -70,8 +77,12 @@
   (setf (gethash name (headers response)) value))
 
 (defun redirect (new-address &optional (code 301) (response *response*))
-  (setf (header "Location" response) new-address)
-  (setf (return-code response) code))
+  (setf (return-code response) code)
+  (setf (header "Location" response) new-address))
+
+(defun serve-file (pathname &optional content-type (response *response*))
+  (setf (content-type response) (or content-type (mimes:mime pathname)))
+  (setf (data response) pathname))
 
 (defun request (request &optional (response (make-instance 'response)))
   (let ((*request* request)
