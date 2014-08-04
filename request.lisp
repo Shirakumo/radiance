@@ -85,11 +85,22 @@
   (setf (data response) pathname))
 
 (defun request (request &optional (response (make-instance 'response)))
-  (let ((*request* request)
-        (*response* response))
-    (let ((result (dispatch request)))
-      (typecase result
-        (response (setf *response* result))
-        (string (setf (data *response*) result))
-        (array (setf (data *response*) result)))
-      *response*)))
+  (handler-bind ((error #'handle-condition))
+    (let ((*request* request)
+          (*response* response))
+      (let ((result (dispatch request)))
+        (typecase result
+          (response (setf *response* result))
+          (string (setf (data *response*) result))
+          ((array (unsigned-byte 8)) (setf (data *response*) result)))
+        (loop until
+              (restart-case
+                  (etypecase (data *response*)
+                    (pathname T) (string T) ((array (unsigned-byte 8)) T)
+                    (null (error 'request-empty :request *request*)))
+                (set-data (data)
+                  :report "Set a new data"
+                  :interactive read-value
+                  (setf (data *response*) data)
+                  NIL)))
+        *response*))))
