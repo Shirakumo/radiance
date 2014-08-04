@@ -56,9 +56,11 @@
 
 (defun make-random-string (&optional (length 16) (chars *random-string-characters*))
   "Generates a random string of alphanumerics."
-  (coerce (loop with charlength = (length chars) 
-                for i below length collect (aref chars (random charlength)))
-          'string))
+  (loop with string = (make-array length :element-type 'character)
+        with charlength = (length chars)
+        for i from 0 below length
+        do (setf (aref string i) (aref chars (random charlength)))
+        finally (return string)))
 
 (defun file-size (pathspec)
   "Retrieves the file size in bytes."
@@ -73,3 +75,6 @@
         (loop for bytes = (read-sequence buffer stream)
               do (write-sequence buffer string :start 0 :end bytes)
               while (= bytes 4096))))))
+
+(defun data-file (pathname &optional (default *data-path*))
+  (merge-pathnames pathname default))
