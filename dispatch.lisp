@@ -8,6 +8,10 @@
 
 (defvar *uri-registry* (make-hash-table :test 'eql))
 (defvar *uri-priority* (make-array 0))
+(defparameter *uri-fallback* #'(lambda (request)
+                                 (if (boundp '*response*)
+                                     (serve-file (static-file "html/error/404.html") "application/xhtml+xml")
+                                     (error 'request-not-found :request request :message "Reached dispatch fallback."))))
 
 (defclass uri-dispatcher (uri)
   ((dispatch-function :initarg :dispatch-function :initform (constantly t) :accessor dispatch-function)))
@@ -23,6 +27,11 @@
   (setf (gethash name *uri-registry*) uri-or-f)
   (rebuild-uri-priority)
   uri-or-f)
+
+(defun remove-uri-dispatcher (name)
+  (remhash name *uri-registry*)
+  (rebuild-uri-priority)
+  name)
 
 (defun make-uri-dispatcher (uri dispatch-function)
   (let ((uri (copy-uri uri)))
@@ -47,4 +56,5 @@
 (defun dispatch (uri-data-object)
   (loop for uri across *uri-priority*
         when (uri-matches uri-data-object uri)
-          do (return (funcall (dispatch-function uri) uri-data-object))))
+          do (return (funcall (dispatch-function uri) uri-data-object))
+        finally (return (funcall *uri-fallback* uri-data-object))))
