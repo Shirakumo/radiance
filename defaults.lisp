@@ -48,3 +48,17 @@
 ;; Api standard format
 (define-api-format lisp (object)
   (write-to-string (api-serialize object) :readably T))
+
+;; Default urls
+(define-page favicon #u"/favicon.ico" ()
+  (serve-file (static-file "img/favicon.ico")))
+
+(define-page robots #u"/robots.txt" ()
+  (serve-file (static-file "txt/robots.txt")))
+
+(define-page static #u"/static/.*" ()
+  (serve-file (static-file (subseq (path *request*)
+                                   (1+ (position #\/ (path *request*)))))))
+
+(define-page welcome #u"/" ()
+  (serve-file (static-file "html/hello.html")))
