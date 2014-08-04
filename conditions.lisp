@@ -6,6 +6,8 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
+(defvar *debugger* NIL)
+
 (define-condition radiance-error (error)
   ((message :initarg :message :initform NIL :accessor message)))
 
@@ -17,8 +19,13 @@
   (:report (lambda (c s) (format s "An error has ocurred while processing the request ~a.~@[ ~a~]"
                                  (current-request c) (message c)))))
 
+(define-condition request-empty (request-error) ()
+  (:report (lambda (c s) (format s "The reply body was NIL on request ~a.~@[ ~a~]"
+                                 (current-request c) (message c)))))
+
 (define-condition api-error (request-error) ()
-  (:report (lambda (c s) (format s "The API call failed.~@[ ~a~]" (message c)))))
+  (:report (lambda (c s) (format s "The API call to ~a failed.~@[ ~a~]"
+                                 (current-request c) (message c)))))
 
 (define-condition api-argument-missing (api-error)
   ((argument :initarg :argument :initform (error "ARGUMENT required.") :accessor argument))
@@ -40,3 +47,9 @@
   ((requested-format :initarg :format :initform (error "FORMAT required.") :accessor requested-format))
   (:report (lambda (c s) (format s "The requested format ~s is not known.~@[ ~a~]"
                                  (requested-format c) (message c)))))
+
+
+(defun handle-condition (condition)
+  (if *debugger*
+      (invoke-debugger condition)
+      (invoke-restart 'set-data (format NIL "Error occurred: ~a" condition))))
