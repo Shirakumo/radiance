@@ -48,7 +48,9 @@
    #:shutdown)
   ;; interfaces.lisp
   (:export
-   #:interface-implementation-not-set)
+   #:interface-implementation-not-set
+   #:find-implementation
+   #:load-implementation)
   ;; toolkit.lisp
   (:export
    #:*config-type*
