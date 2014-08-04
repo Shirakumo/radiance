@@ -11,8 +11,14 @@
   (:report (lambda (c s) (format s "Interface ~s requested but no implementation is configured." (requested c)))))
 
 (defmethod asdf::resolve-dependency-combination ((module module) (combinator (eql :interface)) args)
-  (let* ((interface (interface (first args)))
-         (configured-implementation (config-tree :interfaces (module-name interface))))
+  (find-implementation (first args)))
+
+(defun find-implementation (interface)
+  (let* ((interface (interface interface))
+         (configured-implementation (config-tree :interfaces (make-keyword (module-name interface)))))
     (unless configured-implementation
       (error 'interface-implementation-not-set :requested interface))
-    (asdf:find-system configured-implementation :error-p T)))
+    (asdf:find-system configured-implementation T)))
+
+(defun load-implementation (interface)
+  (asdf:load-system (find-implementation interface)))
