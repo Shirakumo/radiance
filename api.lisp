@@ -11,10 +11,13 @@
 (defvar *default-api-format* "lisp")
 
 (defun api-format (name)
-  (gethash name *api-formats*))
+  (gethash (string name) *api-formats*))
 
 (defun (setf api-format) (parse-func name)
-  (setf (gethash name *api-formats*) parse-func))
+  (setf (gethash (string name) *api-formats*) parse-func))
+
+(defun remove-api-format (name)
+  (remhash (string name) *api-formats*))
 
 (defmacro define-api-format (name (argsvar) &body body)
   `(setf (api-format ,(string name))
@@ -38,6 +41,9 @@
 (defun (setf api-option) (option name)
   (setf (gethash name *api-options*) option))
 
+(defun remove-api-option (name)
+  (remhash name *api-options*))
+
 (defmacro define-api-option (name (namevar argsvar &rest rest) &body body)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (setf (api-option ,(make-keyword name))
@@ -48,10 +54,13 @@
 (defvar *api-pages* (make-hash-table :test 'equalp))
 
 (defun api-page (path)
-  (gethash path *api-pages*))
+  (gethash (string path) *api-pages*))
 
 (defun (setf api-page) (page path)
-  (setf (gethash path *api-pages*) page))
+  (setf (gethash (string path) *api-pages*) page))
+
+(defun remove-api-page (path)
+  (remhash (string path) *api-pages*))
 
 (defclass api-page ()
   ((handler :initarg :handler :initform (error "HANDLER function required.") :accessor handler)
@@ -103,6 +112,4 @@
     (handler-case
         (api-output (api-call api-page *request*))
       (api-error (err)
-        (api-output err))
-      (error (err)
-        ))))
+        (api-output err)))))
