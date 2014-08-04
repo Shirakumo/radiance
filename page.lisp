@@ -14,6 +14,9 @@
 (defun (setf page-option) (option name)
   (setf (gethash name *page-options*) option))
 
+(defun remove-page-otpion (name)
+  (remhash name *page-options*))
+
 (defmacro define-page-option (name (namevar urivar &rest rest) &body body)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (setf (page-option ,(make-keyword name))
