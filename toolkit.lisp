@@ -27,3 +27,9 @@
 
 (defun read-value ()
   (eval (read)))
+
+(defun static-file (pathname)
+  (merge-pathnames pathname (data-file "static/")))
+
+(defun template (pathname)
+  (merge-pathnames pathname (data-file "template/")))
