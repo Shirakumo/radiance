@@ -23,6 +23,10 @@
   (:report (lambda (c s) (format s "The reply body was NIL on request ~a.~@[ ~a~]"
                                  (current-request c) (message c)))))
 
+(define-condition request-not-found (request-error) ()
+  (:report (lambda (c s) (format s "There was nothing that could handle the request ~a.~@[ ~a~]"
+                                 (current-request c) (message c)))))
+
 (define-condition api-error (request-error) ()
   (:report (lambda (c s) (format s "The API call to ~a failed.~@[ ~a~]"
                                  (current-request c) (message c)))))
