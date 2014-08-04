@@ -73,7 +73,7 @@ Creates a new collection in the database. If the implementation supports structu
 }
 Returns the structure definition of the collection in the format described in \inline{CREATE}. If the implementation does not support structure, NIL is returned. \\
 
-\noindent If the collection does not exist, an error of type \symbolref{INEXISTENT-DATABASE-COLLECTION} is signalled.
+\noindent If the collection does not exist, an error of type \symbolref{DATABASE-COLLECTION-NOT-FOUND} is signalled.
 
 \symbolsection{function}{db:drop}
 \extfuncdef{db:drop}{collection}{}{
@@ -81,7 +81,7 @@ Returns the structure definition of the collection in the format described in \i
 }
 Removes the collection completely, including data, structure, indexes and name. \\
 
-\noindent If the collection does not exist, an error of type \symbolref{INEXISTENT-DATABASE-COLLECTION} is signalled.
+\noindent If the collection does not exist, an error of type \symbolref{DATABASE-COLLECTION-NOT-FOUND} is signalled.
 
 \symbolsection{function}{db:empty}
 \extfuncdef{db:empty}{collection}{}{
@@ -89,7 +89,7 @@ Removes the collection completely, including data, structure, indexes and name. 
 }
 Removes all records from the collection. \\
 
-\noindent If the collection does not exist, an error of type \symbolref{INEXISTENT-DATABASE-COLLECTION} is signalled.
+\noindent If the collection does not exist, an error of type \symbolref{DATABASE-COLLECTION-NOT-FOUND} is signalled.
 
 \subsection{Records}
 A collection stores data in the form of records, each record being a map of fields to their values. Each record contains an \symbolref{_id} value that uniquely identifies the record within its collection.
@@ -111,7 +111,7 @@ Selects records with \inline{fields} from \inline{collection} that match the \in
 
 Each record is passed to the function in the form of a hash-map with the field names as keys. If \inline{fields} is NIL, all fields are included. If \inline{sort} is NIL, the order of the records is not specified and may be completely random.\\
 
-\noindent If the collection does not exist, an error of type \symbolref{INEXISTENT-DATABASE-COLLECTION} is signalled. 
+\noindent If the collection does not exist, an error of type \symbolref{DATABASE-COLLECTION-NOT-FOUND} is signalled. 
 
 \symbolsection{function}{db:select}
 \extfuncdef{db:select}{collection query \&key fields skip amount sort}{list}{
@@ -133,7 +133,7 @@ Returns the records as a list of hash-maps. See \inline{iterate}.
 }
 Returns the number of records in the \inline{collection} that match the \inline{query}.\\
 
-\noindent If the collection does not exist, an error of type \symbolref{INEXISTENT-DATABASE-COLLECTION} is signalled. 
+\noindent If the collection does not exist, an error of type \symbolref{DATABASE-COLLECTION-NOT-FOUND} is signalled. 
 
 \symbolsection{function}{db:insert}
 \extfuncdef{db:insert}{collection data}{\symbolref{_id}}{
@@ -142,7 +142,7 @@ Returns the number of records in the \inline{collection} that match the \inline{
 }
 Inserts the \inline{data} as a new record into the \inline{collection}. Returns the value of the \symbolref{_id} field of the newly generated record. \\
 
-\noindent If the \inline{data} contains an \symbolref{_id} field or an inexistent field, an error of type \symbolref{DATABASE-INVALID-FIELD} is signalled. If the collection does not exist, an error of type \symbolref{INEXISTENT-DATABASE-COLLECTION} is signalled. 
+\noindent If the \inline{data} contains an \symbolref{_id} field or an inexistent field, an error of type \symbolref{DATABASE-INVALID-FIELD} is signalled. If the collection does not exist, an error of type \symbolref{DATABASE-COLLECTION-NOT-FOUND} is signalled. 
 
 \symbolsection{function}{db:remove}
 \extfuncdef{db:remove}{collection query \&key skip amount sort}{}{ 
@@ -156,7 +156,7 @@ Inserts the \inline{data} as a new record into the \inline{collection}. Returns 
 }
 Removes all records from the \inline{collection} that match the \inline{query}, sorted by \inline{sort}, skipping the first \inline{skip} and only removing a maximum of \inline{amount} of records. \\
 
-\noindent If the collection does not exist, an error of type \symbolref{INEXISTENT-DATABASE-COLLECTION} is signalled. 
+\noindent If the collection does not exist, an error of type \symbolref{DATABASE-COLLECTION-NOT-FOUND} is signalled. 
 
 \symbolsection{function}{db:update}
 \extfuncdef{db:update}{collection query data \&key skip amount sort}{}{
@@ -171,7 +171,7 @@ Removes all records from the \inline{collection} that match the \inline{query}, 
 }
 Changes all records from the \inline{collection} that match the \inline{query}, sorted by \inline{sort}, skipping the first \inline{skip} and only changing a maximum of \inline{amount} of records by setting all fields contained in \inline{data} to the values in \inline{data}. \\
 
-\noindent If the \inline{data} contains an \inline{_id} field or an inexistent field, an error of type \symbolref{DATABASE-INVALID-FIELD} is signalled. If the collection does not exist, an error of type \symbolref{INEXISTENT-DATABASE-COLLECTION} is signalled. 
+\noindent If the \inline{data} contains an \inline{_id} field or an inexistent field, an error of type \symbolref{DATABASE-INVALID-FIELD} is signalled. If the collection does not exist, an error of type \symbolref{DATABASE-COLLECTION-NOT-FOUND} is signalled. 
 
 \subsection{Query Construct}
 The database interface exposes a query macro that is required to properly translate expressions into database queries. A database operation only ever affects those records that match the given query (the query evaluates to true). Instead of a query, the \inline{:ALL} keyword may be used if all records should be affected.
