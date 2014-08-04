@@ -24,3 +24,6 @@
 (defun extract-lambda-vars (lambda-list)
   "Extracts the symbols that name the variables in the lambda-list."
   (remove-if #'lambda-keyword-p (flatten-lambda-list (remove-aux-part lambda-list))))
+
+(defun read-value ()
+  (eval (read)))
