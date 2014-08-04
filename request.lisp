@@ -81,26 +81,31 @@
   (setf (header "Location" response) new-address))
 
 (defun serve-file (pathname &optional content-type (response *response*))
-  (setf (content-type response) (or content-type (mimes:mime pathname)))
+  (setf (content-type response) (or content-type (mimes:mime-lookup pathname)))
   (setf (data response) pathname))
 
 (defun request (request &optional (response (make-instance 'response)))
   (handler-bind ((error #'handle-condition))
     (let ((*request* request)
           (*response* response))
-      (let ((result (dispatch request)))
-        (typecase result
-          (response (setf *response* result))
-          (string (setf (data *response*) result))
-          ((array (unsigned-byte 8)) (setf (data *response*) result)))
-        (loop until
-              (restart-case
-                  (etypecase (data *response*)
-                    (pathname T) (string T) ((array (unsigned-byte 8)) T)
-                    (null (error 'request-empty :request *request*)))
-                (set-data (data)
-                  :report "Set a new data"
-                  :interactive read-value
-                  (setf (data *response*) data)
-                  NIL)))
-        *response*))))
+      (restart-case
+          (let ((result (dispatch request)))
+            (typecase result
+              (response (setf *response* result))
+              (string (setf (data *response*) result))
+              ((array (unsigned-byte 8)) (setf (data *response*) result))))
+        (set-data (data)
+          :report "Set a new data"
+          :interactive read-value
+          (setf (data *response*) data)))
+      (loop until
+            (restart-case
+                (etypecase (data *response*)
+                  (pathname T) (string T) ((array (unsigned-byte 8)) T)
+                  (null (error 'request-empty :request *request*)))
+              (set-data (data)
+                :report "Set a new data"
+                :interactive read-value
+                (setf (data *response*) data)
+                NIL)))
+      *response*)))
