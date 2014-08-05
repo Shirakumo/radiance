@@ -7,6 +7,35 @@
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
 ;; To be specced
+(define-interface session
+  (defun start ())
+  (defun get (session-id))
+  (defun id (session))
+  (defun field (session field))
+  (defun (setf field) (session field))
+  (defun end (session))
+  (defun active-p (session)))
+
+(define-interface user
+  (defun get (username))
+  (defun field (user field))
+  (defun (setf field) (user field))
+  (defun save (&key user))
+  (defun saved-p (&key user))
+  (defun check (branch &key user))
+  (defun grant (branch &key user))
+  (defun prohibit (branch &key user))
+  (defun action (action &key user public))
+  (defun actions (n &key user (public T) oldest-first)))
+
+(define-interface profile
+  (defun avatar (user size))
+  (defun name (user))
+  (defun page (user &optional (page-type :profile)))
+  (defmacro define-profile-panel (name options &body body))
+  (defmacro define-settings-panel (name options &body body)))
+
+;; To be specced
 (define-interface server
   (defun start (port &optional address))
   (defun stop (port &optional address))
