@@ -84,10 +84,12 @@
   (setf (content-type response) (or content-type (mimes:mime-lookup pathname)))
   (setf (data response) pathname))
 
+(define-hook request (request response))
 (defun request (request &optional (response (make-instance 'response)))
   (handler-bind ((error #'handle-condition))
     (let ((*request* request)
           (*response* response))
+      (trigger 'request request response)
       (restart-case
           (let ((result (dispatch request)))
             (typecase result

@@ -16,6 +16,7 @@
   (defun end (session))
   (defun active-p (session)))
 
+;; To be specced
 (define-interface user
   (defun get (username))
   (defun field (user field))
@@ -28,6 +29,7 @@
   (defun action (action &key user public))
   (defun actions (n &key user (public T) oldest-first)))
 
+;; To be specced
 (define-interface profile
   (defun avatar (user size))
   (defun name (user))
