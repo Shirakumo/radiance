@@ -67,4 +67,5 @@
    #:get-unix-time
    #:make-random-string
    #:file-size
-   #:read-data-file))
+   #:read-data-file
+   #:data-file))
