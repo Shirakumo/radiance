@@ -8,7 +8,22 @@
 (define-module-extension (radiance radiance-web)
   (:nicknames #:org.tymoonnext.radiance.lib.radiance.web)
   ;; api.lisp
-  (:export)
+  (:export
+   #:*default-api-format*
+   #:api-format
+   #:remove-api-format
+   #:define-api-format
+   #:api-serialize
+   
+   #:api-option
+   #:remove-api-option
+   #:define-api-option
+   
+   #:api-page
+   #:remove-api-page
+   #:api-call
+   #:*api-body*
+   #:define-api)
   ;; conditions.lisp
   (:export
    #:radiance-error
@@ -17,19 +32,29 @@
    #:request-error
    #:current-request
    #:request-empty
+   #:request-not-found
    #:api-error
    #:api-argument-missing
+   #:argument
    #:api-argument-invalid
    #:api-call-not-found
    #:api-response-empty
    #:api-unknown-format
+   #:requested-format
 
    #:handle-condition)
   ;; continuation.lisp
   (:export)
+  ;; default.lisp
+  (:export
+   #:favicon
+   #:robots
+   #:static
+   #:welcome)
   ;; dispatch.lisp
   (:export
    #:uri-dispatcher
+   #:remove-uri-dispatcher
    #:dispatch-function
    
    #:uri-dispatcher
@@ -37,14 +62,27 @@
    #:define-uri-dispatcher
    #:dispatch)
   ;; init.lisp
-  (:export)
+  (:export
+   #:db-ready
+   #:db-shutdown
+   #:server-ready
+   #:server-shutdown
+   #:startup-done
+   #:shutdown-done)
   ;; page.lisp
-  (:export)
+  (:export
+   #:page-option
+   #:remove-page-option
+   #:define-page-option
+   #:*page-body*
+   #:define-page)
   ;; request.lisp
   (:export
    #:*request*
    #:*response*
+   #:*session*
    #:*default-external-format*
+   #:*default-content-type*
    
    #:request
    #:http-method
@@ -64,6 +102,7 @@
    #:headers
    #:cookies
 
+   #:cookie
    #:name
    #:value
    #:domain
@@ -94,7 +133,9 @@
    #:define-route
    #:resolve-route)
   ;; toolkit.lisp
-  (:export)
+  (:export
+   #:static-file
+   #:template)
   ;; uri.lisp
   (:export
    #:uri
