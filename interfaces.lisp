@@ -8,19 +8,24 @@
 
 ;; To be specced
 (define-interface session
+  (defvar *default-timeout* (* 60 60 24))
+  (defclass session () ())
   (defun start ())
   (defun get (session-id))
   (defun id (session))
   (defun field (session field))
-  (defun (setf field) (session field))
+  (defun (setf field) (value session field))
+  (defun timeout (session))
+  (defun (setf timeout) (seconds session))
   (defun end (session))
   (defun active-p (session)))
 
 ;; To be specced
 (define-interface user
+  (defclass user () ())
   (defun get (username))
   (defun field (user field))
-  (defun (setf field) (user field))
+  (defun (setf field) (value user field))
   (defun save (&key user))
   (defun saved-p (&key user))
   (defun check (branch &key user))
