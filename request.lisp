@@ -8,6 +8,7 @@
 
 (defvar *request*)
 (defvar *response*)
+(defvar *session*)
 (defvar *default-external-format* :UTF-8)
 (defvar *default-content-type* "text/plain")
 
@@ -88,7 +89,8 @@
 (defun request (request &optional (response (make-instance 'response)))
   (handler-bind ((error #'handle-condition))
     (let ((*request* request)
-          (*response* response))
+          (*response* response)
+          (*session* NIL))
       (trigger 'request request response)
       (restart-case
           (let ((result (dispatch request)))
