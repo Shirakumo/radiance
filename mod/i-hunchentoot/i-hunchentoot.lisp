@@ -12,6 +12,17 @@
 
 (defvar *listeners* (make-hash-table :test 'equalp))
 
+(define-trigger server-start ()
+  (loop for config in (config-tree :hunchentoot :instances)
+        do (server:start (gethash :port config) (gethash :address config))))
+
+(define-trigger server-stop ()
+  (loop for name being the hash-keys of *listeners*
+        do (let* ((pos (position #\: name))
+                  (port (parse-integer (subseq name (1+ pos))))
+                  (address (subseq name 0 pos)))
+             (server:stop port (unless (string= address "NIL") address)))))
+
 (defun server:start (port &optional address)
   (let ((listener (make-instance 'hunchentoot:easy-acceptor
                                  :port port :address address
@@ -20,7 +31,8 @@
         (name (format NIL "~a:~a" address port)))
     (l:info :server "Starting listener ~a" name)
     (setf (gethash name *listeners*) listener)
-    (hunchentoot:start listener)))
+    (hunchentoot:start listener)
+    (trigger 'server:started port address)))
 
 (defun server:stop (port &optional address)
   (let* ((name (format NIL "~a:~a" address port))
@@ -28,7 +40,9 @@
     (cond
       (listener
        (l:info :server "Stopping listener ~a" name)
-       (hunchentoot:stop listener))
+       (hunchentoot:stop listener)
+       (remhash name *listeners*)
+       (trigger 'server:stopped port address))
       (T
        (error "No such listener found.")))))
 
