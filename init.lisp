@@ -6,12 +6,18 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
+(define-hook server-start ())
 (define-hook server-ready ())
+(define-hook server-stop ())
 (define-hook server-shutdown ())
 (define-hook startup-done ())
 (define-hook shutdown-done ())
 
+(defvar *running* NIL)
+
 (define-trigger startup ()
+  (when *running*
+    (error "Radiance is already running!"))
   (unless (implementation 'logger)
     (load-implementation 'logger))
   (l:info :radiance "Starting up.")
@@ -20,7 +26,8 @@
     (load-implementation 'server))
 
   (l:info :radiance "Starting server.")
-  ;; (server:start)
+  (trigger 'server-start)
+  (setf *running* T)
   (trigger 'server-ready)
 
   (trigger 'startup-done)
@@ -28,8 +35,11 @@
   T)
 
 (define-trigger shutdown ()
+  (unless *running*
+    (error "Radiance is not running!"))
   (l:info :radiance "Stopping server.")
-  ;; (server:stop)
+  (trigger 'server-stop)
+  (setf *running* NIL)
   (trigger 'server-shutdown)
 
   (trigger 'shutdown-done)
