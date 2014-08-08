@@ -63,9 +63,9 @@
    #:dispatch)
   ;; init.lisp
   (:export
-   #:db-ready
-   #:db-shutdown
+   #:server-start
    #:server-ready
+   #:server-stop
    #:server-shutdown
    #:startup-done
    #:shutdown-done)
