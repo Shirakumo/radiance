@@ -18,6 +18,7 @@
    (post-data :initarg :post-data :initform (make-hash-table :test 'equalp) :accessor post-data)
    (get-data :initarg :get-data :initform (make-hash-table :test 'equalp) :accessor get-data)
    (cookies :initarg :cookies :initform (make-hash-table :test 'equalp) :accessor cookies)
+   (domain :initarg :domain :initform "localhost" :accessor domain)
    (user-agent :initarg :user-agent :initform "unknown" :accessor user-agent)
    (referer :initarg :referer :initform "" :accessor referer)
    (remote :initarg :remote :initform "unknown" :accessor remote)))
@@ -70,9 +71,9 @@
       ((listp var) var)
       (T (error "Post parameter is not a file.")))))
 
-(defun (setf cookie) (value name &key domain path expires http-only secure (response *response*))
+(defun (setf cookie) (value name &key domain path timeout http-only secure (response *response*))
   (setf (gethash name (cookies response))
-        (make-instance 'cookie :name name :value value :domain domain :path path :expires expires :http-only http-only :secure secure)))
+        (make-instance 'cookie :name name :value value :domain domain :path path :expires timeout :http-only http-only :secure secure)))
 
 (defun (setf header) (value name &optional (response *response*))
   (setf (gethash name (headers response)) value))
