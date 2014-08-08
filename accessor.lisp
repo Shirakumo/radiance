@@ -45,15 +45,3 @@
 (defmethod field ((model asdf:component) field)
   (let ((field (find-symbol (string-upcase field) :ASDF)))
     (if field (slot-value model field))))
-
-(define-component-expander (defield deffield field df) (interface class &optional documentation)
-  (let ((class (or (find-symbol (string class) interface)
-                   (intern (string class) interface))))
-    `(progn
-       (defmethod field ((object ,class) field)
-         ,@(when documentation (list documentation))
-         (declare (ignore object field))
-         (error ,(format NIL "SLOT accessor of ~s is not implemented!" class)))
-       (defmethod (setf field) (value (object ,class) field)
-         (declare (ignore value object field))
-         (error ,(format NIL "(SETF SLOT) accessor of ~s is not implemented!" class))))))

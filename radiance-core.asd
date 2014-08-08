@@ -23,6 +23,7 @@
                (:file "toolkit")
                (:file "accessor")
                (:file "interfaces")
+               (:file "interface-components")
                (:file "init"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
