@@ -12,9 +12,16 @@
 
 (defvar *listeners* (make-hash-table :test 'equalp))
 
+(defun whenthen (var func)
+  (when var (funcall func var)))
+
 (define-trigger server-start ()
   (loop for config in (config-tree :hunchentoot :instances)
-        do (server:start (gethash :port config) (gethash :address config))))
+        do (server:start (gethash :port config)
+                         :address (gethash :address config)
+                         :ssl-key (whenthen (gethash :ssl-key config) #'data-file)
+                         :ssl-cert (whenthen (gethash :ssl-cert config) #'data-file)
+                         :ssl-pass (gethash :ssl-pass config))))
 
 (define-trigger server-stop ()
   (loop for name being the hash-keys of *listeners*
@@ -23,11 +30,17 @@
                   (address (subseq name 0 pos)))
              (server:stop port (unless (string= address "NIL") address)))))
 
-(defun server:start (port &optional address)
-  (let ((listener (make-instance 'hunchentoot:easy-acceptor
-                                 :port port :address address
-                                 :access-log-destination NIL
-                                 :message-log-destination NIL))
+(defun mklist (port address ssl-cert ssl-key ssl-pass)
+  (let ((args `(:port ,port :address ,address
+                :access-log-destination NIL
+                :message-log-destination NIL)))
+    (if (and ssl-cert ssl-key)
+        (apply #'make-instance 'hunchentoot:ssl-acceptor
+               :ssl-certificate-file ssl-cert :ssl-privatekey-file ssl-key :ssl-privatekey-password ssl-pass args)
+        (apply #'make-instance 'hunchentoot:easy-acceptor args))))
+
+(defun server:start (port &key address ssl-cert ssl-key ssl-pass)
+  (let ((listener (mklist port address ssl-cert ssl-key ssl-pass))
         (name (format NIL "~a:~a" address port)))
     (l:info :server "Starting listener ~a" name)
     (setf (gethash name *listeners*) listener)
