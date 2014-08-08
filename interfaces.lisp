@@ -46,7 +46,7 @@
 (define-interface server
   (define-hook started (port &optional address))
   (define-hook stopped (port &optional address))
-  (defun start (port &optional address))
+  (defun start (port &key address ssl-cert ssl-key ssl-pass))
   (defun stop (port &optional address))
   (defun listeners ()))
 
