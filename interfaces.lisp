@@ -44,6 +44,8 @@
 
 ;; To be specced
 (define-interface server
+  (define-hook started (port &optional address))
+  (define-hook stopped (port &optional address))
   (defun start (port &optional address))
   (defun stop (port &optional address))
   (defun listeners ()))
