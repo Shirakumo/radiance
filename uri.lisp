@@ -18,7 +18,8 @@
 
 (defmethod print-object ((uri uri) stream)
   (format stream "#U\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
-          (reverse (domains uri)) (port uri) (path uri)))
+          (reverse (domains uri)) (port uri) (path uri))
+  uri)
 
 (defmethod (setf path) (val (uri uri))
   (when (matcher uri)

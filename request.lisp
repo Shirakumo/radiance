@@ -23,6 +23,11 @@
    (referer :initarg :referer :initform "" :accessor referer)
    (remote :initarg :remote :initform "unknown" :accessor remote)))
 
+(defmethod print-object ((request request) stream)
+  (print-unreadable-object (request stream :type T)
+    (format stream "~a ~A" (http-method request) (uri-to-string request :print-request-domain T :print-port t)))
+  request)
+
 (defclass response ()
   ((data :initarg :data :initform NIL :accessor data)
    (return-code :initarg :return-code :initform 200 :accessor return-code)
@@ -32,7 +37,8 @@
    (cookies :initarg :cookies :initform (make-hash-table :test 'equalp) :accessor cookies)))
 
 (defmethod print-object ((response response) stream)
-  (format stream "~s" (data response)))
+  (format stream "~s" (data response))
+  response)
 
 (defclass cookie ()
   ((name :initarg :name :initform (error "NAME required.") :accessor name)

@@ -48,7 +48,8 @@
 
 (defmethod print-object ((route route) stream)
   (print-unreadable-object (route stream :type T)
-    (format stream "(~a ~a ~a)" (domains route) (port route) (path route))))
+    (format stream "(~a ~a ~a)" (domains route) (port route) (path route)))
+  route)
 
 (defmacro %setf-wrapper (slot)
   `(defmethod (setf ,slot) (val (route route))
