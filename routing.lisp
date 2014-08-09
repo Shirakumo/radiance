@@ -37,9 +37,9 @@
 (defvar *routes* (make-hash-table :test 'eql))
 
 (defclass route ()
-  ((domains :initarg :domains :accessor domains)
-   (port :initarg :port :accessor port)
-   (path :initarg :path :accessor path)
+  ((domains :initarg :domains :initform '* :accessor domains)
+   (port :initarg :port :initform '* :accessor port)
+   (path :initarg :path :initform '* :accessor path)
    (matcher :initarg :matcher :accessor matcher)
    (transformer :initarg :transformer :initform (error "TRANSFORMER required.") :accessor transformer)))
 
