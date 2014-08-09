@@ -9,4 +9,4 @@
   :defsystem-depends-on (:radiance)
   :class "radiance:module"
   :components ((:file "i-hunchentoot"))
-  :depends-on (:hunchentoot))
+  :depends-on (:hunchentoot :cl-ppcre))

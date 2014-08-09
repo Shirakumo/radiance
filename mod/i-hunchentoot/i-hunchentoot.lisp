@@ -11,9 +11,25 @@
 (in-package #:i-hunchentoot)
 
 (defvar *listeners* (make-hash-table :test 'equalp))
+(defvar *url-rewriters* (make-hash-table :test 'equalp))
 
 (defun whenthen (var func)
   (when var (funcall func var)))
+
+(defun compile-url-rewriter (url)
+  (let* ((domains (nreverse (cl-ppcre:split "\\." url)))
+         (len (length domains)))
+    #'(lambda (uri)
+        (and (loop for domain in domains
+                   for compare in (domains uri)
+                   always (string-equal domain compare))
+             (loop repeat len do (pop (domains uri))
+                   finally (return T))))))
+
+(define-trigger startup ()
+  (loop for domain in (config-tree :hunchentoot :domains)
+        do (setf (gethash domain *url-rewriters*)
+                 (compile-url-rewriter domain))))
 
 (define-trigger server-start ()
   (loop for config in (config-tree :hunchentoot :instances)
@@ -79,6 +95,10 @@
      :user-agent (hunchentoot:user-agent ht-request)
      :referer (hunchentoot:referer ht-request)
      :remote (hunchentoot:remote-addr ht-request))
+    (loop for domain being the hash-keys of *url-rewriters*
+          for rewriter being the hash-values of *url-rewriters*
+          when (funcall rewriter request)
+            do (return (setf (domain request) domain)))
     (populate-table-from-alist (headers request) (hunchentoot:headers-in ht-request))
     (populate-table-from-alist (post-data request) (hunchentoot:post-parameters ht-request))
     (populate-table-from-alist (get-data request) (hunchentoot:get-parameters ht-request))
