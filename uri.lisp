@@ -18,7 +18,7 @@
 
 (defmethod print-object ((uri uri) stream)
   (format stream "#U\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
-          (domains uri) (port uri) (path uri)))
+          (reverse (domains uri)) (port uri) (path uri)))
 
 (defmethod (setf path) (val (uri uri))
   (when (matcher uri)
@@ -37,7 +37,7 @@
 (defvar *uri-regex* (cl-ppcre:create-scanner "^(([a-z0-9\\-]+\\.)*[a-z0-9\\-]+)?(:(\\d{1,5}))?/(.*)" :case-insensitive-mode T))
 (defun parse-uri (uri-string)
   (or (cl-ppcre:register-groups-bind (domains NIL NIL port path) (*uri-regex* uri-string)
-        (make-uri :domains (cl-ppcre:split "\\." domains) :port (when port (parse-integer port)) :path path))
+        (make-uri :domains (nreverse (cl-ppcre:split "\\." domains)) :port (when port (parse-integer port)) :path path))
       (error "Failed to parse URI.")))
 
 (set-dispatch-macro-character
@@ -45,8 +45,6 @@
  #'(lambda (stream char arg)
      (declare (ignore char arg))
      `(parse-uri ,(read stream))))
-
-(defvar *default-uri-defaults* (parse-uri "/"))
 
 (defun uri< (a b)
   (or (and (not (port a)) (port b))
@@ -66,13 +64,14 @@
              for b in (domains b)
              always (string-equal a b))))
 
+(defvar *default-uri-defaults* (parse-uri "/"))
 (defun uri-matches (uri pattern-uri)
   (and (or (not (port pattern-uri))
            (not (port uri))
            (= (port uri) (port pattern-uri)))
        (<= (length (domains pattern-uri)) (length (domains uri)))
-       (loop for a in (reverse (domains uri))
-             for b in (reverse (domains pattern-uri))
+       (loop for a in (domains uri)
+             for b in (domains pattern-uri)
              always (string-equal a b))
        (cl-ppcre:scan (matcher pattern-uri) (or (path uri) ""))))
 
@@ -82,3 +81,8 @@
    :port (or (port uri) (port defaults))
    :path (format NIL "~@[~a/~]~@[~a~]"
                  (path defaults) (path uri))))
+
+(defun uri-to-string (uri &key print-port print-request-domain)
+  (format NIL "~{~a~^.~}~:[~*~;~a~]~:[~*~;:~a~]/~a"
+          (domains uri) (and print-request-domain (typep uri 'request)) (domain uri)
+          (and print-port (port uri)) (port uri) (path uri)))
