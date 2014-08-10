@@ -26,12 +26,10 @@
              (loop repeat len do (pop (domains uri))
                    finally (return T))))))
 
-(define-trigger startup ()
+(define-trigger server-start ()
   (loop for domain in (config-tree :hunchentoot :domains)
         do (setf (gethash domain *url-rewriters*)
-                 (compile-url-rewriter domain))))
-
-(define-trigger server-start ()
+                 (compile-url-rewriter domain)))
   (loop for config in (config-tree :hunchentoot :instances)
         do (server:start (gethash :port config)
                          :address (gethash :address config)
