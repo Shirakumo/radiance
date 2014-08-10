@@ -8,7 +8,7 @@
 
 ;; To be specced
 (define-interface session
-  (defvar *default-timeout* (* 60 60 24))
+  (defvar *default-timeout* (* 60 60 24 365))
   (defclass session () ())
   (defun start ())
   (defun get (session-id))
