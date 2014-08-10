@@ -51,7 +51,7 @@
 
 (defmethod print-object ((c cookie) stream)
   (print-unreadable-object (c stream :type T)
-    (format stream "~a=~s ~@[~a~]~@[/~a~] (~:[FOREVER~;~:*~a~])~:[~; HTTP-ONLY~]~:[~; SECURE~]"
+    (format stream "~a=~s ~@[~a~]~@[~a~] (~:[SESSION~;~:*~a~])~:[~; HTTP-ONLY~]~:[~; SECURE~]"
             (name c) (value c) (domain c) (path c) (expires c) (http-only c) (secure c))))
 
 (defun cookie (name &optional (request/response *request*))
