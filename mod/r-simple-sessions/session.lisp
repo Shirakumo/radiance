@@ -22,17 +22,16 @@
 (defmethod print-object ((session session) stream)
   (print-unreadable-object (session stream :type T)
     (format stream "~a " (id session))
-    (local-time:format-timestring stream (timeout session) *session-timeout-format*)))
+    (local-time:format-timestring stream (local-time:universal-to-timestamp (timeout session)) :format *session-timeout-format*)))
 
 (defun make-cookie-value (session)
-  (cryptos:encrypt (format NIL "~a-~a" (id session) (make-random-string (random 8))) *session-key*))
+  (cryptos:encrypt (format NIL "~a-~a" (id session) (make-random-string (+ 4 (random 9)))) *session-key*))
 
 (defmethod initialize-instance :after ((session session) &key)
   (l:debug :session "Starting session ~a" session)
   (setf (gethash (id session) *session-table*) session)
-  (when (boundp *response*)
-    (setf (cookie "radiance-session" :domain "" :path "/" :timeout session:*default-timeout* :http-only T)
-          ;; Note: Add support for the general domain??
+  (when (and (boundp '*request*) (boundp '*response*))
+    (setf (cookie "radiance-session" :domain (domain *request*) :path "/" :timeout (timeout session) :http-only T)
           ;; Note: Add support for the secure flag through https options in the main framework
           (make-cookie-value session))))
 
@@ -40,7 +39,10 @@
   (ignore-errors
    (let ((hash (cryptos:decrypt hash *session-key*)))
      (when (< 36 (length hash))
-       (session:get (id (subseq hash 0 36)))))))
+       (let ((session (session:get (subseq hash 0 36))))
+         (when session
+           (l:debug :session "Resuming session ~a" session)
+           session))))))
 
 (defun session:start ()
   (let ((cookie (cookie "radiance-session")))
@@ -74,7 +76,7 @@
   session)
 
 (defun session:active-p (session)
-  (and (< (timeout session) (get-universal-time))
+  (and (< (get-universal-time) (timeout session))
        session))
 
 (define-trigger request ()
