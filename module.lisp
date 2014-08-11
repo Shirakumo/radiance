@@ -28,6 +28,7 @@
   (:export
    #:radiance-error
    #:message
+   #:radiance-warning
    #:internal-error
    #:request-error
    #:current-request
@@ -41,6 +42,18 @@
    #:api-response-empty
    #:api-unknown-format
    #:requested-format
+   #:database-error
+   #:database-warning
+   #:database-connection-failed
+   #:database
+   #:database-connection-already-open
+   #:database-invalid-collection
+   #:collection
+   #:database-collection-already-exists
+   #:database-invalid-field
+   #:fielddef
+   #:data-model-not-inserted-yet
+   #:model
 
    #:handle-condition)
   ;; continuation.lisp

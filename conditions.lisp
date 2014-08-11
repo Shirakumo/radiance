@@ -11,6 +11,9 @@
 (define-condition radiance-error (error)
   ((message :initarg :message :initform NIL :accessor message)))
 
+(define-condition radiance-warning (warning)
+  ((message :initarg :message :initform NIL :accessor message)))
+
 (define-condition internal-error (radiance-error) ()
   (:report (lambda (c s) (format s "An internal error has ocurred.~@[ ~a~]" (message c)))))
 
@@ -52,6 +55,39 @@
   (:report (lambda (c s) (format s "The requested format ~s is not known.~@[ ~a~]"
                                  (requested-format c) (message c)))))
 
+(define-condition database-error (radiance-error) ())
+
+(define-condition database-warning (radiance-warning) ())
+
+(define-condition database-connection-failed (database-error)
+  ((database :initarg :database :initform (error "DATABASE required.") :accessor database))
+  (:report (lambda (c s) (format s "Failed to connect to database ~a.~@[ ~a~]"
+                                 (database c) (message c)))))
+
+(define-condition database-connection-already-open (database-warning)
+  ((database :initarg :database :initform (error "DATABASE required.") :accessor database))
+  (:report (lambda (c s) (format s "Connection to database ~a already open.~@[ ~a~]"
+                                 (database c) (message c)))))
+
+(define-condition database-invalid-collection (database-error)
+  ((collection :initarg :collection :initform (error "COLLECTION required.") :accessor collection))
+  (:report (lambda (c s) (format s "No such collection ~s.~@[ ~a~]"
+                                 (collection c) (message c)))))
+
+(define-condition database-collection-already-exists (database-error)
+  ((collection :initarg :collection :initform (error "COLLECTION required.") :accessor collection))
+  (:report (lambda (c s) (format s "The collection ~s already exists.~@[ ~a~]"
+                                 (collection c) (message c)))))
+
+(define-condition database-invalid-field (database-error)
+  ((fielddef :initarg :fielddef :initform (error "FIELD required.") :accessor fielddef))
+  (:report (lambda (c s) (format s "The field declaration ~s is invalid.~@[ ~a~]"
+                                 (fielddef c) (message c)))))
+
+(define-condition data-model-not-inserted-yet (database-error)
+  ((model :initarg :model :initform (error "MODEL required.") :accessor model))
+  (:report (lambda (c s) (format s "The model ~s has not been inserted yet.~@[ ~a~]"
+                                 (model c) (message c)))))
 
 (defun handle-condition (condition)
   (if *debugger*
