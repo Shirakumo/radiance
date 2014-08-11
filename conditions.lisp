@@ -89,6 +89,13 @@
   (:report (lambda (c s) (format s "The model ~s has not been inserted yet.~@[ ~a~]"
                                  (model c) (message c)))))
 
+(define-condition user-error (radiance-error)
+  ((user :initarg :user :initform (error "user required.") :accessor user)))
+
+(define-condition user-not-found (user-error) ()
+  (:report (lambda (c s) (format s "The user ~s could not been found.~@[ ~a~]"
+                                 (user c) (message c)))))
+
 (defun handle-condition (condition)
   (if *debugger*
       (invoke-debugger condition)

@@ -54,6 +54,9 @@
    #:fielddef
    #:data-model-not-inserted-yet
    #:model
+   #:user-error
+   #:user
+   #:user-not-found
 
    #:handle-condition)
   ;; continuation.lisp
