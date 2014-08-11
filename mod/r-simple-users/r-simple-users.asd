@@ -10,4 +10,6 @@
   :class "radiance:module"
   :module-name "SIMPLE-USERS"
   :components ((:file "users"))
-  :depends-on ((:interface :data-model)))
+  :depends-on ((:interface :database)
+               (:interface :data-model)
+               :cl-ppcre))
