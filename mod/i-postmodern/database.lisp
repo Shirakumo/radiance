@@ -32,13 +32,15 @@
         (l:info :database "Connecting ~a ~a~:[~;:*~]@~a:~a/~a"
                 database-name user pass host port db)
         (setf *current-con* (postmodern:connect db user pass host :port port)
-              *current-db* database-name)))))
+              *current-db* database-name)
+        (trigger 'db:connected)))))
 
 (defun db:disconnect ()
   (l:info :database "Disconnecting ~a" *current-db*)
   (postmodern:disconnect *current-con*)
   (setf *current-con* NIL
-        *current-db* NIL))
+        *current-db* NIL)
+  (trigger 'db:disconnected))
 
 (defun db:connected-p ()
   (not (null *current-con*)))
