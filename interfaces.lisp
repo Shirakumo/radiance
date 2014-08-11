@@ -23,16 +23,20 @@
 ;; To be specced
 (define-interface user
   (defclass user () ())
-  (defun get (username))
+  (defun get (username &key (if-does-not-exist NIL)))
   (defun field (user field))
   (defun (setf field) (value user field))
-  (defun save (&key user))
-  (defun saved-p (&key user))
-  (defun check (branch &key user))
-  (defun grant (branch &key user))
-  (defun prohibit (branch &key user))
-  (defun action (action &key user public))
-  (defun actions (n &key user (public T) oldest-first)))
+  (defun save (user))
+  (defun saved-p (user))
+  (defun remove (user))
+  (defun check (user branch))
+  (defun grant (user branch))
+  (defun prohibit (user branch))
+  (defun action (user action public))
+  (defun actions (user n &key (public T) oldest-first))
+  (define-hook remove (username))
+  (define-hook action (user action public))
+  (define-hook check (user branch)))
 
 ;; To be specced
 (define-interface profile
@@ -44,11 +48,11 @@
 
 ;; To be specced
 (define-interface server
-  (define-hook started (port &optional address))
-  (define-hook stopped (port &optional address))
   (defun start (port &key address ssl-cert ssl-key ssl-pass))
   (defun stop (port &optional address))
-  (defun listeners ()))
+  (defun listeners ())
+  (define-hook started (port &optional address))
+  (define-hook stopped (port &optional address)))
 
 ;; To be specced
 (define-interface (logger l)
@@ -77,7 +81,9 @@
   (defun insert (collection data))
   (defun remove (collection query &key (skip 0) (amount 0) sort))
   (defun update (collection query data &key skip amount sort))
-  (defmacro query (query-form)))
+  (defmacro query (query-form))
+  (define-hook connected ())
+  (define-hook disconnected ()))
 
 ;; As per spec
 (define-interface (data-model dm)
