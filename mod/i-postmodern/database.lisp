@@ -55,11 +55,11 @@
     (unless structure (err "Structure cannot be empty."))
     (let ((query (format NIL "CREATE TABLE \"~a\" (\"_id\" INTEGER NOT NULL DEFAULT nextval('~:*~a-id-seq'), ~{~a~^, ~});"
                          (string-downcase collection) (mapcar #'compile-field structure))))
-      (when (postmodern:table-exists-p (string-downcase collection))
-        (ecase if-exists
-          (:ignore (return-from db:create NIL))
-          (:error (error 'database-collection-already-exists :collection collection))))
       (with-con
+        (when (postmodern:table-exists-p (string-downcase collection))
+          (ecase if-exists
+            (:ignore (return-from db:create NIL))
+            (:error (error 'database-collection-already-exists :collection collection))))
         (postmodern:query (format NIL "CREATE SEQUENCE \"~a-id-seq\";" (string-downcase collection)))
         (postmodern:query query)
         (postmodern:query (format NIL "CREATE INDEX ON \"~a\" (\"_id\")" (string-downcase collection)))
@@ -79,7 +79,7 @@
         (ecase type
           (:INTEGER
            (format NIL "\"~a\" ~a" (string-downcase name)
-                   (ecase arg ((1 2) "SMALLINT") ((3 4) "INTEGER") ((5 6 7 8) "BIGINT"))))
+                   (ecase arg ((1 2) "SMALLINT") ((3 4) "INTEGER") ((5 6 7 8) "BIGINT") ((NIL) "INTEGER"))))
           (:FLOAT
            (when arg (err "FLOAT cannot accept an argument."))
            (format NIL "\"~a\" DOUBLE PRECISION" (string-downcase name)))
@@ -144,7 +144,7 @@
 
 (defun db:iterate (collection query function &key fields skip amount sort accumulate)
   (with-collection-existing (collection)
-    (with-query ((make-query (format NIL "SELECT ~:[*~;~:*~{\"~a\"~^ ~}~] FROM ~a" (mapcar #'string-downcase fields) collection)
+    (with-query ((make-query (format NIL "SELECT ~:[*~;~:*~{\"~a\"~^ ~}~] FROM ~a" (mapcar #'string-downcase fields) (string-downcase collection))
                              query skip amount sort) query vars)
       (exec-query query vars (if accumulate (collecting-iterator function) (dropping-iterator function))))))
 
