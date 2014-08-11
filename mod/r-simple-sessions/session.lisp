@@ -14,7 +14,7 @@
 (defvar *session-key* (make-random-string))
 (defvar *session-timeout-format* '((:year 4) #\. (:month 2) #\. (:day 2) #\Space (:hour 2) #\: (:min 2) #\: (:sec 2)))
 
-(defclass session (session:session)
+(defclass session:session ()
   ((id :initarg :id :initform (princ-to-string (uuid:make-v4-uuid)) :accessor id)
    (fields :initarg :fields :initform (make-hash-table :test 'eql) :accessor fields)
    (timeout :initarg :timeout :initform (+ (get-universal-time) session:*default-timeout*) :accessor timeout)))
