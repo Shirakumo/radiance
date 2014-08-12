@@ -18,7 +18,8 @@
   (defun timeout (session))
   (defun (setf timeout) (seconds session))
   (defun end (session))
-  (defun active-p (session)))
+  (defun active-p (session))
+  (define-hook create (session)))
 
 ;; To be specced
 (define-interface user
