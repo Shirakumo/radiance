@@ -115,8 +115,8 @@
               #'(lambda (ta) (gethash "action" ta))
               :fields '(action) :amount n :sort `((time ,(if oldest-first :ASC :DESC))) :accumulate T))
 
-(define-trigger db:connected ()
-  ;; time to sync.
+(defun user::sync ()
+  (setf *user-cache* (make-hash-table :test 'equalp))
   (let ((idtable (make-hash-table :test 'eql)))
     (dolist (model (dm:get 'simple-users (db:query :all)))
       (setf (gethash (dm:id model) idtable)
@@ -130,4 +130,7 @@
             (value (dm:field entry "value"))
             (uid (dm:field entry "uid")))
         (setf (gethash field (fields (gethash uid idtable))) value)))
-    (v:info :users "Synchronized ~d users from database." (hash-table-count idtable))))
+    (l:info :users "Synchronized ~d users from database." (hash-table-count idtable))))
+
+(define-trigger db:connected ()
+  (user::sync))
