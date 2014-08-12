@@ -22,8 +22,8 @@
   (assert (or (null skip) (integerp skip)))
   (assert (listp sort))
   (with-query (where where vars)
-    (cons (format NIL "~a ~a~@[ ORDER BY ~{~/i-postmodern::%sort-clause/~^, ~}~]~@[ LIMIT ~d~]~@[ OFFSET ~d~]"
-                  base where sort amount skip)
+    (cons (format NIL "~a ~a~@[ ORDER BY ~{~/i-postmodern::%sort-clause/~^, ~}~]~@[ LIMIT ~d~]~:[~; OFFSET ~d~]"
+                  base where sort amount (and skip (/= skip 0)) skip)
           vars)))
 
 (defvar *vars*)
