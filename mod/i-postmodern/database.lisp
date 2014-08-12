@@ -144,7 +144,7 @@
 
 (defun db:iterate (collection query function &key fields skip amount sort accumulate)
   (with-collection-existing (collection)
-    (with-query ((make-query (format NIL "SELECT ~:[*~;~:*~{\"~a\"~^ ~}~] FROM ~a" (mapcar #'string-downcase fields) (string-downcase collection))
+    (with-query ((make-query (format NIL "SELECT ~:[*~;~:*~{\"~a\"~^ ~}~] FROM \"~a\"" (mapcar #'string-downcase fields) (string-downcase collection))
                              query skip amount sort) query vars)
       (exec-query query vars (if accumulate (collecting-iterator function) (dropping-iterator function))))))
 
