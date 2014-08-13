@@ -52,8 +52,8 @@
   (loop for (name . insert) = (pop (modified user))
         while name
         do (if insert
-               (db:insert 'simple-users-fields `((uid . ,(id user)) (field . ,name) (value ,(gethash name (fields user)))))
-               (db:update 'simple-users-fields (db:query (:and (:= 'uid (id user)) (:= 'field name))) `((value ,(gethash name (fields user)))))))
+               (db:insert 'simple-users-fields `((uid . ,(id user)) (field . ,name) (value . ,(gethash name (fields user)))))
+               (db:update 'simple-users-fields (db:query (:and (:= 'uid (id user)) (:= 'field name))) `((value . ,(gethash name (fields user)))))))
   user)
 
 (defun user:saved-p (user)
