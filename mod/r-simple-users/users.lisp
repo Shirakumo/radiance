@@ -41,6 +41,9 @@
         (:error (error 'user-not-found :user username))
         ((NIL :NIL)))))
 
+(defun user:username (user)
+  (username user))
+
 (defun user:field (user field)
   (gethash field (fields user)))
 
