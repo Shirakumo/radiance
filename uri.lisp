@@ -41,11 +41,12 @@
         (make-uri :domains (nreverse (cl-ppcre:split "\\." domains)) :port (when port (parse-integer port)) :path path))
       (error "Failed to parse URI.")))
 
-(set-dispatch-macro-character
- #\# #\U
- #'(lambda (stream char arg)
-     (declare (ignore char arg))
-     `(parse-uri ,(read stream))))
+(defun read-uri (stream char arg)
+  (declare (ignore char arg))
+  `(parse-uri ,(read stream)))
+
+(make-dispatch-macro-character #\^)
+(set-dispatch-macro-character #\^ #\U #'read-uri)
 
 (defun uri< (a b)
   (or (and (not (port a)) (port b))
