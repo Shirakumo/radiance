@@ -134,3 +134,9 @@
 
 (define-trigger db:connected ()
   (user::sync))
+
+(defmethod field ((user user:user) field)
+  (gethash field (fields user)))
+
+(defmethod (setf field) (value (user user:user) field)
+  (setf (gethash field (fields user)) value))

@@ -91,3 +91,9 @@
         (loop for k being the hash-keys of (fields data-model)
               for v being the hash-values of (fields data-model)
               collect (cons k v))))
+
+(defmethod field ((model dm:data-model) field)
+  (gethash field (fields model)))
+
+(defmethod (setf field) (value (model dm:data-model) field)
+  (setf (gethash field (fields model)) value))
