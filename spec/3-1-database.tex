@@ -31,6 +31,9 @@ Each collection has a field called \symboldef{_id}, which is unique for each rec
 
 Most databases only support a specific range of limited data types, which can be more or less properly matched up with CL types. If they cannot be properly matched, the implementation is required to transform the value as specified. Any implementation is required to support or allow the structure type declarations below. An implementation may or may not support any number of additional data types. 
 
+\symbolsection{database structure type}{:ID}
+Stores a reference to a record \symbolref{_ID}.
+
 \symbolsection{database structure type}{:INTEGER}
 Stores an object of the CL type \inline{INTEGER}. This type supports an optional extra argument that specifies the amount of bytes used to store the integer. It defaults to 4 and must range between 1-8. If the implementation doesn't support the specified amount of bytes, the type is expected to be upgraded to the next bigger one that contains the range. \\
 
