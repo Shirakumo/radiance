@@ -21,6 +21,7 @@
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (setf (page-option ,(make-keyword name))
            #'(lambda (,namevar ,urivar ,@rest)
+               (declare (ignorable ,namevar ,urivar))
                ,@body))))
 
 (defvar *page-body*)
