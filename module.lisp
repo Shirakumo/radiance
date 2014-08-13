@@ -166,4 +166,5 @@
    #:uri>
    #:uri=
    #:uri-matches
-   #:merge-uris))
+   #:merge-uris
+   #:uri-to-string))
