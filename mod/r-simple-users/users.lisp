@@ -41,7 +41,7 @@
         (:error (error 'user-not-found :user username))
         ((NIL :NIL)))))
 
-(defun username (user)
+(defun user:username (user)
   (username user))
 
 (defun user:field (user field)
@@ -122,6 +122,7 @@
   (setf *user-cache* (make-hash-table :test 'equalp))
   (let ((idtable (make-hash-table :test 'eql)))
     (dolist (model (dm:get 'simple-users (db:query :all)))
+      (l:debug :users "Loading ~a" (dm:field model "username"))
       (setf (gethash (dm:id model) idtable)
             (make-instance 'user
                            :id (dm:id model) :username (dm:field model "username")
@@ -132,6 +133,7 @@
       (let ((field (dm:field entry "field"))
             (value (dm:field entry "value"))
             (uid (dm:field entry "uid")))
+        (l:debug :users "Set field ~a of ~a to ~s" field (gethash uid idtable) value)
         (setf (gethash field (fields (gethash uid idtable))) value)))
     (l:info :users "Synchronized ~d users from database." (hash-table-count idtable))))
 
