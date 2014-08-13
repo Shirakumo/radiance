@@ -32,6 +32,7 @@
 (define-interface user
   (defclass user () ())
   (defun get (username &key (if-does-not-exist NIL)))
+  (defun username (user))
   (defun field (user field))
   (defun (setf field) (value user field))
   (defun save (user))
