@@ -8,12 +8,27 @@
 
 ;; Sets up a default trigger for pages
 (define-page-option with-trigger (name uri &optional (value T))
-  (declare (ignore uri))
   (assert (symbolp value))
   (when value
     (let ((name (if (eql value T) name value)))
       (push `(trigger ',name) *page-body*)
       `(define-hook ,name ()))))
+
+(define-page-option access (name uri &optional branch)
+  (when branch
+    (setf *page-body*
+          `((unless (and (auth:current) (user:check (auth:current) ,branch))
+              (error 'request-denied))
+            ,@*page-body*)))
+  NIL)
+
+(define-api-option access (name args &optional branch)
+  (when branch
+    (setf *page-body*
+          `((unless (and (auth:current) (user:check (auth:current) ,branch))
+              (error 'request-denied))
+            ,@*page-body*)))
+  NIL)
 
 ;; Api catchall page
 (define-api "" () (:documentation "API 404")
