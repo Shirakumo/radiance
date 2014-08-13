@@ -17,31 +17,31 @@
   (db:create 'simple-users-fields '((uid :integer) (field (:varchar 64)) (value :text)) :indices '(uid))
   (db:create 'simple-users-actions '((uid :integer) (time :integer) (public (:integer 1)) (action :text)) :indices '(uid)))
 
-(defclass user:user ()
+(defclass user (user:user)
   ((username :initarg :username :initform (error "USERNAME required.") :accessor username)
    (id :initarg :id :initform (error "ID required.") :accessor id)
    (fields :initarg :fields :initform (make-hash-table :test 'equalp) :accessor fields)
    (permissions :initarg :permissions :initform () :accessor permissions)
    (modified :initarg :modified :initform () :accessor modified)))
 
-(defmethod print-object ((user user:user) stream)
+(defmethod print-object ((user user) stream)
   (print-unreadable-object (user stream)
     (format stream "USER ~a~:[~; *~]" (username user) (modified user))))
 
-(defmethod initialize-instance :after ((user user:user) &key)
+(defmethod initialize-instance :after ((user user) &key)
   (setf (gethash (username user) *user-cache*) user))
 
 (defun user:get (username &key (if-does-not-exist NIL))
   (or (gethash username *user-cache*)
       (ecase if-does-not-exist
         (:create
-         (make-instance 'user:user
+         (make-instance 'user
                         :username username
                         :id (db:insert 'simple-users `((username . ,username) (permissions . "")))))
         (:error (error 'user-not-found :user username))
         ((NIL :NIL)))))
 
-(defun user:username (user)
+(defun username (user)
   (username user))
 
 (defun user:field (user field)
@@ -123,7 +123,7 @@
   (let ((idtable (make-hash-table :test 'eql)))
     (dolist (model (dm:get 'simple-users (db:query :all)))
       (setf (gethash (dm:id model) idtable)
-            (make-instance 'user:user
+            (make-instance 'user
                            :id (dm:id model) :username (dm:field model "username")
                            :permissions (mapcar #'(lambda (b) (cl-ppcre:split "\\." b))
                                                 (cl-ppcre:split "\\n" (dm:field model "permissions"))))))
@@ -138,8 +138,8 @@
 (define-trigger db:connected ()
   (user::sync))
 
-(defmethod field ((user user:user) field)
+(defmethod field ((user user) field)
   (gethash field (fields user)))
 
-(defmethod (setf field) (value (user user:user) field)
+(defmethod (setf field) (value (user user) field)
   (setf (gethash field (fields user)) value))

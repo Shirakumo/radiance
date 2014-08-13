@@ -14,12 +14,12 @@
 (defvar *session-key* (make-random-string))
 (defvar *session-timeout-format* '((:year 4) #\. (:month 2) #\. (:day 2) #\Space (:hour 2) #\: (:min 2) #\: (:sec 2)))
 
-(defclass session:session ()
+(defclass session (session:session)
   ((id :initarg :id :initform (princ-to-string (uuid:make-v4-uuid)) :accessor id)
    (fields :initarg :fields :initform (make-hash-table :test 'eql) :accessor fields)
    (timeout :initarg :timeout :initform (+ (get-universal-time) session:*default-timeout*) :accessor timeout)))
 
-(defmethod print-object ((session session:session) stream)
+(defmethod print-object ((session session) stream)
   (print-unreadable-object (session stream :type T)
     (format stream "~a " (id session))
     (local-time:format-timestring stream (local-time:universal-to-timestamp (timeout session)) :format *session-timeout-format*)))
@@ -27,7 +27,7 @@
 (defun make-cookie-value (session)
   (cryptos:encrypt (format NIL "~a-~a" (id session) (make-random-string (+ 4 (random 9)))) *session-key*))
 
-(defmethod initialize-instance :after ((session session:session) &key)
+(defmethod initialize-instance :after ((session session) &key)
   (l:debug :session "Starting session ~a" session)
   (setf (gethash (id session) *session-table*) session)
   (trigger 'session:create session)
@@ -48,7 +48,7 @@
 (defun session:start ()
   (let ((cookie (cookie "radiance-session")))
     (or (and cookie (decode-session cookie))
-        (make-instance 'session:session))))
+        (make-instance 'session))))
 
 (defun session:get (session-id)
   (let ((session (gethash session-id *session-table*)))

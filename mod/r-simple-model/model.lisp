@@ -10,12 +10,12 @@
   (:implements #:data-model))
 (in-package #:simple-model)
 
-(defclass dm:data-model ()
+(defclass data-model (dm:data-model)
   ((collection :initform (error "COLLECTION required.") :initarg :collection :accessor collection)
    (fields :initform (make-hash-table :test 'equalp) :initarg :fields :accessor fields)
    (inserted :initform NIL :initarg :inserted :accessor inserted)))
 
-(defmethod print-object ((model dm:data-model) stream)
+(defmethod print-object ((model data-model) stream)
   (print-unreadable-object (model stream :type NIL)
     (format stream "DATA-MODEL ~a:~a~@[ HULL~]" (collection model) (dm:id model) (dm:hull-p model))))
 
@@ -29,18 +29,18 @@
   (setf (gethash (string-downcase field) (fields data-model)) value))
 
 (defun dm:get (collection query &key (skip 0) amount sort)
-  (db:iterate collection query #'(lambda (ta) (make-instance 'dm:data-model :collection collection :fields ta :inserted T))
+  (db:iterate collection query #'(lambda (ta) (make-instance 'data-model :collection collection :fields ta :inserted T))
               :skip skip :amount amount :sort sort :accumulate T))
 
 (defun dm:get-one (collection query &key (skip 0) sort)
   (db:iterate collection query #'(lambda (ta) (return-from dm:get-one
-                                                (make-instance 'dm:data-model :collection collection :fields ta :inserted T)))
+                                                (make-instance 'data-model :collection collection :fields ta :inserted T)))
               :skip skip :amount 1 :sort sort))
 
 (defun dm:hull (collection) ;; speed up test with extra interface func.
   (unless (member collection (db:collections) :test #'string-equal)
     (error 'database-invalid-collection :collection collection :message "Cannot create hull."))
-  (make-instance 'dm:data-model :collection collection))
+  (make-instance 'data-model :collection collection))
 
 (defun dm:hull-p (data-model)
   (not (inserted data-model)))
@@ -64,7 +64,7 @@
     n))
 
 (defun copy-model (model)
-  (make-instance 'dm:data-model
+  (make-instance 'data-model
                  :inserted (inserted model)
                  :fields (copy-hash-table (fields model))
                  :collection (collection model)))
@@ -80,7 +80,7 @@
 (defun dm::read (readable)
   (destructuring-bind (type collection inserted data) readable
     (assert (eql type :DM))
-    (make-instance 'dm:data-model :inserted inserted :collection collection
+    (make-instance 'data-model :inserted inserted :collection collection
                                   :fields (loop with table = (make-hash-table :test 'equalp)
                                                 for (k . v) in data
                                                 do (setf (gethash k table) v)
@@ -92,8 +92,8 @@
               for v being the hash-values of (fields data-model)
               collect (cons k v))))
 
-(defmethod field ((model dm:data-model) field)
+(defmethod field ((model data-model) field)
   (gethash (string-downcase field) (fields model)))
 
-(defmethod (setf field) (value (model dm:data-model) field)
+(defmethod (setf field) (value (model data-model) field)
   (setf (gethash (string-downcase field) (fields model)) value))
