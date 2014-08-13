@@ -23,10 +23,10 @@
   (gethash "_id" (fields data-model)))
 
 (defun dm:field (data-model field)
-  (gethash field (fields data-model)))
+  (gethash (string-downcase field) (fields data-model)))
 
 (defun (setf dm:field) (value data-model field)
-  (setf (gethash field (fields data-model)) value))
+  (setf (gethash (string-downcase field) (fields data-model)) value))
 
 (defun dm:get (collection query &key (skip 0) amount sort)
   (db:iterate collection query #'(lambda (ta) (make-instance 'dm:data-model :collection collection :fields ta :inserted T))
@@ -93,7 +93,7 @@
               collect (cons k v))))
 
 (defmethod field ((model dm:data-model) field)
-  (gethash field (fields model)))
+  (gethash (string-downcase field) (fields model)))
 
 (defmethod (setf field) (value (model dm:data-model) field)
-  (setf (gethash field (fields model)) value))
+  (setf (gethash (string-downcase field) (fields model)) value))
