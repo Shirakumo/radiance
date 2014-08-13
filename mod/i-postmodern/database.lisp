@@ -77,7 +77,7 @@
         (err "Invalid name, only a-z, - and _ are allowed."))
       (let ((arg (when (listp type) (prog1 (second type) (setf type (first type))))))
         (ecase type
-          (:INTEGER
+          ((:INTEGER :ID)
            (format NIL "\"~a\" ~a" (string-downcase name)
                    (ecase arg ((1 2) "SMALLINT") ((3 4) "INTEGER") ((5 6 7 8) "BIGINT") ((NIL) "INTEGER"))))
           (:FLOAT
