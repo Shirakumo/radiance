@@ -47,6 +47,7 @@
 
 (define-api simple-auth/login (username password &optional redirect) ()
   (flet ((err (message)
+           (l:info :auth "Failed login for ~a." username)
            (cond
              (redirect
               (redirect (format NIL "~a?msg=~a" (referer *request*) message))
