@@ -29,7 +29,8 @@
 
 (defun auth::set-password (user password)
   (setf (user:field user "simple-auth-hash")
-        (cryptos:pbkdf2-hash password *salt*)))
+        (cryptos:pbkdf2-hash password *salt*))
+  (user:save user))
 
 (define-page login ^u"auth/^login" (:lquery (template "simple-auth.html"))
   (r-clip:process (lquery:$ (node)))
