@@ -7,6 +7,13 @@
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
 ;; To be specced
+(define-interface auth
+  (defun current (&optional (session *session*)))
+  (defun associate (user &optional (session *session*)))
+  (defun login! (&optional (landing-page (referer *request*))))
+  (define-hook associate (session)))
+
+;; To be specced
 (define-interface session
   (defvar *default-timeout* (* 60 60 24 365))
   (defclass session () ())
