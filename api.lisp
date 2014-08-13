@@ -48,6 +48,7 @@
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (setf (api-option ,(make-keyword name))
            #'(lambda (,namevar ,argsvar ,@rest)
+               (declare (ignorable ,namevar ,argsvar))
                ,@body))))
 
 ;;; Pages
