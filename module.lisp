@@ -34,6 +34,7 @@
    #:current-request
    #:request-empty
    #:request-not-found
+   #:request-denied
    #:api-error
    #:api-argument-missing
    #:argument
