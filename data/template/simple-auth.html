@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Login</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+    <div id="msg" />
+    <form action="/api/simple-auth/login" method="post">
+      <label>Username</label><input type="text" name="username" /><br />
+      <label>Password</label><input type="password" name="password" /><br />
+      <input type="hidden" name="nonce" value="?" lquery="(val (make-random-string))" />
+      <input type="hidden" name="redirect" value="true" />
+      <input type="submit" value="Login" />
+    </form>
+  </body>
+</html>
