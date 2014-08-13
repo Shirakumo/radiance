@@ -47,7 +47,8 @@
 
 ;; Api standard format
 (define-api-format lisp (object)
-  (write-to-string (api-serialize object) :readably T))
+  (setf (content-type *response*) "text/x-sexpr")
+  (write-to-string (api-serialize object)))
 
 ;; Default urls
 (define-page favicon ^u"/favicon.ico" ()
