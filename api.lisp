@@ -101,7 +101,7 @@
              (make-instance
               'api-page
               :argslist ',args
-              :handler #'(lambda ,(extract-lambda-vars args) ,@*api-body*)
+              :handler #'(lambda ,(extract-lambda-vars args) (block NIL ,@*api-body*))
               :docstring ,(getf options :documentation))))))
 
 ;;; Actual page handler

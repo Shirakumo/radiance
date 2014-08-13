@@ -38,4 +38,5 @@
                when result
                  collect result)
        (define-uri-dispatcher ,name (,uri ,(gensym "REQUEST"))
-         ,@*page-body*))))
+         (block NIL
+           ,@*page-body*)))))
