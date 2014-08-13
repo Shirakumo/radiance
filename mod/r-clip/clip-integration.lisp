@@ -20,7 +20,7 @@
               (lquery:$ (serialize) (node))))))
   NIL)
 
-(defmethod clip:clip (object field)
+(defmethod clip:clip ((object standard-object) field)
   (field object field))
 
 (defun process (target &rest fields)
