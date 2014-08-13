@@ -71,7 +71,7 @@
 
 (defun dm:insert (data-model &key clone)
   (let ((data-model (if clone (copy-model data-model) data-model)))
-    (remhash "_id" data-model)
+    (remhash "_id" (fields data-model))
     (setf (dm:field data-model "_id")
           (db:insert (collection data-model)
                      (fields data-model)))
