@@ -26,36 +26,33 @@
   (gethash name *caches*))
 
 (defun cache::file (symbol)
-  (merge-pathnames (format NIL "~a/~a" (symbol-package symbol) (symbol-name symbol)) *cache-directory*))
+  (merge-pathnames (format NIL "~a/~a" (package-name (symbol-package symbol)) (symbol-name symbol)) *cache-directory*))
 
 (defun cache:get (name)
   (read-data-file (cache::file name)))
 
 (defun cache:renew (name)
-  (funcall (cache::builder name)))
+  (delete-file (cache::file name)))
 
 (defun cache::exists (name)
   (probe-file (cache::file name)))
 
 (defun cache::output (name result)
-  (etypecase result
-    (string
-     (with-open-file (stream (cache::file name) :direction :output :if-exists :supersede)
-       (write-string result stream)))
-    ((array (unsigned-byte 8))
-     (with-open-file (stream (cache::file name) :direction :output :if-exists :supersede :element-type '(array (unsigned-byte 8)))
-       (write-sequence result stream))))
+  (let ((file (cache::file name)))
+    (ensure-directories-exist file)
+    (etypecase result
+      (string
+       (with-open-file (stream file :direction :output :if-exists :supersede)
+         (write-string result stream)))
+      ((array (unsigned-byte 8))
+       (with-open-file (stream file :direction :output :if-exists :supersede :element-type '(array (unsigned-byte 8)))
+         (write-sequence result stream)))))
   result)
 
-(defmacro cache:with (name test &body request-generator)
-  (assert (symbolp name))
-  (setf (cache::builder name) #'(lambda ()))
-  (let ((func (gensym "FUNC")))
-    `(let ((,func (or (cache::builder ',name)
-                      (setf (cache::builder ',name)
-                            #'(lambda ()
-                                (cache::output ',name ,@request-generator))))))
-       (if (or (not (cache::exists ',name))
+(defmacro cache:with-cache (name test &body request-generator)
+  (let ((cache (gensym "CACHE")))
+    `(let ((,cache ,name))
+       (if (or (not (cache::exists ,cache))
                ,test)
-           (funcall ,func)
-           (cache:get ',name)))))
+           (cache::output ,cache ((lambda () ,@request-generator)))
+           (cache:get ,cache)))))
