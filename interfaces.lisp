@@ -7,6 +7,12 @@
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
 ;; To be specced
+(define-interface cache
+  (defun get (name))
+  (defun renew (name))
+  (defmacro cached (name test &body request-generator)))
+
+;; To be specced
 (define-interface auth
   (defun current (&optional (session *session*)))
   (defun associate (user &optional (session *session*)))
