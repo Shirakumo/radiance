@@ -52,7 +52,7 @@
        (:< (format NIL "(~a) < (~a)" (compile-form (second form)) (compile-form (third form))))
        (:<= (format NIL "(~a) <= (~a)" (compile-form (second form)) (compile-form (third form))))
        (:>= (format NIL "(~a) >= (~a)" (compile-form (second form)) (compile-form (third form))))
-       (:MATCHES (format NIL "regexp_matches(~a, ~a)" (compile-form (second form)) (compile-form (third form))))
+       (:MATCHES (format NIL "(~a) ~~ (~a)" (compile-form (second form)) (compile-form (third form))))
        (:IN (format NIL "(~a) IN (~{~a~^, ~})" (compile-form (second form)) (mapcar #'compile-form (cddr form))))
        (:AND (format NIL "~{(~a)~^ AND ~}" (mapcar #'compile-form (rest form))))
        (:OR (format NIL "~{(~a)~^ OR ~}" (mapcar #'compile-form (rest form))))
