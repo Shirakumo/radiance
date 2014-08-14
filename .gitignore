@@ -2,6 +2,7 @@
 /log/
 .directory
 /data/db-dev
+/data/simple-cache/
 radiance.json
 /lib/radiance-core
 /lib/radiance-web
