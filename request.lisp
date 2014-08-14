@@ -10,7 +10,7 @@
 (defvar *response*)
 (defvar *session*)
 (defvar *default-external-format* :UTF-8)
-(defvar *default-content-type* "text/plain")
+(defvar *default-content-type* "text/html")
 
 (defclass request (uri)
   ((http-method :initarg :http-method :initform "GET" :accessor http-method)
