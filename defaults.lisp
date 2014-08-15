@@ -66,15 +66,15 @@
   (write-to-string (api-serialize object)))
 
 ;; Default urls
-(define-page favicon ^u"/favicon.ico" ()
+(define-page favicon #@"/favicon.ico" ()
   (serve-file (static-file "img/favicon.ico")))
 
-(define-page robots ^u"/robots.txt" ()
+(define-page robots #@"/robots.txt" ()
   (serve-file (static-file "txt/robots.txt")))
 
-(define-page static ^u"/static/.*" ()
+(define-page static #@"/static/.*" ()
   (serve-file (static-file (subseq (path *request*)
                                    (1+ (position #\/ (path *request*)))))))
 
-(define-page welcome ^u"/" ()
+(define-page welcome #@"/" ()
   (serve-file (static-file "html/hello.html")))

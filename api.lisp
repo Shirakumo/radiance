@@ -106,7 +106,7 @@
               :docstring ,(getf options :documentation))))))
 
 ;;; Actual page handler
-(define-page api ^u"/api/.*" ()
+(define-page api #@"/api/.*" ()
   (let* ((slashpos (position #\/ (path *request*)))
          (subpath (subseq (path *request*) (1+ slashpos)))
          (api-page (or (api-page subpath) (api-page ""))))

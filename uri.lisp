@@ -45,8 +45,7 @@
   (declare (ignore char arg))
   `(parse-uri ,(read stream)))
 
-(make-dispatch-macro-character #\^)
-(set-dispatch-macro-character #\^ #\U #'read-uri)
+(set-dispatch-macro-character #\# #\@ #'read-uri)
 
 (defun uri< (a b)
   (or (and (not (port a)) (port b))
