@@ -10,7 +10,7 @@
 (define-interface cache
   (defun get (name))
   (defun renew (name))
-  (defmacro with-cached (name-form test-form &body request-generator)))
+  (defmacro with-cache (name-form test-form &body request-generator)))
 
 ;; To be specced
 (define-interface auth
