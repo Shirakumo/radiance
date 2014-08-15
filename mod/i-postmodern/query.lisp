@@ -7,8 +7,9 @@
 (in-package #:i-postmodern)
 
 (defun exec-query (query vars &optional (row-reader 'cl-postgres:ignore-row-reader))
-  (cl-postgres:prepare-query *current-con* "" query)
-  (cl-postgres:exec-prepared *current-con* "" vars row-reader))
+  (with-connection
+    (cl-postgres:prepare-query *current-con* "" query)
+    (cl-postgres:exec-prepared *current-con* "" vars row-reader)))
 
 (defun %sort-clause (s a c p)
   (declare (ignore c p))

@@ -6,13 +6,6 @@
 
 (in-package #:i-postmodern)
 
-(defvar *current-db* NIL)
-(defvar *current-con* NIL)
-
-(defmacro with-con (&body body)
-  `(let ((postmodern:*database* *current-con*))
-     ,@body))
-
 (defmacro with-query ((query-form &optional (where 'where) (vars 'vars)) &body body)
   (let ((res (gensym "RESULT")))
     `(let* ((,res ,query-form)

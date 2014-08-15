@@ -10,6 +10,8 @@
   :class "radiance:module"
   :components ((:file "module")
                (:file "toolkit")
+               (:file "connection")
                (:file "query")
                (:file "database"))
-  :depends-on (:postmodern))
+  :depends-on (:postmodern
+               :bordeaux-threads))

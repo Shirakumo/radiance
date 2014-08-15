@@ -16,37 +16,8 @@
 (define-trigger startup-done ()
   (db:connect (config-tree :postmodern :default)))
 
-(defun db:connect (database-name)
-  (flet ((err (msg) (error 'database-connection-failed :database database-name :message msg)))
-    (let ((conn (config-tree :postmodern :connections database-name)))
-      (unless conn (err "No such connection found."))
-      (when (eql *current-db* database-name)
-        (warn 'database-connection-already-open :database database-name)
-        (db:disconnect))
-      ;; Spec restarts for already open.
-      (let ((host (or (gethash :host conn) "localhost"))
-            (port (or (gethash :port conn) 5432))
-            (user (gethash :user conn))
-            (pass (gethash :pass conn))
-            (db (or (gethash :database conn) (err "No database configured!"))))
-        (l:info :database "Connecting ~a ~a~:[~;:*~]@~a:~a/~a"
-                database-name user pass host port db)
-        (setf *current-con* (postmodern:connect db user pass host :port port)
-              *current-db* database-name)
-        (trigger 'db:connected)))))
-
-(defun db:disconnect ()
-  (l:info :database "Disconnecting ~a" *current-db*)
-  (postmodern:disconnect *current-con*)
-  (setf *current-con* NIL
-        *current-db* NIL)
-  (trigger 'db:disconnected))
-
-(defun db:connected-p ()
-  (not (null *current-con*)))
-
 (defun db:collections ()
-  (with-con
+  (with-connection
     (postmodern:list-tables T)))
 
 (defun db:create (collection structure &key indices (if-exists :ignore))
@@ -55,7 +26,7 @@
     (unless structure (err "Structure cannot be empty."))
     (let ((query (format NIL "CREATE TABLE \"~a\" (\"_id\" INTEGER NOT NULL DEFAULT nextval('~:*~a-id-seq'), ~{~a~^, ~});"
                          (string-downcase collection) (mapcar #'compile-field structure))))
-      (with-con
+      (with-connection
         (when (postmodern:table-exists-p (string-downcase collection))
           (ecase if-exists
             (:ignore (return-from db:create NIL))
@@ -94,7 +65,7 @@
 
 (defun db:structure (collection)
   (check-collection-exists collection)
-  (with-con
+  (with-connection
     (rest 
      (mapcar #'(lambda (column)
                  (destructuring-bind (name type size) column
@@ -115,13 +86,13 @@
 
 (defun db:empty (collection)
   (with-collection-existing (collection)
-    (with-con
+    (with-connection
       (postmodern:query (format NIL "TRUNCATE TABLE \"~a\" CASCADE;" (string-downcase collection)))
       T)))
 
 (defun db:drop (collection)
   (with-collection-existing (collection)
-    (with-con
+    (with-connection
       (postmodern:query (format NIL "DROP TABLE \"~a\" CASCADE;" (string-downcase collection)))
       (postmodern:query (format NIL "DROP SEQUENCE \"~a-id-seq\" CASCADE;" (string-downcase collection)))
       T)))
