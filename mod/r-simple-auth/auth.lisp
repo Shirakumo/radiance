@@ -25,14 +25,14 @@
         (etypecase landing-page
           (uri (uri-to-string landing-page :print-port T :print-request-domain T))
           (string landing-page)))
-  (redirect ^u"auth/login"))
+  (redirect #@"auth/login"))
 
 (defun auth::set-password (user password)
   (setf (user:field user "simple-auth-hash")
         (cryptos:pbkdf2-hash password *salt*))
   (user:save user))
 
-(define-page login ^u"auth/^login" (:lquery (template "simple-auth.html"))
+(define-page login #@"auth/^login" (:lquery (template "simple-auth.html"))
   (r-clip:process (lquery:$ (node)))
   (when (get-var "msg")
     (lquery:$ "#msg" (text (get-var "msg"))))
@@ -42,7 +42,7 @@
       (when landing
         (redirect landing)))))
 
-(define-page logout ^u"auth/^logout" ()
+(define-page logout #@"auth/^logout" ()
   (session:end *session*)
   (redirect (or (session:field *session* 'landing-page) "/")))
 
