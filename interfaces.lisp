@@ -21,4 +21,8 @@
     (asdf:find-system configured-implementation T)))
 
 (defun load-implementation (interface)
-  (asdf:load-system (find-implementation interface)))
+  (let ((*load-verbose* nil)
+        (*compile-verbose* nil)
+        (*load-print* nil)
+        (*compile-print* nil))
+    (asdf:load-system (find-implementation interface))))
