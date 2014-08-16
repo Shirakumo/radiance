@@ -78,3 +78,12 @@
 
 (defun data-file (pathname &optional (default *data-path*))
   (merge-pathnames pathname default))
+
+(defun resolve-base (thing)
+  (etypecase thing
+    (pathname thing)
+    (null (resolve-base *package*))
+    ((or string symbol package)
+     (asdf:system-source-directory
+      (modularize:virtual-module
+       (modularize:module-identifier thing))))))

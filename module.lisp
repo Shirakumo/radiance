@@ -68,4 +68,5 @@
    #:make-random-string
    #:file-size
    #:read-data-file
-   #:data-file))
+   #:data-file
+   #:resolve-base))
