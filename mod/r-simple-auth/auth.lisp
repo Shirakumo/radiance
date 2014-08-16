@@ -32,7 +32,7 @@
         (cryptos:pbkdf2-hash password *salt*))
   (user:save user))
 
-(define-page login #@"auth/^login" (:lquery (template "simple-auth.html"))
+(define-page login #@"auth/^login" (:lquery (template "login.html"))
   (r-clip:process (lquery:$ (node)))
   (when (get-var "msg")
     (lquery:$ "#msg" (text (get-var "msg"))))
