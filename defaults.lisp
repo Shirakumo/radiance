@@ -67,14 +67,17 @@
 
 ;; Default urls
 (define-page favicon #@"/favicon.ico" ()
-  (serve-file (static-file "img/favicon.ico")))
+  (serve-file (data-file "static/img/favicon.ico")))
 
 (define-page robots #@"/robots.txt" ()
-  (serve-file (static-file "txt/robots.txt")))
+  (serve-file (data-file "static/txt/robots.txt")))
 
 (define-page static #@"/static/.*" ()
-  (serve-file (static-file (subseq (path *request*)
-                                   (1+ (position #\/ (path *request*)))))))
+  (let ((slashpos (position #\/ (path *request*) :start (length "static/"))))
+    (if slashpos
+        (serve-file (static-file (subseq (path *request*) (1+ slashpos))
+                                 (string-upcase (subseq (path *request*) (length "static/") slashpos))))
+        (serve-file (merge-pathnames (subseq (path *request*) (length "static/")) (data-file "static/"))))))
 
 (define-page welcome #@"/" ()
-  (serve-file (static-file "html/hello.html")))
+  (serve-file (data-file "static/html/hello.html")))
