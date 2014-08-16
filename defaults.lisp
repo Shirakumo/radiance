@@ -14,6 +14,13 @@
       (push `(trigger ',name) *page-body*)
       `(define-hook ,name ()))))
 
+(define-page-option uri-groups (name uri &optional uri-groups)
+  (when uri-groups
+    (setf *page-body*
+          `((cl-ppcre:register-groups-bind ,uri-groups (,(path uri) (path *request*))
+              ,@*page-body*))))
+  NIL)
+
 (define-page-option access (name uri &optional branch)
   (when branch
     (setf *page-body*
