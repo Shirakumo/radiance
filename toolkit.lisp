@@ -28,8 +28,30 @@
 (defun read-value ()
   (eval (read)))
 
-(defun static-file (pathname)
-  (merge-pathnames pathname (data-file "static/")))
+(defun %static-file (namestring base)
+  (merge-pathnames namestring (merge-pathnames "static/" (merge-pathnames (resolve-base base)))))
 
-(defun template (pathname)
-  (merge-pathnames pathname (data-file "template/")))
+(defun static-file (namestring &optional base)
+  (%static-file namestring base))
+
+(define-compiler-macro static-file (namestring &optional (base *package*))
+  (typecase base
+    ((or package string)
+     (if (stringp namestring)
+         (%static-file namestring base)
+         `(merge-pathnames ,namestring ,(merge-pathnames "static/" (merge-pathnames (resolve-base base))))))
+    (T `(%static-file ,namestring ,base))))
+
+(defun %template (namestring base)
+  (merge-pathnames namestring (merge-pathnames "template/" (merge-pathnames (resolve-base base)))))
+
+(defun template (namestring &optional base)
+  (%template namestring base))
+
+(define-compiler-macro template (namestring &optional (base *package*))
+  (typecase base
+    ((or package string)
+     (if (stringp namestring)
+         (%template namestring base)
+         `(merge-pathnames ,namestring ,(merge-pathnames "template/" (merge-pathnames (resolve-base base))))))
+    (T `(template ,namestring ,base))))
