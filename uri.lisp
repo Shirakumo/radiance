@@ -17,9 +17,13 @@
     (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
 (defmethod print-object ((uri uri) stream)
-  (format stream "#U\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
+  (format stream "#@\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
           (reverse (domains uri)) (port uri) (path uri))
   uri)
+
+(defmethod make-load-form ((uri uri) &optional env)
+  (declare (ignore env))
+  `(make-uri :domains ',(domains uri) :port ,(port uri) :path ,(path uri)))
 
 (defmethod (setf path) (val (uri uri))
   (when (matcher uri)
@@ -43,7 +47,7 @@
 
 (defun read-uri (stream char arg)
   (declare (ignore char arg))
-  `(parse-uri ,(read stream)))
+  (parse-uri (read stream)))
 
 (set-dispatch-macro-character #\# #\@ #'read-uri)
 
