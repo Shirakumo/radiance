@@ -10,7 +10,7 @@
 
 (defsystem radiance
   :name "TymoonNET v5 Radiance"
-  :version "0.0.1"
+  :version "2.0.1"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
