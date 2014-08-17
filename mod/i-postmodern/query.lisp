@@ -16,7 +16,7 @@
   (let ((field (first a))
         (order (second a)))
     (ecase order (:DESC) (:ASC))
-    (format s "\"~a\" ~a" field order)))
+    (format s "\"~a\" ~a" (string-downcase field) order)))
 
 (defun make-query (base where skip amount sort)
   (assert (or (null amount) (integerp amount)))
