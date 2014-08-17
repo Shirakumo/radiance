@@ -13,7 +13,7 @@
 (defvar *user-cache* (make-hash-table :test 'equalp))
 
 (define-trigger db:connected ()
-  (db:create 'simple-users '((username (:varchar 64)) (permissions :text)) :indices '(username))
+  (db:create 'simple-users '((username (:varchar 32)) (permissions :text)) :indices '(username))
   (db:create 'simple-users-fields '((uid :integer) (field (:varchar 64)) (value :text)) :indices '(uid))
   (db:create 'simple-users-actions '((uid :integer) (time :integer) (public (:integer 1)) (action :text)) :indices '(uid)))
 
