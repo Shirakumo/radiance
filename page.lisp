@@ -14,7 +14,7 @@
 (defun (setf page-option) (option name)
   (setf (gethash name *page-options*) option))
 
-(defun remove-page-otpion (name)
+(defun remove-page-option (name)
   (remhash name *page-options*))
 
 (defmacro define-page-option (name (namevar urivar &rest rest) &body body)
@@ -37,6 +37,12 @@
                                 (funcall function name uri value))
                when result
                  collect result)
+       ,@(when (module)
+           `((pushnew ',name (module-storage ,(module) 'radiance-pages))))
        (define-uri-dispatcher ,name (,uri ,(gensym "REQUEST"))
          (block NIL
            ,@*page-body*)))))
+
+(define-delete-hook (module 'radiance-destroy-pages)
+  (dolist (page (module-storage module 'radiance-pages))
+    (remove-uri-dispatcher page)))

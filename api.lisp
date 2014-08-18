@@ -115,12 +115,18 @@
                                 (funcall function name args value))
                when result
                  collect result)
+       ,@(when (module)
+           `((pushnew ,(string name) (module-storage ,(module) 'radiance-apis) :test #'equalp)))
        (setf (api-page ,(string name))
              (make-instance
               'api-page
               :argslist ',args
               :handler #'(lambda ,(extract-lambda-vars args) (block NIL ,@*api-body*))
               :docstring ,(getf options :documentation))))))
+
+(define-delete-hook (module 'radiance-destroy-apis)
+  (dolist (page (module-storage module 'radiance-apis))
+    (remove-api-page page)))
 
 ;;; Actual page handler
 (define-page api #@"/api/.*" ()
