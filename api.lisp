@@ -85,6 +85,23 @@
                 (if val (push val args) (error 'api-argument-missing :argument arg)))))
         finally (apply (handler api-page) (nreverse args))))
 
+(defun make-api-call (api-page &rest arguments)
+  (loop with args = ()
+        with in-optional = NIL
+        for arg in (argslist api-page)
+        do (cond
+             ((eql arg '&optional)
+              (setf in-optional T))
+             ((and in-optional (listp arg))
+              (let ((val (getf arguments (find-symbol (string arg) "KEYWORD"))))
+                (push (or val (second arg)) args)))
+             (in-optional
+              (push (getf arguments (find-symbol (string arg) "KEYWORD")) args))
+             (T
+              (let ((val (getf arguments (find-symbol (string arg) "KEYWORD"))))
+                (if val (push val args) (error 'api-argument-missing :argument arg)))))
+        finally (apply (handler api-page) (nreverse args))))
+
 (defvar *api-body*)
 (defmacro define-api (name args options &body body)
   (let ((*api-body* body)

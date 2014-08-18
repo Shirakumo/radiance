@@ -22,6 +22,7 @@
    #:api-page
    #:remove-api-page
    #:api-call
+   #:make-api-call
    #:*api-body*
    #:define-api)
   ;; conditions.lisp
