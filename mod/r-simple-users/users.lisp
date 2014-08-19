@@ -32,14 +32,16 @@
   (setf (gethash (username user) *user-cache*) user))
 
 (defun user:get (username &key (if-does-not-exist NIL))
-  (or (gethash username *user-cache*)
-      (ecase if-does-not-exist
-        (:create
-         (make-instance 'user
-                        :username username
-                        :id (db:insert 'simple-users `((username . ,username) (permissions . "")))))
-        (:error (error 'user-not-found :user username))
-        ((NIL :NIL)))))
+  (let ((username (string-downcase username)))
+    (or (gethash username *user-cache*)
+        (ecase if-does-not-exist
+          (:create
+           (make-instance 'user
+                          :username username
+                          :id (db:insert 'simple-users `((username . ,username) (permissions . "")))))
+          (:error (error 'user-not-found :user username))
+          (:anonymous (user:get "anonymous"))
+          ((NIL :NIL))))))
 
 (defun user:username (user)
   (username user))
@@ -135,6 +137,8 @@
             (uid (dm:field entry "uid")))
         (l:debug :users "Set field ~a of ~a to ~s" field (gethash uid idtable) value)
         (setf (gethash field (fields (gethash uid idtable))) value)))
+    ;; ensure anonymous user
+    (user:get :anonymous :if-does-not-exist :create)
     (l:info :users "Synchronized ~d users from database." (hash-table-count idtable))))
 
 (define-trigger db:connected ()
