@@ -26,3 +26,9 @@
 (defun process (target &rest fields)
   (let ((*package* (find-package "RADIANCE")))
     (apply #'clip:process target fields)))
+
+(defmacro lquery-wrapper ((template) &body body)
+  `(let ((lquery:*lquery-master-document* (lquery:load-page (template ,template))))
+     ,@body
+     (setf (content-type *response*) "application/xhtml+xml")
+     (lquery:$ (serialize) (node))))
