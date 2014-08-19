@@ -30,4 +30,7 @@
                                      :USER "-radiance",
                                      :PASS "-q#vRsABnFrJ417$!",
                                      :DATABASE "-radiance"}},
-              :DEFAULT :TUNNEL}} 
+              :DEFAULT :TUNNEL},
+ :PLASTER {EQL
+           :ANON T,
+           :CAPTCHA T}} 
