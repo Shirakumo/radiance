@@ -40,7 +40,7 @@
        ,@(when (module)
            `((pushnew ',name (module-storage ,(module) 'radiance-pages))))
        (define-uri-dispatcher ,name (,uri ,(gensym "REQUEST"))
-         (block NIL
+         (block ,name
            ,@*page-body*)))))
 
 (define-delete-hook (module 'radiance-destroy-pages)
