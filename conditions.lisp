@@ -107,4 +107,12 @@
 (defun handle-condition (condition)
   (if *debugger*
       (invoke-debugger condition)
-      (invoke-restart 'set-data (format NIL "Error occurred: ~a" condition))))
+      (invoke-restart
+       'set-data
+       (typecase condition
+         (request-not-found
+          (data-file "static/html/error/404.html"))
+         (request-denied
+          (data-file "static/html/error/403.html"))
+         (T
+          (data-file "static/html/error/500.html"))))))
