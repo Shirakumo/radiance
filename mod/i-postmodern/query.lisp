@@ -8,6 +8,7 @@
 
 (defun exec-query (query vars &optional (row-reader 'cl-postgres:ignore-row-reader))
   (with-connection
+    (l:trace :database "QUERY: ~s ~s" query vars)
     (cl-postgres:prepare-query *current-con* "" query)
     (cl-postgres:exec-prepared *current-con* "" vars row-reader)))
 
