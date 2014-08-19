@@ -12,7 +12,9 @@
 (defun startup ()
   (load-config)
   (loop for module in (config-tree :startup)
-        do (asdf:load-system module))
+        do (if (member :quicklisp *features*)
+               (funcall (symbol-function (find-symbol "QUICKLOAD" :ql)) module)
+               (asdf:load-system module)))
   (trigger 'startup))
 
 (defun shutdown ()
