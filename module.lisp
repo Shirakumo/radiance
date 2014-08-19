@@ -11,6 +11,7 @@
   (:export
    #:*default-api-format*
    #:*serialize-fallback*
+   #:api-output
    #:api-format
    #:remove-api-format
    #:define-api-format
@@ -19,7 +20,7 @@
    #:api-option
    #:remove-api-option
    #:define-api-option
-   
+
    #:api-page
    #:remove-api-page
    #:api-call

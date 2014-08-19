@@ -142,6 +142,6 @@
          (subpath (subseq (path *request*) (1+ slashpos)))
          (api-page (or (api-page subpath) (api-page ""))))
     (handler-case
-        (api-output (api-call api-page *request*))
+        (api-call api-page *request*)
       (api-error (err)
         (api-output err)))))
