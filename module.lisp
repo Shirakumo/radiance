@@ -153,7 +153,9 @@
   ;; toolkit.lisp
   (:export
    #:static-file
-   #:template)
+   #:template
+   #:with-model
+   #:with-model-fields)
   ;; uri.lisp
   (:export
    #:uri

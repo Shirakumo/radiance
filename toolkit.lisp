@@ -55,3 +55,23 @@
          (%template namestring base)
          `(merge-pathnames ,namestring ,(merge-pathnames "template/" (merge-pathnames (resolve-base base))))))
     (T `(template ,namestring ,base))))
+
+(defmacro with-model-fields (object fields &body body)
+  (let ((model (gensym "MODEL")))
+    `(let ((,model ,object))
+       (declare (ignorable ,model))
+       (symbol-macrolet
+           ,(mapcar #'(lambda (field)
+                        (destructuring-bind (name &optional (field name)) (if (listp field) field (list field))
+                          `(,name (dm:field ,model ,(string-downcase field))))) fields)
+         ,@body))))
+
+(defmacro with-model (modelvar (collection query &rest fields) &body body)
+  `(let ((,modelvar ,(if query
+                         `(dm:get-one ,collection ,query)
+                         `(dm:hull ,collection))))
+     (declare (ignorable ,modelvar))
+     ,@(if fields
+           `((with-model-fields ,modelvar ,fields
+               ,@body))
+           body)))
