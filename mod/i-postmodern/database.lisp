@@ -28,7 +28,7 @@
   (flet ((err (msg) (error 'database-invalid-collection :collection collection :message msg)))
     (check-collection-name collection)
     (unless structure (err "Structure cannot be empty."))
-    (let ((query (format NIL "CREATE TABLE \"~a\" (\"_id\" INTEGER NOT NULL DEFAULT nextval('~:*~a-id-seq'), ~{~a~^, ~});"
+    (let ((query (format NIL "CREATE TABLE \"~a\" (\"_id\" INTEGER PRIMARY KEY DEFAULT nextval('~:*~a-id-seq'), ~{~a~^, ~});"
                          (string-downcase collection) (mapcar #'compile-field structure))))
       (with-connection
         (when (postmodern:table-exists-p (string-downcase collection))
