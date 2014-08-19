@@ -9,6 +9,7 @@
 ;;; Formats
 (defvar *api-formats* (make-hash-table :test 'equalp))
 (defvar *default-api-format* "lisp")
+(defvar *serialize-fallback* #'(lambda (a) a))
 
 (defun api-format (name)
   (gethash (string name) *api-formats*))

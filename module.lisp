@@ -10,6 +10,7 @@
   ;; api.lisp
   (:export
    #:*default-api-format*
+   #:*serialize-fallback*
    #:api-format
    #:remove-api-format
    #:define-api-format

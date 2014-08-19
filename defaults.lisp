@@ -43,7 +43,7 @@
 
 ;; Api standard serialise
 (defmethod api-serialize (object)
-  object)
+  (funcall *serialize-fallback* object))
 
 (defmethod api-serialize ((list list))
   (mapcar #'api-serialize list))
@@ -70,7 +70,16 @@
 ;; Api standard format
 (define-api-format lisp (object)
   (setf (content-type *response*) "text/x-sexpr")
-  (write-to-string (api-serialize object)))
+  (let ((*serialize-fallback* #'(lambda (o)
+                                  (typecase o
+                                    (hash-table
+                                     (list :object :table
+                                           :fields (loop for k being the hash-keys of o
+                                                         for v being the hash-values of o
+                                                         collect (cons k v))))
+                                    (T o)))))
+    (write-to-string
+     (api-serialize object))))
 
 ;; Default urls
 (define-page favicon #@"/favicon.ico" ()
