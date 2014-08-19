@@ -52,7 +52,7 @@
            (cond
              (redirect
               (redirect (format NIL "~a?msg=~a" (referer *request*) message))
-              (return))
+              (return-from simple-auth/login))
              (T (error message)))))
     (when (auth:current)
       (err "Already logged in."))
