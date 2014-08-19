@@ -64,11 +64,17 @@
   (remhash (string path) *api-pages*))
 
 (defclass api-page ()
-  ((handler :initarg :handler :initform (error "HANDLER function required.") :accessor handler)
+  ((name :initarg :name :initform (error "NAME required.") :accessor name)
+   (handler :initarg :handler :initform (error "HANDLER function required.") :accessor handler)
    (argslist :initarg :argslist :initform () :accessor argslist)
    (docstring :initarg :docstring :initform NIL :accessor docstring)))
 
+(defmethod print-object ((api api-page) stream)
+  (print-unreadable-object (api stream :type T)
+    (format stream "~a ~s" (name api) (argslist api))))
+
 (defun api-call (api-page request)
+  (v:trace :api "API-CALL: ~a ~a" request api-page)
   (loop with args = ()
         with in-optional = NIL
         for arg in (argslist api-page)
@@ -120,6 +126,7 @@
        (setf (api-page ,(string name))
              (make-instance
               'api-page
+              :name ,(string name)
               :argslist ',args
               :handler #'(lambda ,(extract-lambda-vars args) (block NIL ,@*api-body*))
               :docstring ,(getf options :documentation))))))
