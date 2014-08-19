@@ -89,7 +89,7 @@
              (T
               (let ((val (post/get (string arg) request)))
                 (if val (push val args) (error 'api-argument-missing :argument arg)))))
-        finally (apply (handler api-page) (nreverse args))))
+        finally (return (apply (handler api-page) (nreverse args)))))
 
 (defun make-api-call (api-page &rest arguments)
   (loop with args = ()
@@ -106,7 +106,7 @@
              (T
               (let ((val (getf arguments (find-symbol (string arg) "KEYWORD"))))
                 (if val (push val args) (error 'api-argument-missing :argument arg)))))
-        finally (apply (handler api-page) (nreverse args))))
+        finally (return (apply (handler api-page) (nreverse args)))))
 
 (defvar *api-body*)
 (defmacro define-api (name args options &body body)
