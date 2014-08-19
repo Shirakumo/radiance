@@ -95,7 +95,7 @@
 (define-hook request (request response))
 (defun request (request &optional (response (make-instance 'response)))
   (handler-bind ((error #'handle-condition))
-    (let ((*request* request)
+    (let ((*request* (resolve-route request))
           (*response* response)
           (*session* NIL))
       (trigger 'request request response)
