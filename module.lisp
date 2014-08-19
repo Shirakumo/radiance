@@ -37,6 +37,7 @@
    #:request-not-found
    #:request-denied
    #:api-error
+   #:api-auth-error
    #:api-argument-missing
    #:argument
    #:api-argument-invalid

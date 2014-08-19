@@ -38,6 +38,10 @@
   (:report (lambda (c s) (format s "The API call to ~a failed.~@[ ~a~]"
                                  (current-request c) (message c)))))
 
+(define-condition api-auth-error (api-error) ()
+  (:report (lambda (c s) (format s "The API call to ~a was denied.~@[ ~a~]"
+                                 (current-request c) (message c)))))
+
 (define-condition api-argument-missing (api-error)
   ((argument :initarg :argument :initform (error "ARGUMENT required.") :accessor argument))
   (:report (lambda (c s) (format s "The argument ~s is required, but was not passed.~@[ ~a~]"
