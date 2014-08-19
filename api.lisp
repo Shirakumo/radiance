@@ -74,7 +74,7 @@
     (format stream "~a ~s" (name api) (argslist api))))
 
 (defun api-call (api-page request)
-  (v:trace :api "API-CALL: ~a ~a" request api-page)
+  (l:trace :api "API-CALL: ~a ~a" request api-page)
   (loop with args = ()
         with in-optional = NIL
         for arg in (argslist api-page)
@@ -128,7 +128,7 @@
               'api-page
               :name ,(string name)
               :argslist ',args
-              :handler #'(lambda ,(extract-lambda-vars args) (block ,name ,@*api-body*))
+              :handler #'(lambda ,(extract-lambda-vars args) (block ,(when (symbolp name) name) ,@*api-body*))
               :docstring ,(getf options :documentation))))))
 
 (define-delete-hook (module 'radiance-destroy-apis)
