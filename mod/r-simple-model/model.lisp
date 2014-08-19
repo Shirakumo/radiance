@@ -38,7 +38,7 @@
               :skip skip :amount 1 :sort sort))
 
 (defun dm:hull (collection) ;; speed up test with extra interface func.
-  (unless (member collection (db:collections) :test #'string-equal)
+  (unless (db:collection-exists-p collection)
     (error 'database-invalid-collection :collection collection :message "Cannot create hull."))
   (make-instance 'data-model :collection collection))
 
