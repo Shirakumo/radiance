@@ -79,12 +79,13 @@
   (defun severe (category log-string &rest format-args))
   (defun fatal (category log-string &rest format-args)))
 
-;; As per spec
+;; As per spec (needs updating)
 (define-interface (database db)
   (defun connect (database-name))
   (defun disconnect ())
   (defun connected-p ())
   (defun collections ())
+  (defun collection-exists-p (collection))
   (defun create (collection structure &key indices (if-exists :ignore)))
   (defun structure (collection))
   (defun empty (collection))
