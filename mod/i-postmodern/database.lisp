@@ -20,6 +20,10 @@
   (with-connection
     (postmodern:list-tables T)))
 
+(defun db:collection-exists-p (collection)
+  (with-connection
+    (postmodern:table-exists-p (string-downcase collection))))
+
 (defun db:create (collection structure &key indices (if-exists :ignore))
   (flet ((err (msg) (error 'database-invalid-collection :collection collection :message msg)))
     (check-collection-name collection)
