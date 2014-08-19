@@ -86,7 +86,7 @@
   (let ((request (parse-uri (format NIL "~a~a"
                                     (hunchentoot:host ht-request)
                                     (hunchentoot:url-decode
-                                     (hunchentoot:request-uri ht-request)
+                                     (hunchentoot:script-name ht-request)
                                      *default-external-format*)))))
     (change-class
      request 
