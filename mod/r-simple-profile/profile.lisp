@@ -10,13 +10,19 @@
   (:implements #:profile))
 (in-package #:simple-profile)
 
+(defun normalize (user)
+  (etypecase user
+    (user:user user)
+    (null (user:get :anonymous))
+    ((or string symbol) (user:get user :if-does-not-exist :error))))
+
 (defun profile:avatar (user size)
-  (let ((email (or (user:field (if (stringp user) (user:get user) user) "email") "")))
+  (let ((email (or (user:field (normalize user) "email") "")))
     (format NIL "//www.gravatar.com/avatar/~a?s=~d&d=blank"
             (cryptos:md5 (string-downcase email)) size)))
 
 (defun profile:name (user)
-  (user:field user "displayname"))
+  (user:field (normalize user) "displayname"))
 
 (defun profile:page (user &optional (page-type :profile))
   (declare (ignore user page-type))
