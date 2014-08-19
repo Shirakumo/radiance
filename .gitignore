@@ -6,3 +6,5 @@
 radiance.json
 /lib/radiance-core
 /lib/radiance-web
+/mod/reader
+/mod/plaster
