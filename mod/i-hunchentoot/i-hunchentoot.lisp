@@ -27,10 +27,10 @@
                    finally (return T))))))
 
 (define-trigger server-start ()
-  (loop for domain in (config-tree :hunchentoot :domains)
+  (loop for domain in (config-tree :server :domains)
         do (setf (gethash domain *url-rewriters*)
                  (compile-url-rewriter domain)))
-  (loop for config in (config-tree :hunchentoot :instances)
+  (loop for config in (config-tree :server :instances)
         do (server:start (gethash :port config)
                          :address (gethash :address config)
                          :ssl-key (whenthen (gethash :ssl-key config) #'data-file)
@@ -92,8 +92,6 @@
      request 
      'request
      :http-method (hunchentoot:request-method ht-request)
-     :user-agent (hunchentoot:user-agent ht-request)
-     :referer (hunchentoot:referer ht-request)
      :remote (hunchentoot:remote-addr ht-request))
     (loop for domain being the hash-keys of *url-rewriters*
           for rewriter being the hash-values of *url-rewriters*
