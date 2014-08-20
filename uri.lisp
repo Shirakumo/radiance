@@ -25,7 +25,7 @@
   (declare (ignore env))
   `(make-uri :domains ',(domains uri) :port ,(port uri) :path ,(path uri)))
 
-(defmethod (setf path) (val (uri uri))
+(defmethod (setf path) :after (val (uri uri))
   (when (matcher uri)
     (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
