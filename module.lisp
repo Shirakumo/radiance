@@ -70,3 +70,7 @@
    #:read-data-file
    #:data-file
    #:resolve-base))
+
+(define-module radiance-user
+  (:nicknames #:rad-user)
+  (:use #:cl #:radiance))
