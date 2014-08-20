@@ -10,7 +10,7 @@
               :AUTH "-r-simple-auth",
               :CACHE "-r-simple-cache",
               :PROFILE "-r-simple-profile"},
- :HUNCHENTOOT {EQL
+ :SERVER {EQL
                :INSTANCES ({EQL
                             :PORT 8080}
                            {EQL
