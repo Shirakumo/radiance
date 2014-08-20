@@ -13,14 +13,12 @@
 (defvar *default-content-type* "text/html")
 
 (defclass request (uri)
-  ((http-method :initarg :http-method :initform "GET" :accessor http-method)
+  ((http-method :initarg :http-method :initform :GET :accessor http-method)
    (headers :initarg :headers :initform (make-hash-table :test 'equalp) :accessor headers)
    (post-data :initarg :post-data :initform (make-hash-table :test 'equalp) :accessor post-data)
    (get-data :initarg :get-data :initform (make-hash-table :test 'equalp) :accessor get-data)
    (cookies :initarg :cookies :initform (make-hash-table :test 'equalp) :accessor cookies)
    (domain :initarg :domain :initform "localhost" :accessor domain)
-   (user-agent :initarg :user-agent :initform "unknown" :accessor user-agent)
-   (referer :initarg :referer :initform "" :accessor referer)
    (remote :initarg :remote :initform "unknown" :accessor remote)))
 
 (defmethod print-object ((request request) stream)
@@ -54,6 +52,18 @@
     (format stream "~a=~s ~@[~a~]~@[~a~] (~:[SESSION~;~:*~a~])~:[~; HTTP-ONLY~]~:[~; SECURE~]"
             (name c) (value c) (domain c) (path c) (expires c) (http-only c) (secure c))))
 
+(defun user-agent (&optional (request *request*))
+  (gethash "user-agent" (headers request)))
+
+(defun (setf user-agent) (value &optional (request *request*))
+  (setf (gethash "user-agent" (headers request)) value))
+
+(defun referer (&optional (request *request*))
+  (gethash "referer" (headers request)))
+
+(defun (setf referer) (value &optional (request *request*))
+  (setf (gethash "referer" (headers request)) value))
+
 (defun cookie (name &optional (request/response *request*))
   (gethash name (cookies request/response)))
 
@@ -71,6 +81,8 @@
   (gethash name (headers request/response)))
 
 (defun file (name &optional (request *request*))
+  "Returns file info about a form uploaded file.
+ (PATH ORIGINAL-FILENAME MIME-TYPE)"
   (let ((var (post-var name request)))
     (cond
       ((null var) (error "No such post parameter."))
@@ -115,7 +127,7 @@
                   (pathname T) (string T) ((array (unsigned-byte 8)) T)
                   (null (error 'request-empty :request *request*)))
               (set-data (data)
-                :report "Set a new data"
+                :report "Set new data"
                 :interactive read-value
                 (setf (data *response*) data)
                 NIL)))
