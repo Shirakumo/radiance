@@ -29,6 +29,7 @@
    #:define-api)
   ;; conditions.lisp
   (:export
+   #:*debugger*
    #:radiance-error
    #:message
    #:radiance-warning
