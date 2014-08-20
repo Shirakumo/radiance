@@ -111,8 +111,11 @@
        'set-data
        (typecase condition
          (request-not-found
+          (setf (return-code *response*) 404)
           (data-file "static/html/error/404.html"))
          (request-denied
+          (setf (return-code *response*) 403)
           (data-file "static/html/error/403.html"))
          (T
+          (setf (return-code *response*) 500)
           (data-file "static/html/error/500.html"))))))
