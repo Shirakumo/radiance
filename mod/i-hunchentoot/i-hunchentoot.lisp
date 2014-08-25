@@ -49,9 +49,9 @@
                 :access-log-destination NIL
                 :message-log-destination NIL)))
     (if (and ssl-cert ssl-key)
-        (apply #'make-instance 'hunchentoot:ssl-acceptor
+        (apply #'make-instance 'hunchentoot:ssl-acceptor :persistent-connections-p NIL
                :ssl-certificate-file ssl-cert :ssl-privatekey-file ssl-key :ssl-privatekey-password ssl-pass args)
-        (apply #'make-instance 'hunchentoot:easy-acceptor args))))
+        (apply #'make-instance 'hunchentoot:easy-acceptor :persistent-connections-p NIL args))))
 
 (defun server:start (port &key address ssl-cert ssl-key ssl-pass)
   (let ((listener (mklist port address ssl-cert ssl-key ssl-pass))
@@ -127,8 +127,12 @@
 
 (defun pre-handler (request)
   (let ((request (create-real-request request)))
+    #+sbcl (setf (sb-thread:thread-name (bt:current-thread))
+                 (princ-to-string request))
     (l:trace :server "Pre-process: ~a" request)
     (let ((response (request request)))
       #'(lambda () (post-handler response request)))))
 
 (setf hunchentoot:*dispatch-table* (list #'pre-handler))
+
+
