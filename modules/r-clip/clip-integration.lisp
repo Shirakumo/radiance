@@ -7,7 +7,7 @@
 (in-package #:modularize-user)
 (define-module r-clip
   (:use #:cl #:radiance)
-  (:export #:process))
+  (:export #:process #:lquery-wrapper))
 (in-package #:r-clip)
 
 (define-page-option lquery (page uri &optional template)
@@ -27,8 +27,8 @@
   (let ((*package* (find-package "RADIANCE")))
     (apply #'clip:process target fields)))
 
-(defmacro lquery-wrapper ((template) &body body)
+(defmacro lquery-wrapper ((template &optional (content-type "application/xhtml+xml")) &body body)
   `(let ((lquery:*lquery-master-document* (lquery:load-page (template ,template))))
      ,@body
-     (setf (content-type *response*) "application/xhtml+xml")
+     (setf (content-type *response*) ,content-type)
      (lquery:$ (serialize) (node))))
