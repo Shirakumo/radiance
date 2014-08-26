@@ -89,5 +89,5 @@
 
 (defun uri-to-string (uri &key print-port print-request-domain)
   (format NIL "~{~a~^.~}~:[~*~;.~a~]~:[~*~;:~a~]/~a"
-          (domains uri) (and print-request-domain (typep uri 'request)) (domain uri)
+          (reverse (domains uri)) (and print-request-domain (typep uri 'request)) (when (typep uri 'request) (domain uri))
           (and print-port (port uri)) (port uri) (path uri)))
