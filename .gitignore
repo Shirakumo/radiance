@@ -1,11 +1,8 @@
-*.fasl
-/log/
 .directory
-/data/db-dev
 /data/simple-cache/
-radiance.json
-/lib/radiance-core
-/lib/radiance-web
-/mod/reader
-/mod/plaster
-/mod/chatlog
+/core/radiance-core
+/core/radiance-web
+/modules/reader
+/modules/plaster
+/modules/chatlog
+/modules/purplish
