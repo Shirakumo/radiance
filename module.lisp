@@ -145,15 +145,12 @@
   ;; routing.lisp
   (:export
    #:route
-   #:domains
-   #:port
-   #:path
-   #:transformer
-   
-   #:route
-   #:route-uri
+   #:remove-route
    #:define-route
-   #:resolve-route)
+   #:define-matching-route
+   #:define-target-route
+   #:define-string-route
+   #:route!)
   ;; toolkit.lisp
   (:export
    #:static-file

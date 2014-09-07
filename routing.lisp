@@ -6,195 +6,149 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
-;;; Route spec
-;; (DOMAINS PORT PATHS)
-;; DOMAINS   ::= LIST-SPEC | *
-;; PORT      ::= fixnum | symbol | *
-;; PATHS     ::= LIST-SPEC | *
-;; LIST-SPEC ::= VAR* [&optional OPT*] [&rest symbol]
-;; VAR       ::= symbol | string
-;; OPT       ::= symbol | string | (symbol value)
-;;
-;; The * symbol at any part means that no test is
-;; made.
-;;
-;; Ports are either skipped, bound to the symbol
-;; or tested for = equality with the given fixnum.
-;;
-;; Domains are matched via a pseudo lambda-list
-;; destructuring that supports &OPTIONAL, &REST and
-;; string restraints.
-;;
-;; Paths are split by / and then matched the same way
-;; as domains.
-;;
-;; A symbol in this context means that the corresponding
-;; part will be bound to that symbol and passed to the
-;; transformer. A string means that the URI only matches
-;; the route if the corresponding part is string= to the
-;; string.
-
 (defvar *routes* (make-hash-table :test 'eql))
+(defvar *route-priority* (make-array 0))
 
-(defclass route ()
-  ((domains :initarg :domains :initform '* :accessor domains)
-   (port :initarg :port :initform '* :accessor port)
-   (path :initarg :path :initform '* :accessor path)
-   (matcher :initarg :matcher :accessor matcher)
-   (transformer :initarg :transformer :initform (error "TRANSFORMER required.") :accessor transformer)))
 
-(defmethod initialize-instance :after ((route route) &key)
-  (setf (matcher route) (compile-route-matcher route)))
+(defun ensure-path (var)
+  (if (listp var) (format NIL "~{~a~^/~}" var) var))
 
-(defmethod print-object ((route route) stream)
-  (print-unreadable-object (route stream :type T)
-    (format stream "(~a ~a ~a)" (domains route) (port route) (path route)))
-  route)
+(defun ensure-list (var)
+  (if (listp var) var (list var)))
 
-(defmacro %setf-wrapper (slot)
-  `(defmethod (setf ,slot) (val (route route))
-     (setf (slot-value route ',slot) val
-           (matcher route) (compile-route-matcher route))))
-(%setf-wrapper domains)
-(%setf-wrapper port)
-(%setf-wrapper path)
+(defun rebuild-route-priority-cache ()
+  (setf *route-priority*
+        (loop with array = (make-array (hash-table-count *routes*))
+              for i from 0
+              for route in (sort (loop for route being the hash-values of *routes* collect route)
+                                 #'> :key #'car)
+              do (setf (aref array i) (cdr route)))))
 
 (defun route (name)
-  (assert (symbolp name))
-  (gethash name *routes*))
+  (cdr (gethash name *routes*)))
 
-(defun (setf route) (route name)
-  (assert (typep route 'route))
-  (assert (symbolp name))
-  (setf (gethash name *routes*) route))
+(defun (setf route) (function name &optional (priority 0))
+  (setf (gethash name *routes*) (cons priority function))
+  (rebuild-route-priority-cache)
+  name)
 
-(defun route-uri (route uri)
-  (funcall (matcher route) uri))
+(defun remove-route (name)
+  (remhash name *routes*)
+  (rebuild-route-priority-cache)
+  name)
 
-(defun extract-symbols (list)
-  (when (listp list)
-    (loop for item in list
-          when (or (symbolp item) (listp item))
-            collect (if (listp item) (car item) item))))
+(defmacro define-route (name (urivar) &body body)
+  (destructuring-bind (name &optional (priority 0)) (ensure-list name)
+    `(setf (route ',name)
+           #'(lambda (,urivar)
+               ,@body)
+           ,priority)))
 
-(defvar *matched-vars*)
-(defun put-key (key val)
-  (push val *matched-vars*)
-  (push (make-keyword key) *matched-vars*))
+(defun extract-vars-and-tests (test-forms)
+  (loop with basic-tests = ()
+        with regex-tests = ()
+        for test in test-forms
+        collect (etypecase test
+                  (symbol test)
+                  (fixnum
+                   (let ((gens (gensym (format NIL "FIXNUM=~a" test))))
+                     (push (list '=  gens test) basic-tests)
+                     gens))
+                  (string
+                   (let ((gens (gensym (format NIL "STRING=~a" test))))
+                     (push (list 'string= gens test) basic-tests)
+                     gens))
+                  (list
+                   (let ((gens (gensym (format NIL "REGEX=~a" (car test)))))
+                     (push (list gens (car test) (cdr test)) regex-tests)
+                     gens))) into vars
+        finally (return (values vars basic-tests regex-tests))))
 
-(defun compile-port-test (port-matcher)
-  (cond
-    ((eql port-matcher '*)
-     (constantly T))
-    ((typep port-matcher 'fixnum)
-     #'(lambda (uri)
-         (and (port uri) (= (port uri) port-matcher))))
-    ((symbolp port-matcher)
-     #'(lambda (uri)
-         (put-key port-matcher (port uri))
-         T))
-    (T (error "Invalid port matcher ~s, should be a symbol, '* or fixnum." port-matcher))))
+(defmacro with-destructuring-route-bind (test-form value-form &body body)
+  (multiple-value-bind (vars basic-tests regex-tests) (extract-vars-and-tests test-form)
+    `(ignore-errors ; To ensure that an unmatching form just skips silently.
+      ;; I'd love a better mechanism than ignore-errors, since it will also
+      ;; catch other errors, but the CLHS does not ensure any form of error
+      ;; that we could specifically catch on a destructuring-bind fail.
+      ;;
+      ;; This problem has hit me many times before and it always makes me sad.
+      ;; Imagine crying kittens. 
+      (destructuring-bind ,vars ,value-form
+        (when (and ,@(loop for (func var comparison) in basic-tests
+                           collect `(,func ,comparison ,var)))
+          ,@(loop with body = body
+                  for (var regex bindings) in regex-tests
+                  do (setf body `((cl-ppcre:register-groups-bind ,bindings (,regex ,var)
+                                    ,@body)))
+                  finally (return body)))))))
 
-(defun compile-list-test (list)
-  ;; check for conformity and compile tests
-  (let ((tests ())
-        (required-count (loop for i in list until (member i '(&optional &rest)) count i))
-        (optional-count (loop for i in list until (member i '(&rest)) unless (eql i '&optional) count i))
-        (in-rest)
-        (in-optional))
-    (dolist (item list)
-      (when (member item '(&allow-other-keys &aux &body &environment &key &whole))
-        (error "Only the &REST and &OPTIONAL lambda-keywords are allowed."))
-      (when in-rest
-        (unless (symbolp item)
-          (error "The &REST argument must be a symbol."))
-        (if (eql in-rest T)
-            (setf in-rest item
-                  tests (cons #'(lambda (a) (put-key item a)) tests))
-            (error "Only one symbol can follow after &REST.")))
-      (when (and (not in-optional) (not (stringp item)) (not (symbolp item)))
-        (error "Required arguments must be either a STRING or a SYMBOL."))
-      (when in-optional
-        (unless (or (stringp item) (symbolp item) (listp item))
-          (error "Optional arguments must be either a STRING, SYMBOL or a LIST."))
-        (when (and (listp item) (stringp (first item)))
-          (error "Default values make no sense for STRING matches."))
-        (if (stringp item)
-            (push #'(lambda (a)
-                      (let ((a (car a)))
-                        (or (not a) (string= a item)))) tests)
-            (destructuring-bind (item &optional default) (if (listp item) item (list item))
-              (push #'(lambda (a)
-                        (let ((a (car a)))
-                          (put-key item (or a default)))) tests))))
-      (when (eql item '&rest) (setf in-rest T))
-      (when (eql item '&optional) (setf in-optional T))
-      (unless (or in-optional in-rest)
-        (if (stringp item)
-            (push #'(lambda (a) (string= (car a) item)) tests)
-            (push #'(lambda (a) (let ((a (car a))) (put-key item a))) tests))))
-    (setf tests (nreverse tests))
-    #'(lambda (paths)
-        (when (or (and in-optional
-                       (<= (length paths) optional-count))
-                  (and in-rest
-                       (<= required-count (length paths)))
-                  (= required-count (length paths)))
-          (loop for test in tests
-                for path = paths
-                  then (cdr path)
-                always (funcall test path))))))
+(defmacro with-route-part-bindings ((value-form test-form) &body body)
+  (cond ((eq test-form '*)
+         `(progn ,@body))
+        ((integerp test-form)
+         `(when (= ,test-form ,value-form)
+            ,@body))
+        ((stringp test-form)
+         `(when (string= ,test-form ,value-form)
+            ,@body))
+        ((listp test-form)
+         `(with-destructuring-route-bind ,test-form ,value-form
+            ,@body))
+        ((symbolp test-form)
+         `(let ((,test-form ,value-form))
+            ,@body))
+        (T (error "I don't know what to do with the test-form ~s." test-form))))
 
-(defun compile-domain-test (domains)
-  (cond
-    ((eql domains '*)
-     (constantly T))
-    ((listp domains)
-     (let ((test (compile-list-test domains)))
-       #'(lambda (uri)
-           (funcall test (domains uri)))))
-    (T (error "Invalid domain matcher ~s, should be either '* or a matcher-lambda-list." domains))))
+(defmacro with-route-test-bindings ((uri domains port path) &body body)
+  `(with-route-part-bindings ((or (port ,uri) -1) ,port)
+     (with-route-part-bindings ((domains ,uri) ,domains)
+       (with-route-part-bindings ((cl-ppcre:split "/" (path ,uri)) ,path)
+         ,@body))))
 
-(defun compile-path-test (paths)
-  (cond
-    ((eql paths '*)
-     (constantly T))
-    ((listp paths)
-     (let ((test (compile-list-test paths)))
-       #'(lambda (uri)
-           (funcall test (cl-ppcre:split "/" (path uri))))))
-    (T (error "Invalid path matcher ~s, should be either '* or a matcher-lambda-list." paths))))
+(defmacro define-matching-route (name (urivar domains port path) &body body)
+  `(define-route ,name (,urivar)
+     (with-route-test-bindings (,urivar ,domains ,port ,path)
+       ,@body)))
 
-(defun compile-route-matcher (route)
-  (let ((port-test (compile-port-test (port route)))
-        (domain-test (compile-domain-test (domains route)))
-        (path-test (compile-path-test (path route))))
-    #'(lambda (uri)
-        (let ((*matched-vars*))
-          (when (and (funcall port-test uri)
-                     (funcall domain-test uri)
-                     (funcall path-test uri))
-            (apply (transformer route) uri *matched-vars*))))))
+(defmacro define-target-route (name (domains port path) (target-domains target-port target-path))
+  `(define-matching-route ,name (uri ,domains ,port ,path)
+     ,@(unless (eql target-domains '*)
+         `((setf (domains uri)
+                 ,(if (listp target-domains)
+                      `(apply #'append (mapcar #'ensure-list (list ,@target-domains)))
+                      `(ensure-list ,target-domains)))))
+     ,@(unless (eql target-port '*)
+         `((setf (port uri) ,target-port)))
+     ,@(unless (eql target-path '*)
+         `((setf (path uri)
+                 ,(if (listp target-path)
+                      `(format NIL "~{~a~^/~}" (mapcar #'(lambda (a) (ensure-path a)) (list ,@target-path)))
+                      `(ensure-path ,target-path)))))))
 
-(defmacro define-route (name pattern &body transformations)
-  (destructuring-bind (name &optional (uri 'uri)) (if (listp name) name (list name))
-    (destructuring-bind (domains port path) pattern
-      (let ((symbols (append (extract-symbols domains)
-                             (when (and (symbolp port) (not (eql port '*)))
-                               (list port))
-                             (extract-symbols path))))
-        `(setf (route ',name)
-               (make-instance
-                'route
-                :path ',path
-                :domains ',domains
-                :port ,(if (symbolp port) `',port port)
-                :transformer #'(lambda (,uri &key ,@symbols)
-                                 ,@transformations)))))))
+(defun escape-regex-dots-not-in-group (regex)
+  (with-output-to-string (s)
+    (loop with parencount = 0
+          for prev = #\Space then char
+          for char across regex
+          do (cond ((and (char= char #\() (char/= prev #\\))
+                    (incf parencount))
+                   ((and (char= char #\)) (char/= prev #\\))
+                    (decf parencount))
+                   ((and (char= char #\.) (= 0 parencount))
+                    (write-char #\\ s)))
+             (write-char char s))))
 
-(defun resolve-route (uri)
-  (loop for route being the hash-values of *routes*
-        for match = (route-uri route uri)
-        when match
-          do (return (resolve-route match))
-        finally (return uri)))
+(defmacro define-string-route (name source target)
+  (let ((source (escape-regex-dots-not-in-group source)))
+    `(define-route ,name (uri)
+       (let ((uristring (uri-to-string uri :print-port T)))
+         (when (cl-ppcre:scan ,source uristring)
+           (let ((newuri (parse-uri (cl-ppcre:regex-replace ,source uri ,target))))
+             (setf (domains uri) (domains newuri)
+                   (port uri) (port newuri)
+                   (path uri) (path newuri))))))))
+
+(defun route! (uri)
+  (loop for route-func across *route-priority*
+        do (funcall route-func uri))
+  uri)
