@@ -14,14 +14,22 @@
                                      (error 'request-not-found :request request :message "Reached dispatch fallback."))))
 
 (defclass uri-dispatcher (uri)
-  ((dispatch-function :initarg :dispatch-function :initform (constantly t) :accessor dispatch-function)))
+  ((dispatch-function :initarg :dispatch-function :initform (constantly t) :accessor dispatch-function)
+   (priority :initarg :priority :initform NIL :accessor priority)))
+
+(defun make-uri-dispatcher (uri dispatch-function &optional priority)
+  (let ((uri (copy-uri uri)))
+    (change-class uri 'uri-dispatcher)
+    (setf (dispatch-function uri) dispatch-function
+          (priority uri) priority)
+    uri))
 
 (defun uri-dispatcher (name)
   (gethash name *uri-registry*))
 
-(defun (setf uri-dispatcher) (uri-or-f name &optional uri)
+(defun (setf uri-dispatcher) (uri-or-f name &optional uri priority)
   (if uri
-      (setf uri-or-f (make-uri-dispatcher uri uri-or-f))
+      (setf uri-or-f (make-uri-dispatcher uri uri-or-f priority))
       (unless (typep uri-or-f 'uri-dispatcher)
         (error 'type-error :datum uri-or-f :expected-type 'uri-dispatcher)))
   (setf (gethash name *uri-registry*) uri-or-f)
@@ -33,22 +41,22 @@
   (rebuild-uri-priority)
   name)
 
-(defun make-uri-dispatcher (uri dispatch-function)
-  (let ((uri (copy-uri uri)))
-    (change-class uri 'uri-dispatcher)
-    (setf (dispatch-function uri) dispatch-function)
-    uri))
-
 (defun rebuild-uri-priority ()
   (setf *uri-priority*
         (sort (loop with array = (make-array (hash-table-count *uri-registry*))
                     for uri being the hash-values of *uri-registry*
                     for i from 0 do (setf (aref array i) uri)
-                    finally (return array)) #'uri>)))
+                    finally (return array))
+              #'(lambda (a b)
+                  (or (and (priority a)
+                           (or (not (priority b))
+                               (>= (priority a) (priority b))))
+                      (and (not (priority b))
+                           (uri> a b)))))))
 
-(defmacro define-uri-dispatcher (name (uri &optional (requestvar 'request)) &body body)
+(defmacro define-uri-dispatcher (name (uri &optional (requestvar 'request) priority) &body body)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (setf (uri-dispatcher ',name ,uri)
+     (setf (uri-dispatcher ',name ,uri ,priority)
            #'(lambda (,requestvar)
                (declare (ignorable ,requestvar))
                ,@body))))

@@ -28,20 +28,21 @@
 (defmacro define-page (name uri options &body body)
   (let ((*page-body* body)
         (no-value (gensym "NO-VALUE")))
-    `(eval-when (:compile-toplevel :load-toplevel :execute)
-       ,@(loop for option being the hash-keys of *page-options*
-               for function being the hash-values of *page-options*
-               for value = (getf options option no-value)
-               for result = (if (eql value no-value)
-                                (funcall function name uri)
-                                (funcall function name uri value))
-               when result
-                 collect result)
-       ,@(when (module)
-           `((pushnew ',name (module-storage ,(module) 'radiance-pages))))
-       (define-uri-dispatcher ,name (,uri ,(gensym "REQUEST"))
-         (block ,name
-           ,@*page-body*)))))
+    (destructuring-bind (uri &optional priority) (if (listp uri) uri (list uri))
+      `(eval-when (:compile-toplevel :load-toplevel :execute)
+         ,@(loop for option being the hash-keys of *page-options*
+                 for function being the hash-values of *page-options*
+                 for value = (getf options option no-value)
+                 for result = (if (eql value no-value)
+                                  (funcall function name uri)
+                                  (funcall function name uri value))
+                 when result
+                   collect result)
+         ,@(when (module)
+             `((pushnew ',name (module-storage ,(module) 'radiance-pages))))
+         (define-uri-dispatcher ,name (,uri ,(gensym "REQUEST") ,priority)
+           (block ,name
+             ,@*page-body*))))))
 
 (define-delete-hook (module 'radiance-destroy-pages)
   (dolist (page (module-storage module 'radiance-pages))

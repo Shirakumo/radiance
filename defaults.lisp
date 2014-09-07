@@ -82,13 +82,13 @@
      (api-serialize object))))
 
 ;; Default urls
-(define-page favicon #@"/favicon.ico" ()
+(define-page favicon (#@"/favicon.ico" 10) ()
   (serve-file (data-file "static/img/favicon.ico")))
 
-(define-page robots #@"/robots.txt" ()
+(define-page robots (#@"/robots.txt" 10) ()
   (serve-file (data-file "static/txt/robots.txt")))
 
-(define-page static #@"/static/.*" ()
+(define-page static (#@"/static/.*" 1000) ()
   (let ((slashpos (position #\/ (path *request*) :start (length "static/"))))
     (if slashpos
         (serve-file (static-file (subseq (path *request*) (1+ slashpos))
