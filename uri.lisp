@@ -42,7 +42,7 @@
 (defvar *uri-regex* (cl-ppcre:create-scanner "^(([a-z0-9\\-]+\\.)*[a-z0-9\\-]+)?(:(\\d{1,5}))?/(.*)" :case-insensitive-mode T))
 (defun parse-uri (uri-string)
   (or (cl-ppcre:register-groups-bind (domains NIL NIL port path) (*uri-regex* uri-string)
-        (make-uri :domains (nreverse (cl-ppcre:split "\\." (string-downcase domains))) :port (when port (parse-integer port)) :path path))
+        (make-uri :domains (when domains (nreverse (cl-ppcre:split "\\." (string-downcase domains)))) :port (when port (parse-integer port)) :path path))
       (error "Failed to parse URI.")))
 
 (defun read-uri (stream char arg)
