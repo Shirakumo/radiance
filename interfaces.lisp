@@ -7,6 +7,13 @@
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
 ;; To be specced
+(define-interface admin
+  (defun panel (category name))
+  (defun (setf panel) (function category name))
+  (defun remove-panel (category name))
+  (defmacro define-panel (name category options &body body)))
+
+;; To be specced
 (define-interface cache
   (defun get (name))
   (defun renew (name))
@@ -56,9 +63,11 @@
 (define-interface profile
   (defun avatar (user size))
   (defun name (user))
-  (defun page (user &optional (page-type :profile)))
-  (defmacro define-profile-panel (name options &body body))
-  (defmacro define-settings-panel (name options &body body)))
+  (defun page (user &optional (category :profile)))
+  (defun panel (category name))
+  (defun (setf panel) (function category name))
+  (defun remove-panel (category name))
+  (defmacro define-panel (category name options &body body)))
 
 ;; To be specced
 (define-interface server
