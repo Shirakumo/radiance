@@ -105,6 +105,7 @@
                                  (user c) (message c)))))
 
 (defun handle-condition (condition)
+  (l:warn :radiance "Handling stray condition: ~a" condition)
   (if *debugger*
       (invoke-debugger condition)
       (invoke-restart
