@@ -9,13 +9,14 @@
               :USER "-r-simple-users",
               :AUTH "-r-simple-auth",
               :CACHE "-r-simple-cache",
-              :PROFILE "-r-simple-profile"},
+              :PROFILE "-r-simple-profile",
+              :ADMIN "-r-simple-admin"},
  :SERVER {EQL
-               :INSTANCES ({EQL
-                            :PORT 8080}
-                           {EQL
-                            :PORT 4545}),
-               :DOMAINS ("-localhost" "-linuz.com")},
+          :INSTANCES ({EQL
+                       :PORT 8080}
+                      {EQL
+                       :PORT 4545}),
+          :DOMAINS ("-localhost" "-linuz.com")},
  :POSTMODERN {EQL
               :CONNECTIONS {EQL
                             :LOCALHOST {EQL
