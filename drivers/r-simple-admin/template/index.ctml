@@ -16,7 +16,7 @@
             CATEGORY
           </a>
           <ul iterate="panels">
-            <li>
+            <li lquery="(add-class (or (when (simple-admin::is-current url) &quot;active&quot;) &quot;inactive&quot;))">
               <a href="#" lquery="(attr :href url) (text title)">
                 <i class="fa" lquery="(add-class icon)"></i>
                 PANEL

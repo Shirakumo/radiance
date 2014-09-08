@@ -21,6 +21,9 @@
                        :panels (loop for panel being the hash-values of panels
                                      collect panel)))))
 
+(defun is-current (url)
+  (string-equal url (format NIL "/~a" (path *request*))))
+
 (defun admin::category (category)
   (gethash (string category) *categories*))
 
