@@ -74,14 +74,24 @@
           (array (lquery:$ result (serialize) (node))))))))
 
 (define-page admin-index #@"admin/([^/]*)(/(.+))?" (:uri-groups (category NIL panel) :lquery (template "index.ctml"))
-  (r-clip:process
-   (lquery:$ (node))
-   :categories *prepared-categories*
-   :content (or (when (get-var "simple-admin-manage")
-                  (cond ((string= (get-var "simple-admin-manage") "shutdown")
-                         )
-                        ((string= (get-var "simple-admin-manage") "restart"))))
-                (run-panel category panel))))
+  (let ((manage (post/get "simple-admin-manage"))
+        (action (post-var "simple-admin-action")))
+    (r-clip:process
+     (lquery:$ (node))
+     :manage manage
+     :categories *prepared-categories*
+     :content (or (when manage
+                    (cond ((not action)
+                           (plump:parse (template "confirm.ctml")))
+                          ((not (string-equal action "yes"))
+                           NIL)
+                          ((string= manage "shutdown")
+                           (bt:make-thread #'(lambda () (sleep 1) (radiance:shutdown)))
+                           "Shutting down.")
+                          ((string= manage "restart")
+                           (bt:make-thread #'(lambda () (sleep 1) (radiance:shutdown) (radiance:startup)))
+                           "Restarting.")))
+                  (run-panel category panel)))))
 
 (admin:define-panel index admin (:icon "fa-home")
   "Hi.")
