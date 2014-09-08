@@ -1,0 +1,36 @@
+<div>
+  <h2>Manage Collection <c:splice lquery="(text collection)" /></h2>
+<div class="tablebox">
+  <table class="selectable actions tablesorter">
+    <thead>
+      <tr>
+	<th><input type="checkbox" class="select-all" /></th>
+        <c:splice iterate="fields">
+	  <th lquery="(text *)"></th>
+        </c:splice>  
+	<th>Actions</th>
+      </tr>
+    </thead>
+    <tbody iterate="records">
+      <tr>
+	<td><input type="checkbox" name="selected[]" form="massEditForm" lquery="(val _id)" /></td>
+        <c:splice iterate="(** :fields)">
+	  <td lquery="(text (clip ** *))"></td>
+        </c:splice>
+	<td>
+          <form action="/database/record" method="get">
+            <input type="hidden" name="collection" lquery="(val (** :collection))" />
+	    <input type="hidden" name="id" lquery="(val _id)" />
+	    <input type="submit" name="action" value="Edit" />
+	    <input type="submit" name="action" value="Delete" />
+	  </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <form class="table-actions" id="massEditForm" action="/database/record" method="post">
+    <input type="hidden" name="collection" lquery="(val collection)" />
+    <input type="submit" name="action" value="Delete" />
+  </form>
+</div>
+</div>

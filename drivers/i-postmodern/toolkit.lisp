@@ -30,6 +30,6 @@
 
 (defun check-collection-exists (collection)
   (check-collection-name collection)
-  (with-con
+  (with-connection
     (unless (postmodern:table-exists-p (string-downcase collection))
       (error 'database-invalid-collection :collection collection :message "Collection does not exist on database."))))

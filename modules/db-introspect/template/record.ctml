@@ -1,0 +1,15 @@
+<div>
+  <h2>Edit Record <c:splice lquery="(text (clip record :_id))" /> in <c:splice lquery="(text collection)" /></h2>
+<form action="#" method="post" class="box">
+  <ul iterate="fields">
+    <li class="template">
+      <label lquery="(text *)">Key</label>
+      <input type="text" value="Value" lquery="(val (clip (** :record) *)) (attr :name *)" />
+    </li>
+  </ul>
+  <div class="actionbar">
+    <input type="hidden" name="id" value="ID" lquery="(val (clip record '_id))" />
+    <input type="submit" name="action" value="Save" />
+  </div>
+</form>
+</div>

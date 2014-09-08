@@ -9,12 +9,12 @@
 	<th>Actions</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody iterate="collections">
       <tr>
-	<td data-uibox="text:name"></td>
-	<td data-uibox="text:records"></td>
+	<td lquery="(text *)"></td>
+	<td lquery="(text (db-introspect::ccount *))"></td>
 	<td><form action="/database/collection" method="get">
-	    <input type="hidden" name="name" data-uibox="value:name" />
+	    <input type="hidden" name="collection" lquery="(val *)" />
 	    <input type="submit" name="action" value="Show" />
 	    <input type="submit" name="action" value="Delete" />
 	</form></td>

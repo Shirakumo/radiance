@@ -5,6 +5,6 @@
 |#
 
 (in-package #:modularize-user)
-(define-module i-postmodern
+(define-module #:i-postmodern
   (:use #:cl #:radiance)
   (:implements #:database))
