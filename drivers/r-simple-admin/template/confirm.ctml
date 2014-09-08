@@ -1,6 +1,8 @@
-<form action="#" method="post">
+<form action="#" method="post" class="box">
   Are you sure?
   <input type="hidden" name="simple-admin-manage" value="VAL" lquery="(val manage)" />
-  <input type="submit" name="simple-admin-action" value="Yes" />
-  <input type="submit" name="simple-admin-action" value="Oh no!!" />
+  <div class="actionbar">
+    <input type="submit" name="simple-admin-action" value="Yes" />
+    <input type="submit" name="simple-admin-action" value="Oh no!!" />
+  </div>
 </form>
