@@ -44,6 +44,8 @@
    #:field)
   ;; init.lisp
   (:export
+   #:*startup-time*
+   #:uptime
    #:startup
    #:shutdown)
   ;; interfaces.lisp
