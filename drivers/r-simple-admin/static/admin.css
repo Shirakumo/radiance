@@ -31,6 +31,7 @@ body,html{
 
 body{
     display: flex;
+    align-items: stretch;
 }
 
 #panel{
@@ -182,6 +183,7 @@ body{
     padding: 20px;
     text-align: justify;
     position: relative;
+    overflow-y: auto;
 }
 
 #content label{display: inline-block; min-width: 150px;}
@@ -247,7 +249,7 @@ body{
 }
 
 #content .tablebox table.actions tbody tr td:last-child{
-    width: 1px;
+    width: 1px !important;
 }
 
 #content .tablebox table.actions tbody tr td:last-child form{
