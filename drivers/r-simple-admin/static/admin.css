@@ -359,6 +359,10 @@ body,html{
     padding: 0;
 }
 
+#content form.box ul li *{
+    vertical-align: text-top;
+}
+
 #content .box input, #content .box textarea, #content .box input[type='checkbox'],
 #content .tablebox input, #content .tablebox textarea, #content .tablebox input[type='checkbox']{
     border: 1px solid #0088EE;
@@ -399,8 +403,6 @@ body,html{
     border: none;
     background: #0088EE;
     color: #FFF;
-    position: absolute;
-    bottom: 0; left: 0;
     cursor: pointer;
 }
 
