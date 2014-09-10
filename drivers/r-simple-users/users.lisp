@@ -32,6 +32,10 @@
 (defmethod initialize-instance :after ((user user) &key)
   (setf (gethash (username user) *user-cache*) user))
 
+(defun user:list ()
+  (loop for user being the hash-values of *user-cache*
+        collect user))
+
 (defun user:get (username &key (if-does-not-exist NIL))
   (let ((username (string-downcase username)))
     (or (gethash username *user-cache*)
@@ -46,6 +50,10 @@
 
 (defun user:username (user)
   (username user))
+
+(defun user:fields (user)
+  (loop for field being the hash-keys of (fields user)
+        collect field))
 
 (defun user:field (user field)
   (gethash field (fields user)))
@@ -64,6 +72,9 @@
 
 (defun user:saved-p (user)
   (not (modified user)))
+
+(defun user:discard (user)
+  (user::sync-user (user:username user)))
 
 (defun user:remove (user)
   (trigger 'user:remove user)
@@ -120,6 +131,19 @@
                                         (db:query (:and (:= 'uid (id user)))))
               #'(lambda (ta) (gethash "action" ta))
               :fields '(action) :amount n :sort `((time ,(if oldest-first :ASC :DESC))) :accumulate T))
+
+(defun user::sync-user (username)
+  (with-model model ('simple-users (db:query (:= 'username username)))
+    (let ((user (make-instance 'user
+                               :id (dm:id model) :username (dm:field model "username")
+                               :permissions (mapcar #'(lambda (b) (cl-ppcre:split "\\." b))
+                                                    (cl-ppcre:split "\\n" (dm:field model "permissions"))))))
+      (dolist (entry (dm:get 'simple-users-fields (db:query (:= 'uid (dm:id model)))))
+        (let ((field (dm:field entry "field"))
+              (value (dm:field entry "value")))
+          (l:debug :users "Set field ~a of ~a to ~s" field user value)
+          (setf (gethash field (fields user)) value)))
+      user)))
 
 (defun user::sync ()
   (setf *user-cache* (make-hash-table :test 'equalp))
