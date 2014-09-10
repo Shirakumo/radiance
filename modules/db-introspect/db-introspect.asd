@@ -21,5 +21,4 @@
   :components ((:file "admin"))
   :depends-on ((:interface :data-model)
                (:interface :admin)
-               :r-clip
-               :string-case))
+               :r-clip))
