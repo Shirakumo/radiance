@@ -44,12 +44,15 @@
 ;; To be specced
 (define-interface user
   (defclass user () ())
+  (defun list ())
   (defun get (username &key (if-does-not-exist NIL)))
   (defun username (user))
+  (defun fields (user))
   (defun field (user field))
   (defun (setf field) (value user field))
   (defun save (user))
   (defun saved-p (user))
+  (defun discard (user))
   (defun remove (user))
   (defun check (user branch))
   (defun grant (user branch))
