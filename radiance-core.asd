@@ -27,4 +27,5 @@
                (:file "init"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
-               :universal-config))
+               :universal-config
+               :trivial-indent))

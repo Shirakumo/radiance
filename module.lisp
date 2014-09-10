@@ -8,6 +8,7 @@
 (define-module radiance-core
   (:use #:cl #:modularize #:modularize-interfaces #:modularize-hooks)
   (:nicknames #:radiance #:org.tymoonnext.radiance.lib.radiance.core)
+  (:shadow #:define-interface)
   ;; re-export from modularize
   (:export
    #:define-module
@@ -33,7 +34,6 @@
    #:interface-p
    #:implementation
    #:reset-interface
-   #:define-interface
    #:define-interface-extension
    #:defimpl
    #:i-defun
@@ -48,9 +48,11 @@
    #:shutdown)
   ;; interfaces.lisp
   (:export
+   #:define-interface
    #:interface-implementation-not-set
    #:find-implementation
-   #:load-implementation)
+   #:load-implementation
+   #:define-implement-hook)
   ;; toolkit.lisp
   (:export
    #:*config-type*
