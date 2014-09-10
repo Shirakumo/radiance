@@ -27,9 +27,3 @@
 (defun profile:page (user &optional (page-type :profile))
   (declare (ignore user page-type))
   "")
-
-(defmacro profile:define-profile-panel (name options &body body)
-  (declare (ignore name options body)))
-
-(defmacro profile:define-settings-panel (name options &body body)
-  (declare (ignore name options body)))

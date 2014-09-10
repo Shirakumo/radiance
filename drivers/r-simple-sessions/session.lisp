@@ -5,8 +5,8 @@
 |#
 
 (in-package #:modularize-user)
-(define-module simple-sessions
-  (:use #:cl #:radiance #:modularize-interfaces)
+(define-module #:simple-sessions
+  (:use #:cl #:radiance)
   (:implements #:session))
 (in-package #:simple-sessions)
 
