@@ -1,0 +1,23 @@
+<div>
+  <h2>Edit User <c:splice lquery="(text (user:username user))" /></h2>
+  <form action="#" method="post" class="box">
+    <ul>
+      <c:splice iterate="fields">
+        <li>
+          <label lquery="(text *)">Key</label>
+          <textarea name="KEY" lquery="(text (user:field (** :user) *)) (attr :name *)" />
+        </li>
+      </c:splice>
+      <li>
+        <label><input type="text" name="key" placeholder="KEY" /></label>
+        <textarea name="val" placeholder="VALUE"></textarea>
+        <input type="submit" name="action" value="Add" />
+      </li>
+    </ul>
+    <div class="actionbar">
+      <input type="hidden" name="username" value="USERNAME" lquery="(val (user:username user))" />
+      <input type="submit" name="action" value="Save" />
+      <input type="submit" name="action" value="Discard" />
+    </div>
+  </form>
+</div>

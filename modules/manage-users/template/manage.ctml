@@ -1,0 +1,34 @@
+<div>
+  <h2>Manage Users</h2>
+<div class="tablebox">
+  <table class="selectable actions tablesorter">
+    <thead>
+      <tr>
+	<th><input type="checkbox" class="select-all" /></th>
+        <th>Username</th>
+        <th>Displayname</th>
+        <th>E-Mail</th>
+	<th>Actions</th>
+      </tr>
+    </thead>
+    <tbody iterate="users">
+      <tr>
+	<td><input type="checkbox" name="selected[]" form="massEditForm" lquery="(val (user:username *))" /></td>
+        <td lquery="(text (user:username *))">USERNAME</td>
+        <td lquery="(text (user:field * &quot;displayname&quot;))">DISPLAYNAME</td>
+        <td lquery="(text (user:field * &quot;email&quot;))">E-MAIL</td>
+	<td>
+          <form action="/users/edit" method="get">
+	    <input type="hidden" name="username" lquery="(val (user:username *))" />
+	    <input type="submit" name="action" value="Edit" />
+	    <input type="submit" name="action" value="Delete" />
+	  </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <form class="table-actions" id="massEditForm" action="/users/edit" method="post">
+    <input type="submit" name="action" value="Delete" />
+  </form>
+</div>
+</div>
