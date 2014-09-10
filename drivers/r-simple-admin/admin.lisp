@@ -12,6 +12,16 @@
 (defvar *categories* (make-hash-table :test 'equalp))
 (defvar *prepared-categories* NIL)
 
+(defun format-seconds (s)
+  (let ((y (floor (/ s (* 60 60 24 365))))
+        (d (floor (/ (mod s (* 60 60 24 365)) (* 60 60 24))))
+        (h (floor (/ (mod s (* 60 60 24)) (* 60 60))))
+        (m (floor (/ (mod s (* 60 60)) (* 60))))
+        (s (mod s 60)))
+    (print (list y d h m s))
+    (format NIL "~:[~d years~;~*~]~:[ ~d days~;~*~]~:[ ~d hours~;~*~]~:[ ~d minutes~;~*~]~:[ ~d seconds~;~*~]"
+            (= y 0) y (= d 0) d (= h 0) h (= m 0) m (= s 0) s)))
+
 (defun prepare-categories ()
   (setf *prepared-categories*
         (loop for title being the hash-keys of *categories*
@@ -32,7 +42,8 @@
         (make-hash-table :test 'equalp)))
 
 (defun admin::remove-category (category)
-  (remhash (string category) *categories*))
+  (remhash (string category) *categories*)
+  (prepare-categories))
 
 (defun admin:panel (category name)
   (let ((category (admin::category category)))
@@ -50,7 +61,8 @@
   (when (admin:panel category name)
     (remhash (string name) (admin::category category))
     (when (= 0 (hash-table-count (admin::category category)))
-      (admin::remove-category category))))
+      (admin::remove-category category))
+    (prepare-categories)))
 
 ;; Fix the dumb options thing some how, idfk
 (defmacro admin:define-panel (name category options &body body)
@@ -96,5 +108,6 @@
                            "Restarting.")))
                   (run-panel category panel)))))
 
-(admin:define-panel index admin (:icon "fa-home")
-  "Hi.")
+(admin:define-panel overview admin (:icon "fa-home")
+  (r-clip:process
+   (plump:parse (template "overview.ctml"))))

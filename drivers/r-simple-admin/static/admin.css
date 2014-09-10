@@ -225,6 +225,10 @@ body,html{
     border-right: none;
 }
 
+#content .tablebox table tbody{
+    border-top: 1px solid #0088EE;
+}
+
 #content .tablebox table tbody tr{}
 
 #content .tablebox table tbody tr:nth-child(2n){
