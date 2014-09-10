@@ -1,7 +1,7 @@
 <div>
   <h2>Manage Users</h2>
 <div class="tablebox">
-  <table class="selectable actions tablesorter">
+  <table class="selectable actions interactive">
     <thead>
       <tr>
 	<th><input type="checkbox" class="select-all" /></th>

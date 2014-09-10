@@ -1,7 +1,7 @@
 <div>
 <h2>Database Collections</h2>
 <div class="tablebox">
-  <table class="actions tablesorter">
+  <table class="actions interactive">
     <thead>
       <tr>
 	<th>Name</th>

@@ -29,7 +29,7 @@ $(function(){
         
     });
 
-    $(".tablebox table").dataTable({
+    $(".tablebox table.interactive").dataTable({
 	"bPaginate": false,
 	"bFilter": true,
 	"bSort": true,

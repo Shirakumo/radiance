@@ -2,6 +2,7 @@ body,html{
     font-family: Arial, sans-serif;
     margin:0;padding:0;
     background: #DDD;
+    height: 100%;
 }
 
 .notice{
@@ -28,10 +29,13 @@ body,html{
     text-align: justify;
 }
 
+body{
+    display: flex;
+}
+
 #panel{
-    position: fixed;
-    left:0;top:0;bottom:0;
-    width:200px;
+    position: relative;
+    min-width:200px;
     background: #000;
     color: #FFF;
     padding-top:40px;
@@ -81,8 +85,7 @@ body,html{
 
 #panel>ul{
     background: #151515;
-    position: absolute;
-    bottom:0;left:0;right:0;top:150px;
+    margin-bottom: 30px;
 }
 
 #panel>ul>li{
@@ -175,7 +178,7 @@ body,html{
 
 
 #content{
-    margin-left: 200px;
+    flex-grow: 1;
     padding: 20px;
     text-align: justify;
     position: relative;

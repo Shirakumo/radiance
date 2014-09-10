@@ -7,7 +7,7 @@
 (in-package #:modularize-user)
 (define-module #:db-introspect
   (:nicknames #:org.tymoonnext.db-introspect)
-  (:use #:cl #:radiance #:string-case))
+  (:use #:cl #:radiance))
 (in-package #:db-introspect)
 
 (defun ccount (collection)
