@@ -77,11 +77,14 @@
   (:export
    #:uri-dispatcher
    #:remove-uri-dispatcher
+   #:name
    #:dispatch-function
+   #:priority
    
    #:uri-dispatcher
    #:make-uri-dispatcher
    #:define-uri-dispatcher
+   #:list-uri-dispatchers
    #:dispatch)
   ;; init.lisp
   (:export

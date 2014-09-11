@@ -14,14 +14,16 @@
                                      (error 'request-not-found :request request :message "Reached dispatch fallback."))))
 
 (defclass uri-dispatcher (uri)
-  ((dispatch-function :initarg :dispatch-function :initform (constantly t) :accessor dispatch-function)
+  ((name :initarg :name :initform NIL :accessor name)
+   (dispatch-function :initarg :dispatch-function :initform (constantly t) :accessor dispatch-function)
    (priority :initarg :priority :initform NIL :accessor priority)))
 
-(defun make-uri-dispatcher (uri dispatch-function &optional priority)
+(defun make-uri-dispatcher (uri dispatch-function &optional priority name)
   (let ((uri (copy-uri uri)))
     (change-class uri 'uri-dispatcher)
     (setf (dispatch-function uri) dispatch-function
-          (priority uri) priority)
+          (priority uri) priority
+          (name uri) name)
     uri))
 
 (defun uri-dispatcher (name)
@@ -29,7 +31,7 @@
 
 (defun (setf uri-dispatcher) (uri-or-f name &optional uri priority)
   (if uri
-      (setf uri-or-f (make-uri-dispatcher uri uri-or-f priority))
+      (setf uri-or-f (make-uri-dispatcher uri uri-or-f priority name))
       (unless (typep uri-or-f 'uri-dispatcher)
         (error 'type-error :datum uri-or-f :expected-type 'uri-dispatcher)))
   (setf (gethash name *uri-registry*) uri-or-f)
@@ -40,6 +42,9 @@
   (remhash name *uri-registry*)
   (rebuild-uri-priority)
   name)
+
+(defun list-uri-dispatchers ()
+  (coerce *uri-priority* 'list))
 
 (defun rebuild-uri-priority ()
   (setf *uri-priority*
