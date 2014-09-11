@@ -45,12 +45,7 @@
 (defun remove-api-option (name)
   (remhash name *api-options*))
 
-(defmacro define-api-option (name (namevar argsvar &rest rest) &body body)
-  `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (setf (api-option ,(make-keyword name))
-           #'(lambda (,namevar ,argsvar ,@rest)
-               (declare (ignorable ,namevar ,argsvar))
-               ,@body))))
+(define-options-definer define-api-option api-option (namevar argsvar bodyvar valuevar))
 
 ;;; Pages
 (defvar *api-pages* (make-hash-table :test 'equalp))
@@ -109,19 +104,10 @@
                 (if val (push val args) (error 'api-argument-missing :argument arg)))))
         finally (return (apply (handler api-page) (nreverse args)))))
 
-(defvar *api-body*)
 (defmacro define-api (name args options &body body)
-  (let ((*api-body* body)
-        (no-value (gensym "NO-VALUE")))
+  (multiple-value-bind (body forms) (expand-options *api-options* options body name args)
     `(eval-when (:compile-toplevel :load-toplevel :execute)
-       ,@(loop for option being the hash-keys of *api-options*
-               for function being the hash-values of *api-options*
-               for value = (getf options option no-value)
-               for result = (if (eql value no-value)
-                                (funcall function name args)
-                                (funcall function name args value))
-               when result
-                 collect result)
+       ,@forms
        ,@(when (module)
            `((pushnew ,(string name) (module-storage ,(module) 'radiance-apis) :test #'equalp)))
        (setf (api-page ,(string name))
@@ -129,7 +115,7 @@
               'api-page
               :name ,(string name)
               :argslist ',args
-              :handler #'(lambda ,(extract-lambda-vars args) (block ,(when (symbolp name) name) ,@*api-body*))
+              :handler #'(lambda ,(extract-lambda-vars args) (block ,(when (symbolp name) name) ,@body))
               :docstring ,(getf options :documentation))))))
 
 (define-delete-hook (module 'radiance-destroy-apis)

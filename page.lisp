@@ -17,32 +17,18 @@
 (defun remove-page-option (name)
   (remhash name *page-options*))
 
-(defmacro define-page-option (name (namevar urivar &rest rest) &body body)
-  `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (setf (page-option ,(make-keyword name))
-           #'(lambda (,namevar ,urivar ,@rest)
-               (declare (ignorable ,namevar ,urivar))
-               ,@body))))
+(define-options-definer define-page-option page-option (namevar urivar bodyvar valuevar))
 
-(defvar *page-body*)
 (defmacro define-page (name uri options &body body)
-  (let ((*page-body* body)
-        (no-value (gensym "NO-VALUE")))
-    (destructuring-bind (uri &optional priority) (if (listp uri) uri (list uri))
+  (destructuring-bind (uri &optional priority) (if (listp uri) uri (list uri))
+    (multiple-value-bind (body forms) (expand-options *page-options* options body name uri)
       `(eval-when (:compile-toplevel :load-toplevel :execute)
-         ,@(loop for option being the hash-keys of *page-options*
-                 for function being the hash-values of *page-options*
-                 for value = (getf options option no-value)
-                 for result = (if (eql value no-value)
-                                  (funcall function name uri)
-                                  (funcall function name uri value))
-                 when result
-                   collect result)
+         ,@forms
          ,@(when (module)
              `((pushnew ',name (module-storage ,(module) 'radiance-pages))))
          (define-uri-dispatcher ,name (,uri ,(gensym "REQUEST") ,priority)
            (block ,name
-             ,@*page-body*))))))
+             ,@body))))))
 
 (define-delete-hook (module 'radiance-destroy-pages)
   (dolist (page (module-storage module 'radiance-pages))

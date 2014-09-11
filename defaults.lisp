@@ -7,35 +7,45 @@
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
 ;; Sets up a default trigger for pages
-(define-page-option with-trigger (name uri &optional (value T))
+(define-page-option with-trigger (name uri body (value T))
   (assert (symbolp value))
-  (when value
-    (let ((name (if (eql value T) name value)))
-      (push `(trigger ',name) *page-body*)
-      `(define-hook ,name ()))))
+  (if value
+      (let ((name (if (eql value T) name value)))
+        (values
+         `((trigger ',name)
+           ,@body)
+         `(define-hook ,name ())))
+      body))
 
-(define-page-option uri-groups (name uri &optional uri-groups)
-  (when uri-groups
-    (setf *page-body*
-          `((cl-ppcre:register-groups-bind ,uri-groups (,(path uri) (path *request*))
-              ,@*page-body*))))
-  NIL)
+(define-page-option uri-groups (name uri body uri-groups)
+  (if uri-groups
+      `((cl-ppcre:register-groups-bind ,uri-groups (,(path uri) (path *request*))
+          ,@body))
+      body))
 
-(define-page-option access (name uri &optional branch)
-  (when branch
-    (setf *page-body*
-          `((unless (and (auth:current) (user:check (auth:current) ,branch))
-              (error 'request-denied))
-            ,@*page-body*)))
-  NIL)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun transform-access-body (body branch)
+    (if branch
+        `((unless (and (auth:current) (user:check (auth:current) ,branch))
+            (error 'request-denied))
+          ,@body)
+        body)))
 
-(define-api-option access (name args &optional branch)
-  (when branch
-    (setf *page-body*
-          `((unless (and (auth:current) (user:check (auth:current) ,branch))
-              (error 'request-denied))
-            ,@*page-body*)))
-  NIL)
+(define-page-option access (name uri body branch)
+  (transform-access-body body branch))
+
+(define-api-option access (name args body branch)
+  (transform-access-body body branch))
+
+(define-implement-hook (admin 'define-accessor-option)
+  (admin:define-panel-option access (name category body branch)
+    (declare (ignore name category))
+    (transform-access-body body branch)))
+
+(define-implement-hook (profile 'define-accessor-option)
+  (profile:define-panel-option access (name category body branch)
+    (declare (ignore name category))
+    (transform-access-body body branch)))
 
 ;; Api catchall page
 (define-api "" () (:documentation "API 404")

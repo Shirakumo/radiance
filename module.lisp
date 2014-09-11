@@ -91,6 +91,10 @@
    #:server-shutdown
    #:startup-done
    #:shutdown-done)
+  ;; options.lisp
+  (:export
+   #:define-options-definer
+   #:expand-options)
   ;; page.lisp
   (:export
    #:page-option

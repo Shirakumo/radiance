@@ -28,6 +28,7 @@
                (:file "interfaces")
                (:file "toolkit")
                (:file "conditions")
+               (:file "options")
                (:file "page")
                (:file "api")
                (:file "defaults")
