@@ -11,6 +11,7 @@
   (defun panel (category name))
   (defun (setf panel) (function category name))
   (defun remove-panel (category name))
+  (defmacro define-panel-option (name (categoryvar namevar bodyvar valuevar) &body body))
   (defmacro define-panel (name category options &body body)))
 
 ;; To be specced
@@ -70,6 +71,7 @@
   (defun panel (category name))
   (defun (setf panel) (function category name))
   (defun remove-panel (category name))
+  (defmacro define-panel-option (name (categoryvar namevar bodyvar valuevar) &body body))
   (defmacro define-panel (category name options &body body)))
 
 ;; To be specced
