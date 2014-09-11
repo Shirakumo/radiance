@@ -12,11 +12,11 @@
   :defsystem-depends-on (:radiance)
   :class "radiance:module"
   :name "manage-users"
-  :version "0.0.1"
+  :version "0.5.1"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description ""
+  :description "Radiance administration interface to allow user management."
   :serial T
   :components ((:file "admin"))
   :depends-on ((:interface :user)

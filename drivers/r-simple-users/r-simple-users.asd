@@ -9,6 +9,10 @@
   :defsystem-depends-on (:radiance)
   :class "radiance:module"
   :module-name "SIMPLE-USERS"
+  :author "Nicolas Hafner <shinmera@tymoon.eu>"
+  :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
+  :version "1.0.1"
+  :description "A simple implementation for Radiance's users interface, offering database-backed user storage."
   :components ((:file "users"))
   :depends-on ((:interface :database)
                (:interface :data-model)

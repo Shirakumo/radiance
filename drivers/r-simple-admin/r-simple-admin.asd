@@ -9,6 +9,10 @@
   :defsystem-depends-on (:radiance)
   :class "radiance:module"
   :module-name "SIMPLE-ADMIN"
+  :author "Nicolas Hafner <shinmera@tymoon.eu>"
+  :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
+  :version "1.1.0"
+  :description "A simple Radiance administration interface implementation."
   :serial T
   :components ((:file "admin")
                (:file "panels"))

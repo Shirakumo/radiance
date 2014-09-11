@@ -8,5 +8,9 @@
 (asdf:defsystem #:r-clip
   :defsystem-depends-on (:radiance)
   :class "radiance:module"
+  :author "Nicolas Hafner <shinmera@tymoon.eu>"
+  :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
+  :version "1.0.0"
+  :description "Trivial wrapper around lQuery and Clip to tighten Radiance integration."
   :components ((:file "clip-integration"))
   :depends-on (:clip))
