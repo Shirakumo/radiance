@@ -79,7 +79,10 @@
 
 (defun populate-table-from-alist (table alist)
   (loop for (key . val) in alist
-        do (setf (gethash key table) val))
+        do (let ((key (string key)))
+             (if (and (< 1 (length key)) (string= key "[]" :start1 (- (length key) 2)))
+                 (push val (gethash key table))
+                 (setf (gethash key table) val))))
   table)
 
 (defun create-real-request (ht-request)
