@@ -17,7 +17,7 @@
           </a>
           <ul iterate="panels">
             <li lquery="(add-class (or (when (simple-admin::is-current url) &quot;active&quot;) &quot;inactive&quot;))">
-              <a href="#" lquery="(attr :href url) (text title)">
+              <a href="#" lquery="(attr :href url :title tooltip) (text title)">
                 <i class="fa" lquery="(add-class icon)"></i>
                 PANEL
               </a>

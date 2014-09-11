@@ -10,7 +10,8 @@
   :class "radiance:module"
   :module-name "SIMPLE-ADMIN"
   :serial T
-  :components ((:file "admin"))
+  :components ((:file "admin")
+               (:file "panels"))
   :depends-on ((:interface :auth)
                :r-clip
                :alexandria))

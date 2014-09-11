@@ -6,7 +6,8 @@
 
 (in-package #:modularize-user)
 (define-module #:simple-admin
-  (:use #:cl #:radiance))
+  (:use #:cl #:radiance)
+  (:implements #:admin))
 (in-package #:simple-admin)
 
 (defvar *categories* (make-hash-table :test 'equalp))
@@ -64,19 +65,28 @@
       (admin::remove-category category))
     (prepare-categories)))
 
-;; Fix the dumb options thing some how, idfk
+(defvar *panel-options* (make-hash-table))
+
+(defun (setf panel-option) (function option)
+  (setf (gethash option *panel-options*) function))
+
+(define-options-definer admin:define-panel-option panel-option (namevar category bodyvar valuevar))
+
 (defmacro admin:define-panel (name category options &body body)
   (let ((name (string-downcase name))
         (category (string-downcase category)))
-    (destructuring-bind (&key icon &allow-other-keys) options
-      `(setf (admin:panel ,category ,name)
-             (clip:make-clipboard
-              :title ,(string name)
-              :url ,(format NIL "/~a/~a" category name)
-              :icon ,icon
-              :function
-              #'(lambda ()
-                  ,@body))))))
+    (destructuring-bind (&key icon tooltip &allow-other-keys) options
+      (multiple-value-bind (body forms) (expand-options *panel-options* options body name category)
+        (declare (ignore forms))
+        `(setf (admin:panel ,category ,name)
+               (clip:make-clipboard
+                :title ,(string name)
+                :url ,(format NIL "/~a/~a" category name)
+                :icon ,icon
+                :tooltip ,tooltip
+                :function
+                #'(lambda ()
+                    ,@body)))))))
 
 (defun run-panel (category panel)
   (let ((panel (admin:panel category panel)))
@@ -92,7 +102,7 @@
   (let ((manage (post/get "simple-admin-manage"))
         (action (post-var "simple-admin-action")))
     (r-clip:process
-     (lquery:$ (node))
+     T
      :manage manage
      :categories *prepared-categories*
      :content (or (when manage
@@ -107,7 +117,3 @@
                            (bt:make-thread #'(lambda () (sleep 1) (radiance:shutdown) (radiance:startup)))
                            "Restarting.")))
                   (run-panel category panel)))))
-
-(admin:define-panel overview admin (:icon "fa-home")
-  (r-clip:process
-   (plump:parse (template "overview.ctml"))))
