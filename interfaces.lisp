@@ -55,6 +55,7 @@
           (hook (find-symbol "IMPLEMENTED" (interface interface))))
       `(progn
          (define-trigger (,hook ,ident) ()
-           (eval '(progn ,@body)))
+           (let ((*package* ,*package*)) ;; capture package env
+             (eval '(progn ,@body))))
          ,@(when (implementation interface)
              `((trigger ',hook)))))))
