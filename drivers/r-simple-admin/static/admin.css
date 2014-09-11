@@ -42,6 +42,7 @@ body{
     padding-top:40px;
     overflow-y: auto;
     overflow-x: hidden;
+    text-transform: capitalize;
 }
 
 #panel::-webkit-scrollbar{

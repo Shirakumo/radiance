@@ -12,13 +12,13 @@
       <ul id="menu" iterate="categories">
         <li>
           <a lquery="(text title)">
-            <i class="fa" lquery="(add-class (or icon &quot;fa-folder&quot;))"></i>
+            <i class="fa fa-fw" lquery="(add-class (or icon &quot;fa-folder&quot;))"></i>
             CATEGORY
           </a>
           <ul iterate="panels">
             <li lquery="(add-class (or (when (simple-admin::is-current url) &quot;active&quot;) &quot;inactive&quot;))">
               <a href="#" lquery="(attr :href url :title tooltip) (text title)">
-                <i class="fa" lquery="(add-class icon)"></i>
+                <i class="fa fa-fw" lquery="(add-class icon)"></i>
                 PANEL
               </a>
             </li>
