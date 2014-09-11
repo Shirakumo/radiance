@@ -1,7 +1,7 @@
 <div>
   <h2>Manage Users</h2>
 <div class="tablebox">
-  <table class="selectable actions interactive">
+  <table class="selectable extendable actions interactive">
     <thead>
       <tr>
 	<th><input type="checkbox" class="select-all" /></th>
@@ -11,20 +11,31 @@
 	<th>Actions</th>
       </tr>
     </thead>
-    <tbody iterate="users">
-      <tr>
-	<td><input type="checkbox" name="selected[]" form="massEditForm" lquery="(val (user:username *))" /></td>
-        <td lquery="(text (user:username *))">USERNAME</td>
-        <td lquery="(text (user:field * &quot;displayname&quot;))">DISPLAYNAME</td>
-        <td lquery="(text (user:field * &quot;email&quot;))">E-MAIL</td>
-	<td>
-          <form action="/users/edit" method="get">
-	    <input type="hidden" name="username" lquery="(val (user:username *))" />
-	    <input type="submit" name="action" value="Edit" />
-	    <input type="submit" name="action" value="Delete" />
-	  </form>
-        </td>
-      </tr>
+    <tbody>
+      <c:splice iterate="users">
+        <tr>
+	  <td><input type="checkbox" name="selected[]" form="massEditForm" lquery="(val (user:username *))" /></td>
+          <td lquery="(text (user:username *))">USERNAME</td>
+          <td lquery="(text (user:field * &quot;displayname&quot;))">DISPLAYNAME</td>
+          <td lquery="(text (user:field * &quot;email&quot;))">E-MAIL</td>
+	  <td>
+            <form action="/users/edit" method="get">
+	      <input type="hidden" name="username" lquery="(val (user:username *))" />
+	      <input type="submit" name="action" value="Edit" />
+	      <input type="submit" name="action" value="Delete" />
+	    </form>
+          </td>
+        </tr>
+      </c:splice>
+      <tr class="tableExtensionRow">
+          <td></td>
+	  <td><input type="text" name="username" form="userExtensionForm" placeholder="Username" required="required" style="width:100%" autofocus="autofocus" /></td>
+	  <td><input type="text" name="displayname" form="userExtensionForm" placeholder="Displayname" style="width:100%" /></td>
+	  <td><input type="text" name="email" form="userExtensionForm" placeholder="E-Mail Address" style="width:100%" /></td>
+	  <td><form action="/users/edit" method="post" id="userExtensionForm">
+	      <input type="submit" name="action" value="Add" />
+	  </form></td>
+        </tr>
     </tbody>
   </table>
   <form class="table-actions" id="massEditForm" action="/users/edit" method="post">
