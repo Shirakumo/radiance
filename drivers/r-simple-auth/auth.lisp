@@ -32,6 +32,12 @@
         (cryptos:pbkdf2-hash password *salt*))
   (user:save user))
 
+(defun auth::check-password (user password)
+  (and (user:field user "simple-auth-hash")
+       (string= (user:field user "simple-auth-hash")
+                (cryptos:pbkdf2-hash password *salt*))
+       T))
+
 (define-page login #@"auth/^login" (:lquery (template "login.ctml"))
   (r-clip:process (lquery:$ (node)))
   (when (get-var "msg")
@@ -70,3 +76,21 @@
                (list :login "Successful")))
           (T
            (err "Invalid username or password.")))))))
+
+(define-implement-hook admin
+  (admin:define-panel password settings (:lquery (template "settings.ctml") :icon "fa-key" :tooltip "Change your login password.")
+    (let ((info) (error)
+          (user (auth:current)))
+      (handler-case
+          (when (string= (post-var "action") "Save")
+            (unless (<= 8 (length (or (post-var "new") "")))
+              (error "Password must be 8 characters or more."))
+            (unless (auth::check-password user (or (post-var "old") ""))
+              (error "Old password is invalid."))
+            (unless (string= (or (post-var "new") "") (or (post-var "repeat") ""))
+              (error "New password fields do not match."))
+            (auth::set-password user (post-var "repeat"))
+            (setf info "Password updated!"))
+        (error (err)
+          (setf error (princ-to-string err))))
+      (r-clip:process T :info info :error error))))
