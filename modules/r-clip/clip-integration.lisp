@@ -14,7 +14,7 @@
   (field object field))
 
 (defun process (target &rest fields)
-  (let ((*package* (find-package "RADIANCE")))
+  (let ((*package* (find-package "RADIANCE-USER")))
     (apply #'clip:process
            (if (eql target T)
                lquery:*lquery-master-document*
