@@ -59,3 +59,31 @@
      :error error
      :info info
      :systems (asdf:already-loaded-systems))))
+
+(defpackage #:noop (:use))
+(defun print-symbol (symb)
+  (let ((*package* (find-package "NOOP")))
+    (prin1-to-string symb)))
+
+(admin:define-panel dispatchers admin (:icon "fa-at")
+  (let* ((action (post-var "action"))
+         (selected (post-var "selected[]"))
+         (dispatcher (post-var "dispatcher"))
+         (dispatchers (if dispatcher (cons dispatcher selected) selected))
+         (error NIL) (info NIL))
+    (handler-case
+        (cond ((string-equal action "remove")
+               (dolist (dispatcher dispatchers)
+                 (let ((dispatcher (let ((*read-eval* NIL))
+                                     (read-from-string dispatcher))))
+                   (l:info :simple-admin "Removing dispatcher ~s as per front-end request." dispatcher)
+                   (remove-uri-dispatcher dispatcher)))
+               (setf info (format NIL "Removed dispatchers ~{~a~^, ~}" dispatchers))))
+      (error (err)
+        (setf error (princ-to-string err))))
+    
+    (r-clip:process
+     (plump:parse (template "dispatchers.ctml"))
+     :error error
+     :info info
+     :dispatchers (list-uri-dispatchers))))
