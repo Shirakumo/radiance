@@ -207,6 +207,7 @@ body{
 }
 
 #content .tablebox table{
+    text-align: left;
     width: 100%;
     background: #FFF;
     border-collapse: collapse;
