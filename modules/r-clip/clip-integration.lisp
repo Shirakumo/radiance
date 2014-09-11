@@ -10,25 +10,41 @@
   (:export #:process #:lquery-wrapper))
 (in-package #:r-clip)
 
-(define-page-option lquery (page uri &optional template)
-  (when template
-    (setf *page-body*
-          `((setf (content-type *response*) "application/xhtml+xml")
-            (let* ((lquery:*lquery-master-document*
-                    (lquery:load-page ,template)))
-              ,@*page-body*
-              (lquery:$ (serialize) (node))))))
-  NIL)
-
 (defmethod clip:clip ((object standard-object) field)
   (field object field))
 
 (defun process (target &rest fields)
   (let ((*package* (find-package "RADIANCE")))
-    (apply #'clip:process target fields)))
+    (apply #'clip:process
+           (if (eql target T)
+               lquery:*lquery-master-document*
+               target)
+           fields)))
 
 (defmacro lquery-wrapper ((template &optional (content-type "application/xhtml+xml")) &body body)
   `(let ((lquery:*lquery-master-document* (lquery:load-page (template ,template))))
      ,@body
      (setf (content-type *response*) ,content-type)
      (lquery:$ (serialize) (node))))
+
+(defun transform-body (body template)
+  (if template
+      `((let* ((lquery:*lquery-master-document*
+                 (lquery:load-page ,template)))
+          ,@body
+          (lquery:$ (serialize) (node))))
+      body))
+
+(define-page-option lquery (page uri body template)
+  (if template
+      `((setf (content-type *response*) "application/xhtml+xml")
+        ,@(transform-body body template))
+      body))
+
+(define-implement-hook admin
+  (admin:define-panel-option lquery (name category body template)
+    (transform-body body template)))
+
+(define-implement-hook profile
+  (admin:define-panel-option lquery (name category body template)
+    (transform-body body template)))
