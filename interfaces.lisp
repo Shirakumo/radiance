@@ -51,5 +51,10 @@
 
 (defmacro define-implement-hook (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (if (listp interface) interface (list interface))
-    `(define-trigger (,(find-symbol "IMPLEMENTED" (interface interface)) ,ident) ()
-       (eval '(progn ,@body)))))
+    (let ((interface (interface interface))
+          (hook (find-symbol "IMPLEMENTED" (interface interface))))
+      `(progn
+         (define-trigger (,hook ,ident) ()
+           (eval '(progn ,@body)))
+         ,@(when (implementation interface)
+             `((trigger ',hook)))))))
