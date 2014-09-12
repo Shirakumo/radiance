@@ -57,6 +57,6 @@
       `(eval-when (:compile-toplevel :load-toplevel :execute)
          (define-trigger (,hook ,ident) ()
            (let ((*package* ,*package*)) ;; capture package env
-             (eval '(progn ,@body))))
+             (funcall (compile NIL '(lambda () ,@body)))))
          ,@(when (implementation interface)
              `((trigger ',hook)))))))
