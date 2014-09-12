@@ -104,8 +104,9 @@
 
 (defun user:check (user branch)
   (let ((branch (ensure-branch branch)))
-    (loop for perm in (permissions user)
-          thereis (branch-matches perm branch))))
+    (or (not branch)
+        (loop for perm in (permissions user)
+                thereis (branch-matches perm branch)))))
 
 (defun user:grant (user branch)
   (let ((branch (ensure-branch branch)))
