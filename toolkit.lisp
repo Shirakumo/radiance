@@ -81,15 +81,17 @@
      (with-model-fields ,modelvar ,fields
        ,@body)))
 
-(defmacro with-actions (action-clauses &body body)
+(defmacro with-actions ((error info) action-clauses &body body)
   (let ((action (gensym "ACTION")))
-    `(let ((error) (info)
+    `(let ((,error) (,info)
            (,action (post/get "action")))
-       (declare (ignorable error info))
+       (declare (ignorable ,error ,info))
        (handler-case
            (cond
              ,@(loop for (clause . body) in action-clauses
                      collect `((string-equal ,action ,(string clause)) ,@body)))
-         (error (err)
-           (setf error (princ-to-string err))))
+         (,error (err)
+           (setf ,error (princ-to-string err))))
        ,@body)))
+
+(indent:define-indentation with-actions (6 (&whole 4 &rest) &body))
