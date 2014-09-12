@@ -29,8 +29,11 @@
               for panels being the hash-values of *categories*
               collect (clip:make-clipboard
                        :title title
-                       :panels (loop for panel being the hash-values of panels
-                                     collect panel)))))
+                       :panels (sort (loop for panel being the hash-values of panels
+                                           collect panel)
+                                     #'string< :key #'(lambda (a) (clip:clip a :title))))
+                into categories
+              finally (return (sort categories #'string< :key #'(lambda (a) (clip:clip a :title)))))))
 
 (defun is-current (url)
   (string-equal url (format NIL "/~a" (path *request*))))
