@@ -9,12 +9,12 @@
   (:use #:cl #:radiance))
 (in-package #:manage-users)
 
-(admin:define-panel manage users (:icon "fa-user")
+(admin:define-panel manage users (:access '(radiance admin users view) :icon "fa-user")
   (r-clip:process
    (plump:parse (template "manage.ctml"))
    :users (user:list)))
 
-(admin:define-panel edit users (:icon "fa-edit")
+(admin:define-panel edit users (:access '(radiance admin users edit) :icon "fa-edit")
   (let* ((username (post/get "username"))
          (user (user:get username))
          (action (post/get "action"))

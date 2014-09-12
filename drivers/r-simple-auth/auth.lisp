@@ -78,7 +78,7 @@
            (err "Invalid username or password.")))))))
 
 (define-implement-hook admin
-  (admin:define-panel password settings (:lquery (template "settings.ctml") :icon "fa-key" :tooltip "Change your login password.")
+  (admin:define-panel password settings (:access () :lquery (template "settings.ctml") :icon "fa-key" :tooltip "Change your login password.")
     (let ((info) (error)
           (user (auth:current)))
       (handler-case
