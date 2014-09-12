@@ -62,7 +62,7 @@
         collect field))
 
 (defun user:field (user field)
-  (gethash field (fields user)))
+  (gethash (string field) (fields user)))
 
 (defun (setf user:field) (value user field)
   (push (cons field (null (gethash field (fields user)))) (modified user))
