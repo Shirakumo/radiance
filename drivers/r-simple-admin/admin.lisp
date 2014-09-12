@@ -75,7 +75,7 @@
 (defmacro admin:define-panel (name category options &body body)
   (let ((name (string-downcase name))
         (category (string-downcase category)))
-    (destructuring-bind (&key icon tooltip &allow-other-keys) options
+    (destructuring-bind (&key icon tooltip access &allow-other-keys) options
       (multiple-value-bind (body forms) (expand-options *panel-options* options body name category)
         (declare (ignore forms))
         `(setf (admin:panel ,category ,name)
@@ -84,6 +84,7 @@
                 :url ,(format NIL "/~a/~a" category name)
                 :icon ,icon
                 :tooltip ,tooltip
+                :access ,access
                 :function
                 #'(lambda ()
                     ,@body)))))))
