@@ -94,6 +94,7 @@
     (when panel
       (let ((result (funcall (clip:clip panel :function))))
         (etypecase result
+          (null "")
           (string result)
           (plump:node (with-output-to-string (s)
                         (plump:serialize result s)))
