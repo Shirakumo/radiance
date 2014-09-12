@@ -8,7 +8,7 @@
 (define-module radiance-core
   (:use #:cl #:modularize #:modularize-interfaces #:modularize-hooks)
   (:nicknames #:radiance #:org.tymoonnext.radiance.lib.radiance.core)
-  (:shadow #:define-interface)
+  (:shadow #:define-interface #:module)
   ;; re-export from modularize
   (:export
    #:define-module

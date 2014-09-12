@@ -6,20 +6,22 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.core)
 
+;; Subclass so we can have another AFTER method on ASDF:OPERATE
+(defclass module (modularize:module) ())
+;; Redefine function too since we shadowed that binding
+(defun module (&optional module)
+  (modularize:module module))
+
 (define-condition interface-implementation-not-set (error)
   ((%requested :initarg :requested :initform (error "REQUESTED required.") :reader requested))
   (:report (lambda (c s) (format s "Interface ~s requested but no implementation is configured." (requested c)))))
 
-(defclass interface-wrapper (asdf:system)
-  ((interface :initarg :interface :initform (error "Interface required.") :accessor wrapped-interface)))
-
-(defmethod asdf:perform ((op asdf::load-op) (wrapper interface-wrapper))
-  (load-implementation (wrapped-interface wrapper)))
-
 (defmethod asdf::resolve-dependency-combination ((module module) (combinator (eql :interface)) args)
-  (make-instance
-   'interface-wrapper
-   :interface (first args)))
+  (find-implementation (first args)))
+
+(defmethod asdf:operate :after ((op asdf::load-op) (module module) &key)
+  (loop for interface in (module-storage (module (virtual-module-name module)) :implements)
+        do (trigger (find-symbol "IMPLEMENTED" (interface interface)))))
 
 (defun find-implementation (interface)
   (unless (config-tree :interfaces)
@@ -46,14 +48,13 @@
     (let* ((interface (interface interface))
            (implementation (find-implementation interface)))
       (unless (asdf:component-loaded-p implementation)
-        (asdf:load-system implementation)
-        (trigger (find-symbol "IMPLEMENTED" interface))))))
+        (asdf:load-system implementation)))))
 
 (defmacro define-implement-hook (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (if (listp interface) interface (list interface))
     (let ((interface (interface interface))
           (hook (find-symbol "IMPLEMENTED" (interface interface))))
-      `(progn
+      `(eval-when (:compile-toplevel :load-toplevel :execute)
          (define-trigger (,hook ,ident) ()
            (let ((*package* ,*package*)) ;; capture package env
              (eval '(progn ,@body))))
