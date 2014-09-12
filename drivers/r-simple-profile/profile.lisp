@@ -5,10 +5,14 @@
 |#
 
 (in-package #:modularize-user)
-(define-module simple-profile
+(define-module #:simple-profile
   (:use #:cl #:radiance)
   (:implements #:profile))
 (in-package #:simple-profile)
+
+(define-trigger db:connected ()
+  (db:create 'simple-profile-fields '((:name (:varchar 32)) (:type (:varchar 16)) (:default (:varchar 128)))
+             :indices '(:name)))
 
 (defun normalize (user)
   (etypecase user
@@ -27,3 +31,18 @@
 (defun profile:page (user &optional (page-type :profile))
   (declare (ignore user page-type))
   "")
+
+(defun profile:panel (category name)
+  )
+
+(defun (setf profile:panel) (function category name)
+  )
+
+(defun profile:remove-panel (category name)
+  )
+
+(defmacro profile:define-panel-option (name (categoryvar namevar bodyvar valuevar) &body body)
+  )
+
+(defmacro profile:define-panel (category name options &body body)
+  )
