@@ -1,6 +1,17 @@
 $(function(){
-    // Basic Panel UI
-    //$("#panel>ul>li>ul").hide();
+
+    // Empty hiding
+    $("#panel li").each(function (){
+        if($(this).text().trim() === "")
+            $(this).remove();
+    });
+
+    $("#panel>ul>li").each(function(){
+        if($(">ul", this).text().trim() === "")
+            $(this).remove();
+    });
+
+    // Menu
 
     $("#panel>ul>li>a").click(function(){
 	$("ul", $(this).parent()).stop(true).slideToggle();
