@@ -3,13 +3,22 @@
   <c:when test="error"><div class="notice error" lquery="(text error)" /></c:when>
   <c:when test="info"><div class="notice info" lquery="(text info)" /></c:when>
   <form method="post" action="#" class="box">
-    <label>Avatar</label><img src="" alt="avatar" lquery="(attr :src (profile:avatar user 128))" /><br />
-    <label>Username</label><input type="text" placeholder="Username" lquery="(val (user:username user))" readonly /><br />
-    <label>Displayname</label><input type="text" name="displayname" placeholder="Mr. Fancy" lquery="(val (user:field user :displayname))" /><br />
-    <label>E-Mail</label><input type="email" name="email" placeholder="email@example.com" lquery="(val (user:field user :email))" required /><br />
+    <label>Avatar</label>
+    <img src="" alt="avatar" lquery="(attr :src (profile:avatar user 128))" /><br />
+    <label>Username</label>
+    <input type="text" placeholder="Username" lquery="(val (user:username user))" readonly /><br />
+    <label>Displayname</label>
+    <input type="text" name="displayname" placeholder="Mr. Fancy" lquery="(val (user:field user :displayname))" maxlength="32" /><br />
+    <label>E-Mail</label>
+    <input type="email" name="email" placeholder="email@example.com" lquery="(val (user:field user :email))" required /><br />
     <c:splice iterate="fields">
       <span>
-        <label lquery="(text name)"></label><input lquery="(attr :name name :type type :value (or (user:field (** :user) name) default))" /><br />
+        <label lquery="(text name)"></label>
+        <c:if>
+          <c:test>(string= "textarea" type)</c:test>
+          <c:then><textarea lquery="(attr :name name) (text (or (user:field (** :user) name) default))" /></c:then>
+          <c:else><input lquery="(attr :name name :type type :value (or (user:field (** :user) name) default))" /></c:else>
+        </c:if><br />
       </span>
     </c:splice>
     <div class="actionbar">
