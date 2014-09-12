@@ -75,3 +75,21 @@
            `((with-model-fields ,modelvar ,fields
                ,@body))
            body)))
+
+(defmacro do-models (modelvar (collection query &rest fields) &body body)
+  `(dolist (,modelvar (dm:get ,collection ,query))
+     (with-model-fields ,modelvar ,fields
+       ,@body)))
+
+(defmacro with-actions (action-clauses &body body)
+  (let ((action (gensym "ACTION")))
+    `(let ((error) (info)
+           (,action (post/get "action")))
+       (declare (ignorable error info))
+       (handler-case
+           (cond
+             ,@(loop for (clause . body) in action-clauses
+                     collect `((string-equal ,action ,(string clause)) ,@body)))
+         (error (err)
+           (setf error (princ-to-string err))))
+       ,@body)))

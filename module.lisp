@@ -163,7 +163,9 @@
    #:static-file
    #:template
    #:with-model
-   #:with-model-fields)
+   #:with-model-fields
+   #:do-models
+   #:with-actions)
   ;; uri.lisp
   (:export
    #:uri
