@@ -13,6 +13,7 @@
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :version "1.0.0"
   :description "Simple user profiles implementation for Radiance."
-  :components ((:file "profile"))
+  :components ((:file "profile")
+               (:file "admin"))
   :depends-on ((:interface :user)
                :crypto-shortcuts))
