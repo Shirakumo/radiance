@@ -9,7 +9,7 @@
     <h1>Login</h1>
     <div id="msg" />
     <form action="/api/simple-auth/login" method="post">
-      <label>Username</label><input type="text" name="username" /><br />
+      <label>Username</label><input type="text" name="username" autofocus /><br />
       <label>Password</label><input type="password" name="password" /><br />
       <input type="hidden" name="nonce" value="?" lquery="(val (make-random-string))" />
       <input type="hidden" name="redirect" value="true" />
