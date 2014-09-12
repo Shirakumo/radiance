@@ -11,6 +11,7 @@
 (in-package #:simple-users)
 
 (defvar *user-cache* (make-hash-table :test 'equalp))
+(defvar *default-permissions* ())
 
 (define-trigger db:connected ()
   (db:create 'simple-users '((username (:varchar 32)) (permissions :text)) :indices '(username))
@@ -30,6 +31,9 @@
     (format stream "USER ~a~:[~; *~]" (username user) (modified user))))
 
 (defmethod initialize-instance :after ((user user) &key)
+  (dolist (branch *default-permissions*)
+    (push branch (permissions user)))
+  (save-perms user)
   (setf (gethash (username user) *user-cache*) user))
 
 (defun user:list ()
@@ -40,13 +44,15 @@
   (let ((username (string-downcase username)))
     (or (gethash username *user-cache*)
         (ecase if-does-not-exist
-          (:create
-           (make-instance 'user
-                          :username username
-                          :id (db:insert 'simple-users `((username . ,username) (permissions . "")))))
+          (:create (user::create username))
           (:error (error 'user-not-found :user username))
           (:anonymous (user:get "anonymous"))
           ((NIL :NIL))))))
+
+(defun user::create (username)
+  (make-instance 'user
+                 :username username
+                 :id (db:insert 'simple-users `((username . ,username) (permissions . "")))))
 
 (defun user:username (user)
   (username user))
@@ -120,6 +126,11 @@
           (remove-if #'(lambda (perm) (branch-matches perm branch)) (permissions user)))
     (save-perms user))
   user)
+
+(defun user:add-default-permission (branch)
+  (pushnew (ensure-branch branch) *default-permissions*
+           :test #'(lambda (a b) (loop for i in a for j in b
+                                       always (string-equal (string i) (string j))))))
 
 (defun user:action (user action public)
   (db:insert 'simple-users-actions `((uid . ,(id user)) (time . ,(get-universal-time)) (public . ,(if public 1 0)) (action . ,action)))
