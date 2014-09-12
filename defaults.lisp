@@ -25,25 +25,25 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun transform-access-body (body branch)
-    (if branch
+    (if (not (eql branch T))
         `((unless (and (auth:current) (user:check (auth:current) ,branch))
             (error 'request-denied :message (format NIL "User ~a does not have the necessary rights ~s" (auth:current) ,branch)))
           ,@body)
         body)))
 
-(define-page-option access (name uri body branch)
+(define-page-option access (name uri body (branch T))
   (transform-access-body body branch))
 
-(define-api-option access (name args body branch)
+(define-api-option access (name args body (branch T))
   (transform-access-body body branch))
 
 (define-implement-hook (admin 'define-accessor-option)
-  (admin:define-panel-option access (name category body branch)
+  (admin:define-panel-option access (name category body (branch T))
     (declare (ignore name category))
     (transform-access-body body branch)))
 
 (define-implement-hook (profile 'define-accessor-option)
-  (profile:define-panel-option access (name category body branch)
+  (profile:define-panel-option access (name category body (branch T))
     (declare (ignore name category))
     (transform-access-body body branch)))
 
