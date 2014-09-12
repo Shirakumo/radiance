@@ -6,11 +6,11 @@
 
 (in-package #:simple-admin)
 
-(admin:define-panel overview admin (:access "radiance.admin" :icon "fa-home" :tooltip "Radiance overview info.")
+(admin:define-panel overview admin (:access (radiance admin) :icon "fa-home" :tooltip "Radiance overview info.")
   (r-clip:process
    (plump:parse (template "overview.ctml"))))
 
-(admin:define-panel modules admin (:access "radiance.admin.modules" :icon "fa-cube" :tooltip "Oversee active modules.")
+(admin:define-panel modules admin (:access (radiance admin modules) :icon "fa-cube" :tooltip "Oversee active modules.")
   (let* ((action (post-var "action"))
          (selected (post-var "selected[]"))
          (module (post-var "module"))
@@ -31,7 +31,7 @@
      :info info
      :modules (remove-if #'interfaces:interface-p (modularize:list-modules)))))
 
-(admin:define-panel systems admin (:access "radiance.admin.systems" :icon "fa-briefcase" :tooltip "Manage ASDF systems.")
+(admin:define-panel systems admin (:access (radiance admin systems) :icon "fa-briefcase" :tooltip "Manage ASDF systems.")
   (let* ((action (post-var "action"))
          (selected (post-var "selected[]"))
          (system (post-var "system"))
@@ -65,7 +65,7 @@
   (let ((*package* (find-package "NOOP")))
     (prin1-to-string symb)))
 
-(admin:define-panel dispatchers admin (:access "radiance.admin.dispatchers" :icon "fa-at" :tooltip "Manage Radiance's dispatchers.")
+(admin:define-panel dispatchers admin (:access (radiance admin dispatchers) :icon "fa-at" :tooltip "Manage Radiance's dispatchers.")
   (let* ((action (post-var "action"))
          (selected (post-var "selected[]"))
          (dispatcher (post-var "dispatcher"))

@@ -13,12 +13,12 @@
 (defun ccount (collection)
   (db:count collection (db:query :all)))
 
-(admin:define-panel database database (:access '(radiance admin database) :icon "fa-calendar" :tooltip "Show all collections in the database")
+(admin:define-panel database database (:access (radiance admin database) :icon "fa-calendar" :tooltip "Show all collections in the database")
   (r-clip:process
    (plump:parse (template "database.ctml"))
    :collections (db:collections)))
 
-(admin:define-panel collection database (:access '(radiance admin database) :icon "fa-table" :tooltip "View collection contents")
+(admin:define-panel collection database (:access (radiance admin database) :icon "fa-table" :tooltip "View collection contents")
   (let ((collection (post/get "collection"))
         (confirm (post/get "confirm"))
         (action (post/get "action")))
@@ -41,7 +41,7 @@
             :records (dm:get collection (db:query :all)))))
         (redirect "/database/database"))))
 
-(admin:define-panel record database (:access '(radiance admin database) :icon "fa-list-alt" :tooltip "View record contents")
+(admin:define-panel record database (:access (radiance admin database) :icon "fa-list-alt" :tooltip "View record contents")
   (let ((collection (post/get "collection"))
         (confirm (post/get "confirm"))
         (id (post/get "id"))
