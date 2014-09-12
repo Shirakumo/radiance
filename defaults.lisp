@@ -26,8 +26,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun transform-access-body (body branch)
     (if (not (eql branch T))
-        `((unless (and (auth:current) (user:check (auth:current) ,branch))
-            (error 'request-denied :message (format NIL "User ~a does not have the necessary rights ~s" (auth:current) ,branch)))
+        `((unless (and (auth:current) (user:check (auth:current) ',branch))
+            (error 'request-denied :message (format NIL "User ~a does not have the necessary rights ~s" (auth:current) ',branch)))
           ,@body)
         body)))
 
