@@ -58,6 +58,7 @@
   (defun check (user branch))
   (defun grant (user branch))
   (defun prohibit (user branch))
+  (defun add-default-permission (branch))
   (defun action (user action public))
   (defun actions (user n &key (public T) oldest-first))
   (define-hook remove (username))
