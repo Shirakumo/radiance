@@ -10,7 +10,7 @@
   (admin:define-panel account settings (:access () :lquery (template "account.ctml") :icon "fa-user" :tooltip "Change account information.")
     (let ((user (auth:current))
           (fields (dm:get 'simple-profile-fields (db:query :all))))
-      (with-actions
+      (with-actions (error info)
           ((:save
             (v:info :test "FOO!!")
             (setf (user:field user "displayname") (post-var "displayname")
@@ -25,16 +25,26 @@
             (setf info "Account updated.")))
         (r-clip:process
          T
-         :error error
-         :info info
+         :error error :info info
          :user user
          :fields fields))))
 
   (admin:define-panel profile settings (:access () :lquery (template "profile.ctml") :icon "fa-home" :tooltip "Configure your profile looks.")
-    )
+    (let ((user (auth:current)))
+      (with-actions (error info)
+          ((:save
+            (setf (user:field user "simple-profile-color") (post-var "color")
+                  (user:field user "simple-profile-background") (post-var "background")
+                  (user:field user "simple-profile-actions") (post-var "show-actions"))
+            (user:save user)
+            (setf info "Profile updated.")))
+        (r-clip:process
+         T
+         :info info :error error
+         :user user))))
 
   (admin:define-panel fields users (:access (radiance admin users fields) :lquery (template "fields.ctml") :icon "fa-list" :tooltip "Set user profile fields.")
-    (with-actions
+    (with-actions (error info)
         ((:add
           (db:insert 'simple-profile-fields `((name . ,(post-var "name")) (type . ,(post-var "type")) (default . ,(post-var "default")))))
          (:delete
