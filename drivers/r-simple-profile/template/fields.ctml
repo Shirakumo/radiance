@@ -35,11 +35,20 @@
             <option value="textarea">Text Area</option>
             <option value="password">Password</option>
             <option value="email">E-Mail</option>
-            <option value="date">Date</option>
-            <option value="time">Time</option>
-            <option value="datetime">Date-Time</option>
-            <option value="color">Color</option>
             <option value="url">URL</option>
+            <option value="time">Time</option>
+            <option value="date">Date</option>
+            <option value="datetime">Date-Time</option>
+            <option value="datetime-local">Local Datetime</option>
+            <option value="month">Month</option>
+            <option value="week">Week</option>
+            <option value="color">Color</option>
+            <option value="number">Number</option>
+            <option value="range">Range</option>
+            <option value="checkbox">Checkbox</option>
+            <option value="radio">Radio</option>
+            <option value="file">File</option>
+            <option value="tel">Telephone Number</option>
           </select></td>
 	  <td><input type="text" name="default" form="addForm" placeholder="Default" style="width:100%" maxlength="128" /></td>
 	  <td><form action="#" method="post" id="addForm">
