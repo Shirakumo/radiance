@@ -12,11 +12,13 @@
           (fields (dm:get 'simple-profile-fields (db:query :all))))
       (with-actions (error info)
           ((:save
-            (v:info :test "FOO!!")
+            (ratify:perform-test
+              :email (post-var "email"))
             (setf (user:field user "displayname") (post-var "displayname")
                   (user:field user "email") (post-var "email"))
             (dolist (field fields)
               (let ((val (post-var (dm:field field "name"))))
+                (ratify:perform-test (find-symbol (string-upcase (dm:field field "type")) :keyword) val)
                 (setf (user:field user (dm:field field "name"))
                       (if (or (not val) (string= val ""))
                           (dm:field field "default")
@@ -33,6 +35,10 @@
     (let ((user (auth:current)))
       (with-actions (error info)
           ((:save
+            (ratify:perform-combined-tests
+              (:color (post-var "color"))
+              (:property (post-var "background"))
+              (:boolean (post-var "show-actions")))
             (setf (user:field user "simple-profile-color") (post-var "color")
                   (user:field user "simple-profile-background") (post-var "background")
                   (user:field user "simple-profile-actions") (post-var "show-actions"))

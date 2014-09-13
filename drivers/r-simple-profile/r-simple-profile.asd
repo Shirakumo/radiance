@@ -16,4 +16,6 @@
   :components ((:file "profile")
                (:file "admin"))
   :depends-on ((:interface :user)
-               :crypto-shortcuts))
+               :crypto-shortcuts
+               :r-clip
+               :ratify))
