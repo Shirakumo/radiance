@@ -43,8 +43,8 @@
     (transform-access-body body branch)))
 
 (define-implement-hook (profile 'define-accessor-option)
-  (profile:define-panel-option access (name category body (branch T))
-    (declare (ignore name category))
+  (profile:define-panel-option access (name body (branch T))
+    (declare (ignore name))
     (transform-access-body body branch)))
 
 ;; Api catchall page
