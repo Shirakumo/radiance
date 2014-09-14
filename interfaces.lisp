@@ -70,7 +70,7 @@
   (defun name (user))
   (defun page (user &optional (category :profile)))
   (defun fields ())
-  (defun add-field (name &key (type :text) default (public T)))
+  (defun add-field (name &key (type :text) default (editable T)))
   (defun panel (name))
   (defun (setf panel) (function name))
   (defun remove-panel (name))
