@@ -11,7 +11,7 @@
 (in-package #:simple-profile)
 
 (define-trigger db:connected ()
-  (db:create 'simple-profile-fields '((:name (:varchar 32)) (:type (:varchar 16)) (:default (:varchar 128)))
+  (db:create 'simple-profile-fields '((:name (:varchar 32)) (:type (:varchar 16)) (:default (:varchar 128)) (:editable (:integer 1)))
              :indices '(:name)))
 
 (defun normalize (user)
@@ -26,23 +26,83 @@
             (cryptos:md5 (string-downcase email)) size)))
 
 (defun profile:name (user)
-  (user:field (normalize user) "displayname"))
+  (let ((user (normalize user)))
+    (or* (user:field user "displayname")
+         (user:username user))))
 
-(defun profile:page (user &optional (page-type :profile))
+(defun profile:page (user &optional (panel :profile))
   (declare (ignore user page-type))
   "")
 
-(defun profile:panel (category name)
-  )
+(defun profile:fields ()
+  (dm:get 'simple-profile-fields (db:query :all)))
 
-(defun (setf profile:panel) (function category name)
-  )
+(defun profile:add-field (name &key (type :text) default (public T))
+  (let ((name (string-downcase name)))
+    (unless (db:select 'simple-profile-fields (db:query (:= 'name name)))
+      (let ((type (string-downcase type)))
+        (assert (member type '(text textarea password email url time date datetime datetime-local month week color number range checkbox radio file tel) :test #'string-equal)
+                () "TYPE must be one of (text textarea password email url time date datetime datetime-local month week color number range checkbox radio file tel).")
+        (db:insert 'simple-profile-fields `((:name . ,name) (:type . ,type) (:default . ,(or default "")) (:public . ,(if public 1 0)))))
+      name)))
 
-(defun profile:remove-panel (category name)
-  )
+(defvar *panels* (make-hash-table :test 'equalp))
+(defvar *cached-panels* ())
 
-(defmacro profile:define-panel-option (name (categoryvar namevar bodyvar valuevar) &body body)
-  )
+(defun generate-panel-cache ()
+  (setf *cached-panels*
+        (sort (loop for panel being the hash-values of *panels*
+                    collect panel)
+              #'string> :key #'(lambda (a) (clip:clip a :name)))))
 
-(defmacro profile:define-panel (category name options &body body)
-  )
+(defun profile:panel (name)
+  (gethash (string name) *panels*))
+
+(defun (setf profile:panel) (function name)
+  (setf (gethash (string name) *panels*)
+        function)
+  (generate-panel-cache))
+
+(defun profile:remove-panel (name)
+  (remhash (string name) *panels*)
+  (generate-panel-cache))
+
+(defvar *panel-options* (make-hash-table))
+
+(defun (setf panel-option) (function option)
+  (setf (gethash option *panel-options*) function))
+
+(define-options-definer profile:define-panel-option panel-option (namevar bodyvar valuevar))
+
+(defmacro profile:define-panel (name options &body body)
+  (let ((name (string-downcase name)))
+    (destructuring-bind (&key access &allow-other-keys) options
+      (multiple-value-bind (body forms) (expand-options *panel-options* options body name)
+        (declare (ignore forms))
+        `(setf (profile:panel ,name)
+               (clip:make-clipboard
+                :name ,name
+                :access ',access
+                :function
+                #'(lambda ()
+                    ,@body)))))))
+
+(defun run-panel (panel)
+  (let ((panel (profile:panel panel)))
+    (when panel
+      (let ((result (funcall (if (functionp panel) panel (clip:clip panel :function)))))
+        (etypecase result
+          (null "")
+          (string result)
+          (plump:node (with-output-to-string (s)
+                        (plump:serialize result s)))
+          (array (lquery:$ result (serialize) (node))))))))
+
+(define-page user #@"user/([^/]+)?(/([^/]+))?" (:uri-groups (username NIL panel) :lquery (template "public.ctml"))
+  (r-clip:process
+   T
+   :user (user:get username)
+   :you (auth:current)
+   :panels *cached-panels*
+   :panel-name (or* panel "index")
+   :panel (run-panel (or* panel "index"))))

@@ -9,7 +9,7 @@
 (define-implement-hook admin
   (admin:define-panel account settings (:access () :lquery (template "account.ctml") :icon "fa-user" :tooltip "Change account information.")
     (let ((user (auth:current))
-          (fields (dm:get 'simple-profile-fields (db:query :all))))
+          (fields (dm:get 'simple-profile-fields (db:query (:= 'editable 1)))))
       (with-actions (error info)
           ((:save
             (ratify:perform-test
@@ -52,7 +52,7 @@
   (admin:define-panel fields users (:access (radiance admin users fields) :lquery (template "fields.ctml") :icon "fa-list" :tooltip "Set user profile fields.")
     (with-actions (error info)
         ((:add
-          (db:insert 'simple-profile-fields `((name . ,(post-var "name")) (type . ,(post-var "type")) (default . ,(post-var "default")))))
+          (db:insert 'simple-profile-fields `((name . ,(post-var "name")) (type . ,(post-var "type")) (default . ,(post-var "default")) (editable . ,(or (post-var "editable") 0)))))
          (:delete
           (dolist (name (or (post-var "selected[]") (list (post-var "name"))))
             (db:remove 'simple-profile-fields (db:query (:= 'name name))))))
