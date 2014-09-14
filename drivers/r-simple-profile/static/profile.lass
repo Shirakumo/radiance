@@ -72,7 +72,19 @@
   :min-height 200px
 
   (h2
-   :margin 5px))
+   :margin 5px)
+
+  ("#userinfo"
+
+   (ul
+    :list-style none
+
+    (li
+     (label
+      :display inline-block
+      :min-width 120px
+      :font-weight bold
+      :text-transform capitalize)))))
 
  (>footer
   :max-width 800px
