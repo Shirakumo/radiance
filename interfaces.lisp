@@ -16,10 +16,26 @@
   ((%requested :initarg :requested :initform (error "REQUESTED required.") :reader requested))
   (:report (lambda (c s) (format s "Interface ~s requested but no implementation is configured." (requested c)))))
 
-(defmethod asdf::resolve-dependency-combination ((module module) (combinator (eql :interface)) args)
-  (find-implementation (first args)))
+;; Ho boy here we go!
+;; Hack into parse-dependency-def and add the interface
+;; since hooking into resolve-dependency-combination is not enough anymore.
+;; sad faces all around.
+(when (find-symbol "PARSE-DEPENDENCY-DEF" :ASDF/PARSE-DEFSYSTEM)
+  (eval
+   `(progn
+      (defvar *old-dependency-def-fun* (function ,(find-symbol "PARSE-DEPENDENCY-DEF" :ASDF/PARSE-DEFSYSTEM)))
+      (defun ,(find-symbol "PARSE-DEPENDENCY-DEF" :ASDF/PARSE-DEFSYSTEM) (definition)
+        (if (and (listp definition) (eql (car definition) :interface))
+            definition
+            (funcall *old-dependency-def-fun* definition))))))
 
-(defmethod asdf:operate :after ((op asdf::load-op) (module module) &key)
+(if (find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf)
+    (eval
+     `(defmethod ,(find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf) ((module module) (combinator (eql :interface)) args)
+        (find-implementation (first args))))
+    (error "Radiance cannot support this version of ASDF. Sorry!"))
+
+(defmethod asdf:operate :after ((op asdf:load-op) (module module) &key)
   (loop for interface in (module-storage (module (virtual-module-name module)) :implements)
         do (trigger (find-symbol "IMPLEMENTED" (interface interface)))))
 
