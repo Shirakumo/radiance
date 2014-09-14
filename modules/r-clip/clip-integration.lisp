@@ -45,4 +45,8 @@
   (admin:define-panel-option lquery (name category body template)
     (transform-body body template)))
 
+(define-implement-hook profile
+  (profile:define-panel-option lquery (name body template)
+    (transform-body body template)))
+
 
