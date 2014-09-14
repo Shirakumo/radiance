@@ -69,11 +69,13 @@
   (defun avatar (user size))
   (defun name (user))
   (defun page (user &optional (category :profile)))
-  (defun panel (category name))
-  (defun (setf panel) (function category name))
-  (defun remove-panel (category name))
-  (defmacro define-panel-option (name (categoryvar namevar bodyvar valuevar) &body body))
-  (defmacro define-panel (category name options &body body)))
+  (defun fields ())
+  (defun add-field (name &key (type :text) default (public T)))
+  (defun panel (name))
+  (defun (setf panel) (function name))
+  (defun remove-panel (name))
+  (defmacro define-panel-option (name (namevar bodyvar valuevar) &body body))
+  (defmacro define-panel (name options &body body)))
 
 ;; To be specced
 (define-interface server
