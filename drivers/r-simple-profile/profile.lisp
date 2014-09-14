@@ -37,13 +37,13 @@
 (defun profile:fields ()
   (dm:get 'simple-profile-fields (db:query :all)))
 
-(defun profile:add-field (name &key (type :text) default (public T))
+(defun profile:add-field (name &key (type :text) default (editable T))
   (let ((name (string-downcase name)))
     (unless (db:select 'simple-profile-fields (db:query (:= 'name name)))
       (let ((type (string-downcase type)))
         (assert (member type '(text textarea password email url time date datetime datetime-local month week color number range checkbox radio file tel) :test #'string-equal)
                 () "TYPE must be one of (text textarea password email url time date datetime datetime-local month week color number range checkbox radio file tel).")
-        (db:insert 'simple-profile-fields `((:name . ,name) (:type . ,type) (:default . ,(or default "")) (:public . ,(if public 1 0)))))
+        (db:insert 'simple-profile-fields `((name . ,name) (type . ,type) (default . ,(or default "")) (editable . ,(if editable 1 0)))))
       name)))
 
 (defvar *panels* (make-hash-table :test 'equalp))
@@ -76,7 +76,7 @@
 
 (defmacro profile:define-panel (name options &body body)
   (let ((name (string-downcase name)))
-    (destructuring-bind (&key access &allow-other-keys) options
+    (destructuring-bind (&key access (user (gensym "USER")) &allow-other-keys) options
       (multiple-value-bind (body forms) (expand-options *panel-options* options body name)
         (declare (ignore forms))
         `(setf (profile:panel ,name)
@@ -84,13 +84,14 @@
                 :name ,name
                 :access ',access
                 :function
-                #'(lambda ()
+                #'(lambda (,user)
+                    (declare (ignorable ,user))
                     ,@body)))))))
 
-(defun run-panel (panel)
+(defun run-panel (panel user)
   (let ((panel (profile:panel panel)))
     (when panel
-      (let ((result (funcall (if (functionp panel) panel (clip:clip panel :function)))))
+      (let ((result (funcall (clip:clip panel :function) user)))
         (etypecase result
           (null "")
           (string result)
@@ -99,10 +100,11 @@
           (array (lquery:$ result (serialize) (node))))))))
 
 (define-page user #@"user/([^/]+)?(/([^/]+))?" (:uri-groups (username NIL panel) :lquery (template "public.ctml"))
-  (r-clip:process
-   T
-   :user (user:get username)
-   :you (auth:current)
-   :panels *cached-panels*
-   :panel-name (or* panel "index")
-   :panel (run-panel (or* panel "index"))))
+  (let ((user (user:get username)))
+    (r-clip:process
+     T
+     :user user
+     :you (auth:current)
+     :panels *cached-panels*
+     :panel-name (or* panel "index")
+     :panel (run-panel (or* panel "index") user))))
