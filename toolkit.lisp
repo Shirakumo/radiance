@@ -95,3 +95,11 @@
        ,@body)))
 
 (indent:define-indentation with-actions (6 (&whole 4 &rest) &body))
+
+(defun or* (&rest vals)
+  "Functional equivalent of OR with the twist that empty strings are seen as NIL."
+  (loop for val in vals
+        when (if (stringp val)
+                 (not (string= val ""))
+                 val)
+          do (return val)))

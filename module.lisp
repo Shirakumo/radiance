@@ -165,7 +165,8 @@
    #:with-model
    #:with-model-fields
    #:do-models
-   #:with-actions)
+   #:with-actions
+   #:or*)
   ;; uri.lisp
   (:export
    #:uri
