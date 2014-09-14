@@ -1,0 +1,7 @@
+<header><h2>User Info</h2></header>
+<ul iterate="(profile:fields)">
+  <li>
+    <label lquery="(text name)">FIELD</label>
+    <span lquery="(text (or* (user:field (** :user) name) default))">VALUE</span>
+  </li>
+</ul>

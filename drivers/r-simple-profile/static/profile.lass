@@ -1,0 +1,110 @@
+(html
+ :font-family Arial sans-serif
+ :background "#000")
+
+((:or html body)
+ :margin 0 :padding 0
+ :min-height 100%)
+
+(body
+ (>header
+  :background "#151515"
+  :color "#FFF"
+  :margin 50px 0 0 0
+  :border-bottom 3px solid "#0088EE"
+
+  (div
+   :width 1000px
+   :margin 0 auto 0 auto
+
+   (* :vertical-align text-top)
+   
+   (img
+    :margin 10px
+    :width 128px
+    :height 128px
+    :background "#000"
+    :border 3px solid "#0088EE"
+    :float left)
+   
+   (h1
+    :display inline-block
+    :margin 0
+    :padding 10px)
+
+   (nav
+    (ul
+     :margin 0
+     :padding 0
+     :list-style none
+     :position relative
+
+     (li
+      :display inline-block
+      :vertical-align text-top
+      (a
+       :display inline-block
+       :background "#333"
+       :color "#FFF"
+       :font-weight bold
+       :text-decoration none
+       :text-transform capitalize
+       :padding 3px
+       :margin 3px 3px 0 3px)
+
+      ((:and a :hover)
+       :background white !important
+       :color black))
+
+     ((:and li .active)
+      :margin-bottom -3px
+      (a
+       :background "#0088EE"))))))
+
+ (>main
+  :background "#EEE"
+  :max-width 800px
+  :margin 0 auto 0 auto
+  :padding 10px 20px 10px 20px
+  :border 1px solid "#0088EE"
+  :border-top none
+  :border-bottom none
+  :min-height 200px
+
+  (h2
+   :margin 5px))
+
+ (>footer
+  :max-width 800px
+  :margin 0 auto 0 auto
+  :background "#151515"
+  :padding 5px 21px 5px 21px
+  :font-size 8pt
+  :text-align center
+  :color "#555"))
+
+(:media "(max-width:1000px)"
+
+        (body>header
+
+         (div
+          :width auto
+          :margin 0
+
+          (img
+           :width 64px
+           :height 64px
+           :margin 0
+           :border-width 3px
+           :float none))))
+
+(:media "(max-width: 800px)"
+
+        (body
+         (>header
+          :margin 0)
+
+         (>main
+          :padding 5px
+          :border none
+          :margin 0)))
