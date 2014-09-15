@@ -20,7 +20,7 @@
 ;; Hack into parse-dependency-def and add the interface
 ;; since hooking into resolve-dependency-combination is not enough anymore.
 ;; sad faces all around.
-(when (find-symbol "PARSE-DEPENDENCY-DEF" :ASDF/PARSE-DEFSYSTEM)
+(when (and (find-package :ASDF/PARSE-DEFSYSTEM) (find-symbol "PARSE-DEPENDENCY-DEF" :ASDF/PARSE-DEFSYSTEM))
   (eval
    `(progn
       (defvar *old-dependency-def-fun* (function ,(find-symbol "PARSE-DEPENDENCY-DEF" :ASDF/PARSE-DEFSYSTEM)))
