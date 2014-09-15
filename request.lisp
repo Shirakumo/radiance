@@ -96,7 +96,7 @@
 (defun (setf header) (value name &optional (response *response*))
   (setf (gethash name (headers response)) value))
 
-(defun redirect (new-address &optional (code 301) (response *response*))
+(defun redirect (new-address &optional (code 307) (response *response*))
   (setf (return-code response) code)
   (setf (header "Location" response) new-address))
 
