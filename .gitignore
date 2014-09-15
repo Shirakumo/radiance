@@ -1,5 +1,7 @@
 .directory
 /data/simple-cache/
+/lib/
+
 /core/radiance-core
 /core/radiance-web
 /modules/reader
