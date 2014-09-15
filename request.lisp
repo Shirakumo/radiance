@@ -115,6 +115,7 @@
           (let ((result (dispatch request)))
             (typecase result
               (response (setf *response* result))
+              (pathname (serve-file result))
               (string (setf (data *response*) result))
               ((array (unsigned-byte 8)) (setf (data *response*) result))))
         (set-data (data)
