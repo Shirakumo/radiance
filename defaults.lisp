@@ -105,5 +105,5 @@
                                  (string-upcase (subseq (path *request*) (length "static/") slashpos))))
         (serve-file (merge-pathnames (subseq (path *request*) (length "static/")) (data-file "static/"))))))
 
-(define-page welcome #@"/" ()
+(define-page welcome #@"/^$" ()
   (serve-file (data-file "static/html/hello.html")))
