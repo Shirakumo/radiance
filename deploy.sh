@@ -4,7 +4,7 @@ readonly CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 readonly TARGET=${1-${CWD}}
 readonly GIT_ROOT="git://github.com/Shinmera/"
 readonly CORE=("radiance-core" "radiance-web")
-readonly LIBS=("plump" "CLSS" "lquery" "clip" "staple" "piping" "verbose" "Universal-Config" "trivial-mimes" "trivial-indent" "clip" "crypto-shortcuts" "modularize" "modularize-hooks" "modularize-interfaces" "ratify")
+readonly LIBS=("plump" "CLSS" "lquery" "clip" "staple" "piping" "verbose" "Universal-Config" "trivial-mimes" "trivial-indent" "crypto-shortcuts" "modularize" "modularize-hooks" "modularize-interfaces" "ratify")
 readonly MODS=("radiance-reader" "radiance-plaster" "radiance-chatlog")
 
 status(){
