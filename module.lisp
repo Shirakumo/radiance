@@ -73,7 +73,8 @@
    #:file-size
    #:read-data-file
    #:data-file
-   #:resolve-base))
+   #:resolve-base
+   #:create-module))
 
 (define-module radiance-user
   (:nicknames #:rad-user)
