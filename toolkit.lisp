@@ -93,7 +93,12 @@
          (base-file (string-downcase base-file))
          (root (uiop:ensure-directory-pathname
                 (merge-pathnames name (asdf:system-relative-pathname :radiance "modules/")))))
+    ;; Create directories
     (ensure-directories-exist root)
+    (ensure-directories-exist (merge-pathnames "template/" root))
+    (ensure-directories-exist (merge-pathnames "static/" root))
+
+    ;; Populate base ASD
     (with-open-file (s (merge-pathnames (format NIL "~a.asd" name) root) :direction :output)
       (format s "(in-package #:cl-user)~%~
  (asdf:defsystem #:~a
@@ -102,11 +107,13 @@
   :components ((:file \"~a\"))
   :depends-on (~{~a~^ ~}))"
               name base-file dependencies))
+    ;; Create base module file
     (with-open-file (s (merge-pathnames (format NIL "~a.lisp" base-file) root) :direction :output)
       (format s "(in-package #:rad-user)~%~
  (define-module #:~a
   (:use #:cl #:radiance))~%~
  (in-package #:~:*~a)~%~%" name))
+    ;; Load system into quicklisp
     (when (find-package :ql)
       (dolist (project-folder ql:*local-project-directories*)
         (uiop:delete-file-if-exists (merge-pathnames "system-index.txt" project-folder)))
