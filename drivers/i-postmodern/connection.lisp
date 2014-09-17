@@ -88,4 +88,4 @@
   (trigger 'db:disconnected))
 
 (defun db:connected-p ()
-  (not (null *current-con*)))
+  (not (null *current-db*)))
