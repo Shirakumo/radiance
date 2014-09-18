@@ -5,7 +5,7 @@ body,html{
 }
 
 body{
-	background: #151515 url("/static/img/TyNET-logo-david-dark-256.png") top right no-repeat no-repeat;
+	background: #151515 url("/static/magpie-256.png") top right no-repeat no-repeat;
 	color: #FFF;
 	margin: 20px 5% 0 5%;
 	padding: 10px 250px 10px 10px;
