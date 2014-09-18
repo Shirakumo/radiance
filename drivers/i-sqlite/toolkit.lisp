@@ -4,22 +4,18 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:i-postmodern)
-
-(defmacro with-query ((query-form &optional (where 'where) (vars 'vars)) &body body)
-  (let ((res (gensym "RESULT")))
-    `(let* ((,res ,query-form)
-            (,where (car ,res))
-            (,vars (cdr ,res)))
-       ,@body)))
+(in-package #:i-sqlite)
 
 ;; !ADAPT
 (defmacro with-collection-existing ((collection) &body body)
-  `(handler-case (progn ,@body)
-     (cl-postgres-error:syntax-error-or-access-violation (err)
-       (when (string= "42P01" (cl-postgres-error::database-error-code err))
-         (error 'database-invalid-collection :collection ,collection
-                                             :message (cl-postgres-error::database-error-message err))))))
+  `(handler-bind
+       ((sqlite:sqlite-error
+          #'(lambda (err)
+              (when (and (<= 13 (length (sqlite:sqlite-error-message err)))
+                         (string= "no such table" (sqlite:sqlite-error-message err) :end2 13))
+                (error 'database-invalid-collection :collection ,collection
+                                                    :message (sqlite:sqlite-error-message err))))))
+     ,@body))
 
 (defun valid-name-p (name)
   (loop for char across (string-downcase name)
@@ -31,5 +27,5 @@
 
 (defun check-collection-exists (collection)
   (check-collection-name collection)
-  (unless (postmodern:table-exists-p (string-downcase collection))
+  (when (= 0 (db:count 'sqlite_master (db:query (:and (:= 'type "table") (:= 'name (string-downcase collection))))))
     (error 'database-invalid-collection :collection collection :message "Collection does not exist on database.")))

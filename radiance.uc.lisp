@@ -32,6 +32,11 @@
                                      :PASS "-q#vRsABnFrJ417$!",
                                      :DATABASE "-radiance"}},
               :DEFAULT :LOCALHOST},
+ :SQLITE {EQL
+          :CONNECTIONS {EQL
+                        :DEV "-~/Projects/CL/radiance/data/sqlite-dev",
+                        :MEMORY "-:memory:"},
+          :DEFAULT :DEV},
  :PLASTER {EQL
            :ANON T,
            :CAPTCHA T}} 

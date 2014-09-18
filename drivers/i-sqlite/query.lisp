@@ -6,6 +6,13 @@
 
 (in-package #:i-sqlite)
 
+(defmacro with-query ((query-form &optional (where 'where) (vars 'vars)) &body body)
+  (let ((res (gensym "RESULT")))
+    `(let* ((,res ,query-form)
+            (,where (car ,res))
+            (,vars (cdr ,res)))
+       ,@body)))
+
 (defun exec-query (query vars &optional (row-reader #'(lambda (statement) (declare (ignore statement)))))
   (l:trace :database "QUERY: ~s ~s" query vars)
   (let ((statement (sqlite:prepare-statement *current-con* query)))
@@ -33,13 +40,6 @@
           vars)))
 
 (defvar *vars*)
-(defmacro db:query (query-form)
-  (let ((*vars* ()))
-    (if (eql query-form :ALL)
-        `(cons "" ())
-        `(cons ,(format NIL "WHERE ~a" (compile-form query-form))
-               (list ,@(nreverse *vars*))))))
-
 (defun compile-form (form)
   (etypecase form
     (null (error "NIL not allowed"))
@@ -67,3 +67,10 @@
        (QUOTE (format NIL "\"~a\"" (string-downcase (second form))))
        (T (push form *vars*)
 	"?")))))
+
+(defmacro db:query (query-form)
+  (let ((*vars* ()))
+    (if (eql query-form :ALL)
+        `(cons "" ())
+        `(cons ,(format NIL "WHERE ~a" (compile-form query-form))
+               (list ,@(nreverse *vars*))))))

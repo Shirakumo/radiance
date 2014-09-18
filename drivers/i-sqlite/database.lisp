@@ -4,7 +4,7 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:i-postmodern)
+(in-package #:i-sqlite)
 
 ;; TODO:
 ;; Optimize the shit out of this with compiler macros
@@ -13,12 +13,34 @@
 ;; TODO:
 ;; Implement closer erroring details of spec. (invalid fields, etc)
 
+(define-condition pcre-not-found (error) ()
+  (:report (lambda (c s) (declare (ignore c)) (format s "Could not find sqlite3 pcre extension library."))))
+
+(cffi:defcfun sqlite3-enable-load-extension :int
+  (db sqlite-ffi:p-sqlite3)
+  (onoff :int))
+
+(defun load-extension (extensionpath &optional (connection *current-con*))
+  (l:debug :sqlite "Loading sqlite extension ~a" extensionpath)
+  (sqlite3-enable-load-extension (sqlite::handle connection) 1)
+  (sqlite:execute-non-query connection (format NIL "SELECT load_extension('~a');" extensionpath))
+  (sqlite3-enable-load-extension (sqlite::handle connection) 0)
+  extensionpath)
+
 (define-trigger startup-done ()
-  (db:connect (config-tree :sqlite :default)))
+  (db:connect (config-tree :sqlite :default))
+  (or
+   (loop for path in (list #p"/usr/lib/sqlite3/pcre.so"
+                           #p"/usr/lib/sqlite3/pcre"
+                           (data-file "sqlite3-pcre.so"))
+           thereis (when (probe-file path)
+                     (load-extension (namestring path))))
+   (error 'pcre-not-found)))
 
 (defun db:collections ()
-  ;; !ADAPT
-  )
+  (db:iterate 'sqlite_master (db:query (:= 'type "table"))
+    #'(lambda (row) (gethash "name" row))
+    :sort '(("name" :ASC)) :accumulate T))
 
 (defun db:collection-exists-p (collection)
   (ignore-errors
@@ -26,21 +48,22 @@
    collection))
 
 (defun db:create (collection structure &key indices (if-exists :ignore))
-  (flet ((err (msg) (error 'database-invalid-collection :collection collection :message msg)))
-    (check-collection-name collection)
-    (unless structure (err "Structure cannot be empty."))
-    (let ((query (format NIL "CREATE TABLE \"~a\" (\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT, ~{~a~^, ~});"
-                         (string-downcase collection) (mapcar #'compile-field structure))))
-      (when (db:collection-exists-p collection)
-	(ecase if-exists
-	  (:ignore (return-from db:create NIL))
-	  (:error (error 'database-collection-already-exists :collection collection))))
-      (exec-query query ())
-      (dolist (index indices)
-	(unless (member index structure :key #'car :test #'string-equal)
-	  (err (format NIL "Index on field ~s requested but it does not exist." index)))
-	(exec-query "CREATE INDEX ON ? (?)" (string-downcase collection) (string-downcase index)))
-      T)))
+  (let ((collection (string-downcase collection)))
+    (flet ((err (msg) (error 'database-invalid-collection :collection collection :message msg)))
+      (check-collection-name collection)
+      (unless structure (err "Structure cannot be empty."))
+      (let ((query (format NIL "CREATE TABLE \"~a\" (\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT, ~{~a~^, ~});"
+                           collection (mapcar #'compile-field structure))))
+        (when (db:collection-exists-p collection)
+          (ecase if-exists
+            (:ignore (return-from db:create NIL))
+            (:error (error 'database-collection-already-exists :collection collection))))
+        (exec-query query ())
+        (dolist (index indices)
+          (unless (member index structure :key #'car :test #'string-equal)
+            (err (format NIL "Index on field ~s requested but it does not exist." index)))
+          (exec-query "CREATE INDEX ON ? (?)" collection (string-downcase index)))
+        collection))))
 
 ;; !CHECK
 (defun compile-field (field)
@@ -68,23 +91,21 @@
 ;; !ADAPT
 (defun db:structure (collection)
   (check-collection-exists collection)
-  (rest 
-   (mapcar #'(lambda (column)
-	       (destructuring-bind (name type size) column
-		 (list name (cond ((string= type "integer")
-				   :INTEGER)
-				  ((string= type "smallint")
-				   (list :INTEGER 2))
-				  ((string= type "bigint")
-				   (list :INTEGER 8))
-				  ((string= type "double precision")
-				   :FLOAT)
-				  ((string= type "character varying")
-				   (list :VARCHAR size))
-				  ((string= type "text")
-				   :TEXT)))))
-	   (postmodern:query (format NIL "select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = '~a'"
-				     (string-downcase collection))))))
+  #'(lambda (column)
+      (destructuring-bind (name type size) column
+        (list name (cond ((string= type "integer")
+                          :INTEGER)
+                         ((string= type "smallint")
+                          (list :INTEGER 2))
+                         ((string= type "bigint")
+                          (list :INTEGER 8))
+                         ((string= type "double precision")
+                          :FLOAT)
+                         ((string= type "character varying")
+                          (list :VARCHAR size))
+                         ((string= type "text")
+                          :TEXT)))))
+  )
 
 (defun db:empty (collection)
   (with-collection-existing (collection)
@@ -96,17 +117,23 @@
     (exec-query "DROP TABLE ?;" (list (string-downcase collection)))
     T))
 
+(defun collect-statement-to-table (statement)
+  (loop with table = (make-hash-table :test 'equalp)
+        for field in (sqlite:statement-column-names statement)
+        for i from 0
+        do (setf (gethash field table)
+                 (sqlite:statement-column-value statement i))
+        finally (return table)))
+
 (defun collecting-iterator (function)
   #'(lambda (statement)
       (loop while (sqlite:step-statement statement)
-	    collect (funcall function (loop for i from 0 below (length (sqlite:statement-column-names statement))
-					    collect (sqlite:statement-column-value statement i))))))
+	    collect (funcall function (collect-statement-to-table statement)))))
 
 (defun dropping-iterator (function)
   #'(lambda (statement)
       (loop while (sqlite:step-statement statement)
-	    do (funcall function (loop for i from 0 below (length (sqlite:statement-column-names statement))
-				       collect (sqlite:statement-column-value statement i))))))
+	    do (funcall function (collect-statement-to-table statement)))))
 
 (defun db:iterate (collection query function &key fields skip amount sort accumulate)
   (with-collection-existing (collection)
@@ -128,21 +155,20 @@
 (defun db:insert (collection data)
   (check-collection-name collection)
   (with-collection-existing (collection)
-    (let ((query (format NIL "INSERT INTO \"~a\" (~~{\"~~a\"~~^, ~~}) VALUES (~~{$~~a~~^, ~~}) RETURNING \"_id\";" (string-downcase collection))))
+    (let ((query (format NIL "INSERT INTO \"~a\" (~~{\"~~a\"~~^, ~~}) VALUES (~~:*~~{~~*?~~^, ~~});" (string-downcase collection))))
       (macrolet ((looper (&rest iters)
-                   `(loop ,@iters 
-                          for i from 1
+                   `(loop ,@iters
                           collect (string-downcase field) into fields
                           collect value into values
-                          collect i into nums
-                          finally (return (car (exec-query (format NIL query fields nums) values
+                          finally (return (car (exec-query (format NIL query fields) values
                                                            (collecting-iterator #'(lambda (ta) (gethash "_id" ta)))))))))
         (etypecase data
           (hash-table
            (looper for field being the hash-keys of data
                    for value being the hash-values of data))
           (list
-           (looper for (field . value) in data)))))))
+           (looper for (field . value) in data))))
+      (sqlite:last-insert-rowid *current-con*))))
 
 (defun db:remove (collection query &key skip amount sort)
   (check-collection-name collection)
