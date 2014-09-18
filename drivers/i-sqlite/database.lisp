@@ -6,36 +6,9 @@
 
 (in-package #:i-sqlite)
 
-;; TODO:
-;; Optimize the shit out of this with compiler macros
-;; maybe even triggers to compile all prepared statements on db connect or some shit
-
-;; TODO:
-;; Implement closer erroring details of spec. (invalid fields, etc)
-
-(define-condition pcre-not-found (error) ()
-  (:report (lambda (c s) (declare (ignore c)) (format s "Could not find sqlite3 pcre extension library."))))
-
-(cffi:defcfun sqlite3-enable-load-extension :int
-  (db sqlite-ffi:p-sqlite3)
-  (onoff :int))
-
-(defun load-extension (extensionpath &optional (connection *current-con*))
-  (l:debug :sqlite "Loading sqlite extension ~a" extensionpath)
-  (sqlite3-enable-load-extension (sqlite::handle connection) 1)
-  (sqlite:execute-non-query connection (format NIL "SELECT load_extension('~a');" extensionpath))
-  (sqlite3-enable-load-extension (sqlite::handle connection) 0)
-  extensionpath)
-
 (define-trigger startup-done ()
   (db:connect (config-tree :sqlite :default))
-  (or
-   (loop for path in (list #p"/usr/lib/sqlite3/pcre.so"
-                           #p"/usr/lib/sqlite3/pcre"
-                           (data-file "sqlite3-pcre.so"))
-           thereis (when (probe-file path)
-                     (load-extension (namestring path))))
-   (error 'pcre-not-found)))
+  (load-pcre))
 
 (defun db:collections ()
   (db:iterate 'sqlite_master (db:query (:= 'type "table"))
@@ -65,7 +38,6 @@
           (exec-query "CREATE INDEX ON ? (?)" collection (string-downcase index)))
         collection))))
 
-;; !CHECK
 (defun compile-field (field)
   (flet ((err (msg) (error 'database-invalid-field :fielddef field :message msg)))
     (destructuring-bind (name type) field
@@ -91,20 +63,7 @@
 ;; !ADAPT
 (defun db:structure (collection)
   (check-collection-exists collection)
-  #'(lambda (column)
-      (destructuring-bind (name type size) column
-        (list name (cond ((string= type "integer")
-                          :INTEGER)
-                         ((string= type "smallint")
-                          (list :INTEGER 2))
-                         ((string= type "bigint")
-                          (list :INTEGER 8))
-                         ((string= type "double precision")
-                          :FLOAT)
-                         ((string= type "character varying")
-                          (list :VARCHAR size))
-                         ((string= type "text")
-                          :TEXT)))))
+  ;; something something PRAGMA table_info()
   )
 
 (defun db:empty (collection)
@@ -151,7 +110,6 @@
         (exec-query query vars #'(lambda (statement)
 				   (return-from db:count (sqlite:statement-column-value statement 0))))))))
 
-;; !ADAPT, look at previous impl to figure out how it was dunn.
 (defun db:insert (collection data)
   (check-collection-name collection)
   (with-collection-existing (collection)
@@ -160,8 +118,7 @@
                    `(loop ,@iters
                           collect (string-downcase field) into fields
                           collect value into values
-                          finally (return (car (exec-query (format NIL query fields) values
-                                                           (collecting-iterator #'(lambda (ta) (gethash "_id" ta)))))))))
+                          finally (exec-query (format NIL query fields) values))))
         (etypecase data
           (hash-table
            (looper for field being the hash-keys of data
@@ -177,23 +134,17 @@
       (exec-query query vars)
       T)))
 
-(defun %field-clause (s a c p)
-  (declare (ignore c p))
-  (format s "\"~a\" = ?" (car a)))
-
-;; !ADAPT
 (defun db:update (collection query data &key skip amount sort)
   (check-collection-name collection)
   (with-collection-existing (collection)
-    (with-query ((make-query (format NIL "UPDATE \"~a\" SET ~~{~~/i-sqlite::%field-clause/~~^, ~~} WHERE ctid IN (SELECT ctid FROM \"~:*~a\" "
+    (with-query ((make-query (format NIL "UPDATE \"~a\" SET ~~{\"~~a\" = ?~~^, ~~} "
                                      (string-downcase collection))
                              query skip amount sort) query vars)
       (macrolet ((looper (&rest iters)
                    `(loop ,@iters
-                          for i from (1+ (length vars))
                           collect value into values
-                          collect (cons (string-downcase field) i) into fields
-                          finally (exec-query (format NIL "~a );" (format NIL query fields)) (append vars values)))))
+                          collect (string-downcase field) into fields
+                          finally (exec-query (format NIL query fields) (append vars values)))))
         (etypecase data
           (hash-table
            (looper for field being the hash-keys of data

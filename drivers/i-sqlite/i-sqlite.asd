@@ -16,5 +16,6 @@
                (:file "connection")
                (:file "query")
                (:file "toolkit")
+	       (:file "extension")
                (:file "database"))
   :depends-on (:sqlite))

@@ -6,11 +6,11 @@
 
 (in-package #:i-sqlite)
 
-;; !ADAPT
 (defmacro with-collection-existing ((collection) &body body)
   `(handler-bind
        ((sqlite:sqlite-error
           #'(lambda (err)
+	      ;; Gross, but what can you do.
               (when (and (<= 13 (length (sqlite:sqlite-error-message err)))
                          (string= "no such table" (sqlite:sqlite-error-message err) :end2 13))
                 (error 'database-invalid-collection :collection ,collection

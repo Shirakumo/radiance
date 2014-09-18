@@ -7,4 +7,6 @@
 (in-package #:modularize-user)
 (define-module #:i-sqlite
   (:use #:cl #:radiance)
-  (:implements #:database))
+  (:implements #:database)
+  (:export
+   #:*sqlite-pcre-paths*))
