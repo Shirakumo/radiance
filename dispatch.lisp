@@ -10,7 +10,7 @@
 (defvar *uri-priority* (make-array 0))
 (defparameter *uri-fallback* #'(lambda (request)
                                  (if (boundp '*response*)
-                                     (serve-file (data-file "static/html/error/404.html") "application/xhtml+xml")
+                                     (serve-file (data-file "html/error/404.html") "application/xhtml+xml")
                                      (error 'request-not-found :request request :message "Reached dispatch fallback."))))
 
 (defclass uri-dispatcher (uri)

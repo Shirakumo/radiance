@@ -93,10 +93,10 @@
 
 ;; Default urls
 (define-page favicon (#@"/favicon.ico" 10) ()
-  (serve-file (data-file "static/img/favicon.ico")))
+  (serve-file (data-file "static/favicon.ico")))
 
 (define-page robots (#@"/robots.txt" 10) ()
-  (serve-file (data-file "static/txt/robots.txt")))
+  (serve-file (data-file "static/robots.txt")))
 
 (define-page static (#@"/static/.*" 1000) ()
   (let ((slashpos (position #\/ (path *request*) :start (length "static/"))))
@@ -106,4 +106,4 @@
         (serve-file (merge-pathnames (subseq (path *request*) (length "static/")) (data-file "static/"))))))
 
 (define-page welcome #@"/^$" ()
-  (serve-file (data-file "static/html/hello.html")))
+  (serve-file (data-file "html/hello.html")))
