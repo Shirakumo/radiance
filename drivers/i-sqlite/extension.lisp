@@ -14,7 +14,9 @@
 (defun sqlite::load-extension (extensionpath &optional (connection *current-con*))
   (sqlite3-enable-load-extension (sqlite::handle connection) 1)
   (sqlite:execute-non-query connection (format NIL "SELECT load_extension('~a');"
-					       (uiop:native-namestring extensionpath)))
+					       (etypecase extensionpath
+						 (pathname (uiop:native-namestring extensionpath))
+						 (string extensionpath))))
   (sqlite3-enable-load-extension (sqlite::handle connection) 0)
   extensionpath)
 
@@ -23,9 +25,15 @@
   (:report (lambda (c s) (declare (ignore c)) (format s "Could not find the sqlite3 pcre extension library. Please adapt I-SQLITE:*SQLITE-PCRE-PATHS*"))))
 
 (defvar *sqlite-pcre-paths*
-  (list #p"/usr/lib/sqlite3/pcre.so"
-	#p"/usr/lib/sqlite3/pcre"
-	(data-file "sqlite3-pcre.so")))
+  (list #+unix #p"/usr/lib/sqlite3/pcre.so"
+	#+unix #p"/usr/lib/sqlite3/pcre"
+	#+unix #p"/usr/local/lib/sqlite3/pcre.so"
+	#+unix #p"/usr/local/lib/sqlite3/pcre"
+	#+unix (data-file "sqlite3-pcre.so")
+	#+unix "pcre.so"
+	#+windows #p"C:/Windows/System32/pcre.dll"
+	#+windows (data-file "sqlite3-pcre.dll")
+	#+windows "pcre.dll"))
 
 (defun load-pcre ()
   (or
