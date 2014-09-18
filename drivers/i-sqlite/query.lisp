@@ -20,7 +20,9 @@
 	  for var in vars
 	  do (sqlite:bind-parameter statement i var))
     (unwind-protect
-	 (funcall row-reader statement)
+	 (progn
+	   (sqlite:step-statement statement)
+	   (funcall row-reader statement))
       (sqlite:finalize-statement statement))))
 
 (defun %sort-clause (s a c p)

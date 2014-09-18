@@ -60,11 +60,25 @@
            (when arg (err "TEXT cannot accept an argument."))
            (format NIL "\"~a\" TEXT" (string-downcase name))))))))
 
-;; !ADAPT
 (defun db:structure (collection)
   (check-collection-exists collection)
-  ;; something something PRAGMA table_info()
-  )
+  (cdr
+   (loop for field in (sqlite:execute-to-list *current-con* (format NIL "PRAGMA table_info(\"~a\")" (string-downcase collection)))
+	 collect (destructuring-bind (index name type &rest rest) field
+		   (declare (ignore index rest))
+		   (list name
+			 (cond ((string-equal type "INTEGER")
+				:INTEGER)
+			       ((string-equal type "SMALLINT")
+				(list :INTEGER 2))
+			       ((string-equal type "BIGINT")
+				(list :INTEGER 8))
+			       ((string-equal type "DOUBLE PRECISION")
+				:FLOAT)
+			       ((string-equal type "TEXT")
+				:TEXT)
+			       ((string-equal type "VARCHAR" :end1 7)
+				(list :VARCHAR (parse-integer (subseq type 8 (1- (length type))))))))))))
 
 (defun db:empty (collection)
   (with-collection-existing (collection)
@@ -86,13 +100,13 @@
 
 (defun collecting-iterator (function)
   #'(lambda (statement)
-      (loop while (sqlite:step-statement statement)
-	    collect (funcall function (collect-statement-to-table statement)))))
+      (loop collect (funcall function (collect-statement-to-table statement))
+	    while (sqlite:step-statement statement))))
 
 (defun dropping-iterator (function)
   #'(lambda (statement)
-      (loop while (sqlite:step-statement statement)
-	    do (funcall function (collect-statement-to-table statement)))))
+      (loop do (funcall function (collect-statement-to-table statement))
+	    while (sqlite:step-statement statement))))
 
 (defun db:iterate (collection query function &key fields skip amount sort accumulate)
   (with-collection-existing (collection)
@@ -130,21 +144,22 @@
 (defun db:remove (collection query &key skip amount sort)
   (check-collection-name collection)
   (with-collection-existing (collection)
-    (with-query ((make-query (format NIL "DELETE FROM \"~a\" " (string-downcase collection)) query skip amount sort) query vars)
-      (exec-query query vars)
+    (with-query ((make-query (format NIL "DELETE FROM \"~a\" WHERE \"_id\" IN (SELECT \"_id\" FROM \"~:*~a\" " (string-downcase collection))
+                             query skip amount sort) query vars)
+      (exec-query (format NIL "~a );" query) vars)
       T)))
 
 (defun db:update (collection query data &key skip amount sort)
   (check-collection-name collection)
   (with-collection-existing (collection)
-    (with-query ((make-query (format NIL "UPDATE \"~a\" SET ~~{\"~~a\" = ?~~^, ~~} "
+    (with-query ((make-query (format NIL "UPDATE \"~a\" SET ~~{\"~~a\" = ?~~^, ~~} WHERE \"_id\" IN (SELECT \"_id\" FROM \"~:*~a\" "
                                      (string-downcase collection))
                              query skip amount sort) query vars)
       (macrolet ((looper (&rest iters)
                    `(loop ,@iters
                           collect value into values
                           collect (string-downcase field) into fields
-                          finally (exec-query (format NIL query fields) (append vars values)))))
+                          finally (exec-query (format NIL "~a);" (format NIL query fields)) (append vars values)))))
         (etypecase data
           (hash-table
            (looper for field being the hash-keys of data
