@@ -1,7 +1,7 @@
 
 {EQL
  :INTERFACES {EQL
-              :DATABASE "-i-postmodern",
+              :DATABASE "-i-sqlite",
               :DATA-MODEL "-r-simple-model",
               :LOGGER "-i-verbose",
               :SERVER "-i-hunchentoot",
@@ -34,7 +34,7 @@
               :DEFAULT :LOCALHOST},
  :SQLITE {EQL
           :CONNECTIONS {EQL
-                        :DEV "-~/Projects/CL/radiance/data/sqlite-dev",
+                        :DEV "d/dev.sqlite.db",
                         :MEMORY "-:memory:"},
           :DEFAULT :DEV},
  :PLASTER {EQL
