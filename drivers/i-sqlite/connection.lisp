@@ -20,9 +20,12 @@
         ;; Spec restarts for already open.
         (l:info :database "Connecting ~a ~a" database-name conn)
         (setf *current-db* database-name
-              *current-con* (sqlite:connect (if (string= conn ":memory:")
-                                                conn
-                                                (uiop:parse-native-namestring conn))))
+              *current-con* (sqlite:connect
+                             (etypecase conn
+                               (pathname conn)
+                               (string (if (string= conn ":memory:")
+                                           conn
+                                           (uiop:parse-native-namestring conn))))))
         (trigger 'db:connected)))))
 
 (defun db:disconnect ()
