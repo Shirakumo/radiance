@@ -79,6 +79,9 @@
 (defun data-file (pathname &optional (default *data-path*))
   (merge-pathnames pathname default))
 
+(uc:define-string-deserializer (#\d namestring)
+  (data-file (uiop:parse-native-namestring (subseq namestring 1))))
+
 (defun resolve-base (thing)
   (etypecase thing
     (pathname thing)
