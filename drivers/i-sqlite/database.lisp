@@ -35,7 +35,7 @@
         (dolist (index indices)
           (unless (member index structure :key #'car :test #'string-equal)
             (err (format NIL "Index on field ~s requested but it does not exist." index)))
-          (exec-query "CREATE INDEX ON ? (?)" collection (string-downcase index)))
+          (exec-query (format NIL "CREATE INDEX \"~a\" ON \"~:*~a\" (\"~a\")" collection (string-downcase index)) ()))
         collection))))
 
 (defun compile-field (field)
