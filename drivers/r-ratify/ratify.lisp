@@ -29,8 +29,7 @@
 (ratify:define-parser user (name)
   (user:get name))
 
-(defun verify-nonce (nonce &key (hash (session-var "nonce-hash")) (salt (session-var "nonce-salt")))
-  (v:info :test "NONCE ~a HASH ~a SALT ~a" nonce hash salt)
+(defun verify-nonce (nonce &key (hash (session-var :nonce-hash)) (salt (session-var :nonce-salt)))
   (if (string= hash (cryptos:pbkdf2-hash nonce salt))
       nonce
       (ratify:ratification-error nonce "Invalid nonce.")))
