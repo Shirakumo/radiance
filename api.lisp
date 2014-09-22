@@ -26,7 +26,7 @@
 
 (defun api-output (data)
   (unless data (error 'api-response-empty))
-  (let ((format (or (get-var "format") *default-api-format*)))
+  (let ((format (or (post/get "data-format") *default-api-format*)))
     (funcall (or (api-format format)
                  (error 'api-unknown-format :format format))
              data)))
