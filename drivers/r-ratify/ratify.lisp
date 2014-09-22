@@ -25,6 +25,23 @@
 (ratify:define-parser user (name)
   (user:get name))
 
+(defun verify-nonce (nonce &key (hash (session-var "nonce-salt")) (salt (session-var "nonce-hash")))
+  (if (string= hash (cryptos:pbkdf2-hash nonce salt))
+      nonce
+      (ratify:ratification-error nonce "Invalid nonce.")))
+
+(defun parse-length (type var length)
+  (ratify:with-skipping
+    (unless (= (length var) length)
+      (ratify:ratification-error var "~s is not ~d characters long." var length))
+    (ratify:parse type var)))
+
+(defun parse-range (type var min max)
+  (ratify:with-skipping
+    (unless (<= min (length var) max)
+      (ratify:ratification-error var "~s is not between ~d and ~d characters long." var min max))
+    (ratify:parse type var)))
+
 ;; spec
 ;; parse-form ::= (type var*)
 ;; type       ::= name | (name arg*)
@@ -38,7 +55,10 @@
              (let ((parser (gethash type *form-parsers*)))
                (if parser
                    (apply parser getter-form args)
-                   `(ratify:parse ,type ,getter-form)))))
+                   (ecase (length args)
+                     (0 `(ratify:parse ,type ,getter-form))
+                     (1 `(parse-length ,type ,getter-form ,(first args)))
+                     (2 `(parse-range ,type ,getter-form ,(first args) ,(second args))))))))
          (getter (var)
            (destructuring-bind (func var &rest args) (if (listp var) var (list :post/get var))
              (let ((getter (gethash func *form-getters*)))
@@ -59,7 +79,7 @@
 
 (defmacro define-form-getter (name args &body body)
   `(setf (gethash ,(intern (string name) "KEYWORD") *form-getters*)
-         #'(lambda ,args ,@body))))
+         #'(lambda ,args ,@body)))
 
 (defmacro define-form-parser (name args &body body)
   `(setf (gethash ,(intern (string name) "KEYWORD") *form-parsers*)
@@ -76,11 +96,6 @@
 
 (define-form-getter session (var &optional (session '*session*))
   `(session:field ,session ,var))
-
-(defun verify-nonce (nonce &key (hash (session-var "nonce-salt")) (salt (session-var "nonce-hash")))
-  (if (string= hash (cryptos:pbkdf2-hash nonce salt))
-      nonce
-      (ratify:ratification-error nonce "Invalid nonce.")))
 
 (define-form-parser nonce (getter &optional hash salt)
   `(verify-nonce ,getter ,@(when salt `(:salt ,salt)) ,@(when hash `(:hash ,hash))))

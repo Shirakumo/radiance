@@ -13,4 +13,5 @@
   :version "1.0.0"
   :description "Bridge to integrate ratify into radiance and provide additional checks."
   :components ((:file "ratify"))
-  :depends-on (:ratify))
+  :depends-on (:ratify
+               :crypto-shortcuts))
