@@ -38,20 +38,6 @@
                 (cryptos:pbkdf2-hash password *salt*))
        T))
 
-(define-page login #@"auth/^login" (:lquery (template "login.ctml"))
-  (r-clip:process (lquery:$ (node)))
-  (when (get-var "msg")
-    (lquery:$ "#msg" (text (get-var "msg"))))
-  (when (auth:current)
-    (lquery:$ "body" (html "<h1>You are already logged in!</h1>"))
-    (let ((landing (session:field *session* 'landing-page)))
-      (when landing
-        (redirect landing)))))
-
-(define-page logout #@"auth/^logout" ()
-  (session:end *session*)
-  (redirect (or (session:field *session* 'landing-page) "/")))
-
 (define-api simple-auth/login (username password &optional redirect) ()
   (flet ((err (message)
            (l:info :auth "Failed login for ~a." username)
@@ -64,7 +50,7 @@
       (err "Already logged in."))
     (let ((user (user:get username)))
       (unless user
-         (err "Invalid username or password."))
+        (err "Invalid username or password."))
       (let ((hash (user:field user "simple-auth-hash")))
         (unless hash
           (err "Invalid username or password."))
@@ -76,6 +62,37 @@
                (list :login "Successful")))
           (T
            (err "Invalid username or password.")))))))
+
+(define-page login #@"auth/^login" (:lquery (template "login.ctml"))
+  (r-clip:process
+   T
+   :user (auth:current)
+   :msg (get-var "msg"))
+  (when (auth:current)
+    (let ((landing (session:field *session* 'landing-page)))
+      (when landing
+        (redirect landing)))))
+
+(define-page logout #@"auth/^logout" ()
+  (session:end *session*)
+  (redirect (or (session:field *session* 'landing-page) "/")))
+
+(defvar *nonce-salt* (make-random-string))
+(define-page register #@"auth/^register" (:lquery (template "register.ctml"))
+  (with-actions (error info)
+      ((:register
+        (r-ratify:with-form (((:string 1 32) username)
+                             (:email email)
+                             (:string password)
+                             (:nonce nonce))
+          )))
+    (let ((nonce (make-random-string)))
+      (setf (session:field *session* "nonce-hash") (cryptos:pbkdf2-hash nonce *nonce-salt*))
+      (r-clip:process
+       T
+       :msg (or error info)
+       :user (auth:current)
+       :nonce nonce))))
 
 (define-implement-hook admin
   (admin:define-panel password settings (:access () :lquery (template "settings.ctml") :icon "fa-key" :tooltip "Change your login password.")

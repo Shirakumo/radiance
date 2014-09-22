@@ -17,4 +17,5 @@
   :depends-on ((:interface :session)
                (:interface :user)
                :r-clip
+               :r-ratify
                :crypto-shortcuts))

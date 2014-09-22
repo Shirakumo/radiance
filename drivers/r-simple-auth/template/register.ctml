@@ -2,23 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8"/>
-    <title>Login</title>
+    <title>Register</title>
     <link rel="stylesheet" type="text/css" href="/static/simple-auth/simple-auth.css" />
   </head>
   <body>
     <c:if test="user">
       <c:then>
-        <h1>You are already logged in!</h1>
+        <h2>You are already logged in.</h2>
       </c:then>
       <c:else>
-        <h1>Login</h1>
+        <h1>Register</h1>
         <c:when test="msg"><div id="msg" lquery="(text msg)" /></c:when>
-        <form action="/api/simple-auth/login" method="post">
+        <form action="#" method="post">
           <label>Username</label><input type="text" name="username" autofocus required /><br />
+          <label>E-Mail</label><input type="email" name="email" required /><br />
           <label>Password</label><input type="password" name="password" required /><br />
-          <input type="hidden" name="nonce" value="?" lquery="(val (make-random-string))" />
-          <input type="hidden" name="redirect" value="true" />
-          <input type="submit" value="Submit" />
+          <input type="text" name="firstname" value="?" style="display:none;" required lquery="(val nonce)" />
+          <input type="submit" name="action" value="Register" />
         </form>
       </c:else>
     </c:if>
