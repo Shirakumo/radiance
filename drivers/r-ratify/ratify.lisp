@@ -9,10 +9,14 @@
   (:use #:cl #:radiance)
   (:export
    #:session-var
+   #:verify-nonce
+   #:unacceptable-field
+   #:form-field
+   #:message
+   #:present-error
    #:with-form
    #:define-form-parser
-   #:define-form-getter
-   #:verify-nonce))
+   #:define-form-getter))
 (in-package #:r-ratify)
 
 (defun session-var (var &optional (session *session*))
@@ -25,22 +29,55 @@
 (ratify:define-parser user (name)
   (user:get name))
 
-(defun verify-nonce (nonce &key (hash (session-var "nonce-salt")) (salt (session-var "nonce-hash")))
+(defun verify-nonce (nonce &key (hash (session-var "nonce-hash")) (salt (session-var "nonce-salt")))
+  (v:info :test "NONCE ~a HASH ~a SALT ~a" nonce hash salt)
   (if (string= hash (cryptos:pbkdf2-hash nonce salt))
       nonce
       (ratify:ratification-error nonce "Invalid nonce.")))
 
 (defun parse-length (type var length)
-  (ratify:with-skipping
-    (unless (= (length var) length)
-      (ratify:ratification-error var "~s is not ~d characters long." var length))
-    (ratify:parse type var)))
+  (unless (= (length var) length)
+    (ratify:ratification-error var "~s is not ~d characters long." var length))
+  (ratify:parse type var))
 
 (defun parse-range (type var min max)
-  (ratify:with-skipping
-    (unless (<= min (length var) max)
-      (ratify:ratification-error var "~s is not between ~d and ~d characters long." var min max))
-    (ratify:parse type var)))
+  (unless (<= min (length var) max)
+    (ratify:ratification-error var "~s is not between ~d and ~d characters long." var min max))
+  (ratify:parse type var))
+
+(define-condition unacceptable-field (error)
+  ((form-field :initarg :form-field :initform "???" :accessor form-field)
+   (reason :initarg :reason :initform NIL :accessor reason)))
+
+(defgeneric present-error (error)
+  (:method ((error null))
+    NIL)
+  (:method ((error string))
+    error)
+  (:method ((error error))
+    (princ-to-string error))
+  (:method ((error unacceptable-field))
+    (format NIL "Unacceptable value for the ~a.~@[ <span class=\"reason\">~a</span>~]"
+            (form-field error) (present-error (reason error))))
+  (:method ((error ratify:ratification-error))
+    (format NIL "Reason: ~a"
+            (ratify:message error)))
+  (:method ((error ratify:test-failed))
+    (format NIL "Failed to test for ~a.~@[ ~a~]"
+            (ratify:test-name error)
+            (present-error (ratify:cause error))))
+  (:method ((error ratify:combined-error))
+    (format NIL "<ul class=\"errorlist\">~{<li>~a</li>~}</ul>"
+            (mapcar #'present-error (ratify:errors error)))))
+
+(defmacro with-field-error ((field) &body body)
+  `(ratify:with-skipping
+     (handler-case (progn ,@body)
+       (error (err)
+         (l:error :ARGHGHGNGNGH "~a" err)
+         (error 'unacceptable-field
+                :form-field ',field
+                :reason err)))))
 
 ;; spec
 ;; parse-form ::= (type var*)
@@ -69,12 +106,13 @@
              (loop for (type . vars) in parse-forms
                    appending (loop for var in vars
                                    collect `(,type ,var)))))
-      `(progv ',(loop for (type var) in enumerated-forms
-                      collect (if (listp var) (second var) var))
+      `(destructuring-bind ,(loop for (type var) in enumerated-forms
+                                  collect (if (listp var) (second var) var))
            (ratify:with-errors-combined
              (list
               ,@(loop for (type var) in enumerated-forms
-                      collect (parser type (getter var)))))
+                      collect `(with-field-error (,var)
+                                 ,(parser type (getter var))))))
          ,@body))))
 
 (defmacro define-form-getter (name args &body body)
