@@ -91,7 +91,7 @@
              ,@(loop for (clause . body) in action-clauses
                      collect `((string-equal ,action ,(string clause)) ,@body)))
          (,error (err)
-           (setf ,error (princ-to-string err))))
+           (setf ,error err)))
        ,@body)))
 
 (indent:define-indentation with-actions (6 (&whole 4 &rest) &body))
