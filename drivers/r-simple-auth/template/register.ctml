@@ -15,8 +15,8 @@
         <c:when test="msg"><div id="msg" lquery="(html (r-ratify:present-error msg))" /></c:when>
         <form action="#" method="post">
           <label>Username</label><input type="text" name="username" title="Choose a username of up to 32 characters." pattern=".{1,32}" autofocus required /><br />
-          <label>E-Mail</label><input type="email" name="email" title="Please specify a valid e-mail address." pattern=".{3,32}" required /><br />
-          <label>Password</label><input type="password" name="password" title="Set a password between 8 and 64 characters." pattern=".{8,64}" required /><br />
+          <label>E-Mail</label><input type="email" name="email" title="Please specify a valid e-mail address." placeholder="mr-happy@example.com" pattern=".{3,32}" required /><br />
+          <label>Password</label><input type="password" name="password" title="Set a password between 8 and 64 characters." placeholder="some尻_thatOnlyIKNOW" pattern=".{8,64}" required /><br />
           <label>Repeat</label><input type="password" name="repeat" title="Repeat your password here." pattern=".{8,64}" required /><br />
           <input type="text" name="firstname" value="?" style="display:none;" required lquery="(val nonce)" />
           <input type="submit" name="action" value="Register" />

@@ -26,6 +26,7 @@ form{
 label{
     min-width: 100px;
     display: inline-block;
+    text-align: left;
 }
 
 input{
