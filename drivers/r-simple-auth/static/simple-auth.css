@@ -37,3 +37,15 @@ input[type="submit"]{
     width: 100%;
     font-weight: bold;
 }
+
+.errorlist{
+    text-align: left;
+    border: 2px solid #880000;
+    background: #AA0000;
+    color: #FFF;
+    font-weight: bold;
+}
+
+.errorlist .reason{
+    display: none;
+}

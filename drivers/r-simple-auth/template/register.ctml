@@ -12,10 +12,10 @@
       </c:then>
       <c:else>
         <h1>Register</h1>
-        <c:when test="msg"><div id="msg" lquery="(text msg)" /></c:when>
+        <c:when test="msg"><div id="msg" lquery="(html (r-ratify:present-error msg))" /></c:when>
         <form action="#" method="post">
-          <label>Username</label><input type="text" name="username" autofocus required /><br />
-          <label>E-Mail</label><input type="email" name="email" required /><br />
+          <label>Username</label><input type="text" name="username" autofocus maxlength="32" required /><br />
+          <label>E-Mail</label><input type="email" name="email" maxlength="32" required /><br />
           <label>Password</label><input type="password" name="password" required /><br />
           <input type="text" name="firstname" value="?" style="display:none;" required lquery="(val nonce)" />
           <input type="submit" name="action" value="Register" />

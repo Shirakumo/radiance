@@ -81,13 +81,16 @@
 (define-page register #@"auth/^register" (:lquery (template "register.ctml"))
   (with-actions (error info)
       ((:register
-        (r-ratify:with-form (((:string 1 32) username)
-                             (:email email)
-                             (:string password)
-                             (:nonce nonce))
-          )))
+        (r-ratify:with-form
+            (((:string 1 32) username)
+             ((:email 1 32) email)
+             ((:string 8 64) password)
+             (:nonce firstname))
+          (l:info :test "~a ~a ~a ~a" username email password firstname))))
     (let ((nonce (make-random-string)))
-      (setf (session:field *session* "nonce-hash") (cryptos:pbkdf2-hash nonce *nonce-salt*))
+      (setf (session:field *session* "nonce-hash") (cryptos:pbkdf2-hash nonce *nonce-salt*)
+            (session:field *session* "nonce-salt") *nonce-salt*)
+      (l:info :ARGHGGH "HASH ~a SALT ~a" (session:field *session* "nonce-salt") *nonce-salt*)
       (r-clip:process
        T
        :msg (or error info)
