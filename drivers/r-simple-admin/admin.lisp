@@ -23,6 +23,10 @@
     (format NIL "~:[~d years~;~*~]~:[ ~d days~;~*~]~:[ ~d hours~;~*~]~:[ ~d minutes~;~*~]~:[ ~d seconds~;~*~]"
             (= y 0) y (= d 0) d (= h 0) h (= m 0) m (= s 0) s)))
 
+(defun format-time (ut)
+  (format NIL "~:@{~4,'0d.~2,'0d.~2,'0d ~2,'0d:~2,'0d:~2,'0d~}"
+          (subseq (nreverse (multiple-value-list (decode-universal-time ut))) 3)))
+
 (defun prepare-categories ()
   (setf *prepared-categories*
         (loop for title being the hash-keys of *categories*
