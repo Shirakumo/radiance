@@ -50,6 +50,7 @@
           ((NIL :NIL))))))
 
 (defun user::create (username)
+  (l:info :users "Creating new user ~s" username)
   (make-instance 'user
                  :username username
                  :id (db:insert 'simple-users `((username . ,username) (permissions . "")))))
@@ -97,16 +98,20 @@
   (db:update 'simple-users (db:query (:= '_id (id user)))
              `((permissions . ,(format NIL "~{~{~a~^.~}~^~%~}" (permissions user))))))
 
+(defun ensure-branch (branch)
+  (etypecase branch
+    (string (cl-ppcre:split "\\." branch))
+    (list branch)))
+
 (defun branch-matches (permission branch)
   (when (<= (length permission) (length branch))
     (loop for leaf-a in permission
           for leaf-b in branch
           always (string-equal leaf-a leaf-b))))
 
-(defun ensure-branch (branch)
-  (etypecase branch
-    (string (cl-ppcre:split "\\." branch))
-    (list branch)))
+(defun branch-equal (a b)
+  (loop for i in a for j in b
+        always (string-equal (string i) (string j))))
 
 (defun user:check (user branch)
   (let ((branch (ensure-branch branch)))
@@ -116,12 +121,14 @@
 
 (defun user:grant (user branch)
   (let ((branch (ensure-branch branch)))
-    (push branch (permissions user))
+    (l:debug :users "Granting ~s to ~a." branch user)
+    (pushnew branch (permissions user) :test #'branch-equal)
     (save-perms user))
   user)
 
 (defun user:prohibit (user branch)
   (let ((branch (ensure-branch branch)))
+    (l:debug :users "Prohibiting ~s from ~a." branch user)
     (setf (permissions user)
           (remove-if #'(lambda (perm) (branch-matches perm branch)) (permissions user)))
     (save-perms user))
@@ -129,8 +136,7 @@
 
 (defun user:add-default-permission (branch)
   (pushnew (ensure-branch branch) *default-permissions*
-           :test #'(lambda (a b) (loop for i in a for j in b
-                                       always (string-equal (string i) (string j))))))
+           :test #'branch-equal))
 
 (defun user:action (user action public)
   (db:insert 'simple-users-actions `((uid . ,(id user)) (time . ,(get-universal-time)) (public . ,(if public 1 0)) (action . ,action)))
