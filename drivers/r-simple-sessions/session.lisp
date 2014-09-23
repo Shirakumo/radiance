@@ -50,6 +50,10 @@
     (or (and cookie (decode-session cookie))
         (make-instance 'session))))
 
+(defun session:list ()
+  (loop for session being the hash-values of *session-table*
+        collect session))
+
 (defun session:get (session-id)
   (let ((session (gethash session-id *session-table*)))
     (when session
