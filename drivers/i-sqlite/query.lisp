@@ -15,15 +15,17 @@
 
 (defun exec-query (query vars &optional (row-reader #'(lambda (statement) (declare (ignore statement)))))
   (l:trace :database "QUERY: ~s ~s" query vars)
-  (let ((statement (sqlite:prepare-statement *current-con* query)))
-    (loop for i from 1
-	  for var in vars
-	  do (sqlite:bind-parameter statement i var))
-    (unwind-protect
-	 (progn
-	   (sqlite:step-statement statement)
-	   (funcall row-reader statement))
-      (sqlite:finalize-statement statement))))
+  (with-simple-restart (skip "Skip the query and hope things work out.")
+    (loop until (with-simple-restart (retry "Retry the query.")
+                  (let ((statement (sqlite:prepare-statement *current-con* query)))
+                    (loop for i from 1
+                          for var in vars
+                          do (sqlite:bind-parameter statement i var))
+                    (unwind-protect
+                         (progn
+                           (sqlite:step-statement statement)
+                           (funcall row-reader statement))
+                      (sqlite:finalize-statement statement)))))))
 
 (defun %sort-clause (s a c p)
   (declare (ignore c p))
