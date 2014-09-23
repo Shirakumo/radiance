@@ -79,25 +79,36 @@
 
 (defvar *nonce-salt* (make-random-string))
 (define-page register #@"auth/^register" (:lquery (template "register.ctml"))
-  (with-actions (error info)
-      ((:register
-        (r-ratify:with-form
-            (((:string 1 32) username)
-             ((:email 1 32) email)
-             ((:string 8 64) password)
-             (:nonce firstname))
-          (l:info :test "~a ~a ~a ~a" username email password firstname))))
-    (let ((nonce (make-random-string)))
-      (setf (session:field *session* :nonce-hash) (cryptos:pbkdf2-hash nonce *nonce-salt*)
-            (session:field *session* :nonce-salt) *nonce-salt*)
-      (r-clip:process
-       T
-       :msg (or error info)
-       :user (auth:current)
-       :nonce nonce))))
+  (if (string-equal (config-tree :auth :registration) "open")
+      (with-actions (error info)
+          ((:register
+            (r-ratify:with-form
+                (((:string 1 32) username)
+                 ((:email 1 32) email)
+                 ((:string 8 64) password repeat)
+                 (:nonce firstname))
+              (declare (ignore firstname))
+              (when (user:get username)
+                (error "Sorry, the username is already taken!"))
+              (when (string/= password repeat)
+                (error "The passwords do not match!"))
+              (let ((user (user:get username :if-does-not-exist :create)))
+                (setf (user:field user "email") email)
+                (auth::set-password user password)
+                (auth:associate user)))))
+        (let ((nonce (make-random-string)))
+          (setf (session:field *session* :nonce-hash) (cryptos:pbkdf2-hash nonce *nonce-salt*)
+                (session:field *session* :nonce-salt) *nonce-salt*)
+          (r-clip:process
+           T
+           :msg (or error info)
+           :user (auth:current)
+           :nonce nonce)))
+      (r-clip:process T)))
 
+(user:add-default-permission '(auth change-password))
 (define-implement-hook admin
-  (admin:define-panel password settings (:access () :lquery (template "settings.ctml") :icon "fa-key" :tooltip "Change your login password.")
+  (admin:define-panel password settings (:access (auth change-password) :lquery (template "settings.ctml") :icon "fa-key" :tooltip "Change your login password.")
     (let ((info) (error)
           (user (auth:current)))
       (handler-case
