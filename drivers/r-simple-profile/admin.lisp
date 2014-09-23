@@ -6,8 +6,10 @@
 
 (in-package #:simple-profile)
 
+(user:add-default-permission '(profile change))
+
 (define-implement-hook admin
-  (admin:define-panel account settings (:access () :lquery (template "account.ctml") :icon "fa-user" :tooltip "Change account information.")
+  (admin:define-panel account settings (:access (profile change account) :lquery (template "account.ctml") :icon "fa-user" :tooltip "Change account information.")
     (let ((user (auth:current))
           (fields (dm:get 'simple-profile-fields (db:query (:= 'editable 1)))))
       (with-actions (error info)
@@ -31,7 +33,7 @@
          :user user
          :fields fields))))
 
-  (admin:define-panel profile settings (:access () :lquery (template "profile.ctml") :icon "fa-home" :tooltip "Configure your profile looks.")
+  (admin:define-panel profile settings (:access (profile change profile) :lquery (template "profile.ctml") :icon "fa-home" :tooltip "Configure your profile looks.")
     (let ((user (auth:current)))
       (with-actions (error info)
           ((:save
