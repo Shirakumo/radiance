@@ -238,6 +238,10 @@ body{
 
 #content .tablebox table tbody tr{}
 
+#content .tablebox table tbody tr.highlight{
+    background: yellow !important;
+}
+
 #content .tablebox table tbody tr:nth-child(2n){
     background: #EEE;
 }

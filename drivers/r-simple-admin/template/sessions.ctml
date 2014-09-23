@@ -14,22 +14,22 @@
         </tr>
       </thead>
       <tbody iterate="sessions">
-        <tr>
+        <tr lquery="(add-class (when (eq * (session)) :highlight))">
 	  <td><input type="checkbox" name="selected[]" form="massEditForm" lquery="(val (session:id *))" /></td>
           <td lquery="(text (session:id *))" style="white-space: nowrap;"></td>
           <td lquery="(text (simple-admin::format-time (session:timeout *)))" style="white-space: nowrap;"></td>
           <td lquery="(text (auth:current *))"></td>
 	  <td>
             <form action="#" method="post">
-	      <input type="hidden" name="dispatcher" lquery="(val (session:id *))" />
-	      <input type="submit" name="action" value="Remove" />
+	      <input type="hidden" name="id" lquery="(val (session:id *))" />
+	      <input type="submit" name="action" value="End" />
 	    </form>
           </td>
         </tr>
       </tbody>
     </table>
     <form class="table-actions" id="massEditForm" action="#" method="post">
-      <input type="submit" name="action" value="Remove" />
+      <input type="submit" name="action" value="End" />
     </form>
   </div>
 </div>
