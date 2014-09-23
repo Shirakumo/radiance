@@ -65,20 +65,20 @@
   (setf (gethash "referer" (headers request)) value))
 
 (defun cookie (name &optional (request/response *request*))
-  (gethash name (cookies request/response)))
+  (gethash (string name) (cookies request/response)))
 
 (defun get-var (name &optional (request *request*))
-  (gethash name (get-data request)))
+  (gethash (string name) (get-data request)))
 
 (defun post-var (name &optional (request *request*))
-  (gethash name (post-data request)))
+  (gethash (string name) (post-data request)))
 
 (defun post/get (name &optional (request *request*))
-  (or (gethash name (post-data request))
-      (gethash name (get-data request))))
+  (or (gethash (string name) (post-data request))
+      (gethash (string name) (get-data request))))
 
 (defun header (name &optional (request/response *request*))
-  (gethash name (headers request/response)))
+  (gethash (string name) (headers request/response)))
 
 (defun file (name &optional (request *request*))
   "Returns file info about a form uploaded file.
