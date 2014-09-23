@@ -33,6 +33,7 @@
   (defclass session () ())
   (defun start ())
   (defun get (session-id))
+  (defun list ())
   (defun id (session))
   (defun field (session field))
   (defun (setf field) (value session field))
