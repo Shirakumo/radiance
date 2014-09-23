@@ -73,7 +73,6 @@
   `(ratify:with-skipping
      (handler-case (progn ,@body)
        (error (err)
-         (l:error :ARGHGHGNGNGH "~a" err)
          (error 'unacceptable-field
                 :form-field ',field
                 :reason err)))))
