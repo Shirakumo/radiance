@@ -8,10 +8,13 @@
 (asdf:defsystem #:r-pretty-errors
   :defsystem-depends-on (:radiance)
   :class "radiance:module"
+  :module-name "PRETTY-ERRORS"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :version "1.0.0"
   :description "Prints pretty and informative error pages."
+  
   :components ((:file "pretty"))
   :depends-on (:dissect
-               :r-clip))
+               :r-clip
+               :closer-mop))
