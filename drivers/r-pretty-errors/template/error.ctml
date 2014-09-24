@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Error</title>
+    <link rel="stylesheet" href="/static/pretty-errors/error.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Something Went Wrong</h1>
+    </header>
+    <main>
+      <header>
+        Condition of type <span class="type">TYPE</span> occurred on <span class="time">TIME</span> while requesting <span class="request">REQUEST</span>.
+      </header>
+      <nav>
+        <h3>Stack</h3>
+        <ol class="stack">
+          <li data-id="stack-N">
+            <span class="pos">N</span>
+            <span class="call">CALL</span>
+          </li>
+        </ol>
+        <h3>Restarts</h3>
+        <ul class="restarts">
+          <li data-id="restart-N">NAME</li>
+        </ul>
+        <h3>Objects</h3>
+        <ul class="objects">
+          <li data-id="object-N">TYPE</li>
+        </ul>
+      </nav>
+      <article>
+        <ul class="stack">
+          <li>
+            <article id="stack-N">
+              <span class="pos">N</span>
+              <span class="call">CALL</span>
+              <span class="args">ARGS</span>
+              <span class="file">FILE</span>
+              <span class="line">LINE</span>
+              <pre><code>CODE</code></pre>
+            </article>
+          </li>
+        </ul>
+        <ul class="restarts">
+          <li>
+            <article id="restart-N">
+              <span class="name">NAME</span>
+              <span class="report">REPORT</span>
+              <span class="restart">RESTART</span>
+            </article>
+          </li>
+        </ul>
+        <ul class="objects">
+          <li>
+            <article id="object-N">
+              <span class="type">TYPE</span>
+              <ul class="slots">
+                <li>
+                  <span class="name">NAME</span>
+                  <span class="value">VALUE</span>
+                </li>
+              </ul>
+            </article>
+          </li>
+        </ul>
+      </article>
+    </main>
+  </body>
+</html>
