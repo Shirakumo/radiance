@@ -90,7 +90,7 @@
        :info info
        :dispatchers (list-uri-dispatchers))))
 
-  (admin:define-panel sessions admin (:access (radiance admin sessions) :icon "" :tooltip "Oversee active sessions.")
+  (admin:define-panel sessions admin (:access (radiance admin sessions) :icon "fa-tags" :tooltip "Oversee active sessions.")
     (with-actions (error info)
         ((:end
           (dolist (id (or (post-var "selected[]") (list (post-var "id"))))
