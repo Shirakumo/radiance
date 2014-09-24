@@ -112,10 +112,6 @@
    #:*session*
    #:*default-external-format*
    #:*default-content-type*
-
-   #:request
-   #:response
-   #:session
    
    #:request
    #:http-method

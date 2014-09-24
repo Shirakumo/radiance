@@ -12,9 +12,9 @@
 (defvar *default-external-format* :UTF-8)
 (defvar *default-content-type* "text/html")
 
-(defun request () *request*)
-(defun response () *response*)
-(defun session () *session*)
+(defun *request* () *request*)
+(defun *response* () *response*)
+(defun *session* () *session*)
 
 (defclass request (uri)
   ((http-method :initarg :http-method :initform :GET :accessor http-method)
