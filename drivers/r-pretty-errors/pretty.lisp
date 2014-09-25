@@ -19,9 +19,17 @@
           collect (list (c2mop:slot-definition-name slot)
                         (slot-value object (c2mop:slot-definition-name slot))))))
 
-(define-page show-error #@"/error" (:lquery (template "error.ctml"))
-  (r-clip:process
-   T
-   :stack (dissect::stack)
-   :restarts (dissect::restarts)
-   :objects (remove-if #'null (list *request* *response* *session*))))
+(defun handle-condition (condition)
+  (l:warn :radiance "Handling stray condition: ~a" condition)
+  (if *debugger*
+      (invoke-debugger condition)
+      (invoke-restart
+       'radiance::set-data
+       (with-output-to-string (stream)
+         (plump:serialize
+          (r-clip:process
+           (plump:parse (template "error.ctml"))
+           :condition condition
+           :stack (dissect::stack)
+           :restarts (dissect::restarts)
+           :objects (remove-if #'null (list condition *request* *response* *session*))) stream)))))

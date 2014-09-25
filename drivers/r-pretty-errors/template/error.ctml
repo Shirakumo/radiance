@@ -9,15 +9,15 @@
   <body>
     <header>
       <h1>Something Went Wrong</h1>
-    </header>
-    <main>
       <c:when test="condition">
-        <header>
+        <span class="condition">
           Condition of type <span class="type" lquery="(text (type-of condition))">TYPE</span>
           occurred on <span class="time" lquery="(text (pretty-errors::format-time (get-universal-time)))">TIME</span>
           while requesting <span class="request" lquery="(text (uri-to-string (*request*) :print-request-domain T :print-port T))">REQUEST</span>.
-        </header>
+        </span>
       </c:when>
+    </header>
+    <main>
       <div id="content">
         <nav>
           <h3>Stack</h3>
