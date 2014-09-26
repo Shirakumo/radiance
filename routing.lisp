@@ -22,7 +22,8 @@
               for i from 0
               for route in (sort (loop for route being the hash-values of *routes* collect route)
                                  #'> :key #'car)
-              do (setf (aref array i) (cdr route)))))
+              do (setf (aref array i) (cdr route))
+              finally (return array))))
 
 (defun route (name)
   (cdr (gethash name *routes*)))
@@ -39,10 +40,9 @@
 
 (defmacro define-route (name (urivar) &body body)
   (destructuring-bind (name &optional (priority 0)) (ensure-list name)
-    `(setf (route ',name)
+    `(setf (route ',name ,priority)
            #'(lambda (,urivar)
-               ,@body)
-           ,priority)))
+               ,@body))))
 
 (defun extract-vars-and-tests (test-forms)
   (loop with basic-tests = ()
