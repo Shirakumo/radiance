@@ -23,8 +23,7 @@
                             for var in vars
                             do (sqlite:bind-parameter statement i var))
                       (unwind-protect
-                           (progn
-                             (sqlite:step-statement statement)
+                           (when (sqlite:step-statement statement)
                              (setf result (funcall row-reader statement)))
                         (sqlite:finalize-statement statement)))
                     T)))
