@@ -1,42 +1,42 @@
 
 {EQL
+ :SQLITE {EQL
+          :DEFAULT :DEV,
+          :CONNECTIONS {EQL
+                        :MEMORY "-:memory:",
+                        :DEV "d/dev.sqlite.db"}},
  :INTERFACES {EQL
-              :DATABASE "-i-sqlite",
-              :DATA-MODEL "-r-simple-model",
-              :LOGGER "-i-verbose",
-              :SERVER "-i-hunchentoot",
-              :SESSION "-r-simple-sessions",
-              :USER "-r-simple-users",
-              :AUTH "-r-simple-auth",
               :CACHE "-r-simple-cache",
+              :LOGGER "-i-verbose",
+              :USER "-r-simple-users",
+              :DATA-MODEL "-r-simple-model",
               :PROFILE "-r-simple-profile",
-              :ADMIN "-r-simple-admin"},
+              :DATABASE "-i-sqlite",
+              :ADMIN "-r-simple-admin",
+              :AUTH "-r-simple-auth",
+              :SESSION "-r-simple-sessions",
+              :SERVER "-i-hunchentoot"},
+ :POSTMODERN {EQL
+              :DEFAULT :LOCALHOST,
+              :CONNECTIONS {EQL
+                            :TUNNEL {EQL
+                                     :HOST "-127.0.0.1",
+                                     :USER "-radiance",
+                                     :DATABASE "-radiance",
+                                     :PASS "-q#vRsABnFrJ417$!",
+                                     :PORT 5432},
+                            :LOCALHOST {EQL
+                                        :HOST "-localhost",
+                                        :USER "-radiance",
+                                        :DATABASE "-radiance",
+                                        :PASS "-q#vRsABnFrJ417$!",
+                                        :PORT 5432}}},
+ :PLASTER {EQL
+           :CAPTCHA T,
+           :ANON T},
  :SERVER {EQL
+          :DOMAINS ("-localhost" "-linuz.com" "-radiance.test"),
           :INSTANCES ({EQL
                        :PORT 8080}
                       {EQL
-                       :PORT 4545}),
-          :DOMAINS ("-localhost" "-linuz.com")},
- :POSTMODERN {EQL
-              :CONNECTIONS {EQL
-                            :LOCALHOST {EQL
-                                        :HOST "-localhost",
-                                        :PORT 5432,
-                                        :USER "-radiance",
-                                        :PASS "-q#vRsABnFrJ417$!",
-                                        :DATABASE "-radiance"},
-                            :TUNNEL {EQL
-                                     :HOST "-127.0.0.1",
-                                     :PORT 5432,
-                                     :USER "-radiance",
-                                     :PASS "-q#vRsABnFrJ417$!",
-                                     :DATABASE "-radiance"}},
-              :DEFAULT :LOCALHOST},
- :SQLITE {EQL
-          :CONNECTIONS {EQL
-                        :DEV "d/dev.sqlite.db",
-                        :MEMORY "-:memory:"},
-          :DEFAULT :DEV},
- :PLASTER {EQL
-           :ANON T,
-           :CAPTCHA T}} 
+                       :PORT 4545})}} 
