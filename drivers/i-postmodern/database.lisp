@@ -16,6 +16,9 @@
 (define-trigger startup-done ()
   (db:connect (config-tree :postmodern :default)))
 
+(define-trigger server-stop ()
+  (db:disconnect))
+
 (defun db:collections ()
   (with-connection
     (postmodern:list-tables T)))
