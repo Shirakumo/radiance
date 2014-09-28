@@ -42,16 +42,18 @@ Stores an object of the CL type \inline{INTEGER}. This type supports an optional
 \symbolsection{database structure type}{:FLOAT}
 Stores an object of the CL type \inline{FLOAT}. The database should always store it as a double-precision floating-point number, according to IEEE. If the precision of the value should exceed that of a double, the value is expected to be truncated.
 
-\symbolsection{database structure type}{:CHARACTER}
-Stores an object of the CL type \inline{CHARACTER}. The stored character when retrieved has to be translated into a character of the exact same \inline{CHAR-CODE}.
-
 \symbolsection{database structure type}{:VARCHAR}
-Stores an object of the CL type \inline{STRING}. This type requires an extra argument which specifies the maximum number of characters stored. It maps from and to the CL type \inline{STRING}. The same character requirements as for \inline{:CHARACTER} apply. \\
+Stores an object of the CL type \inline{STRING}. This type requires an extra argument which specifies the maximum number of characters stored. It maps from and to the CL type \inline{STRING}. For each character the stored character when retrieved has to be translated into a character of the exact same \inline{CHAR-CODE}. \\
 
 \noindent If an attempt is made to store a string that exceeds the specified length, an error of type \symbolref{DATABASE-INVALID-VALUE} is signalled.
 
 \symbolsection{database structure type}{:TEXT}
 Stores an object of the CL type \inline{STRING}. The string may be of arbitrary length. The same character requirements as for \inline{:CHARACTER} apply.
+
+\symbolsection{database structure type}{:BINARY}
+Stores an object of the CL type \inline{(ARRAY (UNSIGNED-BYTE 8))}. The array may be of arbitrary length, though the database might exhibit certain upper storage limits.
+
+\noindent If the sequence is too large, an error of type \symbolref{DATABASE-INVALID-VALUE} is signalled.
 
 \symbolsection{function}{db:collections}
 \funcdef{db:collections}{}{list}
