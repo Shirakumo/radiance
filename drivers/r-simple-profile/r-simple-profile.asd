@@ -14,7 +14,8 @@
   :version "1.0.0"
   :description "Simple user profiles implementation for Radiance."
   :components ((:file "profile")
-               (:file "admin"))
+               (:file "admin")
+               (:file "panels"))
   :depends-on ((:interface :user)
                :crypto-shortcuts
                :r-clip
