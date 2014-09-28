@@ -101,10 +101,12 @@
 
 (define-page user #@"user/([^/]+)?(/([^/]+))?" (:uri-groups (username NIL panel) :lquery (template "public.ctml"))
   (let ((user (user:get username)))
-    (r-clip:process
-     T
-     :user user
-     :you (auth:current)
-     :panels *cached-panels*
-     :panel-name (or* panel "index")
-     :panel (run-panel (or* panel "index") user))))
+    (if user
+        (r-clip:process
+         T
+         :user user
+         :you (auth:current)
+         :panels *cached-panels*
+         :panel-name (or* panel "index")
+         :panel (run-panel (or* panel "index") user))
+        (error 'request-not-found :message "No such user."))))
