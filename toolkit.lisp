@@ -118,8 +118,7 @@
  (in-package #:~:*~a)~%~%" name))
     ;; Load system into quicklisp
     (when (find-package :ql)
-      (dolist (project-folder ql:*local-project-directories*)
-        (uiop:delete-file-if-exists (merge-pathnames "system-index.txt" project-folder)))
+      (funcall (symbol-function (find-symbol "REGISTER-LOCAL-PROJECTS" :ql)))
       (funcall (symbol-function (find-symbol "QUICKLOAD" :ql))
                (string-upcase name)))
     root))
