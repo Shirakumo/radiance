@@ -36,9 +36,10 @@
             (:error (error 'database-collection-already-exists :collection collection))))
         (exec-query query ())
         (dolist (index indices)
-          (unless (member index structure :key #'car :test #'string-equal)
-            (err (format NIL "Index on field ~s requested but it does not exist." index)))
-          (exec-query (format NIL "CREATE INDEX \"~a-~a\" ON \"~:*~:*~a\" (\"~a\")" collection (string-downcase index)) ()))
+          (let ((index (if (listp index) index (list index))))
+            (unless (every (member index `((_id) ,@structure) :key #'car :test #'string-equal) index)
+              (err (format NIL "Index on field ~s requested but it does not exist." index))))
+          (exec-query (format NIL "CREATE INDEX \"~a-~a\" ON \"~:*~:*~a\" (~{\"~(~a~)\"~^, ~})" collection index) ()))
         collection))))
 
 (defun compile-field (field)

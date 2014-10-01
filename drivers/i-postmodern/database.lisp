@@ -42,10 +42,11 @@
         (postmodern:query query)
         (postmodern:query (format NIL "CREATE INDEX ON \"~a\" (\"_id\")" (string-downcase collection)))
         (dolist (index indices)
-          (unless (member index structure :key #'car :test #'string-equal)
-            (err (format NIL "Index on field ~s requested but it does not exist." index)))
-          (postmodern:query (format NIL "CREATE INDEX ON \"~a\" (\"~a\")"
-                                    (string-downcase collection) (string-downcase index)))))
+          (let ((index (if (listp index) index (list index))))
+            (unless (every (member index `((_id) ,@structure) :key #'car :test #'string-equal) index)
+              (err (format NIL "Index on field ~s requested but it does not exist." index)))
+            (postmodern:query (format NIL "CREATE INDEX ON \"~a\" (~{\"~(~a~)\"~^, ~})"
+                                      (string-downcase collection) index)))))
       T)))
 
 (defun compile-field (field)
