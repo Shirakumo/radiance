@@ -65,10 +65,10 @@ Returns a list of strings, each of which is the name of a collection in the data
   structure &::=& \inline{(field*)} \\
   field &::=& \inline{(field-name type)} \\
   type &::=& \inline{type-name | (type-name parameter)} \\
-  indices &---& A list of field-names to be indexed. \\
+  indices &::=& \inline{field-name | (field-name*)} \\
   if-exists &::=& \inline{:error | :ignore}
 }
-Creates a new collection in the database. If the implementation supports structure, it is defined according to the given \inline{structure} list. Every collection automatically adds an \symbolref{_id} field as specified above. \\
+Creates a new collection in the database. If the implementation supports structure, it is defined according to the given \inline{structure} list. Every collection automatically adds an \symbolref{_id} field as specified above. If the database supports it, it creates indexes to speed up searching for the specified fields. If a list of \inline{field-names} is given as an index, a compound index is created. \\
 
 \noindent If the \inline{collection} name is not extended alphanumeric, an error of type \symbolref{DATABASE-INVALID-COLLECTION} is signalled. If an additional \inline{_id} field is declared in the \inline{structure} definition, the name of a field is not extended alphanumeric, or a field's type declaration is invalid or unsupported, an error of type \symbolref{DATABASE-INVALID-FIELD} is signalled. If \inline{if-exists} is set to \inline{:error} and the table exists already, an error of type \symbolref{DATABASE-COLLECTION-ALREADY-EXISTS} is signalled.
 
