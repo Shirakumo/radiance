@@ -13,9 +13,10 @@
   :version "1.0.0"
   :description "A bridging library to allow using SQLite3 as a Radiance database."
   :components ((:file "module")
+               (:file "load")
+               (:file "extension")
                (:file "connection")
                (:file "query")
                (:file "toolkit")
-	       (:file "extension")
                (:file "database"))
-  :depends-on (:sqlite))
+  :depends-on (:cffi))

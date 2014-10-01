@@ -6,10 +6,6 @@
 
 (in-package #:i-sqlite)
 
-;; Add our data path to the lib search function so people
-;; can put the dlls or whatnots in there.
-(push *data-path* cffi:*foreign-library-directories*)
-
 ;; Extend SQLite for loading capability
 (cffi:defcfun sqlite3-enable-load-extension :int
   (db sqlite-ffi:p-sqlite3)
