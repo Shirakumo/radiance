@@ -86,12 +86,12 @@
 
 (defun db:empty (collection)
   (with-collection-existing (collection)
-    (exec-query "TRUNCATE TABLE ?;" (list (string-downcase collection)))
+    (exec-query (format NIL "TRUNCATE TABLE ?;" (string-downcase collection)) NIL)
     T))
 
 (defun db:drop (collection)
   (with-collection-existing (collection)
-    (exec-query "DROP TABLE ?;" (list (string-downcase collection)))
+    (exec-query (format NIL "DROP TABLE \"~a\";" (string-downcase collection)) NIL)
     T))
 
 (defun collect-statement-to-table (statement)
