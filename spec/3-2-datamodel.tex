@@ -10,6 +10,12 @@ Base class for data-model instances. Any implementation is required to subclass 
 }
 Returns the \symbolref{_id} field of the current record associated with the data-model instance if there is any. In the case of a hull that has not yet been inserted, NIL is returned.
 
+\symbolsection{function}{dm:collection}
+\extfuncdef{dm:collection}{data-model}{\inline{collection}}{
+  data-model &---& A \inline{data-model} instance.
+}
+Returns the \inline{collection} of the current record associated with the data-model instance.
+
 \symbolsection{accessor}{dm:field}
 \extfuncdef{dm:field}{data-model field}{value}{
   data-model &---& A \inline{data-model} instance. \\
