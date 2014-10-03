@@ -24,12 +24,16 @@
   `(setf (api-format ,(string name))
          #'(lambda (,argsvar) ,@body)))
 
-(defun api-output (data)
+(defun api-output (data &key (status 200) (message "Ok."))
   (unless data (error 'api-response-empty))
   (let ((format (or (post/get "data-format") *default-api-format*)))
     (funcall (or (api-format format)
                  (error 'api-unknown-format :format format))
-             data)))
+             (let ((table (make-hash-table :test 'equal)))
+               (setf (gethash "status" table) status
+                     (gethash "message" table) message
+                     (gethash "data" table) data)
+               table))))
 
 (defgeneric api-serialize (object))
 
@@ -130,4 +134,5 @@
     (handler-case
         (api-call api-page request)
       (api-error (err)
-        (api-output err)))))
+        (api-output err :status 500 :message (or (message err)
+                                                 (princ-to-string err)))))))
