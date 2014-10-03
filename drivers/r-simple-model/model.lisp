@@ -22,6 +22,9 @@
 (defun dm:id (data-model)
   (gethash "_id" (fields data-model)))
 
+(defun dm:collection (data-model)
+  (collection data-model))
+
 (defun dm:field (data-model field)
   (gethash (string-downcase field) (fields data-model)))
 
