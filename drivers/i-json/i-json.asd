@@ -13,4 +13,5 @@
   :version "1.0.0"
   :description "A bridge library to cl-json to allow JSON API format output."
   :components ((:file "i-json"))
-  :depends-on (:cl-json))
+  :depends-on (:cl-json
+               :closer-mop))
