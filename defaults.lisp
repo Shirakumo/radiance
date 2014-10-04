@@ -14,7 +14,7 @@
         (values
          `((trigger ',name)
            ,@body)
-         `(define-hook ,name ())))
+         `(define-hook (,name ,*package*) ())))
       body))
 
 (define-page-option uri-groups (name uri body uri-groups)
