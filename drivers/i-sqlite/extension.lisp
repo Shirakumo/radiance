@@ -29,7 +29,8 @@
                   :report "Use a different path."
                   :interactive read-new-value
                   (setf extensionpath new-path)
-                  NIL))))
+                  NIL)))
+  extensionpath)
 
 ;; We only really do this for PCRE.
 (define-condition pcre-not-found (error) ()
