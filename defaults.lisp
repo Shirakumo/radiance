@@ -12,7 +12,7 @@
   (if value
       (let ((name (if (eql value T) name value)))
         (values
-         `((trigger ',name)
+         `((trigger '(,name ,*package*))
            ,@body)
          `(define-hook (,name ,*package*) ())))
       body))
