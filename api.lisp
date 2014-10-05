@@ -134,5 +134,8 @@
     (handler-case
         (api-call api-page request)
       (api-error (err)
-        (api-output err :status 500 :message (or (message err)
-                                                 (princ-to-string err)))))))
+        (let ((message (or (message err)
+                           (princ-to-string err))))
+          (if (string= (post/get "browser") "true")
+              (redirect (format NIL "~a?error=~a" (referer) message))
+              (api-output err :status 500 :message message)))))))
