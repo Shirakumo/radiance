@@ -137,5 +137,5 @@
         (let ((message (or (message err)
                            (princ-to-string err))))
           (if (string= (post/get "browser") "true")
-              (redirect (format NIL "~a?error=~a" (referer) message))
+              (redirect (format NIL "~a?error=~a" (cut-get-part (referer)) message))
               (api-output err :status 500 :message message)))))))

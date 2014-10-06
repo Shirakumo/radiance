@@ -166,7 +166,8 @@
    #:with-model-fields
    #:do-models
    #:with-actions
-   #:or*)
+   #:or*
+   #:cut-get-part)
   ;; uri.lisp
   (:export
    #:uri

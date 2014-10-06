@@ -102,4 +102,7 @@
         when (if (stringp val)
                  (not (string= val ""))
                  val)
-          do (return val)))
+        do (return val)))
+
+(defun cut-get-part (url)
+  (subseq url 0 (position #\? url)))
