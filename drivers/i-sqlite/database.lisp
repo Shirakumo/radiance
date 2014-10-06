@@ -156,14 +156,14 @@
 (defun db:update (collection query data &key skip amount sort)
   (check-collection-name collection)
   (with-collection-existing (collection)
-    (with-query ((make-query (format NIL "UPDATE \"~a\" SET ~~{\"~~a\" = ?~~^, ~~} WHERE \"_id\" IN (SELECT \"_id\" FROM \"~:*~a\" "
+    (with-query ((make-query (format NIL "UPDATE \"~a\" SET ~~{\"~~a\" = ?~~^, ~~} WHERE ROWID IN (SELECT ROWID FROM \"~:*~a\" "
                                      (string-downcase collection))
                              query skip amount sort) query vars)
       (macrolet ((looper (&rest iters)
                    `(loop ,@iters
                           collect value into values
                           collect (string-downcase field) into fields
-                          finally (exec-query (format NIL "~a);" (format NIL query fields)) (append vars values)))))
+                          finally (exec-query (format NIL "~a);" (format NIL query fields)) (append values vars)))))
         (etypecase data
           (hash-table
            (looper for field being the hash-keys of data
