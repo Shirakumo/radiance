@@ -7,6 +7,12 @@
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
 ;; To be specced
+(define-interface rate
+  (defmacro define-rate (name (time-left &key (timeout 60) (limit 1)) &body on-limit-exceeded))
+  (defun rate-left (rate &key (ip (remote *request*))))
+  (defmacro with-rate-limitation ((rate) &body body)))
+
+;; To be specced
 (define-interface admin
   (defun panel (category name))
   (defun (setf panel) (function category name))
