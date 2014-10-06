@@ -27,9 +27,11 @@
    (exceeded :initarg :exceeded :initform #'(lambda (limit) (error "Please wait ~d seconds." limit)) :accessor exceeded)))
 
 (defun db-rate-name (name)
-  (let ((name (format NIL "~a:~a"
-                      (package-name (symbol-package name))
-                      (symbol-name name))))
+  (let ((name (etypecase name
+                (string name)
+                (symbol (format NIL "~a:~a"
+                                (package-name (symbol-package name))
+                                (symbol-name name))))))
     (if (<= (length name) 64)
         name
         (error "Rate name too long."))))
@@ -53,32 +55,44 @@
 
 (defun rate:rate-left (rate &key (ip (remote *request*)))
   (let* ((rate (rate rate))
-         (limit (dm:get-one 'simple-rates (db:query (:and (:= 'name (name rate))
+         (limit (dm:get-one 'simple-rates (db:query (:and (:= 'rate (name rate))
                                                           (:= 'ip ip))))))
-    (values (dm:field limit "limit")
-            (- (+ (dm:field limit "time")
-                  (timeout rate))
-               (get-universal-time)))))
+    (if limit
+        (values (dm:field limit "limit")
+                (- (+ (dm:field limit "time")
+                      (timeout rate))
+                   (get-universal-time)))
+        (values (limit rate)
+                (timeout rate)))))
 
 (defun rate::tax-rate (rate &key (ip (remote *request*)))
   (let* ((rate (rate rate))
-         (limit (dm:get-one 'simple-rates (db:query (:and (:= 'name (name rate))
+         (limit (dm:get-one 'simple-rates (db:query (:and (:= 'rate (name rate))
                                                           (:= 'ip ip))))))
-    ;; If we're out of attempts, but the time has also passed, reset.
-    (when (and (<= 0 (dm:field limit "limit"))
-               (<= (+ (dm:field limit "time") (timeout rate)) (get-universal-time)))
-      (setf (dm:field limit "limit") (limit rate)))
-    ;; Tax it.
-    (decf (dm:field limit "limit"))
-    (setf (dm:field limit "time") (get-universal-time))
-    (dm:save limit)))
+    (if limit
+        (progn
+          ;; If we're out of attempts, but the time has also passed, reset.
+          (when (and (<= 0 (dm:field limit "limit"))
+                     (<= (+ (dm:field limit "time") (timeout rate)) (get-universal-time)))
+            (setf (dm:field limit "limit") (limit rate)))
+          ;; Tax it.
+          (decf (dm:field limit "limit"))
+          (setf (dm:field limit "time") (get-universal-time))
+          (dm:save limit))
+
+        (progn
+          (db:insert 'simple-rates `((rate . ,(name rate))
+                                     (time . ,(get-universal-time))
+                                     (limit . ,(limit rate))
+                                     (ip . ,ip)))))))
 
 (defmacro rate:with-rate-limitation ((rate) &body body)
+  (assert (rate rate) () "No such rate ~s." rate)
   (let ((amount (gensym "AMOUNT"))
         (timeout (gensym "TIMEOUT")))
     `(multiple-value-bind (,amount ,timeout) (rate:rate-left ',rate)
-       (if (and (<= 0 ,amount) (< 0 ,timeout))
-           (funcall ,(exceeded (rate rate)) ,timeout)
+       (if (and (<= ,amount 0) (< 0 ,timeout))
+           (funcall (exceeded (rate ',rate)) ,timeout)
            (progn
              (rate::tax-rate ',rate)
              ,@body)))))
