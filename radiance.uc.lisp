@@ -15,7 +15,8 @@
               :ADMIN "-r-simple-admin",
               :AUTH "-r-simple-auth",
               :SESSION "-r-simple-sessions",
-              :SERVER "-i-hunchentoot"},
+              :SERVER "-i-hunchentoot",
+              :RATE "-r-simple-rate" },
  :POSTMODERN {EQL
               :DEFAULT :LOCALHOST,
               :CONNECTIONS {EQL
