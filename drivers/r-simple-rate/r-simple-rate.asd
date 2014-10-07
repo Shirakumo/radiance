@@ -14,4 +14,5 @@
   :version "1.0.0"
   :description "Radiance rate interface implementation offering a convenient db-backed rate limiting."
   :components ((:file "rate"))
-  :depends-on ((:interface :db)))
+  :depends-on ((:interface :database)
+               (:interface :data-model)))
