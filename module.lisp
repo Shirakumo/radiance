@@ -167,7 +167,8 @@
    #:do-models
    #:with-actions
    #:or*
-   #:cut-get-part)
+   #:cut-get-part
+   #:format-universal-time)
   ;; uri.lisp
   (:export
    #:uri

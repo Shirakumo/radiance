@@ -106,3 +106,7 @@
 
 (defun cut-get-part (url)
   (subseq url 0 (position #\? url)))
+
+(defun format-universal-time (ut)
+  (format NIL "~:@{~4,'0d.~2,'0d.~2,'0d ~2,'0d:~2,'0d:~2,'0d~}"
+          (subseq (nreverse (multiple-value-list (decode-universal-time ut))) 3)))
