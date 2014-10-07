@@ -114,14 +114,15 @@
     (let ((*request* (route! request))
           (*response* response)
           (*session* NIL))
-      (trigger 'request request response)
       (restart-case
-          (let ((result (dispatch request)))
-            (typecase result
-              (response (setf *response* result))
-              (pathname (serve-file result))
-              (string (setf (data *response*) result))
-              ((array (unsigned-byte 8)) (setf (data *response*) result))))
+          (progn
+            (trigger 'request request response)
+            (let ((result (dispatch request)))
+              (typecase result
+                (response (setf *response* result))
+                (pathname (serve-file result))
+                (string (setf (data *response*) result))
+                ((array (unsigned-byte 8)) (setf (data *response*) result)))))
         (set-data (data)
           :report "Set a new data"
           :interactive read-value
