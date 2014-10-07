@@ -7,6 +7,13 @@
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
 ;; To be specced
+(define-interface ban
+  (defun jail (ip &key duration))
+  (defun list ())
+  (defun jail-time (&optional (ip (remote *request*))))
+  (defun release (ip)))
+
+;; To be specced
 (define-interface rate
   (defmacro define-rate (name (time-left &key (timeout 60) (limit 1)) &body on-limit-exceeded))
   (defun rate-left (rate &key (ip (remote *request*))))
