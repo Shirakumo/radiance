@@ -1,0 +1,42 @@
+<div>
+  <h2>Manage Bans</h2>
+  <c:when test="info"><div class="notice info" lquery="(text info)"></div></c:when>
+  <div class="tablebox">
+    <table class="selectable extendable actions interactive">
+      <thead>
+        <tr>
+	  <th><input type="checkbox" class="select-all" /></th>
+          <th>IP</th>
+          <th>Jail Time</th>
+	  <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <c:splice iterate="bans">
+          <tr>
+	    <td><input type="checkbox" name="selected[]" form="massEditForm" lquery="(val (first *))" /></td>
+            <td lquery="(text (first *))">IP</td>
+            <td lquery="(text (if (integerp (second *)) (format-universal-time (second *)) T))">JAIL TIME</td>
+	    <td>
+              <form action="#" method="get">
+	        <input type="hidden" name="ip" lquery="(val (first *))" />
+	        <input type="submit" name="action" value="Release" />
+	      </form>
+            </td>
+          </tr>
+        </c:splice>
+        <tr class="tableExtensionRow">
+          <td></td>
+	  <td><input type="text" name="ip" form="jailingForm" placeholder="IP" required="required" style="width:100%" autofocus="autofocus" /></td>
+	  <td><input type="text" name="jail-time" form="jailingForm" placeholder="T" style="width:100%" /></td>
+	  <td><form action="#" method="post" id="jailingForm">
+	    <input type="submit" name="action" value="Jail" />
+	  </form></td>
+        </tr>
+      </tbody>
+    </table>
+    <form class="table-actions" id="massEditForm" action="#" method="post">
+      <input type="submit" name="action" value="Release" />
+    </form>
+  </div>
+</div>

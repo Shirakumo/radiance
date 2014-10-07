@@ -18,13 +18,14 @@
     (when stream
       (loop for line = (read-line stream NIL NIL)
             while line
-            do (let* ((space (position #\Space line))
-                      (ip (subseq line 0 space))
-                      (time (subseq line (1+ space))))
-                 (setf (gethash ip *bans*)
-                       (if (string= ip "T")
-                           T
-                           (parse-integer time)))))))
+            do (when (string/= line "")
+                 (let* ((space (position #\Space line))
+                        (ip (subseq line 0 space))
+                        (time (subseq line (1+ space))))
+                   (setf (gethash ip *bans*)
+                         (if (string= ip "T")
+                             T
+                             (parse-integer time))))))))
   *bans*)
 
 (defun save-bans ()
@@ -37,9 +38,10 @@
 (define-trigger radiance:server-start ()
   (load-bans))
 
-(defun ban:jail (ip &key duration)
+(defun ban:jail (ip &key (duration T))
+  (v:info :ban "Jailing ~a for ~a" ip duration)
   (setf (gethash ip *bans*)
-        (if duration
+        (if (integerp duration)
             (+ (get-universal-time) duration)
             T))
   (save-bans)
@@ -54,6 +56,7 @@
   (gethash ip *bans*))
 
 (defun ban:release (ip)
+  (v:info :ban "Releasing ~a" ip)
   (remhash ip *bans*)
   (save-bans)
   ip)
@@ -62,5 +65,28 @@
   (declare (ignore response))
   (let ((limit (gethash (remote request) *bans*)))
     (when limit
-      (error 'request-denied :message (format NIL "~:[You have been banned.~;You have been banned until ~:*~a.~]"
-                                              (when (integerp limit) (format-universal-time limit)))))))
+      (if (or (not (integerp limit)) (< (get-universal-time) limit))
+          (error 'request-denied :message (format NIL "~:[You have been banned.~;You have been banned until ~:*~a.~]"
+                                                  (when (integerp limit) (format-universal-time limit))))
+          (ban:release (remote request))))))
+
+(define-implement-hook admin
+  (admin:define-panel bans admin (:access (radiance admin bans) :icon "fa-ban" :tooltip "Manage banned IP addresses." :lquery (template "bans.ctml"))
+    (with-actions (error info)
+        ((:release
+          (dolist (ip (or (post/get "selected[]") (list (post/get "ip"))))
+            (ban:release ip))
+          (setf info "IPs released."))
+         (:jail
+          (ban:jail
+           (post/get "ip")
+           :duration (if (or (not (post/get "jail-time"))
+                             (string-equal (post/get "jail-time") "")
+                             (string-equal (post/get "jail-time") "T"))
+                         T
+                         (parse-integer (post/get "jail-time"))))
+          (setf info "IP jailed.")))
+      (r-clip:process
+       T
+       :bans (ban:list)
+       :info info))))
