@@ -5,7 +5,7 @@ readonly TARGET=${1-${CWD}}
 readonly GIT_ROOT="git://github.com/Shinmera/"
 readonly CORE=("radiance-core" "radiance-web")
 readonly LIBS=("plump" "CLSS" "lquery" "clip" "staple" "piping" "verbose" "Universal-Config" "trivial-mimes" "trivial-indent" "crypto-shortcuts" "modularize" "modularize-hooks" "modularize-interfaces" "ratify")
-readonly MODS=("radiance-reader" "radiance-plaster" "radiance-chatlog")
+readonly MODS=("reader" "plaster" "chatlog" "purplish")
 
 status(){
     echo -e "\e[32m\e[1m$@\e[0m"
