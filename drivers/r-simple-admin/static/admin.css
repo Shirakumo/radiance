@@ -440,6 +440,15 @@ body{
     bottom: -20px; left: 20px; right: 0;
     background: #0088EE;
     height: 20px;
+    vertical-align: text-top;
+    color: white;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+#content form.box .actionbar>*{
+    padding: 0;
+    margin: 0;
 }
 
 #content form.box .actionbar:before{
@@ -451,14 +460,15 @@ body{
     border-left: 20px solid transparent;
 }
 
-#content form.box .actionbar input{
+#content form.box .actionbar input[type=submit]{
     position: static;
     border-left: 1px solid #FFF;
     height: 100%;
     font-weight: bold;
+    padding: 0 5px 0 5px;
 }
 
-#content form.box .actionbar input:first-child{
+#content form.box .actionbar input[type=submit]:first-child{
     border: none;
 }
 
