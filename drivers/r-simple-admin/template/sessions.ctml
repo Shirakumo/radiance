@@ -14,7 +14,7 @@
         </tr>
       </thead>
       <tbody iterate="sessions">
-        <tr lquery="(add-class (when (eq * (session)) &quot;highlight&quot;))">
+        <tr lquery="(add-class (when (eq * (*session*)) &quot;highlight&quot;))">
 	  <td><input type="checkbox" name="selected[]" form="massEditForm" lquery="(val (session:id *))" /></td>
           <td lquery="(text (session:id *))" style="white-space: nowrap;"></td>
           <td lquery="(text (simple-admin::format-time (session:timeout *)))" style="white-space: nowrap;"></td>
