@@ -178,7 +178,7 @@
                           for i from (1+ (length vars))
                           collect value into values
                           collect (cons (string-downcase field) i) into fields
-                          finally (exec-query (format NIL "~a );" (format NIL query fields)) (append values vars)))))
+                          finally (exec-query (format NIL "~a );" (format NIL query fields)) (append vars values)))))
         (etypecase data
           (hash-table
            (looper for field being the hash-keys of data
