@@ -20,6 +20,9 @@
           <input type="hidden" name="redirect" value="true" />
           <input type="submit" value="Submit" />
         </form>
+        <c:when test='(string= (config-tree :auth :registration) "open")'>
+          <a href="/register" id="register-link">Register an Account</a>
+        </c:when>
       </c:else>
     </c:if>
   </body>

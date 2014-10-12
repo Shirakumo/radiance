@@ -50,3 +50,9 @@ input[type="submit"]{
 .errorlist .reason{
     display: none;
 }
+
+#register-link{
+    display: block;
+    padding-top: 20px;
+    
+}
