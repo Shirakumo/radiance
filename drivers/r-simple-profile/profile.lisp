@@ -99,13 +99,13 @@
                         (plump:serialize result s)))
           (array (lquery:$ result (serialize) (node))))))))
 
-(define-page user #@"user/([^/]+)?(/([^/]+))?" (:uri-groups (username NIL panel) :lquery (template "public.ctml"))
+(define-page user-profile #@"user/([^/]+)?(/([^/]+))?" (:uri-groups (username NIL panel) :lquery (template "public.ctml"))
   (let ((user (user:get username)))
     (if user
         (r-clip:process
          T
          :user user
-         :you (auth:current)
+         :you (or (auth:current) (user:get "anonymous"))
          :panels *cached-panels*
          :panel-name (or* panel "index")
          :panel (run-panel (or* panel "index") user))
