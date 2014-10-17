@@ -134,17 +134,21 @@
                 (string (setf (data *response*) result))
                 ((array (unsigned-byte 8)) (setf (data *response*) result)))))
         (set-data (data)
-          :report "Set a new data"
+          :report "Set the response data."
           :interactive read-value
-          (setf (data *response*) data)))
+          (if (typep data 'response)
+              (setf *response* data)
+              (setf (data *response*) data))))
       (loop until
             (restart-case
                 (etypecase (data *response*)
                   (pathname T) (string T) ((array (unsigned-byte 8)) T)
                   (null (error 'request-empty :request *request*)))
               (set-data (data)
-                :report "Set new data"
+                :report "Set the response data."
                 :interactive read-value
-                (setf (data *response*) data)
+                (if (typep data 'response)
+                    (setf *response* data)
+                    (setf (data *response*) data))
                 NIL)))
       *response*)))
