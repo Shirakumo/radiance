@@ -70,6 +70,7 @@
          :background "#222"
          :color white
          :padding 10px
+         :overflow-x hidden
          ((:or .pos .name .type)
           :color gold
           :display inline-block
@@ -78,6 +79,10 @@
          (.call)
          (.file :display block :color "#0088EE")
          (.line :display none))
+
+        ((.args .arg)
+         :white-space normal
+         :word-break break-all)
         
         ((:or .args >.slots)
          :padding 0 0 0 40px
