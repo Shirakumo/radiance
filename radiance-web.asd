@@ -35,4 +35,5 @@
                (:file "init"))
   :depends-on (:cl-ppcre
                :bordeaux-threads
-               :trivial-mimes))
+               :trivial-mimes
+               :local-time))

@@ -51,6 +51,16 @@
    (http-only :initarg :http-only :initform NIL :accessor http-only)
    (secure :initarg :secure :initform NIL :accessor secure)))
 
+(defun %cookie-time (stream time atp cp)
+  (declare (ignore atp cp))
+  (local-time:format-timestring
+   stream (local-time:universal-to-timestamp time)
+   :format local-time:+rfc-1123-format+))
+
+(defun cookie-header (cookie)
+  (format NIL "Set-Cookie: ~a=~a;~@[Domain=~a;~]~@[Path=~a;~]~@[Secure;~*~]~@[HttpOnly;~*~]~@[Expires=~/radiance::%cookie-time/;~]"
+          (name cookie) (value cookie) (domain cookie) (path cookie) (secure cookie) (http-only cookie) (expires cookie)))
+
 (defmethod print-object ((c cookie) stream)
   (print-unreadable-object (c stream :type T)
     (format stream "~a=~s ~@[~a~]~@[~a~] (~:[SESSION~;~:*~a~])~:[~; HTTP-ONLY~]~:[~; SECURE~]"
@@ -105,7 +115,7 @@
   (setf (header "Location" response) new-address))
 
 (defun serve-file (pathname &optional content-type (response *response*))
-  (setf (content-type response) (or content-type (mimes:mime-lookup pathname)))
+  (setf (content-type response) (or content-type (mimes:mime-lookup pathname) "application/octet-stream"))
   (setf (data response) pathname))
 
 (define-hook request (request response))
