@@ -140,6 +140,7 @@
    #:http-only
    #:secure
 
+   #:cookie-header
    #:cookie
    #:get-var
    #:post-var
@@ -148,7 +149,8 @@
    #:file
    #:redirect
    #:serve-file
-   #:request)
+   #:request
+   #:set-data)
   ;; routing.lisp
   (:export
    #:route
