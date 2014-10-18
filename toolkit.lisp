@@ -6,25 +6,6 @@
 
 (in-package #:org.tymoonnext.radiance.lib.radiance.web)
 
-(defun lambda-keyword-p (symbol)
-  "Returns the symbol if it is a lambda-keyword symbol (the &-options)."
-  (find symbol '(&allow-other-keys &aux &body &environment &key &optional &rest &whole)))
-
-(defun remove-aux-part (lambda-list)
-  "Removes the &aux part of the lambda-list."
-  (let ((position (position '&aux lambda-list)))
-    (if position
-        (subseq lambda-list 0 position)
-        lambda-list)))
-
-(defun flatten-lambda-list (lambda-list)
-  "Flattens the lambda-list by replacing all lists within it with their respective first symbol."
-  (mapcar #'(lambda (a) (if (listp a) (car a) a)) lambda-list))
-
-(defun extract-lambda-vars (lambda-list)
-  "Extracts the symbols that name the variables in the lambda-list."
-  (remove-if #'lambda-keyword-p (flatten-lambda-list (remove-aux-part lambda-list))))
-
 (defun read-value ()
   (eval (read)))
 
@@ -96,6 +77,9 @@
 
 (indent:define-indentation with-actions (6 (&whole 4 &rest) &body))
 
+(defun cut-get-part (url)
+  (subseq url 0 (position #\? url)))
+
 (defun or* (&rest vals)
   "Functional equivalent of OR with the twist that empty strings are seen as NIL."
   (loop for val in vals
@@ -103,9 +87,6 @@
                  (not (string= val ""))
                  val)
         do (return val)))
-
-(defun cut-get-part (url)
-  (subseq url 0 (position #\? url)))
 
 (defun format-universal-time (ut)
   (format NIL "~:@{~4,'0d.~2,'0d.~2,'0d ~2,'0d:~2,'0d:~2,'0d~}"

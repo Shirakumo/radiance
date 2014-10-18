@@ -36,4 +36,5 @@
   :depends-on (:cl-ppcre
                :bordeaux-threads
                :trivial-mimes
-               :local-time))
+               :local-time
+               :lambda-fiddle))

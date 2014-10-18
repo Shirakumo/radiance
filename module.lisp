@@ -7,6 +7,7 @@
 (in-package #:modularize-user)
 (define-module-extension (radiance radiance-web)
   (:nicknames #:org.tymoonnext.radiance.lib.radiance.web)
+  (:use #:lambda-fiddle)
   ;; api.lisp
   (:export
    #:*default-api-format*
