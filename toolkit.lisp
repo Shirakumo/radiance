@@ -4,7 +4,7 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.tymoonnext.radiance.lib.radiance.core)
+(in-package #:org.shirakumo.radiance.core)
 
 (defvar *config* (make-hash-table :test 'eql))
 (defvar *config-type* :lisp)

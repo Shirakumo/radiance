@@ -4,7 +4,7 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.tymoonnext.radiance.lib.radiance.core)
+(in-package #:org.shirakumo.radiance.core)
 
 (defgeneric field (model field)
   (:documentation "Attempts to extract the requested field from a variety of different data models."))

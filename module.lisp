@@ -7,7 +7,7 @@
 (in-package #:modularize-user)
 (define-module #:radiance-core
   (:use #:cl #:modularize #:modularize-interfaces #:modularize-hooks #:lambda-fiddle)
-  (:nicknames #:radiance #:org.tymoonnext.radiance.lib.radiance.core)
+  (:nicknames #:radiance #:org.shirakumo.radiance.core)
   (:shadow #:define-interface #:module)
   ;; re-export from modularize
   (:export

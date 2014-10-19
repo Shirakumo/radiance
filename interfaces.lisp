@@ -4,7 +4,7 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.tymoonnext.radiance.lib.radiance.core)
+(in-package #:org.shirakumo.radiance.core)
 
 ;; Subclass so we can have another AFTER method on ASDF:OPERATE
 (defclass module (modularize:module) ())

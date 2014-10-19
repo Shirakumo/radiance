@@ -4,7 +4,7 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.tymoonnext.radiance.lib.radiance.web)
+(in-package #:org.shirakumo.radiance.core)
 
 (defmacro define-options-definer (name setter args)
   (let ((namevar (gensym "NAME"))
