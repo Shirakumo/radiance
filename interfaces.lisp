@@ -4,145 +4,76 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:org.tymoonnext.radiance.lib.radiance.web)
+(in-package #:org.tymoonnext.radiance.lib.radiance.core)
 
-;; To be specced
-(define-interface ban
-  (defun jail (ip &key duration))
-  (defun list ())
-  (defun jail-time (&optional (ip (remote *request*))))
-  (defun release (ip)))
+;; Subclass so we can have another AFTER method on ASDF:OPERATE
+(defclass module (modularize:module) ())
+;; Redefine function too since we shadowed that binding
+(defun module (&optional module)
+  (modularize:module module))
 
-;; To be specced
-(define-interface rate
-  (defmacro define-rate (name (time-left &key (timeout 60) (limit 1)) &body on-limit-exceeded))
-  (defun rate-left (rate &key (ip (remote *request*))))
-  (defmacro with-rate-limitation ((rate) &body body)))
+(define-condition interface-implementation-not-set (error)
+  ((%requested :initarg :requested :initform (error "REQUESTED required.") :reader requested))
+  (:report (lambda (c s) (format s "Interface ~s requested but no implementation is configured." (requested c)))))
 
-;; To be specced
-(define-interface admin
-  (defun panel (category name))
-  (defun (setf panel) (function category name))
-  (defun remove-panel (category name))
-  (defmacro define-panel-option (name (categoryvar namevar bodyvar valuevar) &body body))
-  (defmacro define-panel (name category options &body body)))
+;; Ho boy here we go!
+;; Hack into parse-dependency-def and add the interface
+;; since hooking into resolve-dependency-combination is not enough anymore.
+;; sad faces all around.
+(when (and (find-package :ASDF/PARSE-DEFSYSTEM) (find-symbol "PARSE-DEPENDENCY-DEF" :ASDF/PARSE-DEFSYSTEM))
+  (eval
+   `(progn
+      (defvar *old-dependency-def-fun* (function ,(find-symbol "PARSE-DEPENDENCY-DEF" :ASDF/PARSE-DEFSYSTEM)))
+      (defun ,(find-symbol "PARSE-DEPENDENCY-DEF" :ASDF/PARSE-DEFSYSTEM) (definition)
+        (if (and (listp definition) (eql (car definition) :interface))
+            definition
+            (funcall *old-dependency-def-fun* definition))))))
 
-;; To be specced
-(define-interface cache
-  (defun get (name))
-  (defun renew (name))
-  (defmacro with-cache (name-form test-form &body request-generator)))
+(if (find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf)
+    (eval
+     `(defmethod ,(find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf) ((module module) (combinator (eql :interface)) args)
+        (find-implementation (first args))))
+    (error "Radiance cannot support this version of ASDF. Sorry!"))
 
-;; To be specced
-(define-interface auth
-  (defun current (&optional (session *session*)))
-  (defun associate (user &optional (session *session*)))
-  (defun login! (&optional (landing-page (referer *request*))))
-  (define-hook associate (session)))
+(defmethod asdf:operate :after ((op asdf:load-op) (module module) &key)
+  (loop for interface in (module-storage (module (virtual-module-name module)) :implements)
+        do (trigger (find-symbol "IMPLEMENTED" (interface interface)))))
 
-;; To be specced
-(define-interface session
-  (defvar *default-timeout* (* 60 60 24 365))
-  (defclass session () ())
-  (defun start ())
-  (defun get (session-id))
-  (defun list ())
-  (defun id (session))
-  (defun field (session field))
-  (defun (setf field) (value session field))
-  (defun timeout (session))
-  (defun (setf timeout) (seconds session))
-  (defun end (session))
-  (defun active-p (session))
-  (define-hook create (session)))
+(defun find-implementation (interface)
+  (unless (config-tree :interfaces)
+    (load-config))
+  (let* ((interface (interface interface))
+         (configured-implementation (config-tree :interfaces (make-keyword (module-name interface)))))
+    (unless configured-implementation
+      (error 'interface-implementation-not-set :requested interface))
+    (asdf:find-system configured-implementation T)))
 
-;; To be specced
-(define-interface user
-  (defclass user () ())
-  (defun list ())
-  (defun get (username &key (if-does-not-exist NIL)))
-  (defun username (user))
-  (defun fields (user))
-  (defun field (user field))
-  (defun (setf field) (value user field))
-  (defun save (user))
-  (defun saved-p (user))
-  (defun discard (user))
-  (defun remove (user))
-  (defun check (user branch))
-  (defun grant (user branch))
-  (defun prohibit (user branch))
-  (defun add-default-permission (branch))
-  (defun action (user action public))
-  (defun actions (user n &key (public T) oldest-first))
-  (define-hook remove (username))
-  (define-hook action (user action public)))
+(defmacro define-interface (name &body components)
+  `(interfaces:define-interface ,name
+     (defhook implemented ()
+       "Called when the interface is implemented.")
+     ,@components))
 
-;; To be specced
-(define-interface profile
-  (defun avatar (user size))
-  (defun name (user))
-  (defun page (user &optional (category :profile)))
-  (defun fields ())
-  (defun add-field (name &key (type :text) default (editable T)))
-  (defun panel (name))
-  (defun (setf panel) (function name))
-  (defun remove-panel (name))
-  (defmacro define-panel-option (name (namevar bodyvar valuevar) &body body))
-  (defmacro define-panel (name options &body body)))
+(indent:define-indentation define-interface (4 &rest (&whole 2 0 4 &body)))
 
-;; To be specced
-(define-interface server
-  (defun start (port &key address ssl-cert ssl-key ssl-pass))
-  (defun stop (port &optional address))
-  (defun listeners ())
-  (define-hook started (port &optional address))
-  (define-hook stopped (port &optional address)))
+(defun load-implementation (interface)
+  (let ((*load-verbose* nil)
+        (*compile-verbose* nil)
+        (*load-print* nil)
+        (*compile-print* nil))
+    (handler-bind ((warning #'(lambda (warn) (muffle-warning warn))))
+      (let* ((interface (interface interface))
+             (implementation (find-implementation interface)))
+        (unless (asdf:component-loaded-p implementation)
+          (asdf:load-system implementation))))))
 
-;; To be specced
-(define-interface (logger l)
-  (defun log (level category log-string &rest format-args))
-  (defun trace (category log-string &rest format-args))
-  (defun debug (category log-string &rest format-args))
-  (defun info (category log-string &rest format-args))
-  (defun warn (category log-string &rest format-args))
-  (defun error (category log-string &rest format-args))
-  (defun severe (category log-string &rest format-args))
-  (defun fatal (category log-string &rest format-args)))
-
-;; As per spec (needs updating)
-(define-interface (database db)
-  (defun connect (database-name))
-  (defun disconnect ())
-  (defun connected-p ())
-  (defun collections ())
-  (defun collection-exists-p (collection))
-  (defun create (collection structure &key indices (if-exists :ignore)))
-  (defun structure (collection))
-  (defun empty (collection))
-  (defun drop (collection))
-  (defun iterate (collection query function &key fields skip amount sort accumulate))
-  (defun select (collection query &key fields skip amount sort))
-  (defun count (collection query))
-  (defun insert (collection data))
-  (defun remove (collection query &key (skip 0) (amount 0) sort))
-  (defun update (collection query data &key skip amount sort))
-  (defmacro query (query-form))
-  (define-hook connected ())
-  (define-hook disconnected ()))
-
-;; As per spec
-(define-interface (data-model dm)
-  (defclass data-model () ())
-  (defield data-model)
-  (defun id (data-model))
-  (defun collection (data-model))
-  (defun field (data-model field))
-  (defun (setf field) (value data-model field))
-  (defun get (collection query &key (skip 0) (amount 0) sort))
-  (defun get-one (collection query &key (skip 0) sort))
-  (defun hull (collection))
-  (defun hull-p (data-model))
-  (defun save (data-model))
-  (defun delete (data-model))
-  (defun insert (data-model &key clone)))
+(defmacro define-implement-hook (interface &body body)
+  (destructuring-bind (interface &optional (ident *package*)) (if (listp interface) interface (list interface))
+    (let ((interface (interface interface))
+          (hook (find-symbol "IMPLEMENTED" (interface interface))))
+      `(eval-when (:compile-toplevel :load-toplevel :execute)
+         (define-trigger (,hook ,ident) ()
+           (let ((*package* ,*package*)) ;; capture package env
+             (funcall (compile NIL '(lambda () ,@body)))))
+         ,@(when (implementation interface)
+             `((trigger ',hook)))))))
