@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Error</title>
+    <link rel="stylesheet" href="/static/pretty-errors/error.css" />
+    <link rel="stylesheet" href="/static/pretty-errors/github.css">
+  </head>
+  <body>
+    <header>
+      <h1>Something Went Wrong</h1>
+      <c:when test="condition">
+        <span class="condition">
+          Condition of type <span class="type" lquery="(text (type-of condition))">TYPE</span>
+          occurred on <span class="time" lquery="(text (pretty-errors::format-time (get-universal-time)))">TIME</span>
+          while requesting <span class="request" lquery="(text (uri-to-string (*request*) :print-request-domain T :print-port T))">REQUEST</span>.
+        </span>
+      </c:when>
+    </header>
+    <main>
+      <div id="content">
+        <nav>
+          <h3>Stack</h3>
+          <ol class="stack" iterate="stack">
+            <li data-id="N" lquery="(data :id (dissect::pos *))">
+              <span class="pos" lquery="(text (dissect::pos *))">N</span>
+              <span class="call"  lquery="(text (dissect::call *))">CALL</span>
+            </li>
+          </ol>
+          <h3>Restarts</h3>
+          <ul class="restarts" iterate="restarts">
+            <li data-id="NAME" lquery="(text (dissect::name *)) (data :id (dissect::name *))">NAME</li>
+          </ul>
+          <h3>Objects</h3>
+          <ul class="objects" iterate="objects">
+            <li data-id="object-N" lquery="(text (type-of *)) (data :id (type-of *))">TYPE</li>
+          </ul>
+        </nav>
+        <article>
+          <ul class="stack" iterate="stack">
+            <li data-id="N" lquery="(data :id (dissect::pos *))">
+              <article>
+                <header>
+                  <span class="pos" lquery="(text (dissect::pos *))">N</span>
+                  <span class="call" lquery="(text (dissect::call *))">CALL</span>
+                  <span class="file" lquery="(text (dissect::file *))">FILE</span>
+                  <span class="line" lquery="(text (dissect::line *))">LINE</span>
+                </header>
+                <ol class="args" iterate="(dissect::args *)">
+                  <li class="arg">
+                    <span class="print" lquery="(text (prin1-to-string *))">ARG</span>
+                    <ul class="slots" iterate="(pretty-errors::slots *)">
+                      <li>
+                        <span class="name" lquery="(text (first *))">NAME</span>
+                        <span class="value" lquery="(text (prin1-to-string (second *)))">VALUE</span>
+                      </li>
+                    </ul>
+                  </li>
+                </ol>
+                <pre class="form"><code class="lisp" lquery="(text (dissect::form *))">CODE</code></pre>
+              </article>
+            </li>
+          </ul>
+          <ul class="restarts" iterate="restarts">
+            <li data-id="NAME" lquery="(data :id (dissect::name *))">
+              <article>
+                <header>
+                  <span class="name" lquery="(text (dissect::name *))">NAME</span>
+                  <span class="restart" lquery="(text (dissect::restart *))">RESTART</span>
+                </header>
+                <span class="report" lquery="(text (dissect::report *))">REPORT</span>
+              </article>
+            </li>
+          </ul>
+          <ul class="objects" iterate="objects">
+            <li data-id="TYPE" lquery="(data :id (type-of *))">
+              <article>
+                <header>
+                  <span class="type" lquery="(text (type-of *))">TYPE</span>
+                </header>
+                <ul class="slots" iterate="(pretty-errors::slots *)">
+                  <li>
+                    <span class="name" lquery="(text (first *))">NAME</span>
+                    <span class="value" lquery="(text (prin1-to-string (second *)))">VALUE</span>
+                  </li>
+                </ul>
+              </article>
+            </li>
+          </ul>
+        </article>
+      </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="/static/pretty-errors/highlight-lisp.js"></script>
+    <script src="/static/pretty-errors/error.js"></script>
+  </body>
+</html>

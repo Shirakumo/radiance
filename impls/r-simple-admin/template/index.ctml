@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Administration</title>
+    <link rel="stylesheet" href="/static/simple-admin/admin.css" />
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="panel">
+      <h1><i class="fa fa-gear"></i>Admin</h1>
+      <ul id="menu" iterate="categories">
+        <li>
+          <a lquery="(text title)">
+            <i class="fa fa-fw" lquery="(add-class (or icon &quot;fa-folder&quot;))"></i>
+            CATEGORY
+          </a>
+          <ul iterate="panels">
+            <li lquery="(add-class (or (when (simple-admin::is-current url) &quot;active&quot;) &quot;inactive&quot;))">
+              <c:when test="(user:check (auth:current) access)">
+                <a href="#" lquery="(attr :href url :title tooltip) (text title)">
+                  <i class="fa fa-fw" lquery="(add-class icon)"></i>
+                  PANEL
+                </a>
+              </c:when>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <form id="manage" action="#" method="get">
+        <button type="submit" name="simple-admin-manage" value="shutdown" title="Shut down the server"><i class="fa fa-power-off"></i></button>
+        <button type="submit" name="simple-admin-manage" value="restart" title="Restart the server"><i class="fa fa-repeat"></i></button>
+      </form>
+    </div>
+    <div id="content" lquery="(html content)">
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+    <script src="/static/simple-admin/admin.js"></script>
+  </body>
+</html>

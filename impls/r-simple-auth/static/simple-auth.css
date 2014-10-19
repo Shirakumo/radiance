@@ -1,0 +1,58 @@
+html,body{
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    background: #151515;
+}
+
+body{
+    background: #FFF;
+    border-left: 5px solid #0088EE;
+    border-right: 5px solid #0088EE;
+    margin: 0 20% 0 20%;
+    padding: 20px 10px 50px 10px;
+    text-align: center;
+}
+
+h1{
+    margin: 0;
+    text-align: center;
+    font-size: 36pt;
+}
+
+form{
+    display: inline-block;
+}
+
+label{
+    min-width: 100px;
+    display: inline-block;
+    text-align: left;
+}
+
+input{
+    border: 1px solid #DDD;
+    background: #EEE;
+}
+
+input[type="submit"]{
+    width: 100%;
+    font-weight: bold;
+}
+
+.errorlist{
+    text-align: left;
+    border: 2px solid #880000;
+    background: #AA0000;
+    color: #FFF;
+    font-weight: bold;
+}
+
+.errorlist .reason{
+    display: none;
+}
+
+#register-link{
+    display: block;
+    padding-top: 20px;
+    
+}

@@ -1,0 +1,65 @@
+<div>
+  <h2>Manage User Profile Fields</h2>
+  <c:when test="error"><div class="notice error" lquery="(text error)" /></c:when>
+  <div class="tablebox">
+    <table class="selectable extendable actions interactive">
+      <thead>
+        <tr>
+	  <th><input type="checkbox" class="select-all" /></th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Default</th>
+	  <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <c:splice iterate="fields">
+          <tr>
+	    <td><input type="checkbox" name="selected[]" form="massEditForm" lquery="(val name)" /></td>
+            <th lquery="(text name)">NAME</th>
+            <th lquery="(text type)">TYPE</th>
+            <th lquery="(text default)">DEFAULT</th>
+	    <td>
+              <form action="#" method="post">
+	        <input type="hidden" name="name" lquery="(val name)" />
+	        <input type="submit" name="action" value="Delete" />
+	      </form>
+            </td>
+          </tr>
+        </c:splice>
+        <tr class="tableExtensionRow">
+          <td></td>
+	  <td><input type="text" name="name" form="addForm" placeholder="Name" required="required" style="width:100%" autofocus="autofocus" maxlength="32" /></td>
+	  <td><select name="type" form="addForm" style="width:100%">
+            <option value="text">Text</option>
+            <option value="textarea">Text Area</option>
+            <option value="password">Password</option>
+            <option value="email">E-Mail</option>
+            <option value="url">URL</option>
+            <option value="time">Time</option>
+            <option value="date">Date</option>
+            <option value="datetime">Date-Time</option>
+            <option value="datetime-local">Local Datetime</option>
+            <option value="month">Month</option>
+            <option value="week">Week</option>
+            <option value="color">Color</option>
+            <option value="number">Number</option>
+            <option value="range">Range</option>
+            <option value="checkbox">Checkbox</option>
+            <option value="radio">Radio</option>
+            <option value="file">File</option>
+            <option value="tel">Telephone Number</option>
+          </select></td>
+	  <td><input type="text" name="default" form="addForm" placeholder="Default" style="width:100%" maxlength="128" /></td>
+	  <td><form action="#" method="post" id="addForm">
+            <input type="hidden" name="form" value="themes" />
+	    <input type="submit" name="action" value="Add" />
+	  </form></td>
+        </tr>
+      </tbody>
+    </table>
+    <form class="table-actions" id="massEditForm" action="#" method="post">
+      <input type="submit" name="action" value="Delete" />
+    </form>
+  </div>
+</div>

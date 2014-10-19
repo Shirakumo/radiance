@@ -1,0 +1,35 @@
+<div>
+  <h2>Manage Sessions</h2>
+  <c:when test="error"><div class="notice error" lquery="(text error)"></div></c:when>
+  <c:when test="info"><div class="notice info" lquery="(text info)"></div></c:when>
+  <div class="tablebox">
+    <table class="selectable actions interactive">
+      <thead>
+        <tr>
+	  <th><input type="checkbox" class="select-all" /></th>
+          <th>ID</th>
+          <th>Timeout</th>
+          <th>User</th>
+	  <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody iterate="sessions">
+        <tr lquery="(add-class (when (eq * (*session*)) &quot;highlight&quot;))">
+	  <td><input type="checkbox" name="selected[]" form="massEditForm" lquery="(val (session:id *))" /></td>
+          <td lquery="(text (session:id *))" style="white-space: nowrap;"></td>
+          <td lquery="(text (simple-admin::format-time (session:timeout *)))" style="white-space: nowrap;"></td>
+          <td lquery="(text (auth:current *))"></td>
+	  <td>
+            <form action="#" method="post">
+	      <input type="hidden" name="id" lquery="(val (session:id *))" />
+	      <input type="submit" name="action" value="End" />
+	    </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <form class="table-actions" id="massEditForm" action="#" method="post">
+      <input type="submit" name="action" value="End" />
+    </form>
+  </div>
+</div>

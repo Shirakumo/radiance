@@ -1,0 +1,72 @@
+<div>
+  <h2>Radiance Overview</h2>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th></th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Radiance version</td>
+          <td lquery="(text (asdf:component-version (asdf:find-system :radiance)))"></td>
+        </tr>
+        <tr>
+          <td>Listeners</td>
+          <td lquery="(text (server:listeners))"></td>
+        </tr>
+        <tr>
+          <td>Uptime</td>
+          <td lquery="(text (simple-admin::format-seconds (uptime)))"></td>
+        </tr>
+      </tbody>
+      <tbody>
+        <tr>
+          <td>CL Environment</td>
+          <td lquery="(text (format NIL &quot;~a ~a&quot; (lisp-implementation-type) (lisp-implementation-version)))"></td>
+        </tr>
+        <tr>
+          <td>Software Environment</td>
+          <td lquery="(text (format NIL &quot;~a ~a&quot; (software-type) (software-version)))"></td>
+        </tr>
+        <tr>
+          <td>Machine Environment</td>
+          <td lquery="(text (format NIL &quot;~a ~a ~a&quot; (machine-instance) (machine-type) (machine-version)))"></td>
+        </tr>
+      </tbody>
+      <tbody>
+        <tr>
+          <td>ASDF version</td>
+          <td lquery="(text (asdf:component-version (asdf:find-system :asdf)))"></td>
+        </tr>
+        <tr>
+          <td>Quicklisp</td>
+          <td lquery="(text (if (find-package :quicklisp) (ql-dist:version (ql-dist:dist &quot;quicklisp&quot;)) :no))"></td>
+        </tr>
+        <tr>
+          <td>Loaded systems</td>
+          <td lquery="(text (length (asdf:already-loaded-systems)))"></td>
+        </tr>
+        <c:when test="(find-package :quicklisp)">
+          <tr>
+            <td>Systems available through QL</td>
+            <td lquery="(text (length (ql:system-list)))"></td>
+          </tr>
+          <tr>
+            <td>Systems locally available</td>
+            <td lquery="(text (length (remove-if-not #'ql-dist:installedp (ql:system-list))))"></td>
+          </tr>
+        </c:when>
+      </tbody>
+      <tbody>
+        <tr>
+          <td>User</td>
+          <td lquery="(text (auth:current))"></td>
+        </tr>
+        <tr>
+          <td>Session</td>
+          <td lquery="(text (symbol-value '*session*))"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
