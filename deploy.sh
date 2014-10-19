@@ -2,10 +2,9 @@
 
 readonly CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 readonly TARGET=${1-${CWD}}
-readonly GIT_ROOT="git://github.com/Shinmera/"
-readonly CORE=("radiance-core" "radiance-web")
-readonly LIBS=("plump" "CLSS" "lquery" "clip" "staple" "piping" "verbose" "Universal-Config" "trivial-mimes" "trivial-indent" "crypto-shortcuts" "modularize" "modularize-hooks" "modularize-interfaces" "ratify")
-readonly MODS=("reader" "plaster" "chatlog" "purplish")
+readonly GIT_ROOT="git://github.com/Shirakumo/"
+readonly CORE=("radiance-core" "radiance-drivers" "radiance-commons" "radiance-impls")
+readonly MODS=("reader" "plaster" "chatlog" "purplish" "db-introspect" "manage-users")
 
 status(){
     echo -e "\e[32m\e[1m$@\e[0m"
@@ -34,17 +33,6 @@ process_core(){
     done
     status ""
 }
-
-
-process_libs(){
-    status ">> Updating LIBS"
-    local i
-    for i in "${LIBS[@]}"; do
-        clone_or_fetch "lib" $i
-    done
-    status ""
-}
-
 
 process_mods(){
     status ">> Updating MODS"
