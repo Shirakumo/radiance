@@ -4,11 +4,8 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(defpackage org.tymoonnext.radiance.lib.radiance.core.asdf
-  (:use #:cl #:asdf))
-(in-package :org.tymoonnext.radiance.lib.radiance.core.asdf)
-
-(defsystem radiance-core
+(in-package #:cl-user)
+(asdf:defsystem radiance-core
   :class "modularize:module"
   :defsystem-depends-on (:modularize) 
   :name "Radiance-Core"
@@ -24,7 +21,6 @@
                (:file "accessor")
                (:file "interfaces")
                (:file "interface-components")
-               (:file "module")
                (:file "uri")
                (:file "routing")
                (:file "dispatch")
