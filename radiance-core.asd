@@ -24,8 +24,26 @@
                (:file "accessor")
                (:file "interfaces")
                (:file "interface-components")
+               (:file "module")
+               (:file "uri")
+               (:file "routing")
+               (:file "dispatch")
+               (:file "request")
+               (:file "continuation")
+               (:file "standard-interfaces")
+               (:file "conditions")
+               (:file "options")
+               (:file "page")
+               (:file "api")
+               (:file "defaults")
+               (:file "convenience")
                (:file "init"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
                :universal-config
-               :trivial-indent))
+               :trivial-indent
+               :cl-ppcre
+               :bordeaux-threads
+               :trivial-mimes
+               :local-time
+               :lambda-fiddle))
