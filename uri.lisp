@@ -85,7 +85,7 @@
    :domains (append (domains uri) (domains defaults))
    :port (or (port uri) (port defaults))
    :path (format NIL "~@[~a/~]~@[~a~]"
-                 (path defaults) (path uri))))
+                 (or* (path defaults)) (path uri))))
 
 (defun uri-to-string (uri &key print-port print-request-domain)
   (format NIL "~{~a~^.~}~:[~*~;.~a~]~:[~*~;:~a~]/~a"
