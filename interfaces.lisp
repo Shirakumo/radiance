@@ -77,3 +77,11 @@
              (funcall (compile NIL '(lambda () ,@body)))))
          ,@(when (implementation interface)
              `((trigger ',hook)))))))
+
+(define-option-expander domain (package domain)
+  `(setf (module-storage ,package :radiance-domain) ,(string-downcase domain)))
+
+(defmethod domain ((module package))
+  (or
+   (module-storage module :radiance-domain)
+   (string-downcase (module-name module))))

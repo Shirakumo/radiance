@@ -139,7 +139,8 @@
    #:interface-implementation-not-set
    #:find-implementation
    #:load-implementation
-   #:define-implement-hook)
+   #:define-implement-hook
+   #:domain)
   ;; options.lisp
   (:export
    #:define-options-definer
@@ -250,7 +251,8 @@
    #:uri=
    #:uri-matches
    #:merge-uris
-   #:uri-to-string))
+   #:uri-to-string
+   #:module-relative-uri))
 
 (define-module #:radiance-user
   (:nicknames #:rad-user)
