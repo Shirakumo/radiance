@@ -127,6 +127,7 @@
   (defun insert (collection data))
   (defun remove (collection query &key (skip 0) (amount 0) sort))
   (defun update (collection query data &key skip amount sort))
+  (defmacro with-transaction (() &body body))
   (defmacro query (query-form))
   (define-hook connected ())
   (define-hook disconnected ()))
