@@ -46,9 +46,9 @@
          (configured-implementation (config-tree :interfaces (make-keyword (module-name interface)))))
     (unless configured-implementation
       (error 'interface-implementation-not-set :requested interface))
-    (if name
-        configured-implementation
-        (asdf:find-system configured-implementation T))))
+    (if system
+        (asdf:find-system configured-implementation T)
+        configured-implementation)))
 
 (defmacro define-interface (name &body components)
   `(interfaces:define-interface ,name
