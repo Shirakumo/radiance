@@ -65,7 +65,8 @@
       (let* ((interface (interface interface))
              (implementation (find-implementation interface)))
         (unless (asdf:component-loaded-p implementation)
-          (asdf:load-system implementation))))))
+          #+:quicklisp (ql:quickload implementation)
+          #-:quicklisp (asdf:load-system implementation))))))
 
 (defmacro define-implement-hook (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (if (listp interface) interface (list interface))
