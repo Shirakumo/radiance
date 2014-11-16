@@ -39,14 +39,16 @@
   (loop for interface in (module-storage (module (virtual-module-name module)) :implements)
         do (trigger (find-symbol "IMPLEMENTED" (interface interface)))))
 
-(defun find-implementation (interface)
+(defun find-implementation (interface &optional (system T))
   (unless (config-tree :interfaces)
     (load-config))
   (let* ((interface (interface interface))
          (configured-implementation (config-tree :interfaces (make-keyword (module-name interface)))))
     (unless configured-implementation
       (error 'interface-implementation-not-set :requested interface))
-    (asdf:find-system configured-implementation T)))
+    (if name
+        configured-implementation
+        (asdf:find-system configured-implementation T))))
 
 (defmacro define-interface (name &body components)
   `(interfaces:define-interface ,name
@@ -62,11 +64,13 @@
         (*load-print* nil)
         (*compile-print* nil))
     (handler-bind ((warning #'(lambda (warn) (muffle-warning warn))))
-      (let* ((interface (interface interface))
-             (implementation (find-implementation interface)))
-        (unless (asdf:component-loaded-p implementation)
-          #+:quicklisp (ql:quickload implementation)
-          #-:quicklisp (asdf:load-system implementation))))))
+      (let* ((interface (interface interface)))
+        #+:quicklisp
+        (ql:quickload (find-implementation interface NIL))
+        #-quicklisp
+        (let ((implementation (find-implementation interface)))
+          (unless (asdf:component-loaded-p implementation)
+            (asdf:load-system implementation)))))))
 
 (defmacro define-implement-hook (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (if (listp interface) interface (list interface))
