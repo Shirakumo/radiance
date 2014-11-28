@@ -106,6 +106,12 @@
                     (module module))))
     (module-storage module :radiance-permissions)))
 
+(defun (setf permissions) (list module)
+  (let ((module (if (interface-p module)
+                    (implementation module)
+                    (module module))))
+    (setf (module-storage module :radiance-permissions) list)))
+
 (defun module-dependencies (module)
   (asdf:system-depends-on
    (if (typep module 'asdf:system)
