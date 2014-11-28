@@ -11,6 +11,8 @@
   (:shadow #:define-interface #:module)
   ;; re-export from modularize
   (:export
+   #:virtual-module
+   #:virtual-module-name
    #:define-module
    #:define-module-extension
    #:delete-module
@@ -33,6 +35,7 @@
    #:interface
    #:interface-p
    #:implementation
+   #:implements
    #:reset-interface
    #:define-interface-extension
    #:defimpl
@@ -140,7 +143,12 @@
    #:find-implementation
    #:load-implementation
    #:define-implement-hook
-   #:domain)
+   #:domain
+   #:permissions
+   #:module-dependencies
+   #:module-required-interfaces
+   #:module-required-systems
+   #:describe-module)
   ;; options.lisp
   (:export
    #:define-options-definer

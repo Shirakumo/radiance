@@ -87,6 +87,65 @@
   `(setf (module-storage ,package :radiance-domain) ,(string-downcase domain)))
 
 (defmethod domain ((module package))
-  (or
-   (module-storage module :radiance-domain)
-   (string-downcase (module-name module))))
+  (let ((module (if (interface-p module)
+                    (implementation module)
+                    (module module))))
+    (or
+     (module-storage module :radiance-domain)
+     (string-downcase (module-name module)))))
+
+(defmethod domain ((module symbol))
+  (domain (module module)))
+
+(define-option-expander permissions (package &rest perms)
+  `(setf (module-storage ,package :radiance-permissions) ',perms))
+
+(defun permissions (module)
+  (let ((module (if (interface-p module)
+                    (implementation module)
+                    (module module))))
+    (module-storage module :radiance-permissions)))
+
+(defun module-dependencies (module)
+  (asdf:system-depends-on
+   (if (typep module 'asdf:system)
+       module
+       (virtual-module (module-name module)))))
+
+(defun module-required-interfaces (module)
+  (loop for dep in (module-dependencies module)
+        when (and (listp dep) (eql (first dep) :interface))
+        collect (second dep)))
+
+(defun module-required-systems (module)
+  (loop for dep in (module-dependencies module)
+        unless (and (listp dep) (eql (first dep) :interface))
+        collect dep))
+
+(defun describe-module (module)
+  (let ((module (module module))
+        (virtual (virtual-module (module-name module))))
+    (format T "Module ~a
+
+Domain: ~a
+Implements: ~:[Nothing~;~:*~{~a~^, ~}~]
+Configuration: ~:[None~;~:*~{~a~^, ~}~]
+Permissions: ~:[None~;~:*~{~a~^, ~}~]
+
+System: ~a
+Required interfaces: ~:[None~;~:*~{~a~^, ~}~]
+Required systems: ~:[None~;~:*~{~a~^, ~}~]~@[
+Author: ~:[None~;~:*~a~]
+Description: ~a~]"
+            (module-name module)
+            (domain module)
+            (implements module)
+            (let ((table (config-tree (module-name module))))
+              (when table (loop for name being the hash-keys of table collect name)))
+            (permissions module)
+
+            (asdf:component-name virtual)
+            (asdf:system-author virtual)
+            (module-required-interfaces virtual)
+            (module-required-systems virtual)
+            (asdf:system-description virtual))))
