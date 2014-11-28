@@ -168,3 +168,9 @@
          (%template namestring base)
          `(merge-pathnames ,namestring ,(merge-pathnames "template/" (merge-pathnames (resolve-base base))))))
     (T `(template ,namestring ,base))))
+
+(defmacro perm (&rest tree)
+  "Returns the entered permission TREE as a dotted string and automatically enters it into the current module."
+  (let ((perm (format NIL "~{~(~a~)~^.~}" tree)))
+    (pushnew perm (permissions (module)) :test #'string=)
+    perm))

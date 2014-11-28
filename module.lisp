@@ -243,7 +243,8 @@
    #:with-actions
    #:or*
    #:cut-get-part
-   #:format-universal-time)
+   #:format-universal-time
+   #:perm)
   ;; uri.lisp
   (:export
    #:uri
