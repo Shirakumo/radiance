@@ -170,7 +170,13 @@
     (T `(template ,namestring ,base))))
 
 (defmacro perm (&rest tree)
-  "Returns the entered permission TREE as a dotted string and automatically enters it into the current module."
+  "Returns the entered permission TREE as a dotted string and automatically enters it into the current module.
+This macro is only usable from within a module context."
   (let ((perm (format NIL "~{~(~a~)~^.~}" tree)))
+    ;; Execute during compile
     (pushnew perm (permissions (module)) :test #'string=)
-    perm))
+    ;; And ensure during load as well.
+    `(load-time-value
+      (progn
+        (pushnew ,perm (permissions ,(module)) :test #'string=)
+        ,perm))))
