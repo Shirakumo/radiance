@@ -130,22 +130,22 @@
 Domain: ~a
 Implements: ~:[Nothing~;~:*~{~a~^, ~}~]
 Configuration: ~:[None~;~:*~{~a~^, ~}~]
-Permissions: ~:[None~;~:*~{~a~^, ~}~]
-
-System: ~a
-Required interfaces: ~:[None~;~:*~{~a~^, ~}~]
-Required systems: ~:[None~;~:*~{~a~^, ~}~]~@[
-Author: ~:[None~;~:*~a~]
-Description: ~a~]"
+Permissions: ~:[None~;~:*~{~a~^, ~}~]~%"
             (module-name module)
             (domain module)
             (implements module)
             (let ((table (config-tree (module-name module))))
               (when table (loop for name being the hash-keys of table collect name)))
-            (permissions module)
-
-            (asdf:component-name virtual)
-            (asdf:system-author virtual)
-            (module-required-interfaces virtual)
-            (module-required-systems virtual)
-            (asdf:system-description virtual))))
+            (permissions module))    
+    (if virtual
+        (format T "~%System: ~a
+Required interfaces: ~:[None~;~:*~{~a~^, ~}~]
+Required systems: ~:[None~;~:*~{~a~^, ~}~]
+Author: ~:[None~;~:*~a~]~@[
+Description: ~a~]"
+                (asdf:component-name virtual)
+                (module-required-interfaces virtual)
+                (module-required-systems virtual)
+                (asdf:system-author virtual)
+                (asdf:system-description virtual))
+        (format T "No corresponding system found!"))))
