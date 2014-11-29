@@ -113,10 +113,20 @@
     (setf (module-storage module :radiance-permissions) list)))
 
 (defun module-dependencies (module)
-  (asdf:system-depends-on
-   (if (typep module 'asdf:system)
-       module
-       (virtual-module (module-name module)))))
+  (cond
+    ;; ASDF 3.1+
+    ((find-symbol "SYSTEM-DEPENDS-ON" "ASDF")
+     (funcall (find-symbol "SYSTEM-DEPENDS-ON" "ASDF")
+      (if (typep module 'asdf:system)
+          module
+          (virtual-module (module-name module)))))
+    ;; ASDF 3 (and maybe 2, but who cares)
+    ((find-symbol "COMPONENT-SIDEWAY-DEPENDENCIES" "ASDF")
+     (funcall (find-symbol "COMPONENT-SIDEWAY-DEPENDENCIES" "ASDF")
+      (if (typep module 'asdf:system)
+          module
+          (virtual-module (module-name module)))))
+    (T (error "What the hell? Where's ASDF?"))))
 
 (defun module-required-interfaces (module)
   (loop for dep in (module-dependencies module)
