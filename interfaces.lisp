@@ -120,7 +120,7 @@
       (if (typep module 'asdf:system)
           module
           (virtual-module (module-name module)))))
-    ;; ASDF 3 (and maybe 2, but who cares)
+    ;; ASDF 3.0 (and maybe 2, but who cares)
     ((find-symbol "COMPONENT-SIDEWAY-DEPENDENCIES" "ASDF")
      (funcall (find-symbol "COMPONENT-SIDEWAY-DEPENDENCIES" "ASDF")
       (if (typep module 'asdf:system)
