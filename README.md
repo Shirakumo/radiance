@@ -1,6 +1,6 @@
 About Radiance
 --------------
-An explanation about what exactly Radiance is will be here as soon as I figure out how to explain it quickly enough.
+An explanation about what exactly Radiance is will be here as soon as I figure out how to explain it quickly enough. In the most basic of words, it is a very featureful web-framework written in Common Lisp.
 
 Radiance is currently lacking in completeness, soundness, and specification to be advocated as a ready-to-use framework. Please be patient until the remaining [issues](https://github.com/Shirakumo/radiance/issues) have been cleaned up. It is however already being used in a production setting for [TymoonNET](https://blog.tymoon.eu/). See the remaining [Shirakumo projects](https://github.com/Shirakumo) for examples of applications built using Radiance.
 
