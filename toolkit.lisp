@@ -108,7 +108,7 @@
   :defsystem-depends-on (:radiance)
   :class \"radiance:module\"
   :components ((:file \"~a\"))
-  :depends-on (~{~a~^ ~}))"
+  :depends-on ~s)"
               name base-file dependencies))
     ;; Create base module file
     (with-open-file (s (merge-pathnames (format NIL "~a.lisp" base-file) root) :direction :output)
