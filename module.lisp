@@ -6,7 +6,8 @@
 
 (in-package #:modularize-user)
 (define-module #:radiance-core
-  (:use #:cl #:modularize #:modularize-interfaces #:modularize-hooks #:lambda-fiddle)
+  (:use #:cl #:modularize #:modularize-interfaces #:modularize-hooks
+        #:lambda-fiddle #:plump-lexer)
   (:nicknames #:radiance #:org.shirakumo.radiance.core)
   (:shadow #:define-interface #:module)
   ;; re-export from modularize
