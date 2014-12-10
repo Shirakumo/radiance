@@ -35,7 +35,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
     (declare (ignore args))
     thing)
   (:method ((pattern pattern) &rest args)
-    (let ((*args* args))
+    (let ((*args* (or args *args*)))
       (make-uri :domains (mapcar #'resolve (domains pattern))
                 :port (resolve (port pattern))
                 :path (if (listp (path pattern))
