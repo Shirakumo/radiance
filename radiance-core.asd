@@ -22,6 +22,7 @@
                (:file "interfaces")
                (:file "interface-components")
                (:file "modules")
+               (:file "resource")
                (:file "uri")
                (:file "pattern")
                (:file "routing")

@@ -69,7 +69,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (defmethod resolve ((resource resource) &rest args)
   (declare (ignore args))
-  (apply #'resource (target resource) (name resource) (args resource)))
+  (apply #'resource (name resource) (target resource) (args resource)))
 
 (defmethod make-load-form ((resource resource) &optional env)
   (declare (ignore env))
