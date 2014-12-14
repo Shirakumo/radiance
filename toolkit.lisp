@@ -91,38 +91,6 @@
       (modularize:virtual-module
        (modularize:module-identifier thing))))))
 
-(defun create-module (name &key (base-file name) dependencies)
-  (let* ((name (string-downcase name))
-         (base-file (string-downcase base-file))
-         (root (uiop:ensure-directory-pathname
-                (merge-pathnames name (asdf:system-relative-pathname :radiance "modules/")))))
-    ;; Create directories
-    (ensure-directories-exist root)
-    (ensure-directories-exist (merge-pathnames "template/" root))
-    (ensure-directories-exist (merge-pathnames "static/" root))
-
-    ;; Populate base ASD
-    (with-open-file (s (merge-pathnames (format NIL "~a.asd" name) root) :direction :output)
-      (format s "(in-package #:cl-user)~%~
- (asdf:defsystem #:~a
-  :defsystem-depends-on (:radiance)
-  :class \"radiance:module\"
-  :components ((:file \"~a\"))
-  :depends-on ~s)"
-              name base-file dependencies))
-    ;; Create base module file
-    (with-open-file (s (merge-pathnames (format NIL "~a.lisp" base-file) root) :direction :output)
-      (format s "(in-package #:rad-user)~%~
- (define-module #:~a
-  (:use #:cl #:radiance))~%~
- (in-package #:~:*~a)~%~%" name))
-    ;; Load system into quicklisp
-    (when (find-package :ql)
-      (funcall (symbol-function (find-symbol "REGISTER-LOCAL-PROJECTS" :ql)))
-      (funcall (symbol-function (find-symbol "QUICKLOAD" :ql))
-               (string-upcase name)))
-    root))
-
 (defun read-value ()
   (eval (read)))
 

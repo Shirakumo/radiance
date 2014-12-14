@@ -21,6 +21,7 @@
                (:file "accessor")
                (:file "interfaces")
                (:file "interface-components")
+               (:file "modules")
                (:file "uri")
                (:file "pattern")
                (:file "routing")
