@@ -6,9 +6,10 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defvar *resource-locators* (or (find-package '#:radiance.resource-locators)
-                                (make-package '#:radiance.resource-locators
-                                              :use () :nicknames '(#:org.shirakumo.radiance.core.resource.locators))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defvar *resource-locators* (or (find-package '#:radiance.resource-locators)
+                                  (make-package '#:radiance.resource-locators
+                                                :use () :nicknames '(#:org.shirakumo.radiance.core.resource.locators)))))
 
 (defmacro define-resource-locator (type (module &rest args) &body body)
   (assert (symbolp type) () "NAME must be a symbol.")

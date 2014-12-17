@@ -1,7 +1,7 @@
 #|
-This file is a part of Radiance
-(c) 2014 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
-Author: Nicolas Hafner <shinmera@tymoon.eu>
+ This file is a part of Radiance
+ (c) 2014 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
+ Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
 (in-package #:org.shirakumo.radiance.core)
@@ -19,9 +19,6 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (defmethod domain ((module symbol))
   (domain (module module)))
-
-(define-resource-locator :domain (module)
-  (domain module))
 
 (define-option-expander permissions (package &rest perms)
   `(setf (module-storage ,package :radiance-permissions) ',perms))
