@@ -143,13 +143,16 @@
    #:interface-implementation-not-set
    #:find-implementation
    #:load-implementation
-   #:define-implement-hook
+   #:define-implement-hook)
+  ;; modules.lisp
+  (:export
    #:domain
    #:permissions
    #:module-dependencies
    #:module-required-interfaces
    #:module-required-systems
-   #:describe-module)
+   #:describe-module
+   #:create-module)
   ;; options.lisp
   (:export
    #:define-options-definer
@@ -161,6 +164,17 @@
    #:define-page-option
    #:*page-body*
    #:define-page)
+  ;; pattern.lisp
+  (:export
+   #:pattern
+   #:resolve
+   #:resource
+   #:target
+   #:name
+   #:args
+   #:placeholder
+   #:var
+   #:parse-pattern)
   ;; request.lisp
   (:export
    #:*request*
@@ -235,7 +249,6 @@
    #:read-data-file
    #:data-file
    #:resolve-base
-   #:create-module
    #:static-file
    #:template
    #:with-model
