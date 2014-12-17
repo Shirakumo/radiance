@@ -91,6 +91,8 @@
                  (or* (path defaults)) (path uri))))
 
 (defun uri-to-string (uri &key print-port print-request-domain)
-  (format NIL "~{~a~^.~}~:[~*~;.~a~]~:[~*~;:~a~]/~a"
-          (reverse (domains uri)) (and print-request-domain (typep uri 'request)) (when (typep uri 'request) (domain uri))
-          (and print-port (port uri)) (port uri) (path uri)))
+  (let ((port (when print-port (port uri)))
+        (domain (when (and print-request-domain (boundp '*request*))
+                  (domain *request*))))
+    (format NIL "~{~a~^.~}~@[.~a~]~@[:~a~]/~a"
+            (reverse (domains uri)) domain port (path uri))))
