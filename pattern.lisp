@@ -116,7 +116,10 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 
 (defmethod resolve ((placeholder placeholder) &rest args)
   (declare (ignore args))
-  (getf *args* (var placeholder)))
+  (let ((var (var placeholder)))
+    (etypecase var
+      (fixnum (nth var *args*))
+      (keyword (getf *args* var)))))
 
 (defmethod make-load-form ((placeholder placeholder) &optional env)
   (declare (ignore env))
@@ -130,7 +133,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (defun read-substitute ()
   (when (char= (or (peek) #\ ) #\{)
     (advance) ;; skip opening {
-    (let ((keyword (intern (string-upcase (consume-until (make-matcher (is #\})))) "KEYWORD")))
+    (let* ((contents (consume-until (make-matcher (is #\}))))
+           (keyword (or (ignore-errors (parse-integer contents))
+                        (intern (string-upcase contents) "KEYWORD"))))
       (advance) ;; skip closing }
       (make-instance 'placeholder :var keyword))))
 
