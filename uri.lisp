@@ -89,9 +89,11 @@
    :path (format NIL "~@[~a/~]~@[~a~]"
                  (or* (path defaults)) (path uri))))
 
-(defun uri-to-string (uri &key print-port print-request-domain)
-  (let ((port (when print-port (port uri)))
-        (domain (when (and print-request-domain (boundp '*request*))
-                  (domain *request*))))
-    (format NIL "~{~a~^.~}~@[.~a~]~@[:~a~]/~a"
-            (reverse (domains uri)) domain port (path uri))))
+(defun uri-to-string (uri &key (print-port T) (print-request-domain T))
+  (let* ((port (when print-port (or (port uri) (when (boundp '*request*) (port *request*)))))
+         (proto (if (and port (= port 443)) "https" "http"))
+         (port (unless (and port (or (= port 80) (= port 443))) port))
+         (domain (when (and print-request-domain (boundp '*request*))
+                   (domain *request*))))
+    (format NIL "~a://~{~a~^.~}~@[.~a~]~@[:~a~]/~a"
+            proto (reverse (domains uri)) domain port (path uri))))
