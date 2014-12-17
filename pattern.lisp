@@ -52,14 +52,15 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                              :port ',(transform (port pattern))
                              :path ,(if (listp (path pattern))
                                         `(list ,@(mapcar #'transform (path pattern)))
-                                        (transform (path pattern))))))
+                                        (transform (path pattern)))
+                             :matcher NIL)))
 
 (defmethod print-object ((pattern pattern) stream)
   (if *print-readably*
       (let ((*print-readably* NIL))
         (format stream "#?\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
                 (reverse (domains pattern)) (port pattern) (path pattern)))
-      (write-string (resolve pattern) stream))
+      (print-object (resolve pattern) stream))
   pattern)
 
 (defclass resource ()
