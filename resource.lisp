@@ -21,10 +21,13 @@
          ,@body))))
 
 (defun resource (type module &rest args)
-  (apply (or (find-symbol (string-upcase type) *resource-locators*)
-             (error "Unknown resource type ~s" type))
-         (module module)
-         args))
+  (let ((module (module module)))
+    (apply (or (find-symbol (string-upcase type) *resource-locators*)
+               (error "Unknown resource type ~s" type))
+           (if (interface-p module)
+               (implementation module)
+               module)
+           args)))
 
 (define-resource-locator domain (module)
   (domain module))
@@ -39,4 +42,5 @@
 
 (define-resource-locator page (module name &rest args)
   (declare (ignore args))
-  (path (uri-dispatcher (find-symbol (string-upcase name) module))))
+  (path (or (uri-dispatcher (find-symbol (string-upcase name) module))
+            (error "No page with name ~s found on ~s" name module))))
