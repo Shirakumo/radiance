@@ -20,8 +20,7 @@
   (if *print-readably*
       (format stream "#@\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
               (reverse (domains uri)) (port uri) (path uri))
-      (format stream "~{~a~^.~}~@[:~a~]/~@[~a~]"
-              (reverse (domains uri)) (port uri) (path uri)))
+      (write-string (uri-to-string uri) stream))
   uri)
 
 (defmethod make-load-form ((uri uri) &optional env)
