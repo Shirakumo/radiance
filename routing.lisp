@@ -6,9 +6,7 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defvar *routes* (make-hash-table :test 'eql))
-(defvar *route-priority* (make-array 0))
-
+(defvar *routes* ())
 
 (defun ensure-path (var)
   (if (listp var) (format NIL "~{~a~^/~}" var) var))
@@ -16,33 +14,46 @@
 (defun ensure-list (var)
   (if (listp var) var (list var)))
 
-(defun rebuild-route-priority-cache ()
-  (setf *route-priority*
-        (loop with array = (make-array (hash-table-count *routes*))
-              for i from 0
-              for route in (sort (loop for route being the hash-values of *routes* collect route)
-                                 #'> :key #'car)
-              do (setf (aref array i) (cdr route))
-              finally (return array))))
+(defclass route ()
+  ((name :initarg :name :initform (error "NAME required.") :accessor name)
+   (type :initarg :type :initform (error "TYPE required.") :accessor route-type)
+   (priority :initarg :priority :initform 0 :accessor priority)
+   (translator :initarg :translator :initform (error "TRANSLATOR required.") :accessor translator)))
 
-(defun route (name)
-  (cdr (gethash name *routes*)))
+(defmethod print-object ((route route) stream)
+  (print-unreadable-object (route stream :type T)
+    (format stream "~s ~a" (route-type route) (name route)))
+  route)
 
-(defun (setf route) (function name &optional (priority 0))
-  (setf (gethash name *routes*) (cons priority function))
-  (rebuild-route-priority-cache)
-  name)
+(defun route (name type)
+  (find-if #'(lambda (route)
+               (and (eql type (route-type route))
+                    (eql name (name route))))
+           *routes*))
 
-(defun remove-route (name)
-  (remhash name *routes*)
-  (rebuild-route-priority-cache)
-  name)
+(defun (setf route) (translator name type &optional priority)
+  (let ((route (route name type)))
+    (if route
+        (setf (priority route) (or priority (priority route))
+              (translator route) translator)
+        (push (make-instance 'route :name name :type type :translator translator :priority (or priority 0)) *routes*)))
+  (setf *routes* (sort *routes* #'> :key #'priority))
+  (route name type))
 
-(defmacro define-route (name (urivar) &body body)
-  (destructuring-bind (name &optional (priority 0)) (ensure-list name)
-    `(setf (route ',name ,priority)
-           #'(lambda (,urivar)
-               ,@body))))
+(defun remove-route (name type)
+  (let ((found NIL))
+    (setf *routes*
+          (delete-if #'(lambda (route)
+                         (when (and (eql type (route-type route))
+                                    (eql name (name route)))
+                           (setf found route)))
+                     *routes*))
+    found))
+
+(defmacro define-route (name type (urivar) &body body)
+  (destructuring-bind (name &optional priority) (ensure-list name)
+    `(setf (route ',name ,type ,priority)
+           #'(lambda (,urivar) ,@body))))
 
 (defun extract-vars-and-tests (test-forms)
   (loop with basic-tests = ()
@@ -105,13 +116,13 @@
        (with-route-part-bindings ((cl-ppcre:split "/" (path ,uri)) ,path)
          ,@body))))
 
-(defmacro define-matching-route (name (urivar domains port path) &body body)
-  `(define-route ,name (,urivar)
+(defmacro define-matching-route (name type (urivar domains port path) &body body)
+  `(define-route ,name ,type (,urivar)
      (with-route-test-bindings (,urivar ,domains ,port ,path)
        ,@body)))
 
-(defmacro define-target-route (name (domains port path) (target-domains target-port target-path))
-  `(define-matching-route ,name (uri ,domains ,port ,path)
+(defmacro define-target-route (name type (domains port path) (target-domains target-port target-path))
+  `(define-matching-route ,name ,type (uri ,domains ,port ,path)
      ,@(unless (eql target-domains '*)
          `((setf (domains uri)
                  ,(if (listp target-domains)
@@ -138,9 +149,9 @@
                     (write-char #\\ s)))
              (write-char char s))))
 
-(defmacro define-string-route (name source target)
+(defmacro define-string-route (name type source target)
   (let ((source (escape-regex-dots-not-in-group source)))
-    `(define-route ,name (uri)
+    `(define-route ,name ,type (uri)
        (let ((uristring (uri-to-string uri :print-port T)))
          (when (cl-ppcre:scan ,source uristring)
            (let ((newuri (parse-uri (cl-ppcre:regex-replace ,source uri ,target))))
@@ -148,7 +159,22 @@
                    (port uri) (port newuri)
                    (path uri) (path newuri))))))))
 
-(defun route! (uri)
-  (loop for route-func across *route-priority*
-        do (funcall route-func uri))
-  uri)
+(defun internal-uri (uri)
+  "Returns an internal equivalent of URI, suitable for usage inside the Radiance framework environment.
+
+See RADIANCE>ROUTING>MAPPING"
+  (loop with internal = (copy-uri uri)
+        for (name . route) in *routes*
+        when (eql (route-type route) :mapping)
+        do (setf internal (funcall (translator route) internal))
+        finally (return internal)))
+
+(defun external-uri (uri)
+  "Returns an external equivalent of URI, suitable for usage in templates and user-facing data.
+
+See RADIANCE>ROUTING>REVERSAL"
+  (loop for external = (copy-uri uri)
+        for (name . route) in *routes*
+        when (eql (route-type route) :reversal)
+        do (setf external (funcall (translator route) external))
+        finally (return external)))

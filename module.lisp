@@ -224,12 +224,18 @@
   ;; routing.lisp
   (:export
    #:route
+   #:name
+   #:route-type
+   #:priority
+   #:translator
+   #:route
    #:remove-route
    #:define-route
    #:define-matching-route
    #:define-target-route
    #:define-string-route
-   #:route!)
+   #:internal-uri
+   #:external-uri)
   ;; toolkit.lisp
   (:export
    #:*config-type*
