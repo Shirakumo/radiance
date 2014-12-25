@@ -61,33 +61,55 @@
         unless (and (listp dep) (eql (first dep) :interface))
         collect dep))
 
-(defun describe-module (module)
-  (let ((module (module module))
-        (virtual (virtual-module (module-name module))))
-    (format T "Module ~a
+(defun describe-module-package (name stream)
+  (when (module-p name)
+    (let ((module (module name)))
+      (pprint-logical-block (stream NIL)
+        (format stream "~@:_~a names the radiance module ~a:" name module)
+        (pprint-indent :block 2 stream)
+        (format stream "~@:_Domain: ~s" (domain module))
+        (format stream "~@:_Implements: ~<~;~:[Nothing~;~:*~{~s~^, ~:_~}~]~;~:>"
+                (list (implements module)))
+        (format stream "~@:_Claimed Pages: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
+                (list (mapcar #'uri-dispatcher (module-storage :purplish 'radiance-pages))))
+        (format stream "~@:_API Endpoints: ~<~;~:[None~;~:*~{~(~a~)~^, ~:_~}~]~;~:>"
+                (list (module-storage :purplish 'radiance-apis)))
+        (format stream "~@:_Configuration: ~<~;~:[None~;~:*~{~s~^, ~:_~}~]~;~:>"
+                (list (let ((table (config-tree (module-name module))))
+                        (when table (loop for name being the hash-keys of table collect name)))))
+        (format stream "~@:_Permissions: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
+                (list (permissions module)))
+        (terpri stream)))))
 
-Domain: ~a
-Implements: ~:[Nothing~;~:*~{~a~^, ~}~]
-Configuration: ~:[None~;~:*~{~a~^, ~}~]
-Permissions: ~:[None~;~:*~{~a~^, ~}~]~%"
-            (module-name module)
-            (domain module)
-            (implements module)
-            (let ((table (config-tree (module-name module))))
-              (when table (loop for name being the hash-keys of table collect name)))
-            (permissions module))    
-    (if virtual
-        (format T "~%System: ~a
-Required interfaces: ~:[None~;~:*~{~a~^, ~}~]
-Required systems: ~:[None~;~:*~{~a~^, ~}~]
-Author: ~:[None~;~:*~a~]~@[
-Description: ~a~]"
-                (asdf:component-name virtual)
-                (module-required-interfaces virtual)
-                (module-required-systems virtual)
-                (asdf:system-author virtual)
-                (asdf:system-description virtual))
-        (format T "No corresponding system found!"))))
+(defun describe-module-system (name stream)
+  (when (module-p name)
+    (let ((virtual (virtual-module (module-name name))))
+      (when virtual
+        (pprint-logical-block (stream NIL)
+          (format stream "~@:_~a names the ASDF system ~a:" name virtual)
+          (pprint-indent :block 2 stream)
+          (format stream "~@:_Version: ~:[Unknown~;~:*~a~]"
+                  (asdf:component-version virtual))
+          (format stream "~@:_Author: ~:[Unknown~;~:*~a~]"
+                  (asdf:system-author virtual))
+          (format stream "~@:_Homepage: ~:[Unknown~;~:*~a~]"
+                  (asdf:system-homepage virtual))
+          (format stream "~@:_License: ~:[Unknown~;~:*~a~]"
+                  (asdf:system-license virtual))
+          (format stream "~@:_Location: ~:[Unknown~;~:*~a~]"
+                  (asdf:system-relative-pathname virtual ""))
+          (format stream "~@:_Description: ~:[None~;~:*~a~]"
+                  (asdf:system-description virtual))
+          (format stream "~@:_Dependant Interfaces: ~<~;~:[None~;~:*~{~(~a~)~^, ~:_~}~]~;~:>"
+                  (list (module-required-interfaces virtual)))
+          (format stream "~@:_Dependant Systems: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
+                  (list (module-required-systems virtual)))
+          (terpri stream))))))
+
+(defun describe-module (thing &optional (stream *standard-output*))
+  (format stream "~&~a~%  [~a]~%" thing (type-of thing))
+  (describe-module-package thing T)
+  (describe-module-system thing stream))
 
 (defun create-module (name &key (base-file name) dependencies)
   (let* ((name (string-downcase name))
