@@ -17,10 +17,8 @@
     (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
 (defmethod print-object ((uri uri) stream)
-  (if *print-readably*
-      (format stream "#@\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
-              (reverse (domains uri)) (port uri) (path uri))
-      (write-string (uri-to-string uri) stream))
+  (format stream "#@\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
+          (reverse (domains uri)) (port uri) (path uri))
   uri)
 
 (defmethod make-load-form ((uri uri) &optional env)
@@ -89,11 +87,17 @@
    :path (format NIL "~@[~a/~]~@[~a~]"
                  (or* (path defaults)) (path uri))))
 
-(defun uri-to-string (uri &key (print-port T) (print-request-domain T))
-  (let* ((port (when print-port (or (port uri) (when (boundp '*request*) (port *request*)))))
-         (proto (if (and port (= port 443)) "https" "http"))
-         (port (unless (and port (or (= port 80) (= port 443))) port))
-         (domain (when (and print-request-domain (boundp '*request*))
-                   (domain *request*))))
-    (format NIL "~a://~{~a~^.~}~@[.~a~]~@[:~a~]/~a"
-            proto (reverse (domains uri)) domain port (path uri))))
+(defun uri-to-url (uri &key (representation :as-is))
+  (let* ((uri (ecase representation
+                ((:as-is NIL) uri)
+                ((:external) (external-uri uri))
+                ((:internal) (internal-uri uri))))
+         (proto (case (port uri)
+                  ((443) "https")
+                  ((80 NIL) "http")
+                  (T "http")))
+         (port (case (port uri)
+                 ((443 80) NIL)
+                 (T (port uri)))))
+    (format NIL "~a://~{~a~^.~}~@[:~a~]/~a"
+            proto (reverse (domains uri)) port (path uri))))
