@@ -34,9 +34,9 @@
                (:file "options")
                (:file "page")
                (:file "api")
+               (:file "init")
                (:file "defaults")
-               (:file "convenience")
-               (:file "init"))
+               (:file "convenience"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
                :universal-config
