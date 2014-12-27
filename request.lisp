@@ -173,14 +173,26 @@
        table))))
 
 (defun request (to-uri &key (representation :internal) (http-method :GET) headers post get cookies (remote "unknown") (response (make-instance 'response)))
-  (execute-request
-   (make-instance
-             'request
-             :uri (represent-uri to-uri representation)
-             :http-method http-method
-             :headers (ensure-request-hash-table headers)
-             :post-data (ensure-request-hash-table post)
-             :get-data (ensure-request-hash-table get)
-             :cookies (ensure-request-hash-table cookies)
-             :remote remote)
-   response))
+  ;; KLUDGE!
+  ;; This should be handled nicer somehow, but
+  ;; we currently have to do it like this as we
+  ;; would run into a problem because the domain
+  ;; cutter route needs to set the DOMAIN on
+  ;; *request* and has no other means to
+  ;; communicate this information to us. Thus,
+  ;; we first spoof the URI and *REQUEST* to
+  ;; perform the proper routing and then switch
+  ;; out the URIs to dispatch.
+  (let ((*request* (make-instance
+                    'request
+                    :uri to-uri
+                    :http-method http-method
+                    :headers (ensure-request-hash-table headers)
+                    :post-data (ensure-request-hash-table post)
+                    :get-data (ensure-request-hash-table get)
+                    :cookies (ensure-request-hash-table cookies)
+                    :remote remote)))
+    (setf (uri *request*) (represent-uri (uri *request*) representation))
+    (execute-request
+     *request*
+     response)))
