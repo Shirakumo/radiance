@@ -192,6 +192,7 @@
    #:cookies
    #:user-agent
    #:referer
+   #:domain
    #:remote
    #:data
    

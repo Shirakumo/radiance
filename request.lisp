@@ -23,6 +23,7 @@
    (post-data :initarg :post-data :initform (make-hash-table :test 'equalp) :accessor post-data)
    (get-data :initarg :get-data :initform (make-hash-table :test 'equalp) :accessor get-data)
    (cookies :initarg :cookies :initform (make-hash-table :test 'equalp) :accessor cookies)
+   (domain :initarg :domain :initform "localhost" :accessor domain)
    (remote :initarg :remote :initform "unknown" :accessor remote)
    (data :initarg :data :initform (make-hash-table :test 'eql) :accessor data)))
 
