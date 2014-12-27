@@ -135,7 +135,7 @@
       (restart-case
           (progn
             (trigger 'request request response)
-            (let ((result (dispatch request)))
+            (let ((result (dispatch (uri request))))
               (typecase result
                 (response (setf *response* result))
                 (pathname (serve-file result))
@@ -151,6 +151,8 @@
 
 (defun ensure-request-hash-table (thing)
   (etypecase thing
+    (null
+     (make-hash-table :test 'equalp))
     (hash-table
      (case (hash-table-test thing)
        (equalp thing)
@@ -174,7 +176,7 @@
   (execute-request
    (make-instance
              'request
-             :to-uri (represent-uri to-uri representation)
+             :uri (represent-uri to-uri representation)
              :http-method http-method
              :headers (ensure-request-hash-table headers)
              :post-data (ensure-request-hash-table post)
