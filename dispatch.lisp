@@ -8,10 +8,14 @@
 
 (defvar *uri-registry* (make-hash-table :test 'eql))
 (defvar *uri-priority* (make-array 0))
-(defparameter *uri-fallback* #'(lambda (request)
-                                 (if (boundp '*response*)
-                                     (serve-file (data-file "html/error/404.html") "application/xhtml+xml")
-                                     (error 'request-not-found :request request :message "Reached dispatch fallback."))))
+(defparameter *uri-fallback* #'(lambda ()
+                                 (cond
+                                   ((boundp '*response*)
+                                    (serve-file (data-file "html/error/404.html") "application/xhtml+xml"))
+                                   ((boundp '*request*)
+                                    (error 'request-not-found :request *request* :message "Reached dispatch fallback."))
+                                   (T
+                                    (error 'request-not-found :request NIL :message "Reached dispatch fallback.")))))
 
 (defclass uri-dispatcher (uri)
   ((name :initarg :name :initform (error "NAME required.") :accessor name)
@@ -59,15 +63,14 @@
                       (and (not (priority b))
                            (uri> a b)))))))
 
-(defmacro define-uri-dispatcher (name (uri &optional (requestvar 'request) priority) &body body)
+(defmacro define-uri-dispatcher (name (uri &optional priority) &body body)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (setf (uri-dispatcher ',name ,uri ,priority)
-           #'(lambda (,requestvar)
-               (declare (ignorable ,requestvar))
+           #'(lambda ()
                ,@body))))
 
-(defun dispatch (uri-data-object)
-  (loop for uri across *uri-priority*
-        when (uri-matches uri-data-object uri)
-          do (return (funcall (dispatch-function uri) uri-data-object))
-        finally (return (funcall *uri-fallback* uri-data-object))))
+(defun dispatch (uri)
+  (loop for dispatcher across *uri-priority*
+        when (uri-matches uri dispatcher)
+          do (return (funcall (dispatch-function dispatcher)))
+        finally (return (funcall *uri-fallback*))))
