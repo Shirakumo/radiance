@@ -108,3 +108,34 @@
 
 (define-page welcome #@"/^$" ()
   (serve-file (data-file "html/hello.html")))
+
+;; Default routing to cut domains.
+(defvar *domain-internalizers* ())
+
+(defun compile-domain-internalizers (&optional (domains (config-tree :server :domains)))
+  (loop for domain in domains
+        collect (let ((parts (nreverse (cl-ppcre:split "\\." domain)))
+                      (domain domain))
+                  #'(lambda (uri)
+                      (loop for subdomains = (domains uri) then (cdr subdomains)
+                            for a = (car subdomains)
+                            for b in parts
+                            when (or (not subdomains) (not (string-equal a b)))
+                            do (return NIL)
+                            finally (return (values domain subdomains)))))))
+
+(define-trigger (radiance:startup 'compile-domain-internalizers) ()
+  (setf *domain-internalizers* (compile-domain-internalizers)))
+
+(define-route internalizer (:mapping most-positive-fixnum) (uri)
+  (loop for internalizer in *domain-internalizers*
+        until (multiple-value-bind (domain subdomains) (funcall internalizer uri)
+                (when domain
+                  (when (boundp '*request*)
+                    (setf (domain *request*) domain))
+                  (setf (domains uri) subdomains)
+                  T))))
+
+(define-route externalizer (:reversal most-positive-fixnum) (uri)
+  (when (boundp '*request*)
+    (push (domain *request*) (domains uri))))
