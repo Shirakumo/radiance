@@ -51,7 +51,7 @@
     found))
 
 (defmacro define-route (name type (urivar) &body body)
-  (destructuring-bind (name &optional priority) (ensure-list name)
+  (destructuring-bind (type &optional priority) (ensure-list type)
     `(setf (route ',name ,type ,priority)
            #'(lambda (,urivar) ,@body))))
 
