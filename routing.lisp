@@ -164,17 +164,17 @@
 
 See RADIANCE>ROUTING>MAPPING"
   (loop with internal = (copy-uri uri)
-        for (name . route) in *routes*
+        for route in *routes*
         when (eql (route-type route) :mapping)
-        do (setf internal (funcall (translator route) internal))
+        do (funcall (translator route) internal)
         finally (return internal)))
 
 (defun external-uri (uri)
   "Returns an external equivalent of URI, suitable for usage in templates and user-facing data.
 
 See RADIANCE>ROUTING>REVERSAL"
-  (loop for external = (copy-uri uri)
-        for (name . route) in *routes*
+  (loop with external = (copy-uri uri)
+        for route in *routes*
         when (eql (route-type route) :reversal)
-        do (setf external (funcall (translator route) external))
+        do (funcall (translator route) external)
         finally (return external)))
