@@ -170,7 +170,7 @@
                   do (push-to-table k v)))))
        table))))
 
-(defun request (to-uri &key (representation :as-is) (http-method :GET) headers post get cookies (remote "unknown") (response (make-instance 'response)))
+(defun request (to-uri &key (representation :internal) (http-method :GET) headers post get cookies (remote "unknown") (response (make-instance 'response)))
   (execute-request
    (make-instance
              'request
