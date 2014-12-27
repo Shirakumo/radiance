@@ -97,10 +97,10 @@
   (gethash (string name) (headers request/response)))
 
 (defmethod field ((request request) field)
-  (gethash (data request) field))
+  (gethash field (data request)))
 
 (defmethod (setf field) (value (request request) field)
-  (setf (gethash (data request) field) value))
+  (setf (gethash field (data request)) value))
 
 (defun file (name &optional (request *request*))
   "Returns file info about a form uploaded file.
