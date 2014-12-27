@@ -148,3 +148,11 @@ This macro is only usable from within a module context."
       (progn
         (pushnew ,perm (permissions ,(module)) :test #'string=)
         ,perm))))
+
+(defun copy-hash-table (table &key (test (hash-table-test table))
+                                   (size (hash-table-size table))
+                                   (rehash-size (hash-table-rehash-size table))
+                                   (rehash-threshold (hash-table-rehash-threshold table)))
+  (let ((new (make-hash-table :test test :size size :rehash-size rehash-size :rehash-threshold rehash-threshold)))
+    (maphash #'(lambda (k v) (setf (gethash k new) v)) table)
+    new))
