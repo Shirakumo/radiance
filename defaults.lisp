@@ -139,3 +139,22 @@
 (define-route externalizer (:reversal most-positive-fixnum) (uri)
   (when (boundp '*request*)
     (push (domain *request*) (domains uri))))
+
+(define-route virtual-module (:mapping 100000) (uri)
+  (when (and (< 1 (length (path uri)))
+             (string= "!/" (path uri) :end2 2))
+    (let ((slashpos (position #\/ (path uri) :start 2)))
+      (let ((module (subseq (path uri) 2 slashpos))
+            (path (if slashpos
+                      (subseq (path uri) (1+ slashpos))
+                      "")))
+        (when (boundp '*request*)
+          (setf (field *request* 'virtual-module) module))
+        (setf (path uri) path)
+        (setf (domains uri) (append (domains uri) (list module)))))))
+
+(define-route virtual-module (:reversal 100000) (uri)
+  (when (and (boundp '*request*)
+             (field *request* 'virtual-module))
+    (setf (path uri) (concatenate 'string "!/" (field *request* 'virtual-module) "/" (path uri))
+          (domains uri) (butlast (domains uri)))))
