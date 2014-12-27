@@ -280,8 +280,8 @@
    #:uri=
    #:uri-matches
    #:merge-uris
-   #:uri-to-string
-   #:module-relative-uri))
+   #:represent-uri
+   #:uri-to-url))
 
 (define-module #:radiance-user
   (:nicknames #:rad-user)

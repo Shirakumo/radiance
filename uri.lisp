@@ -87,11 +87,14 @@
    :path (format NIL "~@[~a/~]~@[~a~]"
                  (or* (path defaults)) (path uri))))
 
+(defun represent-uri (uri representation)
+  (ecase representation
+    ((:as-is NIL) uri)
+    ((:external) (external-uri uri))
+    ((:internal) (internal-uri uri))))
+
 (defun uri-to-url (uri &key (representation :as-is))
-  (let* ((uri (ecase representation
-                ((:as-is NIL) uri)
-                ((:external) (external-uri uri))
-                ((:internal) (internal-uri uri))))
+  (let* ((uri (represent-uri uri representation))
          (proto (case (port uri)
                   ((443) "https")
                   ((80 NIL) "http")
