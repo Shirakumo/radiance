@@ -19,7 +19,7 @@
 
 (define-page-option uri-groups (name uri body uri-groups)
   (if uri-groups
-      `((cl-ppcre:register-groups-bind ,uri-groups (,(path uri) (path *request*))
+      `((cl-ppcre:register-groups-bind ,uri-groups (,(path uri) (path (uri *request*)))
           ,@body))
       body))
 
@@ -99,11 +99,12 @@
   (serve-file (data-file "static/robots.txt")))
 
 (define-page static (#@"/static/.*" 1000) ()
-  (let ((slashpos (position #\/ (path *request*) :start (length "static/"))))
+  (let* ((path (path (uri *request*)))
+         (slashpos (position #\/ path :start (length "static/"))))
     (if slashpos
-        (serve-file (static-file (subseq (path *request*) (1+ slashpos))
-                                 (string-upcase (subseq (path *request*) (length "static/") slashpos))))
-        (serve-file (merge-pathnames (subseq (path *request*) (length "static/")) (data-file "static/"))))))
+        (serve-file (static-file (subseq path (1+ slashpos))
+                                 (string-upcase (subseq path (length "static/") slashpos))))
+        (serve-file (merge-pathnames (subseq path (length "static/")) (data-file "static/"))))))
 
 (define-page welcome #@"/^$" ()
   (serve-file (data-file "html/hello.html")))

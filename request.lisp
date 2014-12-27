@@ -16,14 +16,15 @@
 (defun *response* () *response*)
 (defun *session* () *session*)
 
-(defclass request (uri)
-  ((http-method :initarg :http-method :initform :GET :accessor http-method)
+(defclass request ()
+  ((uri :initarg :uri :initform (error "URI required.") :accessor uri)
+   (http-method :initarg :http-method :initform :GET :accessor http-method)
    (headers :initarg :headers :initform (make-hash-table :test 'equalp) :accessor headers)
    (post-data :initarg :post-data :initform (make-hash-table :test 'equalp) :accessor post-data)
    (get-data :initarg :get-data :initform (make-hash-table :test 'equalp) :accessor get-data)
    (cookies :initarg :cookies :initform (make-hash-table :test 'equalp) :accessor cookies)
-   (domain :initarg :domain :initform "localhost" :accessor domain)
-   (remote :initarg :remote :initform "unknown" :accessor remote)))
+   (remote :initarg :remote :initform "unknown" :accessor remote)
+   (data :initarg :data :initform (make-hash-table :test 'eql) :accessor data)))
 
 (defmethod print-object ((request request) stream)
   (print-unreadable-object (request stream :type T)
@@ -94,6 +95,12 @@
 (defun header (name &optional (request/response *request*))
   (gethash (string name) (headers request/response)))
 
+(defmethod field ((request request) field)
+  (gethash (data request) field))
+
+(defmethod (setf field) (value (request request) field)
+  (setf (gethash (data request) field) value))
+
 (defun file (name &optional (request *request*))
   "Returns file info about a form uploaded file.
  (PATH ORIGINAL-FILENAME MIME-TYPE)"
@@ -119,9 +126,9 @@
   (setf (data response) pathname))
 
 (define-hook request (request response))
-(defun request (request &optional (response (make-instance 'response)))
+(defun execute-request (request &optional (response (make-instance 'response)))
   (handler-bind ((error #'handle-condition))
-    (let ((*request* (route! request))
+    (let ((*request* request)
           (*response* response)
           (*session* NIL))
       (restart-case
@@ -139,16 +146,38 @@
           (if (typep data 'response)
               (setf *response* data)
               (setf (data *response*) data))))
-      (loop until
-            (restart-case
-                (etypecase (data *response*)
-                  (pathname T) (string T) ((array (unsigned-byte 8)) T)
-                  (null (error 'request-empty :request *request*)))
-              (set-data (data)
-                :report "Set the response data."
-                :interactive read-value
-                (if (typep data 'response)
-                    (setf *response* data)
-                    (setf (data *response*) data))
-                NIL)))
       *response*)))
+
+(defun ensure-request-hash-table (thing)
+  (etypecase thing
+    (hash-table
+     (case (hash-table-test thing)
+       (equalp thing)
+       (T (copy-hash-table thing :test 'equalp))))
+    (list
+     (let ((table (make-hash-table :test 'equalp)))
+       (flet ((push-to-table (k v)
+                (if (string= "[]" k :start2 (- (length k) 2))
+                    (push v (gethash k table))
+                    (setf (gethash k table) v))))
+         (etypecase (first thing)
+           ((or string keyword)
+            (loop for (k v) on thing by #'cddr
+                  do (push-to-table k v)))
+           (cons
+            (loop for (k . v) in thing
+                  do (push-to-table k v)))))
+       table))))
+
+(defun request (to-uri &key (representation :as-is) (http-method :GET) headers post get cookies (remote "unknown") (response (make-instance 'response)))
+  (execute-request
+   (make-instance
+             'request
+             :to-uri (represent-uri to-uri representation)
+             :http-method http-method
+             :headers (ensure-request-hash-table headers)
+             :post-data (ensure-request-hash-table post)
+             :get-data (ensure-request-hash-table get)
+             :cookies (ensure-request-hash-table cookies)
+             :remote remote)
+   response))

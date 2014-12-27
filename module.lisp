@@ -184,6 +184,7 @@
    #:*default-content-type*
    
    #:request
+   #:uri
    #:http-method
    #:headers
    #:post-data
@@ -192,6 +193,7 @@
    #:user-agent
    #:referer
    #:remote
+   #:data
    
    #:response
    #:data
@@ -219,8 +221,9 @@
    #:file
    #:redirect
    #:serve-file
-   #:request
-   #:set-data)
+   #:execute-request
+   #:set-data
+   #:request)
   ;; routing.lisp
   (:export
    #:route

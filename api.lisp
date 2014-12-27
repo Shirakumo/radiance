@@ -127,12 +127,13 @@
     (remove-api-page page)))
 
 ;;; Actual page handler
-(define-uri-dispatcher api (#@"/api/.*" request 100)
-  (let* ((slashpos (position #\/ (path request)))
-         (subpath (subseq (path request) (1+ slashpos)))
+(define-uri-dispatcher api (#@"/api/.*" 100)
+  (let* ((path (path (uri *request*)))
+         (slashpos (position #\/ path))
+         (subpath (subseq path (1+ slashpos)))
          (api-page (or (api-page subpath) (api-page ""))))
     (handler-case
-        (api-call api-page request)
+        (api-call api-page *request*)
       (api-error (err)
         (let ((message (or (message err)
                            (princ-to-string err))))

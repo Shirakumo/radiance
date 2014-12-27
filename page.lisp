@@ -26,7 +26,7 @@
          ,@forms
          ,@(when (module)
              `((pushnew ',name (module-storage ,(module) 'radiance-pages))))
-         (define-uri-dispatcher ,name (,uri ,(gensym "REQUEST") ,priority)
+         (define-uri-dispatcher ,name (,uri ,priority)
            (block ,name
              ,@body))))))
 
