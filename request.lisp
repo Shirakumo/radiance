@@ -29,7 +29,7 @@
 
 (defmethod print-object ((request request) stream)
   (print-unreadable-object (request stream :type T)
-    (format stream "~a ~A" (http-method request) (uri-to-string request :print-request-domain T :print-port t)))
+    (format stream "~a ~s" (http-method request) (uri request)))
   request)
 
 (defclass response ()
