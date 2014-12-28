@@ -160,9 +160,10 @@
     (list
      (let ((table (make-hash-table :test 'equalp)))
        (flet ((push-to-table (k v)
-                (if (string= "[]" k :start2 (- (length k) 2))
-                    (push v (gethash k table))
-                    (setf (gethash k table) v))))
+                (let ((k (string k)))
+                  (if (string= "[]" k :start2 (- (length k) 2))
+                      (push v (gethash k table))
+                      (setf (gethash k table) v)))))
          (etypecase (first thing)
            ((or string keyword)
             (loop for (k v) on thing by #'cddr
