@@ -276,7 +276,8 @@
    #:port
    #:path
    #:matcher
-   
+
+   #:uri-string
    #:make-uri
    #:parse-uri
    #:uri<

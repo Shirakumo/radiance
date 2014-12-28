@@ -16,9 +16,12 @@
   (unless (slot-boundp uri 'matcher)
     (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
+(defun uri-string (uri)
+  (format NIL "~{~a~^.~}~@[:~a~]/~@[~a~]"
+          (reverse (domains uri)) (port uri) (path uri)))
+
 (defmethod print-object ((uri uri) stream)
-  (format stream "#@\"~{~a~^.~}~@[:~a~]/~@[~a~]\""
-          (reverse (domains uri)) (port uri) (path uri))
+  (format stream "#@~s" (uri-string uri))
   uri)
 
 (defmethod make-load-form ((uri uri) &optional env)
