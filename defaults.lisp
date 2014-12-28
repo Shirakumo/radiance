@@ -137,8 +137,16 @@
                   T))))
 
 (define-route externalizer (:reversal most-positive-fixnum) (uri)
-  (when (boundp '*request*)
-    (push (domain *request*) (domains uri))))
+  (cond
+    ((boundp '*request*)
+     (push (domain *request*) (domains uri))
+     (unless (port uri)
+       (setf (port uri) (port (uri *request*)))))
+    ;; KLUDGE! Find a better way to do this...
+    (T
+     (push (first (uc:config-tree :server :domains)) (domains uri))
+     (unless (port uri)
+       (setf (port uri) (uc:config-tree :server :instances 0 :port))))))
 
 (define-route virtual-module (:mapping 100000) (uri)
   (when (and (< 1 (length (path uri)))
