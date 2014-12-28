@@ -152,7 +152,7 @@
 (defmacro define-string-route (name type source target)
   (let ((source (escape-regex-dots-not-in-group source)))
     `(define-route ,name ,type (uri)
-       (let ((uristring (uri-to-string uri :print-port T)))
+       (let ((uristring (uri-string uri)))
          (when (cl-ppcre:scan ,source uristring)
            (let ((newuri (parse-uri (cl-ppcre:regex-replace ,source uri ,target))))
              (setf (domains uri) (domains newuri)
