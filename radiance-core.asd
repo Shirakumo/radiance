@@ -28,7 +28,6 @@
                (:file "routing")
                (:file "dispatch")
                (:file "request")
-               (:file "continuation")
                (:file "standard-interfaces")
                (:file "conditions")
                (:file "options")
