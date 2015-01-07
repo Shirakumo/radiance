@@ -104,8 +104,13 @@
    #:user-not-found
 
    #:handle-condition)
-  ;; continuation.lisp
-  (:export)
+  ;; convenience.lisp
+  (:export
+   #:with-model
+   #:with-model-fields
+   #:do-models
+   #:with-actions
+   #:external-pattern)
   ;; default.lisp
   (:export
    #:favicon
@@ -261,10 +266,6 @@
    #:resolve-base
    #:static-file
    #:template
-   #:with-model
-   #:with-model-fields
-   #:do-models
-   #:with-actions
    #:or*
    #:cut-get-part
    #:format-universal-time

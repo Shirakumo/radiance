@@ -46,3 +46,13 @@
 
 (indent:define-indentation with-actions (6 (&whole 4 &rest) &body))
 
+(defun external-pattern (pattern &rest args)
+  (let ((pattern (etypecase pattern
+                   (pattern pattern)
+                   (string (parse-pattern pattern)))))
+    (uri-to-url (apply #'resolve pattern args) :representation :external)))
+
+(define-compiler-macro external-pattern (&whole form &environment env pattern &rest args)
+  (cond ((constantp pattern env)
+         `(external-pattern (load-time-value (parse-pattern ,pattern)) ,@args))
+        (T form)))
