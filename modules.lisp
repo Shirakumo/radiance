@@ -7,7 +7,7 @@
 (in-package #:org.shirakumo.radiance.core)
 
 (define-option-expander domain (package domain)
-  `(setf (module-storage ,package :radiance-domain) ,(string-downcase domain)))
+  (setf (module-storage package :radiance-domain) (string-downcase domain)))
 
 (defmethod domain ((module package))
   (let ((module (if (interface-p module)
