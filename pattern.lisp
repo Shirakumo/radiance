@@ -185,8 +185,3 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
                         (intern (string-upcase contents) "KEYWORD"))))
       (advance) ;; skip closing }
       (make-instance 'placeholder :var keyword))))
-
-
-
-
-

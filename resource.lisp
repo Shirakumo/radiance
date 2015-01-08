@@ -30,17 +30,17 @@
            args)))
 
 (define-resource-locator domain (module)
-  (domain module))
+  (make-uri :domains (list (domain module))))
 
 (define-resource-locator api (module page &rest args)
-  (format NIL "/api/~a/~a?~{~a=~a~^&~}"
-          (module-name module) page args))
+  (make-uri :path (format NIL "/api/~a/~a?~{~a=~a~^&~}"
+                          (module-name module) page args)))
 
 (define-resource-locator static (module resource)
-  (format NIL "/static/~a/~a"
-          (module-name module) resource))
+  (make-uri :path (format NIL "/static/~a/~a"
+                          (module-name module) resource)))
 
 (define-resource-locator page (module name &rest args)
   (declare (ignore args))
-  (path (or (uri-dispatcher (find-symbol (string-upcase name) module))
-            (error "No page with name ~s found on ~s" name module))))
+  (or (uri-dispatcher (find-symbol (string-upcase name) module))
+      (error "No page with name ~s found on ~s" name module)))
