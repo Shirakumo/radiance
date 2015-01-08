@@ -24,10 +24,12 @@
 
 (defun make-uri-dispatcher (name uri dispatch-function &optional priority)
   (let ((uri (copy-uri uri)))
-    (change-class uri 'uri-dispatcher
-                  :name name
-                  :dispatch-function dispatch-function
-                  :priority priority)
+    (initialize-instance
+     (change-class uri 'uri-dispatcher
+                   :name name
+                   :dispatch-function dispatch-function
+                   :priority priority
+                   :matcher T))
     uri))
 
 (defun uri-dispatcher (name)

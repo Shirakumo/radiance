@@ -10,10 +10,10 @@
   ((domains :initarg :domains :initform () :accessor domains)
    (port :initarg :port :initform NIL :accessor port)
    (path :initarg :path :initform NIL :accessor path)
-   (matcher :initarg :matcher :accessor matcher)))
+   (matcher :initarg :matcher :initform NIL :accessor matcher)))
 
 (defmethod initialize-instance :after ((uri uri) &key)
-  (unless (slot-boundp uri 'matcher)
+  (when (eql (matcher uri) T)
     (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
 (defun uri-string (uri)
@@ -32,10 +32,8 @@
   (when (matcher uri)
     (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
-(defun make-uri (&key domains port path (matcher NIL m-p))
-  (if m-p
-      (make-instance 'uri :domains domains :port port :path path :matcher matcher)
-      (make-instance 'uri :domains domains :port port :path path)))
+(defun make-uri (&key domains port path matcher)
+  (make-instance 'uri :domains domains :port port :path path :matcher matcher))
 
 (defun copy-uri (uri)
   (make-uri :domains (copy-seq (domains uri))
@@ -74,6 +72,8 @@
 
 (defvar *default-uri-defaults* (parse-uri "/"))
 (defun uri-matches (uri pattern-uri)
+  (unless (matcher pattern-uri)
+    (setf (matcher pattern-uri) (cl-ppcre:create-scanner (or (path pattern-uri) ""))))
   (and (or (not (port pattern-uri))
            (not (port uri))
            (= (port uri) (port pattern-uri)))
