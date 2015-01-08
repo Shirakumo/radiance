@@ -16,7 +16,7 @@
   (let ((type (intern (string-upcase type) *resource-locators*)))
     `(progn
        ,@(unless (fboundp type)
-           `((defgeneric ,type ,(flatten-lambda-list (cons module args)))))
+           `((defgeneric ,type ,(flatten-method-lambda-list (cons module args)))))
        (defmethod ,type (,module ,@args)
          ,@body))))
 
