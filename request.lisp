@@ -161,7 +161,7 @@
      (let ((table (make-hash-table :test 'equalp)))
        (flet ((push-to-table (k v)
                 (let ((k (string k)))
-                  (if (string= "[]" k :start2 (- (length k) 2))
+                  (if (and (< 2 (length k)) (string= "[]" k :start2 (- (length k) 2)))
                       (push v (gethash k table))
                       (setf (gethash k table) v)))))
          (etypecase (first thing)
