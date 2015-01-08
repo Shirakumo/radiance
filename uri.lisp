@@ -106,4 +106,4 @@
                  ((443 80) NIL)
                  (T (port uri)))))
     (format NIL "~a://~{~a~^.~}~@[:~a~]/~a"
-            proto (reverse (domains uri)) port (path uri))))
+            proto (reverse (domains uri)) port (or (path uri) ""))))
