@@ -137,7 +137,6 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
           (name (read-resource-name))
           (args (read-resource-args)))
       (advance) ;; skip closing >
-      (v:info :ARGH "ARGHH!!!! ~a ~a ~a" module name args)
       (unless (module-p module)
         (warn "No module or interface ~a known, but used as resource identifier in URI." module))
       (make-instance 'resource :target module :name (or* name :domain) :args args))))
