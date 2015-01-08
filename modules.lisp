@@ -11,7 +11,8 @@
 
 (defmethod domain ((module package))
   (let ((module (if (interface-p module)
-                    (implementation module)
+                    (or (implementation module)
+                        (error "Interface ~s has no implementation; cannot retrieve domain." module))
                     (module module))))
     (or
      (module-storage module :radiance-domain)

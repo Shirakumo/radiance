@@ -25,7 +25,8 @@
     (apply (or (find-symbol (string-upcase type) *resource-locators*)
                (error "Unknown resource type ~s" type))
            (if (interface-p module)
-               (implementation module)
+               (or (implementation module)
+                   (error "Interface ~s has no implementation. Cannot resolve resource ~s." module type))
                module)
            args)))
 
