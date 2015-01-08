@@ -230,6 +230,10 @@
    #:execute-request
    #:set-data
    #:request)
+  ;; resource.lisp
+  (:export
+   #:define-resource-locator
+   #:resource)
   ;; routing.lisp
   (:export
    #:route
