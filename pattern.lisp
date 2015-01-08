@@ -18,7 +18,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 ;; target    ::= alphas
 ;; name      ::= alphas
 ;; args      ::= arg*
-;; arg       ::= subst | ((!">"|",")*)
+;; arg       ::= subst | resource | ((!">"|",")*)
 ;; subst     ::= "{" (!"}")* "}"
 
 (defvar *args* ())
@@ -137,6 +137,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
           (name (read-resource-name))
           (args (read-resource-args)))
       (advance) ;; skip closing >
+      (v:info :ARGH "ARGHH!!!! ~a ~a ~a" module name args)
       (unless (module-p module)
         (warn "No module or interface ~a known, but used as resource identifier in URI." module))
       (make-instance 'resource :target module :name (or* name :domain) :args args))))
@@ -156,6 +157,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
           until (or (not peek) (char= peek #\>))
           do (when (char= peek #\,) (advance))
           collect (or (read-substitute)
+                      (read-resource)
                       (consume-until (make-matcher (any #\> #\,)))))))
 
 (defclass placeholder ()
