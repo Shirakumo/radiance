@@ -9,18 +9,17 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 ;;;;;;
 ;; PATTERN syntax
 ;;
-;; uri       ::= [domain] [port] "/" [path]
+;; pattern   ::= ([domain] [port] "/" [path]) | resource
 ;; domain    ::= (subdomain ".")* subdomain
-;; subdomain ::= alphas | subst | resource
-;; port      ::= ":" (number | subst | resource)
-;; path      ::= mixed | resource
-;; mixed     ::= (string | subst)*
-;; subst     ::= "{" (!"}")* "}"
+;; subdomain ::= alphas | subst
+;; port      ::= ":" (number | subst)
+;; path      ::= (string | subst)*
 ;; resource  ::= "<" target [":" name [";" args]] ">"
 ;; target    ::= alphas
 ;; name      ::= alphas
-;; args      ::= ((!","|">")* ",")* (!","|">")
-;;
+;; args      ::= arg*
+;; arg       ::= subst | ((!">"|",")*)
+;; subst     ::= "{" (!"}")* "}"
 
 (defvar *args* ())
 (define-matcher letters (or (in #\a #\z) (in #\A #\Z)))
@@ -47,7 +46,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (flet ((transform (a)
            (etypecase a
              ((or string fixnum null) a)
-             ((or placeholder resource) (make-load-form a)))))
+             (placeholder (make-load-form a)))))
     `(make-instance 'pattern :domains (list ,@(mapcar #'transform (domains pattern)))
                              :port ',(transform (port pattern))
                              :path ,(if (listp (path pattern))
@@ -63,42 +62,73 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (print-object (resolve pattern) stream))
   pattern)
 
+(set-dispatch-macro-character #\# #\? #'(lambda (stream char arg)
+                                          (declare (ignore char arg))
+                                          (parse-pattern (read stream))))
+
+(defun parse-pattern (string)
+  (with-lexer-environment (string)
+    (read-pattern)))
+
+(defun read-pattern ()
+  (or (read-resource)
+      (let ((domains (read-domains))
+            (port (read-port))
+            (path (read-path)))
+        (make-instance
+         'pattern :domains domains :port port :path path :matcher NIL))))
+
+(defun read-domains ()
+  (loop with domains = ()
+        while (funcall (make-matcher (or (any #\. #\< #\{) :alpha)))
+        do (when (char= (peek) #\.) (advance))
+           (push (read-subdomain) domains)
+        finally (return domains)))
+
+(defun read-subdomain ()
+  (or (read-substitute)
+      (consume-until (make-matcher (not :alpha)))))
+
+(defun read-port ()
+  (when (char= (or (peek) #\ ) #\:)
+    (advance) ;; skip beginning :
+    (or (read-substitute)
+        (consume-until (make-matcher (not :number))))))
+
+(defun read-path ()
+  (when (or (char= (or (peek) #\ ) #\/)
+            (error "Path / expected."))
+    (advance) ;; skip beginning /
+    (loop for peek = (peek)
+          while peek
+          collect (case peek
+                    (#\{ (read-substitute))
+                    (T (consume-until (make-matcher (is #\{))))))))
+
 (defclass resource ()
   ((target :initarg :target :initform (error "TARGET required.") :accessor target)
    (name :initarg :name :initform :domain :accessor name)
    (args :initarg :args :initform () :accessor args)))
 
 (defmethod resolve ((resource resource) &rest args)
-  (declare (ignore args))
-  (apply #'resource (name resource) (target resource) (args resource)))
+  (let ((*args* (or args *args*)))
+    (apply #'resource (name resource) (target resource) (mapcar #'resolve (args resource)))))
 
 (defmethod make-load-form ((resource resource) &optional env)
   (declare (ignore env))
-  `(make-instance 'resource :target ,(target resource)
-                            :name ,(name resource)
-                            :args ',(args resource)))
+  (flet ((transform (thing)
+           (etypecase thing
+             ((or string fixnum null) thing)
+             (placeholder (make-load-form thing)))))
+    `(make-instance 'resource :target ,(target resource)
+                              :name ,(name resource)
+                              :args (list ,@(mapcar #'transform (args resource))))))
 
 (defmethod print-object ((resource resource) stream)
   (if *print-readably*
       (print (make-load-form resource) stream)
       (format stream "<~a:~a~@[;~{~a~^,~}~]>"
               (target resource) (name resource) (args resource))))
-
-(defun read-resource-target ()
-  (string-upcase (consume-until (make-matcher (any #\> #\:)))))
-
-(defun read-resource-name ()
-  (when (char= (peek) #\:)
-    (advance)
-    (consume-until (make-matcher (any #\> #\;)))))
-
-(defun read-resource-args ()
-  (when (char= (peek) #\;)
-    (advance)
-    (loop for peek = (peek)
-          until (or (not peek) (char= peek #\>))
-          do (when (char= peek #\,) (advance))
-          collect (consume-until (make-matcher (any #\> #\,))))))
 
 (defun read-resource ()
   (when (char= (or (peek) #\ ) #\<)
@@ -110,6 +140,23 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (unless (module-p module)
         (warn "No module or interface ~a known, but used as resource identifier in URI." module))
       (make-instance 'resource :target module :name (or* name :domain) :args args))))
+
+(defun read-resource-name ()
+  (when (char= (peek) #\:)
+    (advance)
+    (consume-until (make-matcher (any #\> #\;)))))
+
+(defun read-resource-target ()
+  (string-upcase (consume-until (make-matcher (any #\> #\:)))))
+
+(defun read-resource-args ()
+  (when (char= (peek) #\;)
+    (advance)
+    (loop for peek = (peek)
+          until (or (not peek) (char= peek #\>))
+          do (when (char= peek #\,) (advance))
+          collect (or (read-substitute)
+                      (consume-until (make-matcher (any #\> #\,)))))))
 
 (defclass placeholder ()
   ((var :initarg :var :initform (error "VAR required.") :accessor var)))
@@ -139,50 +186,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
       (advance) ;; skip closing }
       (make-instance 'placeholder :var keyword))))
 
-(defun read-mixed ()
-  (loop for peek = (peek)
-        while peek
-        collect (case peek
-                  (#\{ (read-substitute))
-                  (T (consume-until (make-matcher (is #\{)))))))
 
-(defun read-path ()
-  (when (or (char= (or (peek) #\ ) #\/)
-            (error "Path / expected."))
-    (advance) ;; skip beginning /
-    (or (read-resource)
-        (read-mixed))))
 
-(defun read-port ()
-  (when (char= (or (peek) #\ ) #\:)
-    (advance) ;; skip beginning :
-    (or (read-substitute)
-        (read-resource)
-        (consume-until (make-matcher (not :number))))))
 
-(defun read-subdomain ()
-  (or (read-substitute)
-      (read-resource)
-      (consume-until (make-matcher (not :alpha)))))
 
-(defun read-domains ()
-  (loop with domains = ()
-        while (funcall (make-matcher (or (any #\. #\< #\{) :alpha)))
-        do (when (char= (peek) #\.) (advance))
-           (push (read-subdomain) domains)
-        finally (return domains)))
-
-(defun read-pattern ()
-  (let ((domains (read-domains))
-        (port (read-port))
-        (path (read-path)))
-    (make-instance
-     'pattern :domains domains :port port :path path :matcher NIL)))
-
-(defun parse-pattern (string)
-  (with-lexer-environment (string)
-    (read-pattern)))
-
-(set-dispatch-macro-character #\# #\? #'(lambda (stream char arg)
-                                          (declare (ignore char arg))
-                                          (parse-pattern (read stream))))
