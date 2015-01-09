@@ -11,37 +11,62 @@
                                   (make-package '#:radiance.resource-locators
                                                 :use () :nicknames '(#:org.shirakumo.radiance.core.resource.locators)))))
 
-(defmacro define-resource-locator (type (module &rest args) &body body)
+(defun resource-type (type)
+  (or (find-symbol (string-upcase type) *resource-locators*)
+      (error "Unknown resource type ~s" type)))
+
+(define-condition implicit-resource-type-warning (style-warning)
+  ((name :initarg :name :initform (error "NAME required.") :accessor name))
+  (:report (lambda (c s) (format s "Implicitly creating new resource type ~a" (name c)))))
+
+(defmacro define-resource-type (type args &body options)
+  (assert (symbolp type) () "NAME must be a symbol.")
+  ;; Convenience syntax for LOCATOR option.
+  (loop for option in options
+        when (eql (first option) :locator)
+        do (setf (first option) :method)
+           (setf (third option) (list* (second option) (third option)))
+           (setf (cdr option) (cddr option)))
+  ;;
+  (let ((type (intern (string-upcase type) *resource-locators*)))
+    `(defgeneric ,type (,(gensym "MODULE") ,@args)
+       ,@options)))
+
+(defun remove-resource-type (type)
+  (let ((type (resource-type type)))
+    (fmakunbound type)
+    (unintern type *resource-locators*)))
+
+(defmacro define-resource-locator (type module args &body body)
   (assert (symbolp type) () "NAME must be a symbol.")
   (let ((type (intern (string-upcase type) *resource-locators*)))
     `(progn
        ,@(unless (fboundp type)
-           `((defgeneric ,type ,(flatten-method-lambda-list (cons module args)))))
+           (warn 'implicit-resource-type-warning :name type)
+           `((define-resource-type ,type ,(flatten-method-lambda-list args))))
        (defmethod ,type (,module ,@args)
          ,@body))))
 
+(declaim (inline resource))
 (defun resource (type module &rest args)
-  (let ((module (module module)))
-    (apply (or (find-symbol (string-upcase type) *resource-locators*)
-               (error "Unknown resource type ~s" type))
-           (if (interface-p module)
-               (or (implementation module)
-                   (error "Interface ~s has no implementation. Cannot resolve resource ~s." module type))
-               module)
-           args)))
+  (apply (resource-type type) (module module) args))
 
-(define-resource-locator domain (module)
-  (make-uri :domains (list (domain module))))
+(define-resource-type domain ()
+  (:locator module ()
+    (make-uri :domains (list (domain module)))))
 
-(define-resource-locator api (module page &rest args)
-  (make-uri :path (format NIL "/api/~a/~a?~{~a=~a~^&~}"
-                          (module-name module) page args)))
+(define-resource-type api (page &rest args)
+  (:locator module (page &rest args)
+    (make-uri :path (format NIL "/api/~a/~a?~{~a=~a~^&~}"
+                            (module-name module) page args))))
 
-(define-resource-locator static (module resource)
-  (make-uri :path (format NIL "/static/~a/~a"
-                          (module-name module) resource)))
+(define-resource-type static (resource)
+  (:locator module (resource)
+    (make-uri :path (format NIL "/static/~a/~a"
+                            (module-name module) resource))))
 
-(define-resource-locator page (module name &rest args)
-  (declare (ignore args))
-  (or (uri-dispatcher (find-symbol (string-upcase name) module))
-      (error "No page with name ~s found on ~s" name module)))
+(define-resource-type page (name &rest args)
+  (:locator module (name &rest args)
+    (declare (ignore args))
+    (or (uri-dispatcher (find-symbol (string-upcase name) module))
+        (error "No page with name ~s found on ~s" name module))))

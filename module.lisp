@@ -232,6 +232,9 @@
    #:request)
   ;; resource.lisp
   (:export
+   #:implicit-resource-type-warning
+   #:define-resource-type
+   #:remove-resource-type
    #:define-resource-locator
    #:resource)
   ;; routing.lisp
