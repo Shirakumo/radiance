@@ -21,6 +21,7 @@
 
 ;; To be specced
 (define-interface admin
+  (define-resource-locator page (name &rest args))
   (defun panel (category name))
   (defun (setf panel) (function category name))
   (defun remove-panel (category name))
@@ -35,6 +36,7 @@
 
 ;; To be specced
 (define-interface auth
+  (define-resource-locator page (name &rest args))
   (defun current (&optional (session *session*)))
   (defun associate (user &optional (session *session*)))
   (defun login! (&optional (landing-page (referer *request*))))
@@ -80,6 +82,7 @@
 
 ;; To be specced
 (define-interface profile
+  (define-resource-locator user (user &optional tab))
   (defun avatar (user size))
   (defun name (user))
   (defun page (user &optional (category :profile)))
