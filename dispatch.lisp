@@ -13,7 +13,7 @@
                                    ((boundp '*response*)
                                     (serve-file (data-file "html/error/404.html") "application/xhtml+xml"))
                                    ((boundp '*request*)
-                                    (error 'request-not-found :request *request* :message "Reached dispatch fallback."))
+                                    (error 'request-not-found :message "Reached dispatch fallback."))
                                    (T
                                     (error 'request-not-found :request NIL :message "Reached dispatch fallback.")))))
 
