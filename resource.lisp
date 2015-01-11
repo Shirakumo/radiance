@@ -22,15 +22,14 @@
 (defmacro define-resource-type (type args &body options)
   (assert (symbolp type) () "NAME must be a symbol.")
   ;; Convenience syntax for LOCATOR option.
-  (loop for option in options
-        when (eql (first option) :locator)
-        do (setf (first option) :method)
-           (setf (third option) (list* (second option) (third option)))
-           (setf (cdr option) (cddr option)))
-  ;;
-  (let ((type (intern (string-upcase type) *resource-locators*)))
-    `(defgeneric ,type (,(gensym "MODULE") ,@args)
-       ,@options)))
+  (let ((options (loop for option in options
+                       when (eql (first option) :locator)
+                       collect `(:method ,(list* (second option) (third option)) ,@(cdddr option)))))
+    (let ((type (intern (string-upcase type) *resource-locators*)))
+      `(defgeneric ,type (,(gensym "MODULE") ,@args)
+         ,@options))))
+
+(trivial-indent:define-indentation define-resource-type (4 4 &rest (&whole 2 0 4 &body)))
 
 (defun remove-resource-type (type)
   (let ((type (resource-type type)))
