@@ -82,6 +82,7 @@
 
 ;; To be specced
 (define-interface profile
+  (define-resource-type user (user &optional tab))
   (define-resource-locator user (user &optional tab))
   (defun avatar (user size))
   (defun name (user))
