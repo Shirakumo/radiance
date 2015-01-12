@@ -6,8 +6,14 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
+(defclass uri-dispatcher (uri)
+  ((name :initarg :name :initform (error "NAME required.") :accessor name)
+   (dispatch-function :initarg :dispatch-function :initform (error "DISPATCH-FUNCTION required.") :accessor dispatch-function)
+   (priority :initarg :priority :initform NIL :accessor priority)))
+(declaim (ftype (function (uri-dispatcher) function) dispatch-function))
+
 (defvar *uri-registry* (make-hash-table :test 'eql))
-(defvar *uri-priority* (make-array 0))
+(defvar *uri-priority* (make-array 0 :element-type 'uri-dispatcher))
 (defparameter *uri-fallback* #'(lambda ()
                                  (cond
                                    ((boundp '*response*)
@@ -16,11 +22,8 @@
                                     (error 'request-not-found :message "Reached dispatch fallback."))
                                    (T
                                     (error 'request-not-found :request NIL :message "Reached dispatch fallback.")))))
-
-(defclass uri-dispatcher (uri)
-  ((name :initarg :name :initform (error "NAME required.") :accessor name)
-   (dispatch-function :initarg :dispatch-function :initform (error "DISPATCH-FUNCTION required.") :accessor dispatch-function)
-   (priority :initarg :priority :initform NIL :accessor priority)))
+(declaim (function *uri-fallback*))
+(declaim ((simple-array uri-dispatcher 1) *uri-priority*))
 
 (defun make-uri-dispatcher (name uri dispatch-function &optional priority)
   (let ((uri (copy-uri uri)))
@@ -54,10 +57,10 @@
 
 (defun rebuild-uri-priority ()
   (setf *uri-priority*
-        (sort (loop with array = (make-array (hash-table-count *uri-registry*))
-                    for uri being the hash-values of *uri-registry*
-                    for i from 0 do (setf (aref array i) uri)
-                    finally (return array))
+        (sort (make-array (hash-table-count *uri-registry*)
+                          :element-type 'uri-dispatcher
+                          :initial-contents (loop for uri being the hash-values of *uri-registry*
+                                                  collect uri))
               #'(lambda (a b)
                   (or (and (priority a)
                            (or (not (priority b))
@@ -72,7 +75,8 @@
                ,@body))))
 
 (defun dispatch (uri)
+  (declare (optimize (speed 3)))
   (loop for dispatcher across *uri-priority*
         when (uri-matches uri dispatcher)
-          do (return (funcall (dispatch-function dispatcher)))
+        do (return (funcall (dispatch-function dispatcher)))
         finally (return (funcall *uri-fallback*))))

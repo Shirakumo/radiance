@@ -11,6 +11,8 @@
    (port :initarg :port :initform NIL :accessor port)
    (path :initarg :path :initform NIL :accessor path)
    (matcher :initarg :matcher :initform NIL :accessor matcher)))
+(declaim (ftype (function (T) (integer 0 65535)) port))
+(declaim (ftype (function ((integer 0 65535) T) T) (setf port)))
 
 (defmethod initialize-instance :after ((uri uri) &key)
   (when (eql (matcher uri) T)
@@ -42,8 +44,12 @@
 
 (defvar *uri-regex* (cl-ppcre:create-scanner "^(([a-z0-9\\-]+\\.)*[a-z0-9\\-]+)?(:(\\d{1,5}))?/(.*)" :case-insensitive-mode T))
 (defun parse-uri (uri-string)
+  (declare (string uri-string))
+  (declare (optimize (speed 3)))
   (or (cl-ppcre:register-groups-bind (domains NIL NIL port path) (*uri-regex* uri-string)
-        (make-uri :domains (when domains (nreverse (cl-ppcre:split "\\." (string-downcase domains)))) :port (when port (parse-integer port)) :path path))
+        (make-uri :domains (when domains (nreverse (cl-ppcre:split "\\." (string-downcase domains))))
+                  :port (when port (parse-integer port))
+                  :path path))
       (error "Failed to parse URI.")))
 
 (defun read-uri (stream char arg)
@@ -72,6 +78,8 @@
 
 (defvar *default-uri-defaults* (parse-uri "/"))
 (defun uri-matches (uri pattern-uri)
+  (declare (uri uri) (uri pattern-uri))
+  (declare (optimize (speed 3)))
   (unless (matcher pattern-uri)
     (setf (matcher pattern-uri) (cl-ppcre:create-scanner (or (path pattern-uri) ""))))
   (and (or (not (port pattern-uri))

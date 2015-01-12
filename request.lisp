@@ -128,6 +128,7 @@
 
 (define-hook request (request response))
 (defun execute-request (request &optional (response (make-instance 'response)))
+  (declare (optimize (speed 3)))
   (handler-bind ((error #'handle-condition))
     (let ((*request* request)
           (*response* response)
@@ -150,6 +151,7 @@
       *response*)))
 
 (defun ensure-request-hash-table (thing)
+  (declare (optimize (speed 3)))
   (etypecase thing
     (null
      (make-hash-table :test 'equalp))
@@ -174,6 +176,7 @@
        table))))
 
 (defun request (to-uri &key (representation :internal) (http-method :GET) headers post get cookies (remote "unknown") (response (make-instance 'response)))
+  (declare (optimize (speed 3)))
   ;; KLUDGE!
   ;; This should be handled nicer somehow, but
   ;; we currently have to do it like this as we
