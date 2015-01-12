@@ -79,6 +79,12 @@
 (defun data-file (pathname &optional (default *data-path*))
   (merge-pathnames pathname default))
 
+(define-compiler-macro data-file (&whole whole &environment env pathname &optional (default *data-path* d-p))
+  (if (and (constantp pathname env)
+           (or (not d-p) (constantp default env)))
+      `(load-time-value (merge-pathnames ,pathname ,default))
+      whole))
+
 (uc:define-string-deserializer (#\d namestring)
   (data-file (uiop:parse-native-namestring (subseq namestring 1))))
 
