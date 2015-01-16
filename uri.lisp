@@ -11,8 +11,8 @@
    (port :initarg :port :initform NIL :accessor port)
    (path :initarg :path :initform NIL :accessor path)
    (matcher :initarg :matcher :initform NIL :accessor matcher)))
-(declaim (ftype (function (T) (integer 0 65535)) port))
-(declaim (ftype (function ((integer 0 65535) T) T) (setf port)))
+(declaim (ftype (function (T) (or (integer 0 65535) null)) port))
+(declaim (ftype (function ((or (integer 0 65535) null) T) T) (setf port)))
 
 (defmethod initialize-instance :after ((uri uri) &key)
   (when (eql (matcher uri) T)
@@ -89,7 +89,7 @@
        (loop for a in (domains uri)
              for b in (domains pattern-uri)
              always (string-equal a b))
-       (cl-ppcre:scan (matcher pattern-uri) (or (path uri) ""))))
+       (not (null (cl-ppcre:scan (matcher pattern-uri) (or (path uri) ""))))))
 
 (defun merge-uris (uri &optional (defaults *default-uri-defaults*))
   (make-uri
