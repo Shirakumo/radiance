@@ -41,7 +41,6 @@
                :universal-config
                :trivial-indent
                :cl-ppcre
-               :bordeaux-threads
                :trivial-mimes
                :local-time
                :lambda-fiddle
