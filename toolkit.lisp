@@ -6,12 +6,16 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defvar *config* (make-hash-table :test 'eql))
-(defvar *config-type* :lisp)
-(defvar *root* (asdf:system-source-directory :radiance))
-(defvar *config-path* (merge-pathnames (make-pathname :name "radiance.uc" :type "lisp") *root*))
-(defvar *data-path* (merge-pathnames (make-pathname :directory '(:relative "data")) *root*))
-(defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789")
+;; CCL does some weird shit with compiler macros
+;; So in order to make the DATA-FILE macro work we
+;; need to have *DATA-PATH* at compile time.
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defvar *config* (make-hash-table :test 'eql))
+  (defvar *config-type* :lisp)
+  (defvar *root* (asdf:system-source-directory :radiance))
+  (defvar *config-path* (merge-pathnames (make-pathname :name "radiance.uc" :type "lisp") *root*))
+  (defvar *data-path* (merge-pathnames (make-pathname :directory '(:relative "data")) *root*))
+  (defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789"))
 (defconstant +unix-epoch-difference+ (encode-universal-time 0 0 0 1 1 1970 0))
 
 (defun load-config (&optional (path *config-path*))
