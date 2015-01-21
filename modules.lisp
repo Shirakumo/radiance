@@ -72,9 +72,9 @@
         (format stream "~@:_Implements: ~<~;~:[Nothing~;~:*~{~s~^, ~:_~}~]~;~:>"
                 (list (implements module)))
         (format stream "~@:_Claimed Pages: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
-                (list (mapcar #'uri-dispatcher (module-storage :purplish 'radiance-pages))))
+                (list (mapcar #'uri-dispatcher (module-storage module 'radiance-pages))))
         (format stream "~@:_API Endpoints: ~<~;~:[None~;~:*~{~(~a~)~^, ~:_~}~]~;~:>"
-                (list (module-storage :purplish 'radiance-apis)))
+                (list (module-storage module 'radiance-apis)))
         (format stream "~@:_Configuration: ~<~;~:[None~;~:*~{~s~^, ~:_~}~]~;~:>"
                 (list (let ((table (config-tree (module-name module))))
                         (when table (loop for name being the hash-keys of table collect name)))))
