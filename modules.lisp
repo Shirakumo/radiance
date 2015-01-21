@@ -64,7 +64,8 @@
 
 (defun describe-module-package (name stream)
   (when (module-p name)
-    (let ((module (module name)))
+    (let ((*print-pretty* T)
+          (module (module name)))
       (pprint-logical-block (stream NIL)
         (format stream "~@:_~a names the radiance module ~a:" name module)
         (pprint-indent :block 2 stream)
@@ -84,7 +85,8 @@
 
 (defun describe-module-system (name stream)
   (when (module-p name)
-    (let ((virtual (virtual-module (module-name name))))
+    (let ((*print-pretty* T)
+          (virtual (virtual-module (module-name name))))
       (when virtual
         (pprint-logical-block (stream NIL)
           (format stream "~@:_~a names the ASDF system ~a:" name virtual)
@@ -108,9 +110,10 @@
           (terpri stream))))))
 
 (defun describe-module (thing &optional (stream *standard-output*))
-  (format stream "~&~a~%  [~a]~%" thing (type-of thing))
-  (describe-module-package thing T)
-  (describe-module-system thing stream))
+  (let ((*print-pretty* T))
+    (format stream "~&~a~%  [~a]~%" thing (type-of thing))
+    (describe-module-package thing T)
+    (describe-module-system thing stream)))
 
 (defun create-module (name &key (base-file name) dependencies)
   (let* ((name (string-downcase name))
