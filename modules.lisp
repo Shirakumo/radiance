@@ -115,11 +115,17 @@
     (describe-module-package thing T)
     (describe-module-system thing stream)))
 
-(defun create-module (name &key (base-file name) dependencies)
+(defun find-modules-directory ()
+  (if (in-quicklisp-p :radiance)
+      (merge-pathnames "radiance/modules/" (or (first ql:*local-project-directories*)
+                                               (error "No local projects directory configured in Quicklisp; Don't know how to find the modules directory.")))
+      (merge-pathnames "modules/" *root*)))
+
+(defvar *modules-directory* (find-modules-directory))
+
+(defun create-module (name &key (base-file name) dependencies (root *modules-directory*))
   (let* ((name (string-downcase name))
-         (base-file (string-downcase base-file))
-         (root (uiop:ensure-directory-pathname
-                (merge-pathnames name (asdf:system-relative-pathname :radiance "modules/")))))
+         (base-file (string-downcase base-file)))
     ;; Create directories
     (ensure-directories-exist root)
     (ensure-directories-exist (merge-pathnames "template/" root))

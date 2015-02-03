@@ -166,3 +166,16 @@ This macro is only usable from within a module context."
   (let ((new (make-hash-table :test test :size size :rehash-size rehash-size :rehash-threshold rehash-threshold)))
     (maphash #'(lambda (k v) (setf (gethash k new) v)) table)
     new))
+
+(defun contained-in (directory file)
+  (and
+   (loop for filedirs = (cdr (pathname-directory (uiop:ensure-absolute-pathname file))) then (cdr filedirs)
+         for diredirs = (cdr (pathname-directory (uiop:ensure-absolute-pathname directory))) then (cdr diredirs)
+         while (and filedirs diredirs)
+         always (equal (car filedirs) (car diredirs))
+         finally (return (null diredirs)))
+   file))
+
+(defun in-quicklisp-p (system)
+  #+:quicklisp (contained-in (merge-pathnames "dists/" ql:*quicklisp-home*) (asdf:system-definition-pathname system))
+  #-:quicklisp NIL)

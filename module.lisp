@@ -151,12 +151,14 @@
    #:define-implement-hook)
   ;; modules.lisp
   (:export
+   #:*modules-directory*
    #:domain
    #:permissions
    #:module-dependencies
    #:module-required-interfaces
    #:module-required-systems
    #:describe-module
+   #:find-modules-directory
    #:create-module)
   ;; options.lisp
   (:export
