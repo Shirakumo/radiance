@@ -63,50 +63,56 @@
 (defun remove-api-page (path)
   (remhash (string path) *api-pages*))
 
+(defun ensure-api-page (thing)
+  (etypecase thing
+    (string (api-page thing))
+    (symbol (api-page (string thing)))
+    (api-page thing)))
+
 (defclass api-page ()
   ((name :initarg :name :initform (error "NAME required.") :accessor name)
-   (handler :initarg :handler :initform (error "HANDLER function required.") :accessor handler)
-   (argslist :initarg :argslist :initform () :accessor argslist)
+   (handler :initarg :handler :initform (error "HANDLER function required.") :reader handler)
+   (argslist :initarg :argslist :reader argslist)
+   (request-handler :initarg :request-handler :initform () :reader request-handler)
    (docstring :initarg :docstring :initform NIL :accessor docstring)))
+
+(defun make-request-calling-function (function &optional (arglist (arg:arglist function)))
+  (let ((request (gensym "REQUEST")))
+    (flet ((parse (arg optional)
+             (cond ((not optional)
+                    `(,arg (or* (post/get ,(string arg) ,request) (error 'api-argument-missing :argument ',arg))))
+                   ((listp arg)
+                    `(,(first arg) (or* (post/get ,(string (first arg)) ,request) ,(second arg))))
+                   (T
+                    `(,arg (or* (post/get ,(string arg) ,request)))))))
+      `(lambda (,request)
+         (let* ,(loop with in-optional = NIL
+                      for arg in arglist
+                      do (when (eql arg '&optional) (setf in-optional T))
+                      unless (eql arg '&optional)
+                      collect (parse arg in-optional))
+           (funcall ,function ,@(extract-lambda-vars arglist)))))))
+
+(defmethod initialize-instance :after ((page api-page) &key)
+  (unless (slot-boundp page 'argslist)
+    (setf (slot-value page 'argslist)
+          (arg:arglist (handler page))))
+  (unless (request-handler page)
+    (setf (slot-value page 'request-handler)
+          (compile NIL (make-request-calling-function (handler page) (argslist page))))))
 
 (defmethod print-object ((api api-page) stream)
   (print-unreadable-object (api stream :type T)
     (format stream "~a ~s" (name api) (argslist api))))
 
-(defun api-call (api-page request)
-  (l:trace :api "API-CALL: ~a ~a" request api-page)
-  (loop with args = ()
-        with in-optional = NIL
-        for arg in (argslist api-page)
-        do (cond
-             ((eql arg '&optional)
-              (setf in-optional T))
-             ((and in-optional (listp arg))
-              (let ((val (post/get (string (first arg)) request)))
-                (push (or val (second arg)) args)))
-             (in-optional
-              (push (post/get (string arg) request) args))
-             (T
-              (let ((val (post/get (string arg) request)))
-                (if val (push val args) (error 'api-argument-missing :argument arg)))))
-        finally (return (apply (handler api-page) (nreverse args)))))
+(defun call-api-request (api-page &optional (request *request*))
+  (let ((*request* request))
+    (funcall (request-handler (ensure-api-page api-page))
+             request)))
 
-(defun make-api-call (api-page &rest arguments)
-  (loop with args = ()
-        with in-optional = NIL
-        for arg in (argslist api-page)
-        do (cond
-             ((eql arg '&optional)
-              (setf in-optional T))
-             ((and in-optional (listp arg))
-              (let ((val (getf arguments (find-symbol (string arg) "KEYWORD"))))
-                (push (or val (second arg)) args)))
-             (in-optional
-              (push (getf arguments (find-symbol (string arg) "KEYWORD")) args))
-             (T
-              (let ((val (getf arguments (find-symbol (string arg) "KEYWORD"))))
-                (if val (push val args) (error 'api-argument-missing :argument arg)))))
-        finally (return (apply (handler api-page) (nreverse args)))))
+(defun call-api (api-page &rest arguments)
+  (apply (handler (ensure-api-page api-page))
+         arguments))
 
 (defmacro define-api (name args options &body body)
   (multiple-value-bind (body forms) (expand-options *api-options* options body name args)
@@ -119,7 +125,7 @@
               'api-page
               :name ,(string name)
               :argslist ',args
-              :handler #'(lambda ,(extract-lambda-vars args) (block ,(when (symbolp name) name) ,@body))
+              :handler #'(lambda ,args (block ,(when (symbolp name) name) ,@body))
               :docstring ,(getf options :documentation))))))
 
 (define-delete-hook (module 'radiance-destroy-apis)
@@ -133,7 +139,7 @@
          (subpath (subseq path (1+ slashpos)))
          (api-page (or (api-page subpath) (api-page ""))))
     (handler-case
-        (api-call api-page *request*)
+        (call-api-request api-page *request*)
       (api-error (err)
         (let ((message (or (message err)
                            (princ-to-string err))))

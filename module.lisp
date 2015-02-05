@@ -62,9 +62,8 @@
 
    #:api-page
    #:remove-api-page
-   #:api-call
-   #:make-api-call
-   #:*api-body*
+   #:call-api-request
+   #:call-api
    #:define-api)
   ;; conditions.lisp
   (:export
