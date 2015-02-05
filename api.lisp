@@ -8,8 +8,7 @@
 
 ;;; Formats
 (defvar *api-formats* (make-hash-table :test 'equalp))
-(defvar *default-api-format* "lisp")
-(defvar *serialize-fallback* #'(lambda (a) a))
+(defvar *default-api-format*)
 
 (defun api-format (name)
   (gethash (string name) *api-formats*))
@@ -36,6 +35,11 @@
                table))))
 
 (defgeneric api-serialize (object))
+
+(defmethod no-applicable-method ((func (eql (symbol-function 'api-serialize))) &rest args)
+  (declare (ignore func))
+  (error "Don't know how to serialize ~s. No applicable API-SERIALIZE method found."
+         (first args)))
 
 ;;; Options
 (defvar *api-options* (make-hash-table))

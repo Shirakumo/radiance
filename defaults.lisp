@@ -47,49 +47,68 @@
     (declare (ignore name))
     (transform-access-body body branch)))
 
+;; Standard serialisations
+(defmethod api-serialize ((error radiance-error))
+  (let ((table (make-hash-table)))
+    (flet ((s (k v) (setf (gethash (string-downcase k) table) v)))
+      (s :error-type (type-of error))
+      (s :message (message error))
+      (when (typep error 'request-error)
+        (s :uri (uri-to-url (uri (current-request error)) :representation :external)))
+      (when (typep error '(or api-argument-missing
+                              api-argument-invalid))
+        (s :argument (argument error)))
+      (when (typep error 'api-unknown-format)
+        (s :format (requested-format error)))
+      (when (typep error 'user-error)
+        (s :format (user error))))
+    table))
+
 ;; Api catchall page
 (define-api "" () (:documentation "API 404")
   (error 'api-call-not-found))
 
-;; Api standard serialise
-(defmethod api-serialize (object)
-  (funcall *serialize-fallback* object))
-
-(defmethod api-serialize ((list list))
-  (mapcar #'api-serialize list))
-
-(defmethod api-serialize ((err error))
-  (list :object :error
-        :type (type-of err)))
-
-(defmethod api-serialize ((err radiance-error))
-  (cons :message (cons (message err) (call-next-method))))
-
-(defmethod api-serialize ((err request-error))
-  (cons :request (cons (current-request err) (call-next-method))))
-
-(defmethod api-serialize ((err api-argument-missing))
-  (cons :argument (cons (argument err) (call-next-method))))
-
-(defmethod api-serialize ((err api-argument-invalid))
-  (cons :argument (cons (argument err) (call-next-method))))
-
-(defmethod api-serialize ((err api-unknown-format))
-  (cons :format (cons (requested-format err) (call-next-method))))
-
 ;; Api standard format
 (define-api-format lisp (object)
-  (setf (content-type *response*) "text/x-sexpr")
-  (let ((*serialize-fallback* #'(lambda (o)
-                                  (typecase o
-                                    (hash-table
-                                     (list :object :table
-                                           :fields (loop for k being the hash-keys of o
-                                                         for v being the hash-values of o
-                                                         collect (cons k v))))
-                                    (T o)))))
-    (write-to-string
-     (api-serialize object))))
+  (when (boundp '*response*)
+    (setf (content-type *response*) "text/x-sexpr"))
+  (with-output-to-string (stream)
+    (macrolet ((w (&rest args)
+                 `(progn ,@(loop for arg in args
+                                 collect (etypecase arg
+                                           (string `(write-string ,arg stream))
+                                           (character `(write-char ,arg stream))
+                                           (list arg))))))
+      (labels ((output (object)
+                 (typecase object
+                   ((or string symbol number)
+                    (write object :stream stream))
+                   (list
+                    (w "("
+                       (when object
+                         (output (first object))
+                         (loop for o in (rest object)
+                               do (w " " (output o))))
+                       ")"))
+                   (vector
+                    (w "#("
+                       (when (< 0 (length object))
+                         (output (aref object 0))
+                         (loop for i from 1 below (length object)
+                               do (w " " (output (aref object i)))))
+                       ")"))
+                   (hash-table
+                    (w "#{"
+                       (loop for i downfrom (hash-table-count object)
+                             for k being the hash-keys of object
+                             for v being the hash-values of object
+                             do (w (output k) ": " (output v))
+                                (unless (= i 1) (w ", ")))
+                       "}"))
+                   (T (output (api-serialize object))))))
+        (output object)))))
+
+(setf *default-api-format* "lisp")
 
 ;; Default urls
 (define-page favicon (#@"/favicon.ico" 10) ()
