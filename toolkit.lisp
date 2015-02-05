@@ -104,13 +104,13 @@
 (defun read-value ()
   (eval (read)))
 
-(defun or* (&rest vals)
-  "Functional equivalent of OR with the twist that empty strings are seen as NIL."
-  (loop for val in vals
-        when (if (stringp val)
-                 (not (string= val ""))
-                 val)
-        do (return val)))
+(defmacro or* (&rest vals)
+  (let ((arg (gensym "ARG")))
+    `(or ,@(loop for val in vals
+                 collect `(let ((,arg ,val))
+                            (if (stringp ,arg)
+                                (unless (string= ,arg "") ,arg)
+                                ,arg))))))
 
 (defun format-universal-time (ut)
   (format NIL "~:@{~4,'0d.~2,'0d.~2,'0d ~2,'0d:~2,'0d:~2,'0d~}"
