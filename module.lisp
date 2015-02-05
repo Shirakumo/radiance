@@ -102,6 +102,7 @@
    #:user
    #:user-not-found
 
+   #:present-error-page
    #:handle-condition)
   ;; convenience.lisp
   (:export
