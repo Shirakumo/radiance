@@ -129,6 +129,7 @@
 (define-hook request (request response))
 (defun execute-request (request &optional (response (make-instance 'response)))
   (declare (optimize (speed 3)))
+  (l:trace :core.request "Executing request: ~s" request)
   (handler-bind ((error #'handle-condition))
     (let ((*request* request)
           (*response* response)
