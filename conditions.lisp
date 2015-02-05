@@ -106,8 +106,12 @@
 
 (defun handle-condition (condition)
   (l:warn :radiance "Handling stray condition: ~a" condition)
-  (if *debugger*
-      (invoke-debugger condition)
+  (restart-case
+      (if *debugger*
+          (invoke-debugger condition)
+          (invoke-restart 'present-error-page))
+    (present-error-page ()
+      :report "Send back an appropriate error page to the client."
       (invoke-restart
        'set-data
        (typecase condition
@@ -119,4 +123,4 @@
           (data-file "html/error/403.html"))
          (T
           (setf (return-code *response*) 500)
-          (data-file "html/error/500.html"))))))
+          (data-file "html/error/500.html")))))))
