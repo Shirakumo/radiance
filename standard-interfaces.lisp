@@ -46,6 +46,7 @@
 (define-interface session
   (defvar *default-timeout* (* 60 60 24 365))
   (defclass session () ())
+  (defun = (session-a session-b))
   (defun start ())
   (defun get (session-id))
   (defun list ())
@@ -61,6 +62,7 @@
 ;; To be specced
 (define-interface user
   (defclass user () ())
+  (defun = (user-a user-b))
   (defun list ())
   (defun get (username &key (if-does-not-exist NIL)))
   (defun username (user))
