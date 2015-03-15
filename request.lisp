@@ -41,7 +41,8 @@
    (cookies :initarg :cookies :initform (make-hash-table :test 'equalp) :accessor cookies)))
 
 (defmethod print-object ((response response) stream)
-  (format stream "~s" (data response))
+  (print-unreadable-object (response stream :type T)
+    (format stream ":DATA ~s" (data response)))
   response)
 
 (defclass cookie ()
@@ -129,7 +130,7 @@
 (define-hook request (request response))
 (defun execute-request (request &optional (response (make-instance 'response)))
   (declare (optimize (speed 3)))
-  (l:trace :core.request "Executing request: ~s" request)
+  (l:trace :core.request "Executing request: ~s ~s" request response)
   (handler-bind ((error #'handle-condition))
     (let ((*request* request)
           (*response* response)
