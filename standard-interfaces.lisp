@@ -144,6 +144,7 @@
   (defield data-model)
   (defun id (data-model))
   (defun collection (data-model))
+  (defun fields (data-model))
   (defun field (data-model field))
   (defun (setf field) (value data-model field))
   (defun get (collection query &key (skip 0) (amount 0) sort))
