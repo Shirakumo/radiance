@@ -121,7 +121,10 @@
 
 (defun redirect (new-address &optional (code 307) (response *response*))
   (setf (return-code response) code)
-  (setf (header "Location" response) new-address))
+  (setf (header "Location" response)
+        (etypecase new-address
+          (string new-address)
+          (uri (uri-to-url new-address :representation :external)))))
 
 (defun serve-file (pathname &optional content-type (response *response*))
   (setf (content-type response) (or content-type (mimes:mime-lookup pathname) "application/octet-stream"))
