@@ -35,9 +35,18 @@
         (find-implementation (first args))))
     (error "Radiance cannot support this version of ASDF. Sorry!"))
 
-(defmethod asdf:operate :after ((op asdf:load-op) (module module) &key)
+(defmacro future (package-designator symbol-name &rest args)
+  (let ((symbol (gensym "SYMBOL")))
+    `(let ((,symbol (find-symbol ,(string symbol-name) ,(string package-designator))))
+       (when ,symbol
+         (when (interface-p ,(string package-designator))
+           (load-implementation ,(string package-designator)))
+         (funcall ,symbol ,@args)))))
+
+(defmethod asdf:perform :after ((op asdf:load-op) (module module))
   (loop for interface in (module-storage (module (virtual-module-name module)) :implements)
-        do (trigger (find-symbol "IMPLEMENTED" (interface interface)))))
+        do (trigger (find-symbol "IMPLEMENTED" (interface interface)))
+           (future l debug :interfaces "~a now implemented by ~a" (module-name interface) (module-name (virtual-module-name module)))))
 
 (defun find-implementation (interface &optional (system T))
   (unless (config-tree :interfaces)
@@ -65,12 +74,12 @@
         (*compile-print* nil))
     (handler-bind ((warning #'(lambda (warn) (muffle-warning warn))))
       (let* ((interface (interface interface)))
-        #+:quicklisp
-        (ql:quickload (find-implementation interface NIL))
-        #-quicklisp
         (let ((implementation (find-implementation interface)))
           (unless (asdf:component-loaded-p implementation)
-            (asdf:load-system implementation)))))))
+            #-quicklisp
+            (asdf:load-system implementation)
+            #+:quicklisp
+            (ql:quickload (find-implementation interface NIL))))))))
 
 (defmacro define-implement-hook (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (if (listp interface) interface (list interface))
