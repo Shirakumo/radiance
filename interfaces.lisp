@@ -6,7 +6,7 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-;; Subclass so we can have another AFTER method on ASDF:OPERATE
+;; Subclass so we can have another AFTER method on ASDF:PERFORM
 (defclass module (modularize:module) ())
 ;; Redefine function too since we shadowed that binding
 (defun module (&optional module)
