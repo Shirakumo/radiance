@@ -36,6 +36,7 @@
 
 ;; To be specced
 (define-interface auth
+  (defvar *login-timeout* (* 60 60 24 365))
   (define-resource-locator page (name &rest args))
   (defun current (&optional (session *session*)))
   (defun associate (user &optional (session *session*)))
@@ -44,7 +45,7 @@
 
 ;; To be specced
 (define-interface session
-  (defvar *default-timeout* (* 60 60 24 365))
+  (defvar *default-timeout* (* 60 60 24))
   (defclass session () ())
   (defun = (session-a session-b))
   (defun start ())
