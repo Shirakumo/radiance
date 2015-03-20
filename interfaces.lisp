@@ -74,12 +74,14 @@
         (*compile-print* nil))
     (handler-bind ((warning #'(lambda (warn) (muffle-warning warn))))
       (let* ((interface (interface interface)))
-        (let ((implementation (find-implementation interface)))
-          (unless (asdf:component-loaded-p implementation)
+        (let ((implementation (find-implementation interface NIL)))
+          (unless (and (asdf:find-system implementation NIL)
+                       (asdf:component-loaded-p
+                        (asdf:find-system implementation)))
             #-quicklisp
             (asdf:load-system implementation)
             #+:quicklisp
-            (ql:quickload (find-implementation interface NIL))))))))
+            (ql:quickload implementation)))))))
 
 (defmacro define-implement-hook (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (if (listp interface) interface (list interface))
