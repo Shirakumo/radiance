@@ -55,6 +55,17 @@
          (configured-implementation (config-tree :interfaces (make-keyword (module-name interface)))))
     (unless configured-implementation
       (error 'interface-implementation-not-set :requested interface))
+    ;; If quicklisp is available, the system might be loadable, but
+    ;; may not have been installed yet. Check for this and install if
+    ;; necessary.
+    #+quicklisp
+    (when (and system
+               (not (asdf:find-system configured-implementation NIL)))
+      (let ((ql-system (ql-dist:find-system configured-implementation)))
+        (unless (ql-dist:installedp ql-system)
+          (format T "~&Chaining Quicklisp to install interface ~a implementation ~a.~%"
+                  (module-name interface) configured-implementation)
+          (ql-dist:install ql-system))))
     (if system
         (asdf:find-system configured-implementation T)
         configured-implementation)))
