@@ -108,6 +108,7 @@
   (:export
    #:with-model
    #:with-model-fields
+   #:with-model-save
    #:do-models
    #:with-actions
    #:external-pattern)

@@ -6,6 +6,16 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
+(defun ensure-query-form (form)
+  (cond ((eql form :all)
+         `(db:query ,form))
+        ((not (listp form)) form)
+        ((eql (first form) 'db:query)
+         form)
+        ((keywordp (first form))
+         `(db:query ,form))
+        (T form)))
+
 (defmacro with-model-fields (object fields &body body)
   (let ((model (gensym "MODEL")))
     `(let ((,model ,object))
@@ -18,7 +28,7 @@
 
 (defmacro with-model (modelvar (collection query &rest fields) &body body)
   `(let ((,modelvar ,(if query
-                         `(dm:get-one ,collection ,query)
+                         `(dm:get-one ,collection ,(ensure-query-form query))
                          `(dm:hull ,collection))))
      (declare (ignorable ,modelvar))
      ,@(if fields
@@ -26,8 +36,17 @@
                ,@body))
            body)))
 
+(defmacro with-model-save (modelvar (collection queryform) fields &body body)
+  `(with-model ,modelvar (,collection ,queryform ,@fields)
+     (prog1
+         (progn
+           ,@body)
+       ,(if queryform
+            `(dm:save ,modelvar)
+            `(dm:insert ,modelvar)))))
+
 (defmacro do-models (modelvar (collection query &rest fields) &body body)
-  `(dolist (,modelvar (dm:get ,collection ,query))
+  `(dolist (,modelvar (dm:get ,collection ,(ensure-query-form query)))
      (with-model-fields ,modelvar ,fields
        ,@body)))
 
