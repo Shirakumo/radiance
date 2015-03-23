@@ -184,4 +184,7 @@
   (when (and (boundp '*request*)
              (field *request* 'virtual-module))
     (setf (path uri) (concatenate 'string "!/" (field *request* 'virtual-module) "/" (path uri))
-          (domains uri) (butlast (domains uri)))))
+          (domains uri) (if (string-equal (field *request* 'virtual-module)
+                                          (car (last (domains uri))))
+                            (butlast (domains uri))
+                            (domains uri)))))
