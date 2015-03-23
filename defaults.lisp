@@ -155,7 +155,7 @@
                   (setf (domains uri) subdomains)
                   T))))
 
-(define-route externalizer (:reversal most-positive-fixnum) (uri)
+(define-route externalizer (:reversal most-negative-fixnum) (uri)
   (cond
     ((boundp '*request*)
      (push (domain *request*) (domains uri))
@@ -180,11 +180,20 @@
         (setf (path uri) path)
         (setf (domains uri) (append (domains uri) (list module)))))))
 
-(define-route virtual-module (:reversal 100000) (uri)
-  (when (and (boundp '*request*)
-             (field *request* 'virtual-module))
-    (setf (path uri) (concatenate 'string "!/" (field *request* 'virtual-module) "/" (path uri))
-          (domains uri) (if (string-equal (field *request* 'virtual-module)
-                                          (car (last (domains uri))))
-                            (butlast (domains uri))
-                            (domains uri)))))
+(define-route virtual-module (:reversal -100000) (uri)
+  (when (boundp '*request*)
+    (let ((virtual (field *request* 'virtual-module))
+          (last (car (last (domains uri)))))
+      (when virtual
+        ;; Check if we are operating on the requested virtual domain
+        (cond ((string-equal virtual last)
+               (setf (path uri) (concatenate 'string "!/" virtual "/" (path uri))
+                     (domains uri) (butlast (domains uri))))
+              (last
+               ;; Otherwise we need to use the specified subdomain as virtual
+               ;; since we're trying to cross-reference a resource.
+               (setf (path uri) (concatenate 'string "!/" last "/" (path uri))
+                     (domains uri) (butlast (domains uri))))
+              (T
+               ;; Static resource refer, no change.
+               ))))))
