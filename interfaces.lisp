@@ -62,7 +62,7 @@
     (when (and system
                (not (asdf:find-system configured-implementation NIL)))
       (let ((ql-system (ql-dist:find-system configured-implementation)))
-        (unless (ql-dist:installedp ql-system)
+        (when (and ql-system (not (ql-dist:installedp ql-system)))
           (format T "~&Chaining Quicklisp to install interface ~a implementation ~a.~%"
                   (module-name interface) configured-implementation)
           (ql-dist:install ql-system))))
