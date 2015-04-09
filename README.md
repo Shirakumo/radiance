@@ -11,7 +11,7 @@ Radiance and associated modules and applications are distributed via Quicklisp i
     (ql-dist:install-dist "http://dist.tymoon.eu/shirakumo.txt")
     (ql:quickload :radiance)
 
-From there on out you should be able to load and use any kind of Radiance module directly via Quicklisp's `quickload`.
+From there on out you should be able to load and use any kind of Radiance module directly via Quicklisp's `quickload`. You will most likely want to set up a virtual host on your machine to test and develop Radiance, in order to circumvent the issue of blocked cookies on `localhost`. To do this, add an entry like `127.0.0.1 radiance.test` to your `hosts` file. Radiance is by default set up to recognise `radiance.test` as a server host.
 
 Using It
 --------
