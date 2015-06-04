@@ -67,3 +67,6 @@
 
 (defun uptime ()
   (- (get-universal-time) *startup-time*))
+
+(defun started-p ()
+  *running*)

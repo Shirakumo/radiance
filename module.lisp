@@ -142,7 +142,8 @@
    #:startup
    #:startup-done
    #:shutdown
-   #:shutdown-done)
+   #:shutdown-done
+   #:started-p)
   ;; interfaces.lisp
   (:export
    #:define-interface
