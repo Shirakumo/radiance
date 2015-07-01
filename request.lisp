@@ -153,7 +153,7 @@
           (if (typep data 'response)
               (setf *response* data)
               (setf (data *response*) data))))
-      *response*)))
+      (values *response* *request*))))
 
 (defun ensure-request-hash-table (thing)
   (declare (optimize (speed 3)))
