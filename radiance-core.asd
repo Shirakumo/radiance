@@ -44,4 +44,5 @@
                :trivial-mimes
                :local-time
                :lambda-fiddle
-               :plump-lexer))
+               :plump-lexer
+               :bordeaux-threads))
