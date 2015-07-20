@@ -25,7 +25,8 @@
    (cookies :initarg :cookies :initform (make-hash-table :test 'equalp) :accessor cookies)
    (domain :initarg :domain :initform "localhost" :accessor domain)
    (remote :initarg :remote :initform "unknown" :accessor remote)
-   (data :initarg :data :initform (make-hash-table :test 'eql) :accessor data)))
+   (data :initarg :data :initform (make-hash-table :test 'eql) :accessor data)
+   (issue-time :initarg :issue-time :initform (get-universal-time) :accessor issue-time)))
 
 (defmethod print-object ((request request) stream)
   (print-unreadable-object (request stream :type T)
@@ -205,3 +206,19 @@
     (execute-request
      *request*
      response)))
+
+(defun request-run-time (&optional (request *request*))
+  (- (get-universal-time)
+     (issue-time request)))
+
+(defun thread-run-time (thread)
+  (unless (eql (bt:current-thread) thread)
+    (let ((time NIL))
+      (bt:interrupt-thread thread (lambda ()
+                                    (if (boundp '*request*)
+                                        (setf time (request-run-time))
+                                        (setf time :unknown))))
+      (loop for i from 0.001 below 1 by 0.1
+            until time
+            do (sleep i))
+      time)))

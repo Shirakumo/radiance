@@ -204,6 +204,7 @@
    #:domain
    #:remote
    #:data
+   #:issue-time
    
    #:response
    #:data
@@ -233,7 +234,10 @@
    #:serve-file
    #:execute-request
    #:set-data
-   #:request)
+   #:request
+
+   #:request-run-time
+   #:thread-run-time)
   ;; resource.lisp
   (:export
    #:implicit-resource-type-warning
