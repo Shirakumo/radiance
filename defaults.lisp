@@ -111,19 +111,22 @@
 (setf *default-api-format* "lisp")
 
 ;; Default urls
-(define-page favicon (#@"/favicon.ico" 10) ()
+(define-page favicon (#@"/^favicon.ico$" 10) ()
   (serve-file (data-file "static/favicon.ico")))
 
-(define-page robots (#@"/robots.txt" 10) ()
+(define-page robots (#@"/^robots.txt$" 10) ()
   (serve-file (data-file "static/robots.txt")))
 
-(define-page static (#@"/static/.*" 1000) ()
+(define-page static (#@"/^static/.*" 1000) ()
   (let* ((path (path (uri *request*)))
-         (slashpos (position #\/ path :start (length "static/"))))
-    (if slashpos
-        (serve-file (static-file (subseq path (1+ slashpos))
-                                 (string-upcase (subseq path (length "static/") slashpos))))
-        (serve-file (merge-pathnames (subseq path (length "static/")) (data-file "static/"))))))
+         (slashpos (position #\/ path :start (length "static/")))
+         (file (if slashpos
+                   (ignore-errors
+                    (static-file (subseq path (1+ slashpos)) (string-upcase (subseq path (length "static/") slashpos))))
+                   (merge-pathnames (subseq path (length "static/")) (data-file "static/")))))
+    (if (and file (uiop:file-exists-p file))
+        (serve-file file)
+        (error 'request-not-found))))
 
 (define-page welcome #@"/^$" ()
   (serve-file (data-file "html/hello.html")))
