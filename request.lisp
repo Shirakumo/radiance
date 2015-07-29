@@ -43,7 +43,7 @@
 
 (defmethod print-object ((response response) stream)
   (print-unreadable-object (response stream :type T)
-    (format stream ":DATA ~s" (data response)))
+    (format stream "~d ~s" (return-code response) (content-type response)))
   response)
 
 (defclass cookie ()
