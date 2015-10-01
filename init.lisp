@@ -18,12 +18,14 @@
 (define-hook shutdown ())
 (define-hook shutdown-done ())
 
-(defun startup ()
+(defun startup (&optional application)
   (when *running*
     (error "Radiance is already running!"))
   
   (setf *startup-time* (get-universal-time))
-  (load-config)
+  (load-config (if application
+                   (asdf:system-relative-pathname application "radiance.uc" :type "lisp")
+                   *config-path*))
   (loop for module in (config-tree :startup)
         do (if (member :quicklisp *features*)
                (funcall (symbol-function (find-symbol "QUICKLOAD" :ql)) module)
