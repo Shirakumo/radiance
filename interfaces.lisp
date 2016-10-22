@@ -102,5 +102,5 @@
          (define-trigger (,hook ,ident) ()
            (let ((*package* ,*package*)) ;; capture package env
              (funcall (compile NIL '(lambda () ,@body)))))
-         ,@(when (implementation interface)
-             `((trigger ',hook)))))))
+         (when (implementation ',interface)
+           (trigger ',hook))))))
