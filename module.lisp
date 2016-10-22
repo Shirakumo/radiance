@@ -274,7 +274,6 @@
    #:*root*
    #:*data-path*
    #:make-keyword
-   #:concatenate-strings
    #:universal-to-unix-time
    #:unix-to-universal-time
    #:get-unix-time

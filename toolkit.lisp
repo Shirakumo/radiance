@@ -20,11 +20,6 @@
     (or (find-symbol name "KEYWORD")
         (intern name "KEYWORD"))))
 
-(declaim (inline concatenate-strings))
-(defun concatenate-strings (list &optional (delim ""))
-  "Joins a list of strings into one string using format."
-  (format nil (format nil "~~{~~A~~^~a~~}" delim) list))
-
 (declaim (inline universal-to-unix-time))
 (defun universal-to-unix-time (universal-time)
   (- universal-time +unix-epoch-difference+))
