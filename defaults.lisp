@@ -134,7 +134,7 @@
 ;; Default routing to cut domains.
 (defvar *domain-internalizers* ())
 
-(defun compile-domain-internalizers (&optional (domains (config-tree :server :domains)))
+(defun compile-domain-internalizers (&optional (domains (mconfig :server :domains)))
   (loop for domain in domains
         collect (let ((parts (nreverse (cl-ppcre:split "\\." domain)))
                       (domain domain))
@@ -166,9 +166,9 @@
        (setf (port uri) (port (uri *request*)))))
     ;; KLUDGE! Find a better way to do this...
     (T
-     (push (first (uc:config-tree :server :domains)) (domains uri))
+     (push (first (mconfig :server :domains)) (domains uri))
      (unless (port uri)
-       (setf (port uri) (uc:config-tree :server :instances 0 :port))))))
+       (setf (port uri) (mconfig :server :instances 0 :port))))))
 
 (define-route virtual-module (:mapping 100000) (uri)
   (when (and (< 1 (length (path uri)))

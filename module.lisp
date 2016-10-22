@@ -104,6 +104,15 @@
 
    #:present-error-page
    #:handle-condition)
+  ;; config.lisp
+  (:export
+   #:environment
+   #:mconfig-pathname
+   #:mconfig-storage
+   #:mconfig
+   #:defaulted-mconfig
+   #:config
+   #:defaulted-config)
   ;; convenience.lisp
   (:export
    #:with-model
@@ -262,13 +271,8 @@
    #:external-uri)
   ;; toolkit.lisp
   (:export
-   #:*config-type*
    #:*root*
-   #:*config-path*
    #:*data-path*
-   #:load-config
-   #:save-config
-   #:config-tree
    #:make-keyword
    #:concatenate-strings
    #:universal-to-unix-time

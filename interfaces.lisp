@@ -49,10 +49,8 @@
            (future l debug :interfaces "~a now implemented by ~a" (module-name interface) (module-name (virtual-module-name module)))))
 
 (defun find-implementation (interface &optional (system T))
-  (unless (config-tree :interfaces)
-    (load-config))
   (let* ((interface (interface interface))
-         (configured-implementation (config-tree :interfaces (make-keyword (module-name interface)))))
+         (configured-implementation (config :interfaces (make-keyword (module-name interface)))))
     (unless configured-implementation
       (error 'interface-implementation-not-set :requested interface))
     ;; If quicklisp is available, the system might be loadable, but

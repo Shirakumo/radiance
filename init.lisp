@@ -18,18 +18,14 @@
 (define-hook shutdown ())
 (define-hook shutdown-done ())
 
-(defun startup (&optional application)
+(defun startup (&optional (environment *environment*))
+  (check-type environment string)
+  
   (when *running*
     (error "Radiance is already running!"))
-  
+
   (setf *startup-time* (get-universal-time))
-  (load-config (if application
-                   (asdf:system-relative-pathname application "radiance.uc" :type "lisp")
-                   *config-path*))
-  (loop for module in (config-tree :startup)
-        do (if (member :quicklisp *features*)
-               (funcall (symbol-function (find-symbol "QUICKLOAD" :ql)) module)
-               (asdf:load-system module)))
+  (setf (environment) environment)
 
   (trigger 'startup)
   
@@ -60,7 +56,6 @@
   (setf *running* NIL)
   (trigger 'server-shutdown)
   
-  (save-config)
   (setf *startup-time* NIL)
 
   (trigger 'shutdown-done)
@@ -72,3 +67,21 @@
 
 (defun started-p ()
   *running*)
+
+;; Handle default server startup.
+;; FIXME: Not sure if this is the right place for this.
+(define-trigger (server-start 'launch-listeners) ()
+  (defaulted-mconfig '(((:port 8080))) :server :instances)
+  (dotimes (i (length (mconfig :server :instances)))
+    (server:start (mconfig :server :instances i :port config)
+                  :address (mconfig :server :instances i :address config)
+                  :ssl-key (mconfig :server :instances i :ssl-key config)
+                  :ssl-cert (mconfig :server :instances i :ssl-cert config)
+                  :ssl-pass (mconfig :server :instances i :ssl-pass config))))
+
+(define-trigger (server-stop 'stop-listeners) ()
+  (loop for name being the hash-keys of (server:listeners)
+        do (let* ((pos (position #\: name))
+                  (port (parse-integer (subseq name (1+ pos))))
+                  (address (subseq name 0 pos)))
+             (server:stop port (unless (string= address "NIL") address)))))

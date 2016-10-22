@@ -18,6 +18,7 @@
   :serial T
   :components ((:file "module")
                (:file "toolkit")
+               (:file "config")
                (:file "accessor")
                (:file "interfaces")
                (:file "modules")
@@ -38,7 +39,7 @@
                (:file "convenience"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
-               :universal-config
+               :ubiquitous
                :trivial-indent
                :cl-ppcre
                :trivial-mimes

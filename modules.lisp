@@ -77,7 +77,7 @@
         (format stream "~@:_API Endpoints: ~<~;~:[None~;~:*~{~(~a~)~^, ~:_~}~]~;~:>"
                 (list (module-storage module 'radiance-apis)))
         (format stream "~@:_Configuration: ~<~;~:[None~;~:*~{~s~^, ~:_~}~]~;~:>"
-                (list (let ((table (config-tree (module-name module))))
+                (list (let ((table (mconfig-storage module)))
                         (when table (loop for name being the hash-keys of table collect name)))))
         (format stream "~@:_Permissions: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
                 (list (permissions module)))
