@@ -46,11 +46,12 @@
     (or (module-storage module :config)
         (setf (module-storage module :config)
               (ubiquitous:with-local-storage (module :transaction NIL)
-                (handler-case
-                    (ubiquitous:restore)
-                  (ubiquitous:no-storage-file ()
-                    (invoke-restart 'ubiquitous:use-new-storage
-                                    (make-hash-table :test 'equal))))
+                (handler-bind ((ubiquitous:no-storage-file
+                                 (lambda (err)
+                                   (declare (ignore err))
+                                   (invoke-restart 'ubiquitous:use-new-storage
+                                                   (make-hash-table :test 'equal)))))
+                    (ubiquitous:restore))
                 (ubiquitous:offload))))))
 
 (defun mconfig (module &rest path)
