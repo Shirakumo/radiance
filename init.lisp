@@ -80,7 +80,7 @@
                   :ssl-pass (config :server :instances i :ssl-pass))))
 
 (define-trigger (server-stop 'stop-listeners) ()
-  (loop for name being the hash-keys of (server:listeners)
+  (loop for name in (server:listeners)
         do (let* ((pos (position #\: name))
                   (port (parse-integer (subseq name (1+ pos))))
                   (address (subseq name 0 pos)))
