@@ -123,9 +123,6 @@
   (when (module-p module)
     (describe-module module stream)))
 
-(defun describe-module (thing &optional (stream *standard-output*))
-  (describe (module thing) stream))
-
 (defun find-modules-directory ()
   (if (in-quicklisp-p :radiance)
       (merge-pathnames "radiance/modules/" (or (first ql:*local-project-directories*)
