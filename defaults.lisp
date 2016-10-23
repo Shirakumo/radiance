@@ -134,6 +134,16 @@
 ;; Default routing to cut domains.
 (defvar *domain-internalizers* ())
 
+(defun add-domain (domain)
+  (pushnew domain (config :server :domains) :test #'string-equal)
+  (compile-domain-internalizers)
+  (config :server :domains))
+
+(defun remove-domain (domain)
+  (setf (config :server :domains) (remove domain (config :server :domains) :test #'string-equal))
+  (compile-domain-internalizers)
+  (config :server :domains))
+
 (defun compile-domain-internalizers (&optional (domains (config :server :domains)))
   (loop for domain in domains
         collect (let ((parts (nreverse (cl-ppcre:split "\\." domain)))

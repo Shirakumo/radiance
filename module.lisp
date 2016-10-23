@@ -122,12 +122,14 @@
    #:do-models
    #:with-actions
    #:external-pattern)
-  ;; default.lisp
+  ;; defaults.lisp
   (:export
    #:favicon
    #:robots
    #:static
-   #:welcome)
+   #:welcome
+   #:add-domain
+   #:remove-domain)
   ;; dispatch.lisp
   (:export
    #:uri-dispatcher
