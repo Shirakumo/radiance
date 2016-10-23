@@ -15,5 +15,5 @@
   (:connections
    (:dev . "dev.lambdalite.db")))
  (:server
-  (:domains . ("-localhost" "127.0.0.1" "::1"))
+  (:domains . ("radiance" "localhost" "127.0.0.1" "::1"))
   (:instances . (((:port . 8080))))))
