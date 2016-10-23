@@ -71,13 +71,13 @@
 ;; Handle default server startup.
 ;; FIXME: Not sure if this is the right place for this.
 (define-trigger (server-start 'launch-listeners) ()
-  (defaulted-mconfig '(((:port 8080))) :server :instances)
-  (dotimes (i (length (mconfig :server :instances)))
-    (server:start (mconfig :server :instances i :port config)
-                  :address (mconfig :server :instances i :address config)
-                  :ssl-key (mconfig :server :instances i :ssl-key config)
-                  :ssl-cert (mconfig :server :instances i :ssl-cert config)
-                  :ssl-pass (mconfig :server :instances i :ssl-pass config))))
+  (defaulted-config '(((:port 8080))) :server :instances)
+  (dotimes (i (length (config :server :instances)))
+    (server:start (config :server :instances i :port)
+                  :address (config :server :instances i :address)
+                  :ssl-key (config :server :instances i :ssl-key)
+                  :ssl-cert (config :server :instances i :ssl-cert)
+                  :ssl-pass (config :server :instances i :ssl-pass))))
 
 (define-trigger (server-stop 'stop-listeners) ()
   (loop for name being the hash-keys of (server:listeners)
