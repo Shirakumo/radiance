@@ -8,12 +8,14 @@
 
 (defvar *environment* "default")
 
+(define-hook environment-change ())
+
 (defun environment ()
   *environment*)
 
 (defun (setf environment) (environment)
   ;; Clear config
-  (dolist (module modularize:list-modules)
+  (dolist (module (list-modules))
     (setf (module-storage module :config) NIL))
   ;; Update environment
   (setf *environment* environment)
@@ -23,17 +25,18 @@
     (ubiquitous:no-storage-file ()
       (warn "Configuration for ~s not found-- creating from defaults." environment)
       (ubiquitous:restore (asdf:system-relative-pathname :radiance-core "default-config.lisp"))
-      (ubiquitous:offload #.*package*))))
+      (ubiquitous:offload #.*package*)))
+  (trigger 'environment-change))
 
 (defun mconfig-pathname (module &optional (type :lisp))
-  (ubiquitous:designator-pathname
-   (if (and (module-p designator) (module-storage designator :config-file))
-       (module-storage designator :config-file)
-       (make-pathname :name (if (module-p designator)
-                                (module-name designator)
-                                (package-name designator))
+  (merge-pathnames
+   (if (and (module-p module) (module-storage module :config-pathname))
+       (module-storage module :config-pathname)
+       (make-pathname :name (if (module-p module)
+                                (module-name module)
+                                (package-name module))
                       :directory `(:relative "radiance" ,*environment*)))
-   type))
+   (ubiquitous:config-pathname type)))
 
 (defmethod ubiquitous:designator-pathname ((designator package) type)
   (mconfig-pathname designator type))

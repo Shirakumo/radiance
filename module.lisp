@@ -106,6 +106,7 @@
    #:handle-condition)
   ;; config.lisp
   (:export
+   #:environment-change
    #:environment
    #:mconfig-pathname
    #:mconfig-storage

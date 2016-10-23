@@ -146,7 +146,7 @@
                             do (return NIL)
                             finally (return (values domain subdomains)))))))
 
-(define-trigger (radiance:startup 'compile-domain-internalizers) ()
+(define-trigger (environment-change 'compile-domain-internalizers) ()
   (setf *domain-internalizers* (compile-domain-internalizers)))
 
 (define-route internalizer (:mapping most-positive-fixnum) (uri)
