@@ -6,7 +6,7 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defvar *environment* "default")
+(defvar *environment* NIL)
 
 (define-hook environment-change ())
 
@@ -27,6 +27,18 @@
       (ubiquitous:restore (asdf:system-relative-pathname :radiance-core "default-config.lisp"))
       (ubiquitous:offload #.*package*)))
   (trigger 'environment-change))
+
+(defun check-environment ()
+  (restart-case
+      (unless *environment*
+        (error 'environment-not-set))
+    (continue ()
+      :report "Use and load the default environment."
+      (setf (environment) "default"))
+    (set-environment (environment)
+      :report "Set and load a specific environment."
+      :interactive (lambda () (read *query-io*))
+      (setf (environment) environment))))
 
 (defun mconfig-pathname (module &optional (type :lisp))
   (merge-pathnames

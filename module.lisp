@@ -71,6 +71,7 @@
    #:radiance-error
    #:message
    #:radiance-warning
+   #:environment-not-set
    #:internal-error
    #:request-error
    #:current-request
@@ -108,6 +109,8 @@
   (:export
    #:environment-change
    #:environment
+   #:check-environment
+   #:set-environment
    #:mconfig-pathname
    #:mconfig-storage
    #:mconfig

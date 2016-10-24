@@ -18,7 +18,7 @@
 (define-hook shutdown ())
 (define-hook shutdown-done ())
 
-(defun startup (&optional (environment *environment*))
+(defun startup (&optional (environment (or *environment* "default")))
   (check-type environment string)
   
   (when *running*

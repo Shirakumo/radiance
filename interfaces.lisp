@@ -49,6 +49,7 @@
            (future l debug :interfaces "~a now implemented by ~a" (module-name interface) (module-name (virtual-module-name module)))))
 
 (defun find-implementation (interface &optional (system T))
+  (check-environment)
   (let* ((interface (interface interface))
          (configured-implementation (config :interfaces (make-keyword (module-name interface)))))
     (unless configured-implementation
