@@ -1,3 +1,5 @@
+![logo](data/static/radiance.png)
+
 About Radiance
 --------------
 An explanation about what exactly Radiance is will be here as soon as I figure out how to explain it quickly enough. In the most basic of words, it is a very featureful web-framework written in Common Lisp.
