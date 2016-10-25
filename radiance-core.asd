@@ -36,7 +36,8 @@
                (:file "api")
                (:file "init")
                (:file "defaults")
-               (:file "convenience"))
+               (:file "convenience")
+               (:file "documentation"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
                :ubiquitous
@@ -46,4 +47,5 @@
                :local-time
                :lambda-fiddle
                :plump-lexer
-               :bordeaux-threads))
+               :bordeaux-threads
+               :documentation-utils))
