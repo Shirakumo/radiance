@@ -9,13 +9,10 @@
 (defvar *startup-time* NIL)
 (defvar *running* NIL)
 
-(define-hook server-start ())
-(define-hook server-ready ())
-(define-hook server-stop ())
-(define-hook server-shutdown ())
-(define-hook startup ())
+(define-hook-switch server-start server-shutdown ())
+(define-hook-switch server-ready server-stop ())
+(define-hook-switch startup shutdown)
 (define-hook startup-done ())
-(define-hook shutdown ())
 (define-hook shutdown-done ())
 
 (defun startup (&optional (environment (or *environment* "default")))

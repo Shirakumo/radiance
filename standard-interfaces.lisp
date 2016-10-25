@@ -103,8 +103,7 @@
   (defun start (port &key address ssl-cert ssl-key ssl-pass))
   (defun stop (port &optional address))
   (defun listeners ())
-  (define-hook started (port &optional address))
-  (define-hook stopped (port &optional address)))
+  (define-hook-switch started stopped (port &optional address)))
 
 ;; To be specced
 (define-interface (logger l)
@@ -136,8 +135,7 @@
   (defun update (collection query data &key (skip 0) amount sort))
   (defmacro with-transaction (() &body body))
   (defmacro query (query-form))
-  (define-hook connected ())
-  (define-hook disconnected ()))
+  (define-hook-switch connected disconnected (name)))
 
 ;; As per spec
 (define-interface (data-model dm)
