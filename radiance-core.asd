@@ -25,7 +25,6 @@
                (:file "interface-components")
                (:file "standard-interfaces")
                (:file "uri")
-               (:file "pattern")
                (:file "routing")
                (:file "dispatch")
                (:file "request")
@@ -45,6 +44,5 @@
                :trivial-mimes
                :local-time
                :lambda-fiddle
-               :plump-lexer
                :bordeaux-threads
                :documentation-utils))

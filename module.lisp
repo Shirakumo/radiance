@@ -7,7 +7,7 @@
 (in-package #:modularize-user)
 (define-module #:radiance-core
   (:use #:cl #:modularize #:modularize-interfaces #:modularize-hooks
-        #:lambda-fiddle #:plump-lexer)
+        #:lambda-fiddle)
   (:nicknames #:radiance #:org.shirakumo.radiance.core)
   (:shadow #:define-interface #:module)
   ;; re-export from modularize
@@ -185,17 +185,6 @@
    #:define-page-option
    #:*page-body*
    #:define-page)
-  ;; pattern.lisp
-  (:export
-   #:pattern
-   #:resolve
-   #:resource
-   #:target
-   #:name
-   #:args
-   #:placeholder
-   #:var
-   #:parse-pattern)
   ;; request.lisp
   (:export
    #:*request*
