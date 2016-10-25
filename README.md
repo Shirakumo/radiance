@@ -1,4 +1,4 @@
-![logo](data/static/radiance.png)
+<img alt="logo" src="data/static/radiance.png" width="512" align="center"/>
 
 About Radiance
 --------------
