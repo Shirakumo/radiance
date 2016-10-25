@@ -1,8 +1,5 @@
 .directory
 /data/simple-cache/
-/commons/
-/core/
-/drivers/
-/impls/
+/contribs/
 /modules/
 /spec/

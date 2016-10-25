@@ -1,18 +1,46 @@
 #|
-  This file is a part of TyNETv5/Radiance
-  (c) 2013 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
-  Author: Nicolas Hafner <shinmera@tymoon.eu>
+ This file is a part of Radiance
+ (c) 2014 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
+ Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(defpackage org.tymoonnext.radiance.asdf
-  (:use :cl :asdf))
-(in-package :org.tymoonnext.radiance.asdf)
-
-(defsystem radiance
-  :name "TymoonNET v5 Radiance"
-  :version "2.0.1"
+(in-package #:cl-user)
+(asdf:defsystem radiance
+  :class "modularize:module"
+  :defsystem-depends-on (:modularize)
+  :version "0.0.1"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description "Version 5 of TyNET, an extensible framework library and multi-application CMS."
-  :depends-on (:radiance-core))
+  :description "Core component of Radiance, an extensible web application environment."
+  :serial T
+  :components ((:file "module")
+               (:file "toolkit")
+               (:file "config")
+               (:file "interfaces")
+               (:file "modules")
+               (:file "resource")
+               (:file "interface-components")
+               (:file "standard-interfaces")
+               (:file "uri")
+               (:file "routing")
+               (:file "dispatch")
+               (:file "request")
+               (:file "conditions")
+               (:file "options")
+               (:file "page")
+               (:file "api")
+               (:file "init")
+               (:file "defaults")
+               (:file "convenience")
+               (:file "documentation"))
+  :depends-on (:modularize-hooks
+               :modularize-interfaces
+               :ubiquitous
+               :trivial-indent
+               :cl-ppcre
+               :trivial-mimes
+               :local-time
+               :lambda-fiddle
+               :bordeaux-threads
+               :documentation-utils))
