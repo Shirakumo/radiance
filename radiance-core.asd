@@ -19,7 +19,6 @@
   :components ((:file "module")
                (:file "toolkit")
                (:file "config")
-               (:file "accessor")
                (:file "interfaces")
                (:file "modules")
                (:file "resource")

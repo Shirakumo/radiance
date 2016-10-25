@@ -189,13 +189,13 @@
                       (subseq (path uri) (1+ slashpos))
                       "")))
         (when (boundp '*request*)
-          (setf (field *request* 'virtual-module) module))
+          (setf (gethash 'virtual-module (data *request*)) module))
         (setf (path uri) path)
         (setf (domains uri) (append (domains uri) (list module)))))))
 
 (define-route virtual-module (:reversal -100000) (uri)
   (when (boundp '*request*)
-    (let ((virtual (field *request* 'virtual-module))
+    (let ((virtual (gethash 'virtual-module (data *request*)))
           (last (car (last (domains uri)))))
       (when virtual
         ;; Check if we are operating on the requested virtual domain

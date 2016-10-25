@@ -142,7 +142,6 @@
 ;; As per spec
 (define-interface (data-model dm)
   (defclass data-model () ())
-  (defield data-model)
   (defun id (data-model))
   (defun collection (data-model))
   (defun fields (data-model))

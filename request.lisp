@@ -98,12 +98,6 @@
 (defun header (name &optional (request/response *request*))
   (gethash (string name) (headers request/response)))
 
-(defmethod field ((request request) field)
-  (gethash field (data request)))
-
-(defmethod (setf field) (value (request request) field)
-  (setf (gethash field (data request)) value))
-
 (defun file (name &optional (request *request*))
   "Returns file info about a form uploaded file.
  (PATH ORIGINAL-FILENAME MIME-TYPE)"

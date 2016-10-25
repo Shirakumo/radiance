@@ -43,9 +43,6 @@
    #:i-defun
    #:i-defmacro
    #:i-defmethod)
-  ;; accessor.lisp
-  (:export
-   #:field)
   ;; api.lisp
   (:export
    #:*default-api-format*
