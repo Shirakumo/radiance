@@ -14,7 +14,7 @@
 (define-condition radiance-warning (warning)
   ((message :initarg :message :initform NIL :accessor message)))
 
-(define-condition environment-not-set (radiance-error)
+(define-condition environment-not-set (radiance-error) ()
   (:report "The application environment was not yet set but is required.
             This means you are either using Radiance for the first time or forgot to set it up properly.
             In the first case, simply use the CONTINUE restart. In the second, make sure to adjust your
