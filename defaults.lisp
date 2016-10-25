@@ -128,9 +128,6 @@
         (serve-file file)
         (error 'request-not-found))))
 
-(define-page welcome #@"/^$" ()
-  (serve-file (data-file "html/hello.html")))
-
 ;; Default routing to cut domains.
 (defvar *domain-internalizers* ())
 
