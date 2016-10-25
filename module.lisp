@@ -120,8 +120,7 @@
    #:with-model-fields
    #:with-model-save
    #:do-models
-   #:with-actions
-   #:external-pattern)
+   #:with-actions)
   ;; defaults.lisp
   (:export
    #:favicon
