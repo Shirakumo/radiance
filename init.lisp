@@ -38,6 +38,11 @@
   (setf *running* T)
   (trigger 'server-ready)
 
+  (l:info :radiance "Loading startup modules.")
+  (dolist (module (config :startup))
+    #+quicklisp (ql:quickload module)
+    #-quicklisp (asdf:load-system module))
+
   (trigger 'startup-done)
   (l:info :radiance "Startup done.")
   T)
