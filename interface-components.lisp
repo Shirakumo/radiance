@@ -14,7 +14,9 @@
 (define-component-expander (defswitch define-hook-switch switch s) (interface on off args)
   (let ((on (intern (string on) interface))
         (off (intern (string off) interface)))
-    `(define-hook-switch ,on ,off ,args)))
+    `(progn ;; modularize-interfaces only exports the first symbol.
+       (export ',off ,interface)
+       (define-hook-switch ,on ,off ,args))))
 
 (define-component-expander (defresource define-resource define-resource-type resource) (interface type args &optional documentation)
   `(define-resource-type ,type ,args
