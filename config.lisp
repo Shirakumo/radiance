@@ -24,7 +24,7 @@
       (ubiquitous:restore #.*package*)
     (ubiquitous:no-storage-file ()
       (warn "Configuration for ~s not found-- creating from defaults." environment)
-      (ubiquitous:restore (asdf:system-relative-pathname :radiance-core "default-config.lisp"))
+      (ubiquitous:restore (asdf:system-relative-pathname :radiance "default-config.lisp"))
       (ubiquitous:offload #.*package*)))
   (trigger 'environment-change))
 
