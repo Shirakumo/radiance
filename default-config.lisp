@@ -10,10 +10,7 @@
   (:session . "r-simple-sessions")
   (:server . "i-hunchentoot")
   (:rate . "r-simple-rate"))
- (:lambdalite
-  (:default . :dev)
-  (:connections
-   (:dev . "dev.lambdalite.db")))
  (:server
   (:domains . ("radiance" "localhost" "127.0.0.1" "::1"))
-  (:instances . (((:port . 8080))))))
+  (:instances . (((:port . 8080)))))
+ (:startup :r-welcome))
