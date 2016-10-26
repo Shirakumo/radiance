@@ -62,6 +62,12 @@
         unless (and (listp dep) (eql (first dep) :interface))
         collect dep))
 
+(defun module-pages (module)
+  (mapcar #'uri-dispatcher (module-storage module 'radiance-pages)))
+
+(defun module-api-endpoints (module)
+  (module-storage module 'radiance-apis))
+
 (defun describe-module (module stream)
   (let* ((*print-pretty* T)
          (*print-circle* NIL)
@@ -107,9 +113,9 @@
              (format stream "~@:_Implements: ~<~;~:[Nothing~;~:*~{~s~^, ~:_~}~]~;~:>"
                      (list (implements module)))
              (format stream "~@:_Claimed Pages: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
-                     (list (mapcar #'uri-dispatcher (module-storage module 'radiance-pages))))
+                     (list (module-pages module)))
              (format stream "~@:_API Endpoints: ~<~;~:[None~;~:*~{~(~a~)~^, ~:_~}~]~;~:>"
-                     (list (module-storage module 'radiance-apis)))
+                     (list (module-api-endpoints module)))
              (format stream "~@:_Configuration: ~<~;~:[None~;~:*~{~s~^, ~:_~}~]~;~:>"
                      (list (let ((table (mconfig-storage module)))
                              (when table (loop for name being the hash-keys of table collect name)))))

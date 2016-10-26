@@ -26,11 +26,13 @@
    #:current-module)
   ;; re-export from hooks
   (:export
+   #:list-hooks
    #:define-hook
    #:remove-hook
    #:define-trigger
    #:remove-trigger
-   #:trigger)
+   #:trigger
+   #:define-hook-switch)
   ;; re-export from interfaces
   (:export
    #:interface
@@ -170,6 +172,8 @@
    #:module-dependencies
    #:module-required-interfaces
    #:module-required-systems
+   #:module-pages
+   #:module-api-endpoints
    #:describe-module
    #:find-modules-directory
    #:create-module)
