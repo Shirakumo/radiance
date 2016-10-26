@@ -11,7 +11,7 @@
 
 (define-hook-switch server-start server-shutdown ())
 (define-hook-switch server-ready server-stop ())
-(define-hook-switch startup shutdown)
+(define-hook-switch startup shutdown ())
 (define-hook startup-done ())
 (define-hook shutdown-done ())
 
