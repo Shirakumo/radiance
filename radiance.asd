@@ -8,6 +8,7 @@
 (asdf:defsystem radiance
   :class "modularize:module"
   :defsystem-depends-on (:modularize)
+  :module-name "RADIANCE-CORE"
   :version "0.0.1"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
