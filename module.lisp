@@ -103,7 +103,8 @@
    #:user-not-found
 
    #:present-error-page
-   #:handle-condition)
+   #:handle-condition
+   #:render-error-page)
   ;; config.lisp
   (:export
    #:environment-change
