@@ -196,6 +196,7 @@
                     :get-data (ensure-request-hash-table get)
                     :cookies (ensure-request-hash-table cookies)
                     :remote remote)))
+    (v:trace :core.request "Received request ~a" *request*)
     (setf (uri *request*) (represent-uri (uri *request*) representation))
     (execute-request
      *request*
