@@ -6,66 +6,63 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defvar *resource-locators* (or (find-package '#:radiance.resource-locators)
-                                  (make-package '#:radiance.resource-locators
-                                                :use () :nicknames '(#:org.shirakumo.radiance.core.resource.locators)))))
+(defvar *resource-locators* (make-hash-table :test 'equal))
 
 (defun resource-type (type)
-  (or (find-symbol (string-upcase type) *resource-locators*)
+  (or (gethash (string-downcase type) *resource-locators*)
       (error "Unknown resource type ~s" type)))
 
-(define-condition implicit-resource-type-warning (style-warning)
-  ((name :initarg :name :initform (error "NAME required.") :accessor name))
-  (:report (lambda (c s) (format s "Implicitly creating new resource type ~a" (name c)))))
-
-(defmacro define-resource-type (type args &body options)
-  (assert (symbolp type) () "NAME must be a symbol.")
-  ;; Convenience syntax for LOCATOR option.
-  (let ((options (loop for option in options
-                       when (eql (first option) :locator)
-                       collect `(:method ,(list* (second option) (third option)) ,@(cdddr option)))))
-    (let ((type (intern (string-upcase type) *resource-locators*)))
-      `(defgeneric ,type (,(gensym "MODULE") ,@args)
-         ,@options))))
-
-(trivial-indent:define-indentation define-resource-type (4 4 &rest (&whole 2 0 4 &body)))
+(defun (setf resource-type) (table type)
+  (setf (gethash (string-downcase type) *resource-locators*) table))
 
 (defun remove-resource-type (type)
-  (let ((type (resource-type type)))
-    (fmakunbound type)
-    (unintern type *resource-locators*)))
+  (remhash (string-downcase type) *resource-locators*))
 
-(defmacro define-resource-locator (type module args &body body)
+(defun resource-locator (type ident)
+  (or (gethash (string-downcase ident) (resource-type type))
+      (if (eql ident T)
+          (error "No default resource locator for resource type ~s." type)
+          (resource-locator type T))))
+
+(defun (setf resource-locator) (value type ident)
+  (setf (gethash (string-downcase ident) (resource-type type))
+        value))
+
+(defmacro define-resource-type (type args &body default)
+  (let ((type (string-downcase type)))
+    `(progn (setf (resource-type ,type)
+                  (gethash ,type *resource-locators*
+                           (make-hash-table :test 'equal)))
+            ,@(when default
+                `((setf (gethash T (resource-type ,type))
+                         (lambda ,args ,@default)))))))
+
+(defmacro define-resource-locator (module type args &body body)
   (assert (symbolp type) () "NAME must be a symbol.")
-  (let ((type (intern (string-upcase type) *resource-locators*)))
-    `(progn
-       ,@(unless (fboundp type)
-           (warn 'implicit-resource-type-warning :name type)
-           `((define-resource-type ,type ,(flatten-method-lambda-list args))))
-       (defmethod ,type (,module ,@args)
-         ,@body))))
+  (let ((type (string-downcase type))
+        (module (string-downcase module))
+        (moduleg (gensym "MODULE")))
+    `(setf (resource-locator ,type ,module)
+           (lambda (,moduleg ,@args)
+             (declare (ignore ,moduleg))
+             ,@body))))
 
 (declaim (inline resource))
-(defun resource (type module &rest args)
-  (apply (resource-type type) (module module) args))
+(defun resource (module type &rest args)
+  (apply (resource-locator type module) (module module) args))
 
-(define-resource-type domain ()
-  (:locator module ()
-    (make-uri :domains (list (domain module)))))
+(define-resource-type domain (module)
+  (make-uri :domains (list (domain module))))
 
-(define-resource-type api (page &rest args)
-  (:locator module (page &rest args)
-    (make-uri :path (format NIL "/api/~a/~a?~{~a=~a~^&~}"
-                            (module-name module) page args))))
+(define-resource-type api (module page &rest args)
+  (make-uri :path (format NIL "/api/~a/~a?~{~a=~a~^&~}"
+                          (module-name module) page args)))
 
-(define-resource-type static (resource)
-  (:locator module (resource)
-    (make-uri :path (format NIL "/static/~a/~a"
-                            (module-name module) resource))))
+(define-resource-type static (module resource)
+  (make-uri :path (format NIL "/static/~a/~a"
+                          (module-name module) resource)))
 
-(define-resource-type page (name &rest args)
-  (:locator module (name &rest args)
-    (declare (ignore args))
-    (or (uri-dispatcher (find-symbol (string-upcase name) module))
-        (error "No page with name ~s found on ~s" name module))))
+(define-resource-type page (module name &rest args)
+  (declare (ignore args))
+  (or (uri-dispatcher (find-symbol (string-upcase name) module))
+    (error "No page with name ~s found on ~s" name module)))

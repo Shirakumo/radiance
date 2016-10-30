@@ -71,7 +71,7 @@
 
 (defmacro define-interface (name &body components)
   `(interfaces:define-interface ,name
-     (defhook implemented ()
+     (define-hook implemented ()
        "Called when the interface is implemented.")
      ,@components))
 

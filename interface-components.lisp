@@ -6,25 +6,20 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(define-component-expander (defhook define-hook hook h) (interface name args &optional documentation)
+(define-component-expander (define-hook) (interface name args &optional documentation)
   (let ((name (or (find-symbol (string name) interface)
                   (intern (string name) interface))))
     `(define-hook ,name ,args ,documentation)))
 
-(define-component-expander (defswitch define-hook-switch switch s) (interface on off args)
+(define-component-expander (define-hook-switch) (interface on off args)
   (let ((on (intern (string on) interface))
         (off (intern (string off) interface)))
     `(progn ;; modularize-interfaces only exports the first symbol.
        (export ',off ,interface)
        (define-hook-switch ,on ,off ,args))))
 
-(define-component-expander (defresource define-resource define-resource-type resource) (interface type args &optional documentation)
-  `(define-resource-type ,type ,args
-     ,@(when documentation
-         `((:documentation ,documentation)))))
-
-(define-component-expander (defresourcelocator define-resource-locator locator) (interface type args)
-  (let ((module (gensym "MODULE")))
-    `(define-resource-locator ,type (,module (eql (load-time-value (interface ,(package-name interface))))) ,args
-       (declare (ignore ,module ,@(lambda-fiddle:extract-lambda-vars args)))
-       (error "Resource locator ~a not implemented for interface ~a!" ,(string-upcase type) ,(package-name interface)))))
+(define-component-expander (define-resource-locator) (interface type args)
+  `(define-resource-locator ,(package-name interface) ,type ,args
+     (declare (ignore ,@(lambda-fiddle:extract-lambda-vars args)))
+     (error "Resource locator ~a not implemented for interface ~a!"
+            ,(string-upcase type) ,(package-name interface))))
