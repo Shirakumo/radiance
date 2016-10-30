@@ -273,6 +273,11 @@
    #:universal-to-unix-time
    #:unix-to-universal-time
    #:get-unix-time
+   #:format-relative-time
+   #:format-machine-date
+   #:format-human-date
+   #:format-fancy-date
+   #:format-time
    #:make-random-string
    #:file-size
    #:read-data-file
@@ -281,8 +286,6 @@
    #:static-file
    #:template
    #:or*
-   #:cut-get-part
-   #:format-universal-time
    #:perm)
   ;; uri.lisp
   (:export

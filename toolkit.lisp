@@ -33,6 +33,64 @@
   "Returns a unix timestamp."
   (universal-to-unix-time (get-universal-time)))
 
+(defun format-relative-time (stamp)
+  (when (typep stamp local-time:timestamp)
+    (setf stamp (local-time:timestamp-to-universal stamp)))
+  (if (= stamp 0)
+      (format NIL "0 seconds")
+      (let ((seconds   (mod (floor (/ stamp 1)) 60))
+            (minutes   (mod (floor (/ stamp 60)) 60))
+            (hours     (mod (floor (/ stamp 60 60)) 24))
+            (days      (mod (floor (/ stamp 60 60 24)) 7))
+            ;; We approximate by saying each month has four weeks
+            (weeks     (mod (floor (/ stamp 60 60 24 7)) 4))
+            (months    (mod (floor (/ stamp 60 60 24 7 4)) 12))
+            ;; More accurate through stamp in a year
+            (years     (mod (floor (/ stamp 31557600)) 10))
+            (decades   (mod (floor (/ stamp 31557600 10)) 10))
+            (centuries (mod (floor (/ stamp 31557600 10 10)) (expt 10 (- 9 2))))
+            (aeons          (floor (/ stamp 31557600 10 10 (expt 10 (- 9 2)))))
+            (non-NIL ()))
+        (flet ((p (i format) (when (< 0 i) (push (format NIL format i) non-NIL))))
+          (p seconds "~a second~:p")
+          (p minutes "~a minute~:p")
+          (p hours "~a hour~:p")
+          (p days "~a day~:p")
+          (p weeks "~a week~:p")
+          (p months "~a month~:p")
+          (p years "~a year~:p")
+          (p decades "~a decade~:p")
+          (p centuries "~a centur~:@p")
+          (p aeons "~a æon~:p")
+          (format NIL "~{~a~^, ~}" non-NIL)))))
+
+(defun format-machine-date (stamp)
+  (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
+  (let ((local-time:*default-timezone* local-time:+utc-zone+))
+    (local-time:format-timestring
+     NIL stamp :format '((:year 4) "-" (:month 2) "-" (:day 2) "T" (:hour 2) ":" (:min 2) ":" (:sec 2)))))
+
+(defun format-human-date (stamp)
+  (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
+  (let ((local-time:*default-timezone* local-time:+utc-zone+))
+    (local-time:format-timestring
+     NIL stamp :format '((:year 4) "." (:month 2) "." (:day 2) " " (:hour 2) ":" (:min 2) ":" (:sec 2)))))
+
+(defun format-fancy-date (stamp)
+  (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
+  (let ((local-time:*default-timezone* local-time:+utc-zone+))
+    (local-time:format-timestring
+     NIL stamp :format '(:long-weekday ", " :ordinal-day " of " :long-month " " :year ", " :hour ":" (:min 2) ":" (:sec 2) " UTC"))))
+
+(defun format-time (time &optional (relative-time-threshold (* 60 60 24)))
+  (let ((now (get-universal-time)))
+    (cond ((and (< (- now relative-time-threshold) time) (<= time now))
+           (format NIL "~a ago" (format-relative-time (- now time))))
+          ((and (< time (+ now relative-time-threshold)) (< now time))
+           (format NIL "in ~a" (format-relative-time (- time now))))
+          (T
+           (format NIL "at ~a" (format-human-date time))))))
+
 (defun make-random-string (&optional (length 16) (chars *random-string-characters*))
   "Generates a random string of alphanumerics."
   (loop with string = (make-array length :element-type 'character)
@@ -83,10 +141,6 @@
                             (if (stringp ,arg)
                                 (unless (string= ,arg "") ,arg)
                                 ,arg))))))
-
-(defun format-universal-time (ut)
-  (format NIL "~:@{~4,'0d.~2,'0d.~2,'0d ~2,'0d:~2,'0d:~2,'0d~}"
-          (subseq (nreverse (multiple-value-list (decode-universal-time ut))) 3)))
 
 (defun cut-get-part (url)
   (subseq url 0 (position #\? url)))
