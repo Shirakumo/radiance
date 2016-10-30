@@ -66,21 +66,21 @@
 
 (defun format-machine-date (stamp)
   (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
-  (let ((local-time:*default-timezone* local-time:+utc-zone+))
-    (local-time:format-timestring
-     NIL stamp :format '((:year 4) "-" (:month 2) "-" (:day 2) "T" (:hour 2) ":" (:min 2) ":" (:sec 2)))))
+  (local-time:format-timestring
+   NIL stamp :format '((:year 4) "-" (:month 2) "-" (:day 2) "T" (:hour 2) ":" (:min 2) ":" (:sec 2))
+             :timezone local-time:+utc-zone+))
 
 (defun format-human-date (stamp)
   (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
-  (let ((local-time:*default-timezone* local-time:+utc-zone+))
-    (local-time:format-timestring
-     NIL stamp :format '((:year 4) "." (:month 2) "." (:day 2) " " (:hour 2) ":" (:min 2) ":" (:sec 2)))))
+  (local-time:format-timestring
+   NIL stamp :format '((:year 4) "." (:month 2) "." (:day 2) " " (:hour 2) ":" (:min 2) ":" (:sec 2))
+             :timezone local-time:+utc-zone+))
 
 (defun format-fancy-date (stamp)
   (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
-  (let ((local-time:*default-timezone* local-time:+utc-zone+))
-    (local-time:format-timestring
-     NIL stamp :format '(:long-weekday ", " :ordinal-day " of " :long-month " " :year ", " :hour ":" (:min 2) ":" (:sec 2) " UTC"))))
+  (local-time:format-timestring
+   NIL stamp :format '(:long-weekday ", " :ordinal-day " of " :long-month " " :year ", " :hour ":" (:min 2) ":" (:sec 2) " UTC")
+             :timezone local-time:+utc-zone+))
 
 (defun format-time (time &optional (relative-time-threshold (* 60 60 24)))
   (let ((now (get-universal-time)))
