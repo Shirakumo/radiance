@@ -85,11 +85,9 @@
 
 ;; To be specced
 (define-interface profile
-  (define-resource-type user (user &optional tab))
-  (define-resource-locator user (user &optional tab))
+  (define-resource-locator page (user &optional tab))
   (defun avatar (user size))
   (defun name (user))
-  (defun page (user &optional (category :profile)))
   (defun fields ())
   (defun add-field (name &key (type :text) default (editable T)))
   (defun panel (name))
