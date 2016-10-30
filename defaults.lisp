@@ -111,13 +111,13 @@
 (setf *default-api-format* "lisp")
 
 ;; Default urls
-(define-page favicon (#@"/^favicon.ico$" 10) ()
+(define-page favicon ("/^favicon.ico$" 10) ()
   (serve-file (data-file "static/favicon.ico")))
 
-(define-page robots (#@"/^robots.txt$" 10) ()
+(define-page robots ("/^robots.txt$" 10) ()
   (serve-file (data-file "static/robots.txt")))
 
-(define-page static (#@"/^static/.*" 1000) ()
+(define-page static ("/^static/.*" 1000) ()
   (let* ((path (path (uri *request*)))
          (slashpos (position #\/ path :start (length "static/")))
          (file (if slashpos
