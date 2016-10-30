@@ -274,6 +274,7 @@
    #:unix-to-universal-time
    #:get-unix-time
    #:format-relative-time
+   #:format-clock-time
    #:format-machine-date
    #:format-human-date
    #:format-fancy-date
