@@ -41,11 +41,14 @@
   (assert (symbolp type) () "NAME must be a symbol.")
   (let ((type (string-downcase type))
         (module (string-downcase module))
-        (moduleg (gensym "MODULE")))
+        (moduleg (gensym "MODULE"))
+        (argsg (gensym "ARGS")))
     `(setf (resource-locator ,type ,module)
-           (lambda (,moduleg ,@args)
-             (declare (ignore ,moduleg))
-             ,@body))))
+           (lambda (,moduleg &rest ,argsg)
+             (flet ((call-default-locator ()
+                      (apply (resource-locator ,type T) ,moduleg ,argsg)))
+               (destructuring-bind ,args ,argsg
+                 ,@body))))))
 
 (declaim (inline resource))
 (defun resource (module type &rest args)
