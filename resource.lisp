@@ -50,9 +50,15 @@
                (destructuring-bind ,args ,argsg
                  ,@body))))))
 
-(declaim (inline resource))
 (defun resource (module type &rest args)
   (apply (resource-locator type module) (module module) args))
+
+(define-compiler-macro resource (&whole whole &environment env module type &rest args)
+  (if (and (constantp module env) (constantp type env))
+      `(apply (load-time-value (resource-locator ,type ,module))
+              (load-time-value (module ,module))
+              ,@args)
+      whole))
 
 (define-resource-type domain (module)
   (make-uri :domains (list (domain module))))
