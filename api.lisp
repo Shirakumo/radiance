@@ -109,6 +109,9 @@
   (print-unreadable-object (api stream :type T)
     (format stream "~a ~s" (name api) (argslist api))))
 
+(defmethod documentation ((page api-page) type)
+  (docstring page))
+
 (defun call-api-request (api-page &optional (request *request*))
   (let ((*request* request))
     (funcall (request-handler (ensure-api-page api-page))

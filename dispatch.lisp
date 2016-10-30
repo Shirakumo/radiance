@@ -26,6 +26,11 @@
 (declaim (function *uri-fallback*))
 (declaim ((simple-array uri-dispatcher 1) *uri-priority*))
 
+(defmethod print-object ((dispatcher uri-dispatcher) stream)
+  (print-unreadable-object (dispatcher stream :type T)
+    (format stream "~a " (name dispatcher))
+    (call-next-method)))
+
 (defun make-uri-dispatcher (name uri dispatch-function &optional priority)
   (let ((uri (copy-uri uri)))
     (initialize-instance
