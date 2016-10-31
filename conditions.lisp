@@ -8,11 +8,14 @@
 
 (defvar *debugger* NIL)
 
-(define-condition radiance-error (error)
+(define-condition radiance-condition (condition)
   ((message :initarg :message :initform NIL :accessor message)))
 
-(define-condition radiance-warning (warning)
-  ((message :initarg :message :initform NIL :accessor message)))
+(define-condition radiance-error (error radiance-condition)
+  ())
+
+(define-condition radiance-warning (warning radiance-condition)
+  ())
 
 (define-condition environment-not-set (radiance-error) ()
   (:report "The application environment was not yet set but is required.
@@ -68,56 +71,3 @@
   ((requested-format :initarg :format :initform (error "FORMAT required.") :accessor requested-format))
   (:report (lambda (c s) (format s "The requested format ~s is not known.~@[ ~a~]"
                                  (requested-format c) (message c)))))
-
-(define-condition database-error (radiance-error) ())
-
-(define-condition database-warning (radiance-warning) ())
-
-(define-condition database-connection-failed (database-error)
-  ((database :initarg :database :initform (error "DATABASE required.") :accessor database))
-  (:report (lambda (c s) (format s "Failed to connect to database ~a.~@[ ~a~]"
-                                 (database c) (message c)))))
-
-(define-condition database-connection-already-open (database-warning)
-  ((database :initarg :database :initform (error "DATABASE required.") :accessor database))
-  (:report (lambda (c s) (format s "Connection to database ~a already open.~@[ ~a~]"
-                                 (database c) (message c)))))
-
-(define-condition database-invalid-collection (database-error)
-  ((collection :initarg :collection :initform (error "COLLECTION required.") :accessor collection))
-  (:report (lambda (c s) (format s "No such collection ~s.~@[ ~a~]"
-                                 (collection c) (message c)))))
-
-(define-condition database-collection-already-exists (database-error)
-  ((collection :initarg :collection :initform (error "COLLECTION required.") :accessor collection))
-  (:report (lambda (c s) (format s "The collection ~s already exists.~@[ ~a~]"
-                                 (collection c) (message c)))))
-
-(define-condition database-invalid-field (database-error)
-  ((fielddef :initarg :fielddef :initform (error "FIELD required.") :accessor fielddef))
-  (:report (lambda (c s) (format s "The field declaration ~s is invalid.~@[ ~a~]"
-                                 (fielddef c) (message c)))))
-
-(define-condition data-model-not-inserted-yet (database-error)
-  ((model :initarg :model :initform (error "MODEL required.") :accessor model))
-  (:report (lambda (c s) (format s "The model ~s has not been inserted yet.~@[ ~a~]"
-                                 (model c) (message c)))))
-
-(define-condition user-error (radiance-error)
-  ((user :initarg :user :initform (error "user required.") :accessor user)))
-
-(define-condition user-not-found (user-error) ()
-  (:report (lambda (c s) (format s "The user ~s could not been found.~@[ ~a~]"
-                                 (user c) (message c)))))
-
-(defun handle-condition (condition)
-  (l:warn :radiance "Handling stray condition: ~a" condition)
-  (cond (*debugger*
-         (invoke-debugger condition))
-        (T
-         (invoke-restart 'set-data (render-error-page condition)))))
-
-(defun render-error-page (condition)
-  (setf (return-code *response*) 500)
-  (setf (content-type *response*) "text/plain")
-  (format NIL "Internal error: ~s" condition))

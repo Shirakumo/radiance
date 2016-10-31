@@ -125,6 +125,18 @@
   (setf (content-type response) (or content-type (mimes:mime-lookup pathname) "application/octet-stream"))
   (setf (data response) pathname))
 
+(defun handle-condition (condition)
+  (l:warn :radiance "Handling stray condition: ~a" condition)
+  (cond (*debugger*
+         (invoke-debugger condition))
+        (T
+         (invoke-restart 'set-data (render-error-page condition)))))
+
+(defun render-error-page (condition)
+  (setf (return-code *response*) 500)
+  (setf (content-type *response*) "text/plain")
+  (format NIL "Internal error: ~s" condition))
+
 (define-hook request (request response))
 (defun execute-request (request &optional (response (make-instance 'response)))
   (declare (optimize (speed 3)))

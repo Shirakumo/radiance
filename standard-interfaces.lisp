@@ -62,6 +62,10 @@
 
 ;; To be specced
 (define-interface user
+  (define-condition condition (radiance-condition)
+    ())
+  (define-condition not-found (error condition)
+    ((name :initarg :name :initform (error "NAME required."))))
   (defclass user () ())
   (defun = (user-a user-b))
   (defun list ())
@@ -116,6 +120,22 @@
 
 ;; As per spec (needs updating)
 (define-interface (database db)
+  (define-condition condition (radiance-condition)
+    ())
+  (define-condition database-condition (condition)
+    ((database :initarg :database :initform (error "DATABASE required."))))
+  (define-condition connection-failed (error database-condition)
+    ())
+  (define-condition connection-already-open (warning database-condition)
+    ())
+  (define-condition collection-condition (database-condition)
+    ((collection :initarg :collection :initform (error "COLLECTION required."))))
+  (define-condition invalid-collection (error collection-condition)
+    ())
+  (define-condition collection-already-exists (error collection-condition)
+    ())
+  (define-condition invalid-field (error condition)
+    ((field :initarg :field :initform (error "FIELD required."))))
   (defun connect (database-name))
   (defun disconnect ())
   (defun connected-p ())
@@ -137,6 +157,10 @@
 
 ;; As per spec
 (define-interface (data-model dm)
+  (define-condition condition (radiance-condition)
+    ())
+  (define-condition not-inserted-yet (error condition)
+    ((model :initarg :model :initform (error "MODEL required."))))
   (defclass data-model () ())
   (defun id (data-model))
   (defun collection (data-model))
