@@ -17,6 +17,7 @@
   :serial T
   :components ((:file "module")
                (:file "toolkit")
+               (:file "conditions")
                (:file "config")
                (:file "interfaces")
                (:file "modules")
@@ -27,7 +28,6 @@
                (:file "routing")
                (:file "dispatch")
                (:file "request")
-               (:file "conditions")
                (:file "options")
                (:file "page")
                (:file "api")
