@@ -197,12 +197,12 @@
       (when virtual
         ;; Check if we are operating on the requested virtual domain
         (cond ((string-equal virtual last)
-               (setf (path uri) (concatenate 'string "!/" virtual "/" (path uri))
+               (setf (path uri) (format NIL "!/~a/~a" virtual (path uri))
                      (domains uri) (butlast (domains uri))))
               (last
                ;; Otherwise we need to use the specified subdomain as virtual
                ;; since we're trying to cross-reference a resource.
-               (setf (path uri) (concatenate 'string "!/" last "/" (path uri))
+               (setf (path uri) (format NIL "!/~a/~a" last (path uri))
                      (domains uri) (butlast (domains uri))))
               (T
                ;; Static resource refer, no change.
