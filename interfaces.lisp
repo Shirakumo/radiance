@@ -12,10 +12,6 @@
 (defun module (&optional module)
   (modularize:module module))
 
-(define-condition interface-implementation-not-set (error)
-  ((%requested :initarg :requested :initform (error "REQUESTED required.") :reader requested))
-  (:report (lambda (c s) (format s "Interface ~s requested but no implementation is configured." (requested c)))))
-
 ;; Ho boy here we go!
 ;; Hack into parse-dependency-def and add the interface
 ;; since hooking into resolve-dependency-combination is not enough anymore.

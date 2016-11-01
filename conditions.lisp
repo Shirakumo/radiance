@@ -71,3 +71,8 @@
   ((requested-format :initarg :format :initform (error "FORMAT required.") :accessor requested-format))
   (:report (lambda (c s) (format s "The requested format ~s is not known.~@[ ~a~]"
                                  (requested-format c) (message c)))))
+
+(define-condition interface-implementation-not-set (radiance-error)
+  ((requested :initarg :requested :initform (error "REQUESTED required.") :reader requested))
+  (:report (lambda (c s) (format s "Interface ~s requested but no implementation is configured."
+                                 (requested c)))))
