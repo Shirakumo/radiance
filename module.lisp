@@ -149,8 +149,8 @@
   ;; modules.lisp
   (:export
    #:*modules-directory*
-   #:domain
-   #:permissions
+   #:module-domain
+   #:module-permissions
    #:module-dependencies
    #:module-required-interfaces
    #:module-required-systems

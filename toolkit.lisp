@@ -186,11 +186,11 @@
 This macro is only usable from within a module context."
   (let ((perm (format NIL "~{~(~a~)~^.~}" tree)))
     ;; Execute during compile
-    (pushnew perm (permissions (module)) :test #'string=)
+    (pushnew perm (module-permissions (module)) :test #'string=)
     ;; And ensure during load as well.
     `(load-time-value
       (progn
-        (pushnew ,perm (permissions ,(module)) :test #'string=)
+        (pushnew ,perm (module-permissions ,(module)) :test #'string=)
         ,perm))))
 
 (defun copy-hash-table (table &key (test (hash-table-test table))

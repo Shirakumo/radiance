@@ -9,7 +9,7 @@
 (define-option-expander domain (package domain)
   (setf (module-storage package :radiance-domain) (string-downcase domain)))
 
-(defmethod domain ((module package))
+(defun module-domain (module)
   (let ((module (if (interface-p module)
                     (or (implementation module)
                         (error "Interface ~s has no implementation; cannot retrieve domain." module))
@@ -18,19 +18,22 @@
      (module-storage module :radiance-domain)
      (string-downcase (module-name module)))))
 
+(defmethod domain ((module package))
+  (module-domain module))
+
 (defmethod domain ((module symbol))
   (domain (module module)))
 
 (define-option-expander permissions (package &rest perms)
   `(setf (module-storage ,package :radiance-permissions) ',perms))
 
-(defun permissions (module)
+(defun module-permissions (module)
   (let ((module (if (interface-p module)
                     (implementation module)
                     (module module))))
     (module-storage module :radiance-permissions)))
 
-(defun (setf permissions) (list module)
+(defun (setf module-permissions) (list module)
   (let ((module (if (interface-p module)
                     (implementation module)
                     (module module))))
@@ -109,7 +112,7 @@
            (pprint-logical-block (stream NIL)
              (format stream "~@:_~a is a radiance module:" (module-name module))
              (pprint-indent :block 2 stream)
-             (format stream "~@:_Domain: ~s" (domain module))
+             (format stream "~@:_Domain: ~s" (module-domain module))
              (format stream "~@:_Implements: ~<~;~:[Nothing~;~:*~{~s~^, ~:_~}~]~;~:>"
                      (list (implements module)))
              (format stream "~@:_Claimed Pages: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
@@ -120,7 +123,7 @@
                      (list (let ((table (mconfig-storage module)))
                              (when table (loop for name being the hash-keys of table collect name)))))
              (format stream "~@:_Permissions: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
-                     (list (permissions module)))
+                     (list (module-permissions module)))
              (format stream "~@:_Hooks: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
                      (list (list-hooks module)))
              (terpri stream))))))
