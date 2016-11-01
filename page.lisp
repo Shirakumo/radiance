@@ -17,6 +17,9 @@
 (defun remove-page-option (name)
   (remhash name *page-options*))
 
+(defun list-page-options ()
+  (loop for name being the hash-keys of *page-options* collect name))
+
 (define-options-definer define-page-option page-option (namevar urivar bodyvar valuevar))
 
 (defmacro define-page (name uri options &body body)

@@ -19,6 +19,9 @@
 (defun remove-api-format (name)
   (remhash (string name) *api-formats*))
 
+(defun list-api-formats ()
+  (loop for name being the hash-keys of *api-formats* collect name))
+
 (defmacro define-api-format (name (argsvar) &body body)
   `(setf (api-format ,(string name))
          #'(lambda (,argsvar) ,@body)))
@@ -53,6 +56,9 @@
 (defun remove-api-option (name)
   (remhash name *api-options*))
 
+(defun list-api-options ()
+  (loop for name being the hash-keys of *api-options* collect name))
+
 (define-options-definer define-api-option api-option (namevar argsvar bodyvar valuevar))
 
 ;;; Pages
@@ -66,6 +72,9 @@
 
 (defun remove-api-page (path)
   (remhash (string path) *api-pages*))
+
+(defun list-api-pages ()
+  (loop for page being the hash-values of *api-pages* collect page))
 
 (defun ensure-api-page (thing)
   (etypecase thing

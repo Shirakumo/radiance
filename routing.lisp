@@ -50,6 +50,9 @@
                      *routes*))
     found))
 
+(defun list-routes ()
+  (copy-list *routes*))
+
 (defmacro define-route (name type (urivar) &body body)
   (destructuring-bind (type &optional priority) (ensure-list type)
     `(setf (route ',name ,type ,priority)

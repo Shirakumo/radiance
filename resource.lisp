@@ -18,6 +18,9 @@
 (defun remove-resource-type (type)
   (remhash (string-downcase type) *resource-locators*))
 
+(defun list-resource-types ()
+  (loop for name being the hash-keys *resource-locators* collect name))
+
 (defun resource-locator (type ident)
   (or (gethash (string-downcase ident) (resource-type type))
       (if (eql ident T)
