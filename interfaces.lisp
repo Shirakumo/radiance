@@ -65,12 +65,6 @@
         (asdf:find-system configured-implementation T)
         configured-implementation)))
 
-(defmacro define-interface (name &body components)
-  `(interfaces:define-interface ,name
-     (define-hook implemented ()
-       "Called when the interface is implemented.")
-     ,@components))
-
 (indent:define-indentation define-interface (4 &rest (&whole 2 0 4 &body)))
 
 (defun load-implementation (interface)
@@ -89,6 +83,12 @@
             #+:quicklisp
             (ql:quickload implementation)))))))
 
+;; FIXME: Currently we have no way of triggering the unimplemented hook...
+(defmacro define-interface (name &body components)
+  `(interfaces:define-interface ,name
+     (define-hook-switch implemented unimplemented ())
+     ,@components))
+
 (defmacro define-implement-hook (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (if (listp interface) interface (list interface))
     (let ((interface (interface interface))
@@ -96,6 +96,4 @@
       `(eval-when (:compile-toplevel :load-toplevel :execute)
          (define-trigger (,hook ,ident) ()
            (let ((*package* ,*package*)) ;; capture package env
-             (funcall (compile NIL '(lambda () ,@body)))))
-         (when (implementation ',interface)
-           (trigger ',hook))))))
+             (funcall (compile NIL '(lambda () ,@body)))))))))
