@@ -27,7 +27,7 @@
   (:report (lambda (c s) (format s "An internal error has ocurred.~@[ ~a~]" (message c)))))
 
 (define-condition request-error (radiance-error)
-  ((current-request :initarg :request :initform *request* :accessor current-request))
+  ((current-request :initarg :request :initform (symbol-value '*request*) :accessor current-request))
   (:report (lambda (c s) (format s "An error has ocurred while processing the request ~a.~@[ ~a~]"
                                  (current-request c) (message c)))))
 

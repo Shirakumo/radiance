@@ -89,7 +89,7 @@
              :timezone local-time:+utc-zone+))
 
 (defun format-time (stamp &optional (relative-time-threshold (* 60 60 24)))
-  (when (typep stamp local-time:timestamp)
+  (when (typep stamp 'local-time:timestamp)
     (setf stamp (local-time:timestamp-to-universal stamp)))
   (let ((now (get-universal-time)))
     (cond ((and (< (- now relative-time-threshold) stamp) (<= stamp now))
