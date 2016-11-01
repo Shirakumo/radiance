@@ -85,26 +85,7 @@
    #:api-call-not-found
    #:api-response-empty
    #:api-unknown-format
-   #:requested-format
-   #:database-error
-   #:database-warning
-   #:database-connection-failed
-   #:database
-   #:database-connection-already-open
-   #:database-invalid-collection
-   #:collection
-   #:database-collection-already-exists
-   #:database-invalid-field
-   #:fielddef
-   #:data-model-not-inserted-yet
-   #:model
-   #:user-error
-   #:user
-   #:user-not-found
-
-   #:present-error-page
-   #:handle-condition
-   #:render-error-page)
+   #:requested-format)
   ;; config.lisp
   (:export
    #:environment-change
@@ -240,6 +221,10 @@
    #:execute-request
    #:set-data
    #:request
+
+   #:present-error-page
+   #:handle-condition
+   #:render-error-page
 
    #:request-run-time
    #:thread-run-time)
