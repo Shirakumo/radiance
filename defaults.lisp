@@ -37,6 +37,7 @@
 (define-api-option access (name args body (branch T))
   (transform-access-body body branch))
 
+;; FIXME: This feels wrong. Maybe relocate
 (define-implement-hook (admin 'define-accessor-option)
   (admin:define-panel-option access (name category body (branch T))
     (declare (ignore name category))
@@ -48,7 +49,7 @@
     (transform-access-body body branch)))
 
 ;; Standard serialisations
-(defmethod api-serialize ((error radiance-error))
+(defmethod api-serialize ((error radiance-condition))
   (let ((table (make-hash-table)))
     (flet ((s (k v) (setf (gethash (string-downcase k) table) v)))
       (s :error-type (type-of error))
@@ -59,9 +60,7 @@
                               api-argument-invalid))
         (s :argument (argument error)))
       (when (typep error 'api-unknown-format)
-        (s :format (requested-format error)))
-      (when (typep error 'user-error)
-        (s :format (user error))))
+        (s :format (requested-format error))))
     table))
 
 ;; Api catchall page
