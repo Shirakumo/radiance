@@ -49,27 +49,29 @@
   (:export
    #:*default-api-format*
    #:*serialize-fallback*
-   #:api-output
    #:api-format
    #:remove-api-format
+   #:list-api-formats
    #:define-api-format
+   #:api-output
    #:api-serialize
    
    #:api-option
    #:remove-api-option
+   #:list-api-options
    #:define-api-option
 
    #:api-page
    #:remove-api-page
+   #:list-api-pages
    #:call-api-request
    #:call-api
    #:define-api)
   ;; conditions.lisp
   (:export
    #:*debugger*
-   #:radiance-error
+   #:radiance-condition
    #:message
-   #:radiance-warning
    #:environment-not-set
    #:internal-error
    #:request-error
@@ -85,7 +87,8 @@
    #:api-call-not-found
    #:api-response-empty
    #:api-unknown-format
-   #:requested-format)
+   #:requested-format
+   #:interface-implementation-not-set)
   ;; config.lisp
   (:export
    #:environment-change
@@ -107,24 +110,28 @@
    #:with-actions)
   ;; defaults.lisp
   (:export
+   #:with-trigger
+   #:uri-groups
+   #:access
    #:favicon
    #:robots
    #:static
-   #:welcome
    #:add-domain
-   #:remove-domain)
+   #:remove-domain
+   #:internalizer
+   #:externalizer
+   #:virtual-module)
   ;; dispatch.lisp
   (:export
    #:uri-dispatcher
-   #:remove-uri-dispatcher
    #:name
    #:dispatch-function
    #:priority
    
    #:uri-dispatcher
    #:make-uri-dispatcher
-   #:define-uri-dispatcher
    #:list-uri-dispatchers
+   #:define-uri-dispatcher
    #:dispatch)
   ;; init.lisp
   (:export
@@ -139,12 +146,16 @@
    #:shutdown
    #:shutdown-done
    #:started-p)
+  ;; interface-components.lisp
+  (:export
+   #:define-hook
+   #:define-hook-switch
+   #:define-resource-locator)
   ;; interfaces.lisp
   (:export
-   #:define-interface
-   #:interface-implementation-not-set
    #:find-implementation
    #:load-implementation
+   #:define-interface
    #:define-implement-hook)
   ;; modules.lisp
   (:export
@@ -167,6 +178,7 @@
   (:export
    #:page-option
    #:remove-page-option
+   #:list-page-options
    #:define-page-option
    #:*page-body*
    #:define-page)
@@ -174,7 +186,6 @@
   (:export
    #:*request*
    #:*response*
-   #:*session*
    #:*default-external-format*
    #:*default-content-type*
    
@@ -230,9 +241,11 @@
    #:thread-run-time)
   ;; resource.lisp
   (:export
-   #:implicit-resource-type-warning
-   #:define-resource-type
+   #:resource-type
    #:remove-resource-type
+   #:list-resource-types
+   #:resource-locator
+   #:define-resource-type
    #:define-resource-locator
    #:resource)
   ;; routing.lisp
@@ -244,6 +257,7 @@
    #:translator
    #:route
    #:remove-route
+   #:list-routes
    #:define-route
    #:define-matching-route
    #:define-target-route
@@ -254,6 +268,7 @@
   (:export
    #:*root*
    #:*data-path*
+   #:*random-string-characters*
    #:make-keyword
    #:universal-to-unix-time
    #:unix-to-universal-time
@@ -283,6 +298,8 @@
 
    #:uri-string
    #:make-uri
+   #:ensure-uri
+   #:copy-uri
    #:parse-uri
    #:uri<
    #:uri>
