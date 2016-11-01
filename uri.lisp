@@ -56,7 +56,7 @@
         (make-uri :domains (when domains (nreverse (cl-ppcre:split "\\." (string-downcase domains))))
                   :port (when port (parse-integer port))
                   :path path))
-      (error "Failed to parse URI ~s" uri-string)))
+      (error 'unparsable-uri-string :string uri-string)))
 
 (defun read-uri (stream char arg)
   (declare (ignore char arg))

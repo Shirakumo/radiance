@@ -72,7 +72,35 @@
   (:report (lambda (c s) (format s "The requested format ~s is not known.~@[ ~a~]"
                                  (requested-format c) (message c)))))
 
-(define-condition interface-implementation-not-set (radiance-error)
-  ((requested :initarg :requested :initform (error "REQUESTED required.") :reader requested))
+(define-condition api-unserializable-object (api-error)
+  ((object :initarg :object :initform (error "OBJECT required.")))
+  (:report (lambda (c s) (format s "The object ~s is not serializable to the API format."
+                                 (slot-value c 'object)))))
+
+(define-condition interface-condition (radiance-condition)
+  ((interface :initarg :interface :initform (error "REQUESTED required."))))
+
+(define-condition interface-implementation-not-set (interface-condition radiance-error)
+  ()
   (:report (lambda (c s) (format s "Interface ~s requested but no implementation is configured."
-                                 (requested c)))))
+                                 (slot-value c 'interface)))))
+
+(define-condition interface-implementation-not-present (interface-condition radiance-error)
+  ()
+  (:report (lambda (c s) (format S "Interface ~s has no loaded implementation."
+                                 (slot-value c 'interface)))))
+
+(define-condition unparsable-uri-string (radiance-error)
+  ((string :initarg :string :initform (error "STRING required.")))
+  (:report (lambda (c s) (format s "The string ~s is not parseable as a URI."
+                                 (slot-value c 'string)))))
+
+(define-condition no-such-post-parameter (request-error)
+  ((parameter :initarg :parameter :initform (error "PARAMETER required.")))
+  (:report (lambda (c s) (format s "The post parameter ~s was not present."
+                                 (slot-value c 'parameter)))))
+
+(define-condition post-parameter-not-a-file (request-error)
+  ((parameter :initarg :parameter :initform (error "PARAMETER required.")))
+  (:report (lambda (c s) (format s "The post parameter ~s is not a posted file."
+                                 (slot-value c 'parameter)))))

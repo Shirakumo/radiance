@@ -12,7 +12,7 @@
 (defun module-domain (module)
   (let ((module (if (interface-p module)
                     (or (implementation module)
-                        (error "Interface ~s has no implementation; cannot retrieve domain." module))
+                        (error 'interface-implementation-not-present :interface module))
                     (module module))))
     (or
      (module-storage module :radiance-domain)

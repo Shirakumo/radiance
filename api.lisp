@@ -41,8 +41,7 @@
 
 (defmethod no-applicable-method ((func (eql (symbol-function 'api-serialize))) &rest args)
   (declare (ignore func))
-  (error "Don't know how to serialize ~s. No applicable API-SERIALIZE method found."
-         (first args)))
+  (error 'api-unserializable-object :object (first args)))
 
 ;;; Options
 (defvar *api-options* (make-hash-table))

@@ -101,9 +101,9 @@
  (PATH ORIGINAL-FILENAME MIME-TYPE)"
   (let ((var (post-var name request)))
     (cond
-      ((null var) (error "No such post parameter."))
+      ((null var) (error 'no-such-post-parameter :request request :parameter name))
       ((listp var) var)
-      (T (error "Post parameter is not a file.")))))
+      (T (error 'post-parameter-not-a-file :request request :parameter name)))))
 
 (defun (setf cookie) (value name &key domain path timeout http-only secure (response *response*))
   (setf (gethash name (cookies response))

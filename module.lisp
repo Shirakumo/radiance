@@ -88,7 +88,10 @@
    #:api-response-empty
    #:api-unknown-format
    #:requested-format
-   #:interface-implementation-not-set)
+   #:interface-implementation-not-set
+   #:unparsable-uri-string
+   #:no-such-post-parameter
+   #:post-parameter-not-a-file)
   ;; config.lisp
   (:export
    #:environment-change

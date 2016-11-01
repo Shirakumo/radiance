@@ -17,8 +17,6 @@
 (defvar *uri-priority* (make-array 0 :element-type 'uri-dispatcher))
 (defparameter *uri-fallback* #'(lambda ()
                                  (cond
-                                   ((boundp '*response*)
-                                    (serve-file (data-file "html/error/404.html") "application/xhtml+xml"))
                                    ((boundp '*request*)
                                     (error 'request-not-found :message "Reached dispatch fallback."))
                                    (T
