@@ -132,13 +132,8 @@
   (when (module-p module)
     (describe-module module stream)))
 
-(defun find-modules-directory ()
-  (if (in-quicklisp-p :radiance)
-      (merge-pathnames "radiance/modules/" (or (first ql:*local-project-directories*)
-                                               (error "No local projects directory configured in Quicklisp; Don't know how to find the modules directory.")))
-      (merge-pathnames "modules/" *root*)))
-
-(defvar *modules-directory* (find-modules-directory))
+(defvar *modules-directory* (or #+quicklisp (first ql:*local-project-directories*)
+                                #-quicklisp *default-pathname-defaults*))
 
 (defun create-module (name &key (base-file name) dependencies (root *modules-directory*))
   (let* ((name (string-downcase name))
