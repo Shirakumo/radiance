@@ -8,13 +8,11 @@
 
 (defvar *request*)
 (defvar *response*)
-(defvar *session*)
 (defvar *default-external-format* :UTF-8)
 (defvar *default-content-type* "text/html")
 
 (defun *request* () *request*)
 (defun *response* () *response*)
-(defun *session* () *session*)
 
 (defclass request ()
   ((uri :initarg :uri :initform (error "URI required.") :accessor uri)
@@ -143,8 +141,7 @@
   (l:trace :core.request "Executing request: ~s ~s" request response)
   (handler-bind ((error #'handle-condition))
     (let ((*request* request)
-          (*response* response)
-          (*session* NIL))
+          (*response* response))
       (restart-case
           (progn
             (trigger 'request request response)
