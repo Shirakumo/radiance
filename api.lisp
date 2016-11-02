@@ -97,7 +97,7 @@
    :request-handler ()
    :docstring NIL))
 
-(defun make-request-calling-function (function &optional (arglist (arg:arglist function)))
+(defun make-request-handler-function (function &optional (arglist (arg:arglist function)))
   (let ((request (gensym "REQUEST")))
     (flet ((parse (arg optional)
              (cond ((not optional)
@@ -120,7 +120,7 @@
           (arg:arglist (handler page))))
   (unless (request-handler page)
     (setf (slot-value page 'request-handler)
-          (compile NIL (make-request-calling-function (handler page) (argslist page))))))
+          (compile NIL (make-request-handler-function (handler page) (argslist page))))))
 
 (defmethod print-object ((api api-page) stream)
   (print-unreadable-object (api stream :type T)
