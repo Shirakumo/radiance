@@ -34,7 +34,7 @@
   (universal-to-unix-time (get-universal-time)))
 
 (defun format-relative-time (stamp)
-  (when (typep stamp local-time:timestamp)
+  (when (typep stamp 'local-time:timestamp)
     (setf stamp (local-time:timestamp-to-universal stamp)))
   (if (= stamp 0)
       (format NIL "0 seconds")
