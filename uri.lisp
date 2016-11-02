@@ -19,7 +19,8 @@
    :path NIL
    :matcher NIL))
 
-(defmethod initialize-instance :after ((uri uri) &key)
+(defmethod shared-initialize :after ((uri uri) slots &key)
+  (declare (ignore slots))
   (when (eql (matcher uri) T)
     (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
