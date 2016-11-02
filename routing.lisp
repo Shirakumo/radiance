@@ -81,7 +81,9 @@
                           :name ',name
                           :direction ,type
                           :priority ,priority
-                          :translator (lambda (,urivar) ,@body)))))
+                          :translator (lambda (,urivar)
+                                        (declare (type uri ,urivar))
+                                        ,@body)))))
 
 (defun extract-vars-and-tests (test-forms)
   (loop with basic-tests = ()
