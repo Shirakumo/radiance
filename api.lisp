@@ -139,20 +139,23 @@
          arguments))
 
 (defmacro define-api (name args options &body body)
-  (multiple-value-bind (body forms) (expand-options *api-options* options body name args)
-    `(eval-when (:compile-toplevel :load-toplevel :execute)
-       ,@forms
-       ,@(when (module)
-           `((pushnew ,(string name) (module-storage ,(module) 'radiance-apis) :test #'equalp)))
-       (setf (api-page ,(string name))
-             (make-instance
-              'api-page
-              :name ,(string name)
-              :argslist ',args
-              :handler (lambda ,args
-                         (block ,(when (symbolp name) name)
-                           ,@body))
-              :docstring ,(getf options :documentation))))))
+  (let ((handler (gensym "HANDLER")))
+    (multiple-value-bind (body forms) (expand-options *api-options* options body name args)
+      `(eval-when (:compile-toplevel :load-toplevel :execute)
+         ,@forms
+         ,@(when (module)
+             `((pushnew ,(string name) (module-storage ,(module) 'radiance-apis) :test #'equalp)))
+         (flet ((,handler ,args
+                  (block ,(when (symbolp name) name)
+                    ,@body)))
+           (setf (api-page ,(string name))
+                 (make-instance
+                  'api-page
+                  :name ,(string name)
+                  :argslist ',args
+                  :handler #',handler
+                  :request-handler ,(make-request-handler-function `#',handler args)
+                  :docstring ,(getf options :documentation))))))))
 
 (define-delete-hook (module 'radiance-destroy-apis)
   (dolist (page (module-storage module 'radiance-apis))
