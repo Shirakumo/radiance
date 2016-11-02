@@ -6,6 +6,8 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
+(defvar *debugger* NIL)
+
 (defun handle-condition (condition)
   (l:warn :radiance "Handling stray condition: ~a" condition)
   (cond (*debugger*

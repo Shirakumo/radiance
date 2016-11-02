@@ -6,8 +6,6 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defvar *debugger* NIL)
-
 (define-condition radiance-condition (condition)
   ((message :initarg :message :initform NIL :accessor message)))
 
