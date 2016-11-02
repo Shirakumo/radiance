@@ -41,6 +41,7 @@
       (setf (environment) environment))))
 
 (defun mconfig-pathname (module &optional (type :lisp))
+  (check-environment)
   (merge-pathnames
    (if (and (module-p module) (module-storage module :config-pathname))
        (module-storage module :config-pathname)
