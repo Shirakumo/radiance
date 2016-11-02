@@ -240,8 +240,7 @@
    #:handle-condition
    #:render-error-page
 
-   #:request-run-time
-   #:thread-run-time)
+   #:request-run-time)
   ;; resource.lisp
   (:export
    #:resource-type

@@ -22,8 +22,6 @@
                (:file "interfaces")
                (:file "modules")
                (:file "resource")
-               (:file "interface-components")
-               (:file "standard-interfaces")
                (:file "uri")
                (:file "routing")
                (:file "dispatch")
@@ -31,9 +29,12 @@
                (:file "options")
                (:file "page")
                (:file "api")
-               (:file "init")
+               (:file "interface-components")
+               (:file "standard-interfaces")
+               (:file "handle")
                (:file "defaults")
                (:file "convenience")
+               (:file "init")
                (:file "documentation"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
