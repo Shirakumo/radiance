@@ -80,7 +80,8 @@
                           :priority ,priority
                           :translator (lambda (,urivar)
                                         (declare (type uri ,urivar))
-                                        ,@body)))))
+                                        (block ,name
+                                          ,@body))))))
 
 (defun extract-vars-and-tests (test-forms)
   (loop with basic-tests = ()
