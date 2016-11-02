@@ -255,7 +255,7 @@
   (:export
    #:route
    #:name
-   #:route-type
+   #:direction
    #:priority
    #:translator
    #:route

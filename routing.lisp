@@ -6,7 +6,17 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defvar *routes* ())
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass route ()
+    ((name :initarg :name :initform (error "NAME required.") :accessor name)
+     (direction :initarg :direction :initform (error "TYPE required.") :accessor direction)
+     (priority :initarg :priority :initform 0 :accessor priority)
+     (translator :initarg :translator :initform (error "TRANSLATOR required.") :accessor translator))))
+
+(declaim (type (simple-array function) *route-mapping* *route-reversal*))
+(defvar *route-registry* (make-hash-table :test 'eql))
+(defvar *route-mapping* (make-array 0 :element-type 'function))
+(defvar *route-reversal* (make-array 0 :element-type 'function))
 
 (defun ensure-path (var)
   (if (listp var) (format NIL "~{~a~^/~}" var) var))
@@ -14,49 +24,59 @@
 (defun ensure-list (var)
   (if (listp var) var (list var)))
 
-(defclass route ()
-  ((name :initarg :name :initform (error "NAME required.") :accessor name)
-   (type :initarg :type :initform (error "TYPE required.") :accessor route-type)
-   (priority :initarg :priority :initform 0 :accessor priority)
-   (translator :initarg :translator :initform (error "TRANSLATOR required.") :accessor translator)))
-
 (defmethod print-object ((route route) stream)
   (print-unreadable-object (route stream :type T)
-    (format stream "~s ~a" (route-type route) (name route)))
+    (format stream "~s ~a" (direction route) (name route)))
   route)
 
 (defun route (name type)
-  (find-if #'(lambda (route)
-               (and (eql type (route-type route))
-                    (eql name (name route))))
-           *routes*))
+  (ecase type
+    (:mapping (car (gethash name *route-registry*)))
+    (:reversal (cdr (gethash name *route-registry*)))))
 
-(defun (setf route) (translator name type &optional priority)
-  (let ((route (route name type)))
-    (if route
-        (setf (priority route) (or priority (priority route))
-              (translator route) translator)
-        (push (make-instance 'route :name name :type type :translator translator :priority (or priority 0)) *routes*)))
-  (setf *routes* (sort *routes* #'> :key #'priority))
-  (route name type))
+(defun (setf route) (route name type)
+  (let ((cons (gethash name *route-registry* (cons NIL NIL))))
+    (ecase type
+      (:mapping (setf (car cons) route))
+      (:reversal (setf (cdr cons) route)))
+    (setf (gethash name *route-registry*) cons))
+  (rebuild-route-vectors)
+  route)
 
 (defun remove-route (name type)
-  (let ((found NIL))
-    (setf *routes*
-          (delete-if #'(lambda (route)
-                         (when (and (eql type (route-type route))
-                                    (eql name (name route)))
-                           (setf found route)))
-                     *routes*))
-    found))
+  (ecase type
+    (:mapping (setf (car (gethash name *route-registry* (cons NIL NIL))) NIL))
+    (:reversal (setf (cdr (gethash name *route-registry* (cons NIL NIL))) NIL)))
+  (rebuild-route-vectors)
+  NIL)
 
 (defun list-routes ()
-  (copy-list *routes*))
+  (loop for cons being the hash-values of *route-registry*
+        for mapping = (car cons)
+        for reversal = (cdr cons)
+        when mapping collect mapping
+        when reversal collect reversal))
+
+(defun rebuild-route-vectors ()
+  (let ((mapping (remove :reversal (list-routes) :key #'direction))
+        (reversal (remove :mapping (list-routes) :key #'direction)))
+    (let ((mapfuns (mapcar #'translator (sort mapping #'> :key #'priority)))
+          (revfuns (mapcar #'translator (sort reversal #'> :key #'priority))))
+      (setf *route-mapping* (make-array (length mapfuns)
+                                        :element-type 'function
+                                        :initial-contents mapfuns))
+      (setf *route-reversal* (make-array (length revfuns)
+                                         :element-type 'function
+                                         :initial-contents revfuns)))))
 
 (defmacro define-route (name type (urivar) &body body)
-  (destructuring-bind (type &optional priority) (ensure-list type)
-    `(setf (route ',name ,type ,priority)
-           #'(lambda (,urivar) ,@body))))
+  (destructuring-bind (type &optional (priority 0)) (ensure-list type)
+    `(setf (route ',name ,type)
+           (make-instance 'route
+                          :name ',name
+                          :direction ,type
+                          :priority ,priority
+                          :translator (lambda (,urivar) ,@body)))))
 
 (defun extract-vars-and-tests (test-forms)
   (loop with basic-tests = ()
@@ -163,21 +183,15 @@
                    (path uri) (path newuri))))))))
 
 (defun internal-uri (uri)
-  "Returns an internal equivalent of URI, suitable for usage inside the Radiance framework environment.
-
-See RADIANCE>ROUTING>MAPPING"
+  (declare (optimize speed))
   (loop with internal = (copy-uri uri)
-        for route in *routes*
-        when (eql (route-type route) :mapping)
-        do (funcall (translator route) internal)
+        for translator in *route-mapping*
+        do (funcall (the function translator) internal)
         finally (return internal)))
 
 (defun external-uri (uri)
-  "Returns an external equivalent of URI, suitable for usage in templates and user-facing data.
-
-See RADIANCE>ROUTING>REVERSAL"
+  (declare (optimize speed))
   (loop with external = (copy-uri uri)
-        for route in *routes*
-        when (eql (route-type route) :reversal)
-        do (funcall (translator route) external)
+        for translator in *route-reversal*
+        do (funcall (the function translator) external)
         finally (return external)))
