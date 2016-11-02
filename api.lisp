@@ -28,9 +28,9 @@
            (block ,name
              ,@body))))
 
-(defun api-output (data &key (status 200) (message "Ok."))
+(defun api-output (data &key (status 200) (message "Ok.") (format (post/get "data-format")))
   (unless data (error 'api-response-empty))
-  (let ((format (or (post/get "data-format") *default-api-format*)))
+  (let ((format (or format *default-api-format*)))
     (funcall (or (api-format format)
                  (error 'api-unknown-format :format format))
              (let ((table (make-hash-table :test 'equal)))
