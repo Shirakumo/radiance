@@ -6,13 +6,18 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defclass uri ()
-  ((domains :initarg :domains :initform () :accessor domains)
-   (port :initarg :port :initform NIL :accessor port)
-   (path :initarg :path :initform NIL :accessor path)
-   (matcher :initarg :matcher :initform NIL :accessor matcher)))
 (declaim (ftype (function (T) (or (integer 0 65535) null)) port))
 (declaim (ftype (function ((or (integer 0 65535) null) T) T) (setf port)))
+(defclass uri ()
+  ((domains :initarg :domains :accessor domains)
+   (port :initarg :port :accessor port)
+   (path :initarg :path :accessor path)
+   (matcher :initarg :matcher :accessor matcher))
+  (:default-initargs
+   :domains ()
+   :port NIL
+   :path NIL
+   :matcher NIL))
 
 (defmethod initialize-instance :after ((uri uri) &key)
   (when (eql (matcher uri) T)

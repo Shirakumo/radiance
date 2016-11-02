@@ -82,11 +82,17 @@
     (api-page thing)))
 
 (defclass api-page ()
-  ((name :initarg :name :initform (error "NAME required.") :accessor name)
-   (handler :initarg :handler :initform (error "HANDLER function required.") :reader handler)
+  ((name :initarg :name :accessor name)
+   (handler :initarg :handler :reader handler)
    (argslist :initarg :argslist :reader argslist)
-   (request-handler :initarg :request-handler :initform () :reader request-handler)
-   (docstring :initarg :docstring :initform NIL :accessor docstring)))
+   (request-handler :initarg :request-handler :reader request-handler)
+   (docstring :initarg :docstring :accessor docstring))
+  (:default-initargs
+   :name (error "NAME required")
+   :handler (error "HANDLER function required")
+   :argslist ()
+   :request-handler ()
+   :docstring NIL))
 
 (defun make-request-calling-function (function &optional (arglist (arg:arglist function)))
   (let ((request (gensym "REQUEST")))

@@ -6,12 +6,16 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
+(declaim (ftype (function (uri-dispatcher) function) dispatch-function))
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass uri-dispatcher (uri)
-    ((name :initarg :name :initform (error "NAME required.") :accessor name)
-     (dispatch-function :initarg :dispatch-function :initform (error "DISPATCH-FUNCTION required.") :accessor dispatch-function)
-     (priority :initarg :priority :initform NIL :accessor priority))))
-(declaim (ftype (function (uri-dispatcher) function) dispatch-function))
+    ((name :initarg :name :accessor name)
+     (dispatch-function :initarg :dispatch-function :accessor dispatch-function)
+     (priority :initarg :priority :accessor priority)))
+  (:default-initargs
+   :name (error "NAME required.")
+   :dispatch-function (error "DISPATCH-FUNCTION required.")
+   :priority NIL))
 
 (defvar *uri-registry* (make-hash-table :test 'eql))
 (defvar *uri-priority* (make-array 0 :element-type 'uri-dispatcher))

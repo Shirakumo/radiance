@@ -8,10 +8,15 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defclass route ()
-    ((name :initarg :name :initform (error "NAME required.") :accessor name)
-     (direction :initarg :direction :initform (error "TYPE required.") :accessor direction)
-     (priority :initarg :priority :initform 0 :accessor priority)
-     (translator :initarg :translator :initform (error "TRANSLATOR required.") :accessor translator))))
+    ((name :initarg :name :accessor name)
+     (direction :initarg :direction :accessor direction)
+     (priority :initarg :priority :accessor priority)
+     (translator :initarg :translator :accessor translator))
+    (:default-initargs
+     :name (error "NAME required")
+     :direction (error "DIRECTION required")
+     :priority 0
+     :translator (error "TRANSLATOR required"))))
 
 (declaim (type (simple-array function) *route-mapping* *route-reversal*))
 (defvar *route-registry* (make-hash-table :test 'eql))

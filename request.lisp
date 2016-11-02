@@ -15,16 +15,27 @@
 (defun *response* () *response*)
 
 (defclass request ()
-  ((uri :initarg :uri :initform (error "URI required.") :accessor uri)
-   (http-method :initarg :http-method :initform :GET :accessor http-method)
-   (headers :initarg :headers :initform (make-hash-table :test 'equalp) :accessor headers)
-   (post-data :initarg :post-data :initform (make-hash-table :test 'equalp) :accessor post-data)
-   (get-data :initarg :get-data :initform (make-hash-table :test 'equalp) :accessor get-data)
-   (cookies :initarg :cookies :initform (make-hash-table :test 'equalp) :accessor cookies)
-   (domain :initarg :domain :initform "localhost" :accessor domain)
-   (remote :initarg :remote :initform "unknown" :accessor remote)
-   (data :initarg :data :initform (make-hash-table :test 'eql) :accessor data)
-   (issue-time :initarg :issue-time :initform (get-universal-time) :accessor issue-time)))
+  ((uri :initarg :uri :accessor uri)
+   (http-method :initarg :http-method :accessor http-method)
+   (headers :initarg :headers :accessor headers)
+   (post-data :initarg :post-data :accessor post-data)
+   (get-data :initarg :get-data :accessor get-data)
+   (cookies :initarg :cookies :accessor cookies)
+   (domain :initarg :domain :accessor domain)
+   (remote :initarg :remote :accessor remote)
+   (data :initarg :data :accessor data)
+   (issue-time :initarg :issue-time :accessor issue-time))
+  (:default-initargs
+   :uri (error "URI required")
+   :http-method :get
+   :headers (make-hash-table :test 'equalp)
+   :post-data (make-hash-table :test 'equalp)
+   :get-data (make-hash-table :test 'equalp)
+   :cookies (make-hash-table :test 'equalp)
+   :domain "localhost"
+   :remote "unknown"
+   :data (make-hash-table :test 'eql)
+   :issue-time (get-universal-time)))
 
 (defmethod print-object ((request request) stream)
   (print-unreadable-object (request stream :type T)
@@ -32,12 +43,19 @@
   request)
 
 (defclass response ()
-  ((data :initarg :data :initform NIL :accessor data)
-   (return-code :initarg :return-code :initform 200 :accessor return-code)
-   (content-type :initarg :content-type :initform *default-content-type* :accessor content-type)
-   (external-format :initarg :external-format :initform *default-external-format* :accessor external-format)
-   (headers :initarg :headers :initform (make-hash-table :test 'equalp) :accessor headers)
-   (cookies :initarg :cookies :initform (make-hash-table :test 'equalp) :accessor cookies)))
+  ((data :initarg :data :accessor data)
+   (return-code :initarg :return-code :accessor return-code)
+   (content-type :initarg :content-type :accessor content-type)
+   (external-format :initarg :external-format :accessor external-format)
+   (headers :initarg :headers :accessor headers)
+   (cookies :initarg :cookies :accessor cookies))
+  (:default-initargs
+   :data NIL
+   :return-code 200
+   :content-type *default-content-type*
+   :external-format *default-external-format*
+   :headers (make-hash-table :test 'equalp)
+   :cookies (make-hash-table :test 'equalp)))
 
 (defmethod print-object ((response response) stream)
   (print-unreadable-object (response stream :type T)
@@ -45,13 +63,21 @@
   response)
 
 (defclass cookie ()
-  ((name :initarg :name :initform (error "NAME required.") :accessor name)
-   (value :initarg :value :initform "" :accessor value)
-   (domain :initarg :domain :initform NIL :accessor domain)
-   (path :initarg :path :initform NIL :accessor path)
-   (expires :initarg :expires :initform NIL :accessor expires)
-   (http-only :initarg :http-only :initform NIL :accessor http-only)
-   (secure :initarg :secure :initform NIL :accessor secure)))
+  ((name :initarg :name :accessor name)
+   (value :initarg :value :accessor value)
+   (domain :initarg :domain :accessor domain)
+   (path :initarg :path :accessor path)
+   (expires :initarg :expires :accessor expires)
+   (http-only :initarg :http-only :accessor http-only)
+   (secure :initarg :secure :accessor secure))
+  (:default-initargs
+   :name (error "NAME required")
+   :value ""
+   :domain NIL
+   :path NIL
+   :expires NIL
+   :http-only NIL
+   :secure NIL))
 
 (defun %cookie-time (stream time atp cp)
   (declare (ignore atp cp))
