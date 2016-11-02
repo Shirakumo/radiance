@@ -26,9 +26,6 @@
 (defun ensure-path (var)
   (if (listp var) (format NIL "~{~a~^/~}" var) var))
 
-(defun ensure-list (var)
-  (if (listp var) var (list var)))
-
 (defmethod print-object ((route route) stream)
   (print-unreadable-object (route stream :type T)
     (format stream "~s ~a" (direction route) (name route)))
@@ -75,7 +72,7 @@
                                          :initial-contents revfuns)))))
 
 (defmacro define-route (name type (urivar) &body body)
-  (destructuring-bind (type &optional (priority 0)) (ensure-list type)
+  (destructuring-bind (type &optional (priority 0)) (enlist type)
     `(setf (route ',name ,type)
            (make-instance 'route
                           :name ',name
@@ -156,8 +153,8 @@
      ,@(unless (eql target-domains '*)
          `((setf (domains uri)
                  ,(if (listp target-domains)
-                      `(apply #'append (mapcar #'ensure-list (list ,@target-domains)))
-                      `(ensure-list ,target-domains)))))
+                      `(apply #'append (mapcar #'enlist (list ,@target-domains)))
+                      `(enlist ,target-domains)))))
      ,@(unless (eql target-port '*)
          `((setf (port uri) ,target-port)))
      ,@(unless (eql target-path '*)

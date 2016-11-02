@@ -22,7 +22,7 @@
        (declare (ignorable ,model))
        (symbol-macrolet
            ,(mapcar #'(lambda (field)
-                        (destructuring-bind (name &optional (field name)) (if (listp field) field (list field))
+                        (destructuring-bind (name &optional (field name)) (enlist field)
                           `(,name (dm:field ,model ,(string-downcase field))))) fields)
          ,@body))))
 

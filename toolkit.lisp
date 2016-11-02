@@ -15,6 +15,9 @@
   (defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789"))
 (defconstant +unix-epoch-difference+ (encode-universal-time 0 0 0 1 1 1970 0))
 
+(defun enlist (var &rest args)
+  (if (listp var) var (list* var args)))
+
 (defun make-keyword (name)
   (let ((name (string name)))
     (or (find-symbol name "KEYWORD")

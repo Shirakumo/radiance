@@ -23,7 +23,7 @@
 (define-options-definer define-page-option page-option (namevar urivar bodyvar valuevar))
 
 (defmacro define-page (name uri options &body body)
-  (destructuring-bind (uri &optional priority) (if (listp uri) uri (list uri))
+  (destructuring-bind (uri &optional priority) (enlist uri)
     (multiple-value-bind (body forms) (expand-options *page-options* options body name uri)
       `(eval-when (:compile-toplevel :load-toplevel :execute)
          ,@forms

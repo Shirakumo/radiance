@@ -90,7 +90,7 @@
      ,@components))
 
 (defmacro define-implement-hook (interface &body body)
-  (destructuring-bind (interface &optional (ident *package*)) (if (listp interface) interface (list interface))
+  (destructuring-bind (interface &optional (ident *package*)) (enlist interface)
     (let ((interface (interface interface))
           (hook (find-symbol "IMPLEMENTED" (interface interface))))
       `(eval-when (:compile-toplevel :load-toplevel :execute)
