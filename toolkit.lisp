@@ -30,7 +30,6 @@
 
 (declaim (inline get-unix-time))
 (defun get-unix-time ()
-  "Returns a unix timestamp."
   (universal-to-unix-time (get-universal-time)))
 
 (defun format-relative-time (stamp)
@@ -100,7 +99,6 @@
            (format NIL "at ~a" (format-human-date stamp))))))
 
 (defun make-random-string (&optional (length 16) (chars *random-string-characters*))
-  "Generates a random string of alphanumerics."
   (loop with string = (make-array length :element-type 'character)
         with charlength = (length chars)
         for i from 0 below length
@@ -108,12 +106,10 @@
         finally (return string)))
 
 (defun file-size (pathspec)
-  "Retrieves the file size in bytes."
   (with-open-file (in pathspec :direction :input :element-type '(unsigned-byte 8))
     (file-length in)))
 
 (defun read-data-file (pathspec &key (if-does-not-exist :ERROR))
-  "Returns the file contents in string format. Any path is relative to the radiance data directory."
   (with-open-file (stream (merge-pathnames pathspec *data-path*) :if-does-not-exist if-does-not-exist)
     (with-output-to-string (string)
       (let ((buffer (make-array 4096 :element-type 'character)))
@@ -182,8 +178,6 @@
     (T `(template ,namestring ,base))))
 
 (defmacro perm (&rest tree)
-  "Returns the entered permission TREE as a dotted string and automatically enters it into the current module.
-This macro is only usable from within a module context."
   (let ((perm (format NIL "~{~(~a~)~^.~}" tree)))
     ;; Execute during compile
     (pushnew perm (module-permissions (module)) :test #'string=)
