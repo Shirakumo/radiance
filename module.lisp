@@ -82,12 +82,10 @@
    #:api-error
    #:api-auth-error
    #:api-argument-missing
-   #:argument
    #:api-argument-invalid
    #:api-call-not-found
    #:api-response-empty
    #:api-unknown-format
-   #:requested-format
    #:interface-implementation-not-set
    #:unparsable-uri-string
    #:no-such-post-parameter
