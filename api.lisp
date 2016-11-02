@@ -24,7 +24,9 @@
 
 (defmacro define-api-format (name (argsvar) &body body)
   `(setf (api-format ,(string name))
-         #'(lambda (,argsvar) ,@body)))
+         (lambda (,argsvar)
+           (block ,name
+             ,@body))))
 
 (defun api-output (data &key (status 200) (message "Ok."))
   (unless data (error 'api-response-empty))
