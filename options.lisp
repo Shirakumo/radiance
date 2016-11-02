@@ -12,7 +12,7 @@
         (common-args (butlast args)))
     `(defmacro ,name (,namevar ,args &body body)
        `(eval-when (:compile-toplevel :load-toplevel :execute)
-          (setf (,',setter ,(make-keyword ,namevar))
+          (setf (,',setter ,(intern (string ,namevar) :KEYWORD))
                 (lambda (,,@common-args &optional ,,valuevar)
                   (declare (ignorable ,,@common-args))
                   ,@body))))))

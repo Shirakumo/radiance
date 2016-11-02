@@ -18,11 +18,6 @@
 (defun enlist (var &rest args)
   (if (listp var) var (list* var args)))
 
-(defun make-keyword (name)
-  (let ((name (string name)))
-    (or (find-symbol name "KEYWORD")
-        (intern name "KEYWORD"))))
-
 (declaim (inline universal-to-unix-time))
 (defun universal-to-unix-time (universal-time)
   (- universal-time +unix-epoch-difference+))

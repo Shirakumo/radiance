@@ -270,7 +270,6 @@
    #:*root*
    #:*data-path*
    #:*random-string-characters*
-   #:make-keyword
    #:universal-to-unix-time
    #:unix-to-universal-time
    #:get-unix-time

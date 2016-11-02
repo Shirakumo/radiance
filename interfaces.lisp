@@ -47,7 +47,7 @@
 (defun find-implementation (interface &optional (system T))
   (check-environment)
   (let* ((interface (interface interface))
-         (configured-implementation (config :interfaces (make-keyword (module-name interface)))))
+         (configured-implementation (config :interfaces (intern (string (module-name interface)) :KEYWORD))))
     (unless configured-implementation
       (error 'interface-implementation-not-set :requested interface))
     ;; If quicklisp is available, the system might be loadable, but
