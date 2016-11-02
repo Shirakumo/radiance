@@ -195,6 +195,6 @@
                                    (rehash-size (hash-table-rehash-size table))
                                    (rehash-threshold (hash-table-rehash-threshold table)))
   (let ((new (make-hash-table :test test :size size :rehash-size rehash-size :rehash-threshold rehash-threshold)))
-    (maphash #'(lambda (k v) (setf (gethash k new) v)) table)
+    (maphash (lambda (k v) (setf (gethash k new) v)) table)
     new))
 

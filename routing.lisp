@@ -160,7 +160,7 @@
      ,@(unless (eql target-path '*)
          `((setf (path uri)
                  ,(if (listp target-path)
-                      `(format NIL "~{~a~^/~}" (mapcar #'(lambda (a) (ensure-path a)) (list ,@target-path)))
+                      `(format NIL "~{~a~^/~}" (mapcar #'ensure-path (list ,@target-path)))
                       `(ensure-path ,target-path)))))))
 
 (defun escape-regex-dots-not-in-group (regex)

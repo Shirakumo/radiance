@@ -21,9 +21,9 @@
     `(let ((,model ,object))
        (declare (ignorable ,model))
        (symbol-macrolet
-           ,(mapcar #'(lambda (field)
-                        (destructuring-bind (name &optional (field name)) (enlist field)
-                          `(,name (dm:field ,model ,(string-downcase field))))) fields)
+           ,(mapcar (lambda (field)
+                      (destructuring-bind (name &optional (field name)) (enlist field)
+                        `(,name (dm:field ,model ,(string-downcase field))))) fields)
          ,@body))))
 
 (defmacro with-model (modelvar (collection query &rest fields) &body body)

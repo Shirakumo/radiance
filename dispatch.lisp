@@ -19,12 +19,12 @@
 
 (defvar *uri-registry* (make-hash-table :test 'eql))
 (defvar *uri-priority* (make-array 0 :element-type 'uri-dispatcher))
-(defparameter *uri-fallback* #'(lambda ()
-                                 (cond
-                                   ((boundp '*request*)
-                                    (error 'request-not-found :message "Reached dispatch fallback."))
-                                   (T
-                                    (error 'request-not-found :request NIL :message "Reached dispatch fallback.")))))
+(defparameter *uri-fallback* (lambda ()
+                               (cond
+                                 ((boundp '*request*)
+                                  (error 'request-not-found :message "Reached dispatch fallback."))
+                                 (T
+                                  (error 'request-not-found :request NIL :message "Reached dispatch fallback.")))))
 (declaim (function *uri-fallback*))
 (declaim ((simple-array uri-dispatcher 1) *uri-priority*))
 
@@ -63,24 +63,25 @@
 (defun list-uri-dispatchers ()
   (coerce *uri-priority* 'list))
 
+(defun uri-dispatcher< (a b)
+  (or (and (priority a)
+           (or (not (priority b))
+               (>= (priority a) (priority b))))
+      (and (not (priority b))
+           (uri> a b))))
+
 (defun rebuild-uri-priority ()
   (setf *uri-priority*
         (sort (make-array (hash-table-count *uri-registry*)
                           :element-type 'uri-dispatcher
                           :initial-contents (loop for uri being the hash-values of *uri-registry*
                                                   collect uri))
-              #'(lambda (a b)
-                  (or (and (priority a)
-                           (or (not (priority b))
-                               (>= (priority a) (priority b))))
-                      (and (not (priority b))
-                           (uri> a b)))))))
+              #'uri-dispatcher<)))
 
 (defmacro define-uri-dispatcher (name (uri &optional priority) &body body)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (setf (uri-dispatcher ',name ,uri ,priority)
-           #'(lambda ()
-               ,@body))))
+           (lambda () ,@body))))
 
 (defun dispatch (uri)
   (declare (optimize (speed 3)))

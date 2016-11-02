@@ -72,7 +72,7 @@
         (*compile-verbose* nil)
         (*load-print* nil)
         (*compile-print* nil))
-    (handler-bind ((warning #'(lambda (warn) (muffle-warning warn))))
+    (handler-bind ((warning #'muffle-warning))
       (let* ((interface (interface interface)))
         (let ((implementation (find-implementation interface NIL)))
           (unless (and (asdf:find-system implementation NIL)

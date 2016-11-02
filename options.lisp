@@ -13,9 +13,9 @@
     `(defmacro ,name (,namevar ,args &body body)
        `(eval-when (:compile-toplevel :load-toplevel :execute)
           (setf (,',setter ,(make-keyword ,namevar))
-                #'(lambda (,,@common-args &optional ,,valuevar)
-                    (declare (ignorable ,,@common-args))
-                    ,@body))))))
+                (lambda (,,@common-args &optional ,,valuevar)
+                  (declare (ignorable ,,@common-args))
+                  ,@body))))))
 
 (defun expand-options (options-table options body &rest common-args)
   (let ((no-value (gensym "NO-VALUE")))

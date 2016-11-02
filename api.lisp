@@ -146,7 +146,9 @@
               'api-page
               :name ,(string name)
               :argslist ',args
-              :handler #'(lambda ,args (block ,(when (symbolp name) name) ,@body))
+              :handler (lambda ,args
+                         (block ,(when (symbolp name) name)
+                           ,@body))
               :docstring ,(getf options :documentation))))))
 
 (define-delete-hook (module 'radiance-destroy-apis)
