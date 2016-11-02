@@ -30,8 +30,7 @@
          ,@(when (module)
              `((pushnew ',name (module-storage ,(module) 'radiance-pages))))
          (define-uri-dispatcher ,name (,uri ,priority)
-           (block ,name
-             ,@body))))))
+           ,@body)))))
 
 (define-delete-hook (module 'radiance-destroy-pages)
   (dolist (page (module-storage module 'radiance-pages))

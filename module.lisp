@@ -132,7 +132,6 @@
    #:priority
    
    #:uri-dispatcher
-   #:make-uri-dispatcher
    #:list-uri-dispatchers
    #:define-uri-dispatcher
    #:dispatch)

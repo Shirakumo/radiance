@@ -33,27 +33,13 @@
     (format stream "~a " (name dispatcher))
     (call-next-method)))
 
-(defun make-uri-dispatcher (name uri dispatch-function &optional priority)
-  (let ((uri (copy-uri uri)))
-    (initialize-instance
-     (change-class uri 'uri-dispatcher
-                   :name name
-                   :dispatch-function dispatch-function
-                   :priority priority
-                   :matcher T))
-    uri))
-
 (defun uri-dispatcher (name)
   (gethash name *uri-registry*))
 
-(defun (setf uri-dispatcher) (uri-or-f name &optional uri priority)
-  (if uri
-      (setf uri-or-f (make-uri-dispatcher name uri uri-or-f priority))
-      (unless (typep uri-or-f 'uri-dispatcher)
-        (error 'type-error :datum uri-or-f :expected-type 'uri-dispatcher)))
-  (setf (gethash name *uri-registry*) uri-or-f)
+(defun (setf uri-dispatcher) (dispatcher name)
+  (setf (gethash name *uri-registry*) dispatcher)
   (rebuild-uri-priority)
-  uri-or-f)
+  dispatcher)
 
 (defun remove-uri-dispatcher (name)
   (remhash name *uri-registry*)
@@ -80,11 +66,18 @@
 
 (defmacro define-uri-dispatcher (name (uri &optional priority) &body body)
   `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (setf (uri-dispatcher ',name ,uri ,priority)
-           (lambda () ,@body))))
+     (setf (uri-dispatcher ',name)
+           (change-class (copy-uri ,uri)
+                         'uri-dispatcher
+                         :name ',name
+                         :dispatch-function (lambda ()
+                                              (block ,name
+                                                ,@body))
+                         :priority ,priority
+                         :matcher T))))
 
 (defun dispatch (uri)
-  (declare (optimize (speed 3)))
+  (declare (optimize speed))
   (loop for dispatcher across *uri-priority*
         when (uri-matches uri dispatcher)
         do (return (funcall (dispatch-function dispatcher)))
