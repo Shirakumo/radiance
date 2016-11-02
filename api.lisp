@@ -79,15 +79,16 @@
 
 (defun ensure-api-page (thing)
   (etypecase thing
-    (string (api-page thing))
+    (string (or (api-page thing)
+                (error "No such api-page ~s." thing)))
     (symbol (api-page (string thing)))
     (api-page thing)))
 
 (defclass api-page ()
   ((name :initarg :name :accessor name)
-   (handler :initarg :handler :reader handler)
-   (argslist :initarg :argslist :reader argslist)
-   (request-handler :initarg :request-handler :reader request-handler)
+   (handler :initarg :handler :accessor handler)
+   (argslist :initarg :argslist :accessor argslist)
+   (request-handler :initarg :request-handler :accessor request-handler)
    (docstring :initarg :docstring :accessor docstring))
   (:default-initargs
    :name (error "NAME required")
