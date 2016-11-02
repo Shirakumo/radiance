@@ -11,11 +11,11 @@
   (defclass uri-dispatcher (uri)
     ((name :initarg :name :accessor name)
      (dispatch-function :initarg :dispatch-function :accessor dispatch-function)
-     (priority :initarg :priority :accessor priority)))
-  (:default-initargs
-   :name (error "NAME required.")
-   :dispatch-function (error "DISPATCH-FUNCTION required.")
-   :priority NIL))
+     (priority :initarg :priority :accessor priority))
+    (:default-initargs
+     :name (error "NAME required.")
+     :dispatch-function (error "DISPATCH-FUNCTION required.")
+     :priority NIL)))
 
 (defvar *uri-registry* (make-hash-table :test 'eql))
 (defvar *uri-priority* (make-array 0 :element-type 'uri-dispatcher))

@@ -192,13 +192,13 @@
 (defun internal-uri (uri)
   (declare (optimize speed))
   (loop with internal = (copy-uri uri)
-        for translator in *route-mapping*
+        for translator across *route-mapping*
         do (funcall (the function translator) internal)
         finally (return internal)))
 
 (defun external-uri (uri)
   (declare (optimize speed))
   (loop with external = (copy-uri uri)
-        for translator in *route-reversal*
+        for translator across *route-reversal*
         do (funcall (the function translator) external)
         finally (return external)))
