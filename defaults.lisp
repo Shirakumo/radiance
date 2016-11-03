@@ -156,7 +156,7 @@
 (define-trigger (environment-change 'compile-domain-internalizers) ()
   (setf *domain-internalizers* (compile-domain-internalizers)))
 
-(define-route internalizer (:mapping most-positive-fixnum) (uri)
+(define-route domain (:mapping most-positive-fixnum) (uri)
   (loop for internalizer in *domain-internalizers*
         until (multiple-value-bind (domain subdomains) (funcall internalizer uri)
                 (when domain
@@ -165,7 +165,7 @@
                   (setf (domains uri) subdomains)
                   T))))
 
-(define-route externalizer (:reversal most-negative-fixnum) (uri)
+(define-route domain (:reversal most-negative-fixnum) (uri)
   (cond
     ((boundp '*request*)
      (push (domain *request*) (domains uri))
