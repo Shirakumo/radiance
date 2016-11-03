@@ -65,7 +65,8 @@
   T)
 
 (defun uptime ()
-  (- (get-universal-time) *startup-time*))
+  (when *startup-time*
+    (- (get-universal-time) *startup-time*)))
 
 (defun started-p ()
   *running*)
