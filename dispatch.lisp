@@ -69,14 +69,14 @@
   (let ((dispatcher (gensym "DISPATCHER")))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
        (flet ((,dispatcher ()
-                ,@body)
-              (setf (uri-dispatcher ',name)
-                (change-class (copy-uri ,uri)
-                              'uri-dispatcher
-                              :name ',name
-                              :dispatch-function #',dispatcher
-                              :priority ,priority
-                              :matcher T)))))))
+                ,@body))
+         (setf (uri-dispatcher ',name)
+               (change-class (copy-uri ,uri)
+                             'uri-dispatcher
+                             :name ',name
+                             :dispatch-function #',dispatcher
+                             :priority ,priority
+                             :matcher T))))))
 
 (defun dispatch (uri)
   (declare (optimize speed))
