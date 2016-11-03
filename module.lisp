@@ -55,12 +55,6 @@
    #:define-api-format
    #:api-output
    #:api-serialize
-   
-   #:api-option
-   #:remove-api-option
-   #:list-api-options
-   #:define-api-option
-
    #:api-page
    #:remove-api-page
    #:list-api-pages
@@ -128,7 +122,6 @@
    #:name
    #:dispatch-function
    #:priority
-   
    #:uri-dispatcher
    #:list-uri-dispatchers
    #:define-uri-dispatcher
@@ -172,15 +165,17 @@
    #:create-module)
   ;; options.lisp
   (:export
-   #:define-options-definer
+   #:option
+   #:option-type
+   #:name
+   #:expander
+   #:option
+   #:remove-option
+   #:list-options
+   #:define-option
    #:expand-options)
   ;; page.lisp
   (:export
-   #:page-option
-   #:remove-page-option
-   #:list-page-options
-   #:define-page-option
-   #:*page-body*
    #:define-page)
   ;; request.lisp
   (:export

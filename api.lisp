@@ -45,23 +45,6 @@
   (declare (ignore func))
   (error 'api-unserializable-object :object (first args)))
 
-;;; Options
-(defvar *api-options* (make-hash-table))
-
-(defun api-option (name)
-  (gethash name *api-options*))
-
-(defun (setf api-option) (option name)
-  (setf (gethash name *api-options*) option))
-
-(defun remove-api-option (name)
-  (remhash name *api-options*))
-
-(defun list-api-options ()
-  (loop for name being the hash-keys of *api-options* collect name))
-
-(define-options-definer define-api-option api-option (namevar argsvar bodyvar valuevar))
-
 ;;; Pages
 (defvar *api-pages* (make-hash-table :test 'equalp))
 
@@ -106,6 +89,7 @@
                    (T
                     `(,arg (or* (post/get ,(string arg) ,request)))))))
       `(lambda (,request)
+         (declare (ignorable ,request))
          (let* ,(loop with in-optional = NIL
                       for arg in arglist
                       do (when (eql arg '&optional) (setf in-optional T))
@@ -139,7 +123,7 @@
 
 (defmacro define-api (name args options &body body)
   (let ((handler (gensym "HANDLER")))
-    (multiple-value-bind (body forms) (expand-options *api-options* options body name args)
+    (multiple-value-bind (body forms) (expand-options 'api options name body args)
       `(eval-when (:compile-toplevel :load-toplevel :execute)
          ,@forms
          ,@(when (module)

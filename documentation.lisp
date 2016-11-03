@@ -75,44 +75,6 @@ API-UNSERIALIZABLE-OBJECT is signalled.")
 
 See API-OPTION")
 
-  (function api-option
-    "Accessor to the api option transformers
-
-An api option function should accept four arguments:
-  NAME         --- The name of the API endpoint being expanded
-  LAMBDA-LIST  --- The lambda-list of the API endpoint
-  BODY         --- The list of body forms of the API endpoint
-  VALUE        --- (Optional) the value supplied to the option
-
-The function should return two values:
-  BODY         --- The new list of body forms to use for the
-                   API endpoint
-  FORMS        --- A list of forms to dump to the toplevel
-                   before the actual API endpoint definition.
-
-See *API-OPTIONS*
-See REMOVE-API-OPTION
-See LIST-API-OPTIONS
-See DEFINE-API-OPTION
-See DEFINE-API")
-
-  (function remove-api-option
-    "Removes the api option if it exists.
-
-See *API-OPTIONS*
-See API-OPTION")
-
-  (function list-api-options
-    "Lists all available api options.
-
-See *API-OPTIONS*
-See API-OPTION")
-
-  (function define-api-option
-    "Defines a new api option that transforms the api definition.
-
-See API-OPTION")
-
   (variable *api-pages*
     "A map from names to api-pages.
 
@@ -153,8 +115,7 @@ See API-PAGE")
 See NAME
 See HANDLER
 See ARGSLIST
-See REQUEST-HANDLER
-See DOCSTRING")
+See REQUEST-HANDLER")
 
   (function name
     "Accesses the name of the object.
@@ -191,13 +152,6 @@ handler function. The function only takes a single argument
 namely the request object to handle.
 
 See HANDLER
-See API-PAGE")
-
-  (function docstring
-    "Accessor to the docstring of the api-page.
-
-You can also use CL:DOCUMENTATION
-
 See API-PAGE")
 
   (function make-request-handler-function

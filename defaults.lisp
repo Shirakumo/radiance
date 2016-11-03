@@ -7,17 +7,19 @@
 (in-package #:org.shirakumo.radiance.core)
 
 ;; Sets up a default trigger for pages
-(define-page-option with-trigger (name uri body (value T))
+(define-option page with-trigger (name body uri &optional (value T))
+  (declare (ignore uri))
   (assert (symbolp value))
   (if value
       (let ((name (if (eql value T) name value)))
         (values
-         `((trigger '(,name ,*package*))
+         `((trigger '(,name ,(package-name *package*)))
            ,@body)
-         `(define-hook (,name ,*package*) ())))
+         `(define-hook (,name ,(package-name *package*)) ())))
       body))
 
-(define-page-option uri-groups (name uri body uri-groups)
+(define-option page uri-groups (name body uri &optional uri-groups)
+  (declare (ignore name))
   (if uri-groups
       `((cl-ppcre:register-groups-bind ,uri-groups (,(path uri) (path (uri *request*)))
           ,@body))
@@ -31,22 +33,21 @@
           ,@body)
         body)))
 
-(define-page-option access (name uri body (branch T))
+(define-option page access (name body uri &optional (branch T))
+  (declare (ignore name uri))
   (transform-access-body body branch))
 
-(define-api-option access (name args body (branch T))
+(define-option api access (name body args &optional (branch T))
+  (declare (ignore name args))
   (transform-access-body body branch))
 
-;; FIXME: This feels wrong. Maybe relocate
-(define-implement-hook (admin 'define-accessor-option)
-  (admin:define-panel-option access (name category body (branch T))
-    (declare (ignore name category))
-    (transform-access-body body branch)))
+(define-option admin:panel access (name body category &optional (branch T))
+  (declare (ignore name category))
+  (transform-access-body body branch))
 
-(define-implement-hook (profile 'define-accessor-option)
-  (profile:define-panel-option access (name body (branch T))
-    (declare (ignore name))
-    (transform-access-body body branch)))
+(define-option profile:panel access (name body &optional (branch T))
+  (declare (ignore name))
+  (transform-access-body body branch))
 
 ;; Standard serialisations
 (defmethod api-serialize ((error radiance-condition))
@@ -55,12 +56,12 @@
       (s :error-type (type-of error))
       (s :message (message error))
       (when (typep error 'request-error)
-        (s :uri (uri-to-url (uri (current-request error)) :representation :external)))
+        (s :uri (uri-to-url (uri (slot-value error 'request)) :representation :external)))
       (when (typep error '(or api-argument-missing
                               api-argument-invalid))
-        (s :argument (argument error)))
+        (s :argument (slot-value error 'argument)))
       (when (typep error 'api-unknown-format)
-        (s :format (requested-format error))))
+        (s :format (slot-value error 'format))))
     table))
 
 ;; Api catchall page

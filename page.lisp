@@ -6,31 +6,15 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defvar *page-options* (make-hash-table))
-
-(defun page-option (name)
-  (gethash name *page-options*))
-
-(defun (setf page-option) (option name)
-  (setf (gethash name *page-options*) option))
-
-(defun remove-page-option (name)
-  (remhash name *page-options*))
-
-(defun list-page-options ()
-  (loop for name being the hash-keys of *page-options* collect name))
-
 (defmethod documentation ((name symbol) (type (eql 'page)))
   (documentation name 'uri-dispatcher))
 
 (defmethod (setf documentation) (string (name symbol) (type (eql 'page)))
   (setf (documentation name 'uri-dispatcher) string))
 
-(define-options-definer define-page-option page-option (namevar urivar bodyvar valuevar))
-
 (defmacro define-page (name uri options &body body)
   (destructuring-bind (uri &optional priority) (enlist uri)
-    (multiple-value-bind (body forms) (expand-options *page-options* options body name uri)
+    (multiple-value-bind (body forms) (expand-options 'page options name body uri)
       `(eval-when (:compile-toplevel :load-toplevel :execute)
          ,@forms
          ,@(when (module)
