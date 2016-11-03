@@ -65,7 +65,7 @@
     table))
 
 ;; Api catchall page
-(define-api "" () (:documentation "API 404")
+(define-api || () (:documentation "API 404")
   (error 'api-call-not-found))
 
 ;; Api standard format
