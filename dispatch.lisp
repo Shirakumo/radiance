@@ -50,7 +50,7 @@
 (defun list-uri-dispatchers ()
   (coerce *uri-priority* 'list))
 
-(defun uri-dispatcher< (a b)
+(defun uri-dispatcher> (a b)
   (or (and (priority a)
            (or (not (priority b))
                (>= (priority a) (priority b))))
@@ -63,19 +63,20 @@
                           :element-type 'uri-dispatcher
                           :initial-contents (loop for uri being the hash-values of *uri-registry*
                                                   collect uri))
-              #'uri-dispatcher<)))
+              #'uri-dispatcher>)))
 
 (defmacro define-uri-dispatcher (name (uri &optional priority) &body body)
-  `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (setf (uri-dispatcher ',name)
-           (change-class (copy-uri ,uri)
-                         'uri-dispatcher
-                         :name ',name
-                         :dispatch-function (lambda ()
-                                              (block ,name
-                                                ,@body))
-                         :priority ,priority
-                         :matcher T))))
+  (let ((dispatcher (gensym "DISPATCHER")))
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
+       (flet ((,dispatcher ()
+                ,@body)
+              (setf (uri-dispatcher ',name)
+                (change-class (copy-uri ,uri)
+                              'uri-dispatcher
+                              :name ',name
+                              :dispatch-function #',dispatcher
+                              :priority ,priority
+                              :matcher T)))))))
 
 (defun dispatch (uri)
   (declare (optimize speed))
