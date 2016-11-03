@@ -18,6 +18,7 @@
   :components ((:file "module")
                (:file "toolkit")
                (:file "conditions")
+               (:file "documentable")
                (:file "config")
                (:file "interfaces")
                (:file "modules")

@@ -84,18 +84,17 @@
     (symbol (api-page (string thing)))
     (api-page thing)))
 
-(defclass api-page ()
+(define-documentable api-page ()
   ((name :initarg :name :accessor name)
    (handler :initarg :handler :accessor handler)
    (argslist :initarg :argslist :accessor argslist)
-   (request-handler :initarg :request-handler :accessor request-handler)
-   (docstring :initarg :docstring :accessor docstring))
+   (request-handler :initarg :request-handler :accessor request-handler))
   (:default-initargs
    :name (error "NAME required")
    :handler (error "HANDLER function required")
    :argslist ()
-   :request-handler ()
-   :docstring NIL))
+   :request-handler ())
+  (:find-function api-page))
 
 (defun make-request-handler-function (function &optional (arglist (arg:arglist function)))
   (let ((request (gensym "REQUEST")))
@@ -155,7 +154,7 @@
                   :argslist ',args
                   :handler #',handler
                   :request-handler ,(make-request-handler-function `#',handler args)
-                  :docstring ,(getf options :documentation))))))))
+                  :documentation ,(getf options :documentation))))))))
 
 (define-delete-hook (module 'radiance-destroy-apis)
   (dolist (page (module-storage module 'radiance-apis))

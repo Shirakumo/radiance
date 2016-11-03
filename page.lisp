@@ -20,6 +20,12 @@
 (defun list-page-options ()
   (loop for name being the hash-keys of *page-options* collect name))
 
+(defmethod documentation ((name symbol) (type (eql 'page)))
+  (documentation name 'uri-dispatcher))
+
+(defmethod (setf documentation) (string (name symbol) (type (eql 'page)))
+  (setf (documentation name 'uri-dispatcher) string))
+
 (define-options-definer define-page-option page-option (namevar urivar bodyvar valuevar))
 
 (defmacro define-page (name uri options &body body)

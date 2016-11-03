@@ -8,14 +8,15 @@
 
 (declaim (ftype (function (uri-dispatcher) function) dispatch-function))
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass uri-dispatcher (uri)
+  (define-documentable uri-dispatcher (uri)
     ((name :initarg :name :accessor name)
      (dispatch-function :initarg :dispatch-function :accessor dispatch-function)
      (priority :initarg :priority :accessor priority))
     (:default-initargs
      :name (error "NAME required.")
      :dispatch-function (error "DISPATCH-FUNCTION required.")
-     :priority NIL)))
+     :priority NIL)
+    (:find-function uri-dispatcher)))
 
 (defvar *uri-registry* (make-hash-table :test 'eql))
 (defvar *uri-priority* (make-array 0 :element-type 'uri-dispatcher))

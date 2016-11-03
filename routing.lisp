@@ -7,7 +7,7 @@
 (in-package #:org.shirakumo.radiance.core)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass route ()
+  (define-documentable route ()
     ((name :initarg :name :accessor name)
      (direction :initarg :direction :accessor direction)
      (priority :initarg :priority :accessor priority)
@@ -16,7 +16,8 @@
      :name (error "NAME required")
      :direction (error "DIRECTION required")
      :priority 0
-     :translator (error "TRANSLATOR required"))))
+     :translator (error "TRANSLATOR required"))
+    (:find-function route)))
 
 (declaim (type (simple-array function) *route-mapping* *route-reversal*))
 (defvar *route-registry* (make-hash-table :test 'eql))
