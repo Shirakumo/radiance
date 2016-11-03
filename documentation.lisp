@@ -740,7 +740,71 @@ See *URI-FALLBACK*"))
 
 ;; init.lisp
 (docs:define-docs
-  )
+  (variable *startup-time*
+    "Keeps the universal-time of when STARTUP was called.
+
+See STARTUP
+See SHUTDOWN
+See UPTIME")
+
+  (variable *running*
+    "Whether Radiance is currently running or not.
+
+See STARTUP
+See SHUTDOWN
+See STARTED-P")
+
+  (function startup
+    "Starts up Radiance and prepares it for use.
+
+If Radiance is already running, an error is signalled.
+If ENVIRONMENT is not a string, an error is signalled.
+
+The startup sequence proceeds as follows:
+1. *STARTUP-TIME* is saved
+2. The environment is changed
+3. STARTUP is triggered
+4. The implementation for the LOGGER interface is loaded
+5. The implementation for the SERVER interface is loaded
+6. SERVER-START is triggered
+7. *RUNNING* is set to T
+8. SERVER-READY is triggered
+9. The systems in the (MCONFIG :RADIANCE :STARTUP)
+   configuration are loaded in sequence
+10. STARTUP-DONE is triggered
+
+See SHUTDOWN
+See STARTED-P")
+
+  (function shutdown
+    "Stops Radiance and cleans up all connections.
+
+If Radiance is not already running, an error is signalled.
+
+The shutdown sequence proceeds as follows:
+1. SHUTDOWN is triggered
+2. SERVER-STOP is triggered
+3. *RUNNING* is set to NIL
+4. SERVER-SHUTDOWN is triggered
+5. *STARTUP-TIME* is set to NIL
+6. SHUTDOWN-DONE is triggered
+
+See STARTUP
+See STARTED-P")
+
+  (function uptime
+    "Returns the amount of seconds that radiance has been started for, if at all.
+
+See STARTUP
+See SHUTDOWN
+See *STARTUP-TIME*")
+
+  (function started-p
+    "Returns true if Radiance has been started up and is ready for use.
+
+See STARTUP
+See SHUTDOWN
+See *RUNNING*"))
 
 ;; interface-components.lisp
 (docs:define-docs
@@ -748,7 +812,78 @@ See *URI-FALLBACK*"))
 
 ;; interfaces.lisp
 (docs:define-docs
-  )
+  (type module
+    "ASDF system subclass for modules.
+
+See MODULARIZE:MODULE")
+
+  (function module
+    "Coerces the requested module.
+
+See MODULARIZE:MODULE")
+
+  (variable *old-dependency-def-fun*
+    "Variable to keep the old definition of ASDF/PARSE-DEFSYSTEM::PARSE-DEPENDENCY-DEF.")
+
+  (function future
+    "Shorthand macro to help calling a function for a package or interface that has not yet been loaded at compile time.")
+
+  (function find-implementation
+    "Attempts to find a suitable implementation for the given interface.
+
+This checks for the value of the configuration in
+ MCONFIG :RADIANCE :INTERFACES interface-name-as-keyword
+
+If SYSTEM is T, then the ASDF system object is returned
+otherwise the implementation's system name.
+
+If Quicklisp is available and the implementing system has
+not yet been installed, it is installed automatically.
+The system is not loaded, however.
+
+If no implementation has been configured for the interface,
+an INTERFACE-IMPLEMENTATION-NOT-SET error is signalled.")
+
+  (function load-implementation
+    "Attempts to silently load the implementation for the interface if necessary.
+
+This function is called whenever an interface is requested
+as a dependency in an ASDF system definition.
+
+See FIND-IMPLEMENTATION")
+
+  (function define-interface
+    "Define a new module interface.
+
+Unlike the native version of this macro, a hook-switch is
+always defined that provides an IMPLEMENTED and UNIMPLEMENTED
+hook, which will be called at the appropriate time. This
+lets you react to when an implementation becomes active and
+thus conditionally compile code without needing to incur a 
+hard dependency.
+
+See MODULARIZE-INTERFACES:DEFINE-INTERFACE
+See DEFINE-IMPLEMENT-HOOK")
+
+  (function define-implement-hook
+    "Defines a trigger that will cause the body to be compiled and run once the interface becomes implemented.
+
+This is useful if you want to provide parts of a package
+that depend on an interface being implemented, but do not
+want to depend on the interface directly. Thus, using this
+you can achieve optional/soft dependencies.
+
+This depends on the IMPLEMENTED hook-switch present on every
+Radiance interface. Since it is a hook-switch, a trigger like
+this will be called automatically even if it is defined after
+the interface has already been implemented.
+
+Note that since the body is captured and quoted, and thus no
+compilation will occur until the hook is triggered. This means
+that you will potentially miss out on compilation errors or
+information until later.
+
+See DEFINE-INTERFACE"))
 
 ;; modules.lisp
 (docs:define-docs
