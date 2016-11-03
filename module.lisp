@@ -124,6 +124,7 @@
    #:priority
    #:uri-dispatcher
    #:list-uri-dispatchers
+   #:uri-dispatcher>
    #:define-uri-dispatcher
    #:dispatch)
   ;; init.lisp
