@@ -70,11 +70,6 @@ a structure that can.
 If the object is not serializable, an error of type
 API-UNSERIALIZABLE-OBJECT is signalled.")
 
-  (variable *api-options*
-    "A table mapping option names to transformation functions.
-
-See API-OPTION")
-
   (variable *api-pages*
     "A map from names to api-pages.
 
@@ -197,6 +192,8 @@ BODY     --- A number of body forms that compose the actual
 
 A standard uri-dispatcher called API is responsible for calling the
 api pages when the path /api/ is requested.
+
+Api definitions are transformed by options of the type API.
 
 See API-OUTPUT
 See API-PAGE
@@ -507,11 +504,239 @@ CLAUSE         --- A string designator that names the action"))
 
 ;; defaults.lisp
 (docs:define-docs
-  )
+  (option (page with-trigger)
+    "Adds a hook that is automatically triggered when the page is called.
+
+Unless otherwise specified, the hook is named the same as the page.")
+
+  (option (page uri-groups)
+    "Allows capturing the regex groups in the URI's path as variables.
+
+See CL-PPCRE:REGISTER-GROUPS-BIND")
+
+  (function transform-access-body
+    "Transforms the body to be protected from access by the permission branch.")
+
+  (option (page access)
+    #1="Ensures that the page is only accessible if the user requesting it has the appropriate permission branch.")
+  
+  (option (api access)
+    #1#)
+
+  (option (admin:panel access)
+    #1#)
+
+  (option (profile:panel access)
+    #1#)
+
+  (api-page ||
+    "Fallback api endpoint that signals an API-CALL-NOT-FOUND error.")
+
+  (page favicon
+    "Standard page for the favicon.ico root image.
+
+See DATA-FILE")
+
+  (page robots
+    "Standard page for the robots.txt root file.
+
+See DATA-FILE")
+
+  (page static
+    "Standard delegate for static files.
+
+The address must be of the form /static/module/path
+where the path is translated to one relative to the
+module's static resource directory.
+
+See STATIC-FILE")
+
+  (variable *domain-internalizers*
+    "A list of functions that potentially capture and remove known domain parts from the URI.")
+
+  (function add-domain
+    "Adds a new top-level domain to the list of recognised domains.
+
+Adds the name to (MCONFIG :RADIANCE :SERVER :DOMAINS)
+
+The top-level domain as thought of by radiance is any
+domain that does not contain any subdomains in its name.
+For example, if your website is hosted on example.com
+then that would be a top-level domain. Or, if your domain
+is some.deep.thing.network.internal then that too would be
+a top-level domain.
+
+Radiance needs to know this in order to be able to distinguish
+when subdomains for its own purposes start and end since it
+is not generally predictable for an arbitrary domain name.
+
+See MCONFIG
+See REMOVE-DOMAIN")
+
+  (function remove-domain
+    "Removes a known top-level domain.
+
+See ADD-DOMAIN")
+
+  (function compile-domain-internalizers
+    "Compiles the known top-level domain to optimised recogniser functions.
+
+If the domain does not have an internalizer, it will not
+be properly stripped from the request.
+
+See ADD-DOMAIN
+See REMOVE-DOMAIN
+See *DOMAIN-INTERNALIZERS*")
+
+  (route (domain :mapping)
+    "Ensures that top-level domains are stripped from the uri.
+
+Depends on *DOMAIN-INTERNALIZERS*")
+
+  (route (domain :reversal)
+    "Ensures that the appropriate top-level domain is added to the uri.")
+
+  (route (virtual-module :mapping)
+    "Allows using a path of /!/module/path to simulate a call to a subdomain.
+
+This translates the path by prepending the module to the subdomains
+of the uri and resetting the path to the sub-path. The module is also
+stored in the request's data field called VIRTUAL-MODULE.")
+
+  (route (virtual-module :reversal)
+    "Properly reverses the uri if the current request context was made under a virtual-module.
+
+Uses the request's data field called VIRTUAL-MODULE to know
+where we came from."))
 
 ;; dispatch.lisp
 (docs:define-docs
-  )
+  (type uri-dispatcher
+    "Container object for a link between a uri and a page function.
+
+A uri-dispatcher should be called from a request and is then
+responsible for generating the content of the response.
+
+See NAME
+See DISPATCH-FUNCTION
+See PRIORITY
+See DISPATCH
+See URI-DISPATCHER")
+
+  (function dispatch-function
+    "Accessor to the function that performs the actual response building of the dispatch.
+
+The function should not take any arguments.
+The body should either set the data of the *RESPONSE*
+object or return suitable data for it.
+
+See URI-DISPATCHER")
+
+  (function priority
+    "Accessor to the priority of the uri dispatcher, which may be NIL or an INTEGER.
+
+See URI-DISPATCHER
+See DISPATCH")
+
+  (variable *uri-registry*
+    "Map from names to uri-dispatcher instances.
+
+See URI-DISPATCHER")
+
+  (variable *uri-priority*
+    "An automatically generated vector containing the properly ordered sequence of uri-dispatchers.
+
+See URI-DISPATCHER
+See REBUILD-URI-PRIORITY
+See DISPATCH")
+
+  (variable *uri-fallback*
+    "The fallback function to call when no matching uri-dispatcher could be found.
+
+The function should not take any arguments and
+otherwise act just like a uri-dispatcher dispatch-
+function.
+
+See DISPATCH")
+
+  (function uri-dispatcher
+    "Accessor to the registered uri-dispatcher instances.
+
+Setting this automatically invokes a rebuild of the
+*uri-priority* vector.
+
+See *URI-REGISTRY*
+See URI-DISPATCHER
+See REMOVE-URI-DISPATCHER
+See LIST-URI-DISPATCHERS
+See REBUILD-URI-PRIORITY")
+
+  (function remove-uri-dispatcher
+    "Removes the named uri-dispatcher, if any.
+
+See *URI-REGISTRY*
+See URI-DISPATCHER")
+
+  (function list-uri-dispatchers
+    "Returns a list of all uri-dispatchers that are registered.
+
+See *URI-REGISTRY*
+See URI-DISPATCHER")
+
+  (function uri-dispatcher>
+    "Returns true if the uri-dispatcher A has a higher priority than B.
+
+If neither A nor B have a priority set, the
+comparison is the same as URI>. If only A has a
+priority set, then T is returned. If only B has a
+priority set, then NIL is returned. Otherwise T
+is returned if the priority of A is greater or equal
+to that of B.
+
+See URI>")
+
+  (function rebuild-uri-priority
+    "Rebuilds the optimised and sorted vector of uri-dispatchers.
+
+Sorting is done according to URI-DISPATCHER>.
+Only uri-dispatchers that are registered are considered.
+
+See URI-DISPATCHER>
+See *URI-PRIORITY*
+See *URI-REGISTRY*")
+
+  (function define-uri-dispatcher
+    "Defines a new uri-dispatcher.
+
+The body forms will be evaluated if DISPATCH is called
+with a URI object that matches the URI given in the 
+definition and if no other uri-dispatcher precedes this
+one in their priority.
+
+See URI-DISPATCHER
+See URI-DISPATCHER>
+See DISPATCH-FUNCTION
+See DISPATCH")
+
+  (function dispatch
+    "Calls the appropriate uri-dispatcher that is set up to handle the given uri.
+
+Only a single uri-dispatcher will be called, if any.
+In order for a dispatcher to be called, the uri must
+match the dispatcher's by URI-MATCHES. In the case
+where two uri-dispatchers have a matching uri, then
+the one with the higher priority will be executed.
+This is achived by simply following the order present
+in the *uri-priority* vector.
+
+If no matching uri-dispatcher is available, the function
+in *URI-FALLBACK* will be called instead.
+
+See URI-MATCHES
+See URI-DISPATCHER>
+See DISPATCH-FUNCTION
+See *URI-PRIORITY*
+See *URI-FALLBACK*"))
 
 ;; init.lisp
 (docs:define-docs
