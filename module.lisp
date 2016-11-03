@@ -47,6 +47,7 @@
    #:i-defmethod)
   ;; api.lisp
   (:export
+   #:api
    #:*default-api-format*
    #:*serialize-fallback*
    #:api-format
@@ -177,6 +178,7 @@
    #:expand-options)
   ;; page.lisp
   (:export
+   #:page
    #:define-page)
   ;; request.lisp
   (:export
