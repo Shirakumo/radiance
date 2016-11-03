@@ -17,7 +17,7 @@
      :direction (error "DIRECTION required")
      :priority 0
      :translator (error "TRANSLATOR required"))
-    (:find-function route)))
+    (:find-function %route)))
 
 (declaim (type (simple-array function) *route-mapping* *route-reversal*))
 (defvar *route-registry* (make-hash-table :test 'eql))
@@ -31,6 +31,12 @@
   (print-unreadable-object (route stream :type T)
     (format stream "~s ~a" (direction route) (name route)))
   route)
+
+(defun %route (name-type)
+  (route (first name-type) (second name-type)))
+
+(defun (setf %route) (value name-type)
+  (setf (route (first name-type) (second name-type)) value))
 
 (defun route (name type)
   (ecase type

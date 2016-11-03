@@ -45,5 +45,6 @@
                :trivial-mimes
                :local-time
                :lambda-fiddle
+               :form-fiddle
                :bordeaux-threads
                :documentation-utils))

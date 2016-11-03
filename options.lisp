@@ -16,11 +16,17 @@
    :type (error "TYPE required.")
    :name (error "NAME required.")
    :expander (error "EXPANDER required."))
-  (:find-function option))
+  (:find-function %option))
 
 (defmethod print-object ((option option) stream)
   (print-unreadable-object (option stream :type T)
     (format stream "~a ~s" (option-type option) (name option))))
+
+(defun %option (type-name)
+  (option (first type-name) (second type-name)))
+
+(defun (setf %option) (value type-name)
+  (setf (option (first type-name) (second type-name)) value))
 
 (defun option (type name)
   (let ((options (gethash type *options*)))
@@ -52,7 +58,9 @@
                (make-instance 'option
                               :type ',type
                               :name ,name
-                              :expander #',handler))))))
+                              :expander #',handler
+                              :documentation ,(form-fiddle:lambda-docstring
+                                               `(lambda () ,@body))))))))
 
 (defun expand-options (type options name body &rest args)
   (let ((no-value (gensym "NO-VALUE")))
