@@ -109,6 +109,10 @@
 (defun cookie (name &optional (request/response *request*))
   (gethash (string name) (cookies request/response)))
 
+(defun (setf cookie) (value name &key domain path timeout http-only secure (response *response*))
+  (setf (gethash name (cookies response))
+        (make-instance 'cookie :name name :value value :domain domain :path path :expires timeout :http-only http-only :secure secure)))
+
 (defun get-var (name &optional (request *request*))
   (gethash (string name) (get-data request)))
 
@@ -122,6 +126,9 @@
 (defun header (name &optional (request/response *request*))
   (gethash (string name) (headers request/response)))
 
+(defun (setf header) (value name &optional (response *response*))
+  (setf (gethash name (headers response)) value))
+
 (defun file (name &optional (request *request*))
   "Returns file info about a form uploaded file.
  (PATH ORIGINAL-FILENAME MIME-TYPE)"
@@ -131,19 +138,12 @@
       ((listp var) var)
       (T (error 'post-parameter-not-a-file :request request :parameter name)))))
 
-(defun (setf cookie) (value name &key domain path timeout http-only secure (response *response*))
-  (setf (gethash name (cookies response))
-        (make-instance 'cookie :name name :value value :domain domain :path path :expires timeout :http-only http-only :secure secure)))
-
-(defun (setf header) (value name &optional (response *response*))
-  (setf (gethash name (headers response)) value))
-
-(defun redirect (new-address &optional (code 307) (response *response*))
+(defun redirect (new-address &optional (representation :external) (code 307) (response *response*))
   (setf (return-code response) code)
   (setf (header "Location" response)
         (etypecase new-address
           (string new-address)
-          (uri (uri-to-url new-address :representation :external)))))
+          (uri (uri-to-url new-address :representation representation)))))
 
 (defun serve-file (pathname &optional content-type (response *response*))
   (setf (content-type response) (or content-type (mimes:mime-lookup pathname) "application/octet-stream"))
