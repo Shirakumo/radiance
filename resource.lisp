@@ -6,39 +6,53 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defvar *resource-locators* (make-hash-table :test 'equal))
+(defvar *resource-types* (make-hash-table :test 'equal))
 
-(defun resource-type (type)
-  (or (gethash (string-downcase type) *resource-locators*)
-      (error "Unknown resource type ~s" type)))
+(define-documentable resource-type ()
+  ((name :initarg :name :accessor name)
+   (locators :initarg :locators :accessor locators))
+  (:default-initargs
+   :name (error "NAME required.")
+   :locators (make-hash-table :test 'equal))
+  (:find-function resource-type))
 
-(defun (setf resource-type) (table type)
-  (setf (gethash (string-downcase type) *resource-locators*) table))
+(defmethod print-object ((type resource-type) stream)
+  (print-unreadable-object (type stream :type T)
+    (format stream "~a" (name type))))
+
+(defun resource-type (name)
+  (or (gethash (string-downcase name) *resource-types*)
+      (error "Unknown resource type ~s" name)))
+
+(defun (setf resource-type) (type name)
+  (setf (gethash (string-downcase name) *resource-types*) type))
 
 (defun remove-resource-type (type)
-  (remhash (string-downcase type) *resource-locators*))
+  (remhash (string-downcase type) *resource-types*))
 
 (defun list-resource-types ()
-  (loop for name being the hash-keys of *resource-locators* collect name))
+  (loop for name being the hash-keys of *resource-types* collect name))
 
 (defun resource-locator (type ident)
-  (or (gethash (string-downcase ident) (resource-type type))
-      (if (eql ident T)
-          (error "No default resource locator for resource type ~s." type)
-          (resource-locator type T))))
+  (let ((locators (locators (resource-type type))))
+    (if (eql ident T)
+        (or (gethash T locators)
+            (error "No default resource locator for resource type ~s." type))
+        (gethash (string-downcase ident) locators))))
 
 (defun (setf resource-locator) (value type ident)
-  (setf (gethash (string-downcase ident) (resource-type type))
+  (setf (gethash (string-downcase ident) (locators (resource-type type)))
         value))
 
 (defmacro define-resource-type (type args &body default)
   (let ((type (string-downcase type)))
     `(progn (setf (resource-type ,type)
-                  (gethash ,type *resource-locators*
-                           (make-hash-table :test 'equal)))
-            ,@(when default
-                `((setf (gethash T (resource-type ,type))
-                         (lambda ,args ,@default)))))))
+                  (gethash ,type *resource-types*
+                           (make-instance 'resource-type :name ,type)))
+            (setf (gethash T (resource-type ,type))
+                  ,(if default
+                       `(lambda ,args ,@default)
+                       NIL)))))
 
 (defmacro define-resource-locator (module type args &body body)
   (assert (symbolp type) () "NAME must be a symbol.")
