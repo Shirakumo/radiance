@@ -111,7 +111,7 @@
        (modularize:module-identifier thing))))))
 
 (defun read-value ()
-  (eval (read)))
+  (eval (read *query-io*)))
 
 (defmacro or* (&rest vals)
   (let ((arg (gensym "ARG")))
