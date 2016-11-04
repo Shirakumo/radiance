@@ -49,7 +49,7 @@
     `(progn (setf (resource-type ,type)
                   (gethash ,type *resource-types*
                            (make-instance 'resource-type :name ,type)))
-            (setf (gethash T (resource-type ,type))
+            (setf (gethash T (locators (resource-type ,type)))
                   ,(if default
                        `(lambda ,args ,@default)
                        NIL)))))
@@ -91,4 +91,4 @@
 (define-resource-type page (module name &rest args)
   (declare (ignore args))
   (or (uri-dispatcher (find-symbol (string-upcase name) module))
-    (error "No page with name ~s found on ~s" name module)))
+      (error "No page with name ~s found on ~s" name module)))
