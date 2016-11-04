@@ -32,28 +32,28 @@
     (format stream "~s ~a" (direction route) (name route)))
   route)
 
-(defun %route (name-type)
-  (route (first name-type) (second name-type)))
+(defun %route (name-direction)
+  (route (first name-direction) (second name-direction)))
 
-(defun (setf %route) (value name-type)
-  (setf (route (first name-type) (second name-type)) value))
+(defun (setf %route) (value name-direction)
+  (setf (route (first name-direction) (second name-direction)) value))
 
-(defun route (name type)
-  (ecase type
+(defun route (name direction)
+  (ecase direction
     (:mapping (car (gethash name *route-registry*)))
     (:reversal (cdr (gethash name *route-registry*)))))
 
-(defun (setf route) (route name type)
+(defun (setf route) (route name direction)
   (let ((cons (gethash name *route-registry* (cons NIL NIL))))
-    (ecase type
+    (ecase direction
       (:mapping (setf (car cons) route))
       (:reversal (setf (cdr cons) route)))
     (setf (gethash name *route-registry*) cons))
   (rebuild-route-vectors)
   route)
 
-(defun remove-route (name type)
-  (ecase type
+(defun remove-route (name direction)
+  (ecase direction
     (:mapping (setf (car (gethash name *route-registry* (cons NIL NIL))) NIL))
     (:reversal (setf (cdr (gethash name *route-registry* (cons NIL NIL))) NIL)))
   (rebuild-route-vectors)
@@ -78,24 +78,24 @@
                                          :element-type 'function
                                          :initial-contents revfuns)))))
 
-(defmacro define-route (name type (urivar) &body body)
-  (destructuring-bind (type &optional (priority 0)) (enlist type)
-    `(setf (route ',name ,type)
-           (make-instance 'route
-                          :name ',name
-                          :direction ,type
-                          :priority ,priority
-                          :translator (lambda (,urivar)
-                                        (declare (type uri ,urivar))
-                                        (block ,name
-                                          ,@body))
-                          :documentation ,(form-fiddle:lambda-docstring
-                                           `(lambda () ,@body))))))
+(defmacro define-route (name direction (urivar) &body body)
+  (destructuring-bind (direction &optional (priority 0)) (enlist direction)
+    (let ((translator (gensym "TRANSLATOR")))
+      `(flet ((,translator (,urivar)
+                ,@body))
+         (setf (route ',name ,direction)
+               (make-instance 'route
+                              :name ',name
+                              :direction ,direction
+                              :priority ,priority
+                              :translator #',translator
+                              :documentation ,(form-fiddle:lambda-docstring
+                                               `(lambda () ,@body))))))))
 
-(defun extract-vars-and-tests (test-forms)
+(defun extract-vars-and-tests (lambda-list)
   (loop with basic-tests = ()
         with regex-tests = ()
-        for test in test-forms
+        for test in lambda-list
         collect (etypecase test
                   (symbol test)
                   (fixnum
@@ -112,8 +112,8 @@
                      gens))) into vars
         finally (return (values vars basic-tests regex-tests))))
 
-(defmacro with-destructuring-route-bind (test-form value-form &body body)
-  (multiple-value-bind (vars basic-tests regex-tests) (extract-vars-and-tests test-form)
+(defmacro with-destructuring-route-bind (lambda-list value-form &body body)
+  (multiple-value-bind (vars basic-tests regex-tests) (extract-vars-and-tests lambda-list)
     `(ignore-errors ; To ensure that an unmatching form just skips silently.
       ;; I'd love a better mechanism than ignore-errors, since it will also
       ;; catch other errors, but the CLHS does not ensure any form of error
@@ -131,21 +131,22 @@
                   finally (return body)))))))
 
 (defmacro with-route-part-bindings ((value-form test-form) &body body)
-  (cond ((eq test-form '*)
-         `(progn ,@body))
-        ((integerp test-form)
-         `(when (= ,test-form ,value-form)
-            ,@body))
-        ((stringp test-form)
-         `(when (string= ,test-form ,value-form)
-            ,@body))
-        ((listp test-form)
-         `(with-destructuring-route-bind ,test-form ,value-form
-            ,@body))
-        ((symbolp test-form)
-         `(let ((,test-form ,value-form))
-            ,@body))
-        (T (error "I don't know what to do with the test-form ~s." test-form))))
+  (etypecase test-form
+    ((eql *)
+     `(progn ,@body))
+    ((integer 0)
+     `(when (= ,test-form ,value-form)
+        ,@body))
+    (string
+     `(when (string= ,test-form ,value-form)
+        ,@body))
+    (list
+     `(with-destructuring-route-bind ,test-form ,value-form
+        ,@body))
+    (symbol
+     `(let ((,test-form ,value-form))
+        ,@body))
+    (T (error "I don't know what to do with the test-form ~s." test-form))))
 
 (defmacro with-route-test-bindings ((uri domains port path) &body body)
   `(with-route-part-bindings ((or (port ,uri) -1) ,port)
