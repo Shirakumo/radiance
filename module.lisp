@@ -59,6 +59,11 @@
    #:api-page
    #:remove-api-page
    #:list-api-pages
+   #:api-page
+   #:name
+   #:handler
+   #:argslist
+   #:request-handler
    #:call-api-request
    #:call-api
    #:define-api)
@@ -106,16 +111,13 @@
    #:with-actions)
   ;; defaults.lisp
   (:export
-   #:with-trigger
-   #:uri-groups
-   #:access
+   #:||
    #:favicon
    #:robots
    #:static
    #:add-domain
    #:remove-domain
-   #:internalizer
-   #:externalizer
+   #:domain
    #:virtual-module)
   ;; dispatch.lisp
   (:export
@@ -124,10 +126,23 @@
    #:dispatch-function
    #:priority
    #:uri-dispatcher
+   #:remove-uri-dispatcher
    #:list-uri-dispatchers
    #:uri-dispatcher>
    #:define-uri-dispatcher
    #:dispatch)
+  ;; documentable.lisp
+  (:export
+   #:documentable
+   #:define-documentable)
+  ;; handle.lisp
+  (:export
+   #:*debugger*
+   #:handle-condition
+   #:render-error-page
+   #:execute-request
+   #:set-data
+   #:request)
   ;; init.lisp
   (:export
    #:*startup-time*
@@ -154,7 +169,6 @@
    #:define-implement-hook)
   ;; modules.lisp
   (:export
-   #:*modules-directory*
    #:module-domain
    #:module-permissions
    #:module-dependencies
@@ -164,6 +178,7 @@
    #:module-api-endpoints
    #:describe-module
    #:find-modules-directory
+   #:*modules-directory*
    #:create-module)
   ;; options.lisp
   (:export
@@ -227,24 +242,23 @@
    #:file
    #:redirect
    #:serve-file
-   #:execute-request
-   #:set-data
-   #:request
-
-   #:present-error-page
-   #:handle-condition
-   #:render-error-page
-
    #:request-run-time)
   ;; resource.lisp
   (:export
+   #:resource-type
+   #:name
+   #:locators
    #:resource-type
    #:remove-resource-type
    #:list-resource-types
    #:resource-locator
    #:define-resource-type
    #:define-resource-locator
-   #:resource)
+   #:resource
+   #:domain
+   #:api
+   #:static
+   #:page)
   ;; routing.lisp
   (:export
    #:route
@@ -287,7 +301,6 @@
    #:port
    #:path
    #:matcher
-
    #:uri-string
    #:make-uri
    #:ensure-uri
