@@ -505,12 +505,12 @@ CLAUSE         --- A string designator that names the action"))
 
 ;; defaults.lisp
 (docs:define-docs
-  (option (page with-trigger)
+  (option (page :hook)
     "Adds a hook that is automatically triggered when the page is called.
 
 Unless otherwise specified, the hook is named the same as the page.")
 
-  (option (page uri-groups)
+  (option (page :uri-groups)
     "Allows capturing the regex groups in the URI's path as variables.
 
 See CL-PPCRE:REGISTER-GROUPS-BIND")
@@ -518,30 +518,26 @@ See CL-PPCRE:REGISTER-GROUPS-BIND")
   (function transform-access-body
     "Transforms the body to be protected from access by the permission branch.")
 
-  (option (page access)
+  (option (page :access)
     #1="Ensures that the page is only accessible if the user requesting it has the appropriate permission branch.")
   
-  (option (api access)
+  (option (api :access)
     #1#)
 
-  (option (admin:panel access)
+  (option (admin:panel :access)
     #1#)
 
-  (option (profile:panel access)
+  (option (profile:panel :access)
     #1#)
 
   (api-page ||
     "Fallback api endpoint that signals an API-CALL-NOT-FOUND error.")
 
   (page favicon
-    "Standard page for the favicon.ico root image.
-
-See DATA-FILE")
+    "Standard page for the favicon.ico root image.")
 
   (page robots
-    "Standard page for the robots.txt root file.
-
-See DATA-FILE")
+    "Standard page for the robots.txt root file.")
 
   (page static
     "Standard delegate for static files.
@@ -634,10 +630,11 @@ object or return suitable data for it.
 See URI-DISPATCHER")
 
   (function priority
-    "Accessor to the priority of the uri dispatcher, which may be NIL or an INTEGER.
+    "Accessor to the priority, which may be NIL or an INTEGER.
 
 See URI-DISPATCHER
-See DISPATCH")
+See DISPATCH
+See ROUTE")
 
   (variable *uri-registry*
     "Map from names to uri-dispatcher instances.
@@ -1530,23 +1527,273 @@ See RESOURCE-TYPE")
     "Define a new resource type.
 
 A resource-type defines a way to retrieve a certain kind of
-information from some place.
+information from a module.
 
 If DEFAULT is given, a fallback function is defined with it.
 You can retrieve this fallback by using T as the indent.
 
+The first argument of any resource call is always the module
+it was called for.
+
 See DEFINE-RESOURCE-LOCATOR
 See RESOURCE-TYPE
-See RESOURCE-LOCATOR")
+See RESOURCE-LOCATOR
+See RESOURCE")
 
   (function define-resource-locator
     "Define a resource locator for a given resource type.
 
-"))
+The arguments list can vary depending on the resource type
+and even between locators for the same resource. Ultimately
+the argument list is decided by the locator that ends up
+being called.
+
+Within the body, the local function CALL-DEFAULT-LOCATOR
+can be used to call the default locator for this resource
+type.
+
+If an attempt is made to define a locator for an inexistent
+resource type, an error is signalled.
+
+See DEFINE-RESOURCE-TYPE
+See RESOURCE")
+
+  (function resource
+    "Returns the requested resource type on the given module.
+
+If the module does not have a specific locator, the default
+locator is called. If no default exists, an error is
+signalled.
+
+The applicable structure and number of the arguments is
+dependant on the locator being called.
+
+See LIST-RESOURCE-TYPES
+See DEFINE-RESOURCE-LOCATOR")
+
+  (resource-type domain
+    "Returns an internal URI that is a representation of the domain on which the module operates.")
+
+  (resource-type api
+    "Returns an internal URI that is a representation of the path on which the given API endpoint can be called.
+
+It expects one or more arguments, where the first is the
+endpoint's name and the rest are key-value pairs of the
+arguments for the call.")
+
+  (resource-type static
+    "Returns an internal URI that is a representation of the requested static resource.
+
+Requires a single argument, namely the name of the resource.")
+
+  (resource-type page
+    "Returns an internal URI that points to the requested page.
+
+By default a page with the name corresponding to the symbol
+of the given name in the module's package is used if available.
+
+However, a module or interface may special-case certain page
+names to provide a specified name to point to a page of
+particular interest."))
 
 ;; routing.lisp
 (docs:define-docs
-  )
+  (type route
+    "Container class for a URI translation route.
+
+See NAME
+See DIRECTION
+See PRIORITY
+See TRANSLATOR
+See ROUTE
+See REMOVE-ROUTE
+See LIST-ROUTES
+See DEFINE-ROUTE")
+
+  (function direction
+    "Accessor to the direction in which the route operates.
+
+Has to be one of :MAPPING :REVERSAL
+
+See ROUTE")
+
+  (function translator
+    "Accessor to the route's translation function.
+
+The function should accept a single URI object
+as an argument and modify it as it sees fit.
+
+See ROUTE")
+
+  (variable *route-registry*
+    "A table mapping names to the route instances.
+
+Each value in the table is a cons where
+the car is the mapping route and the cdr
+is the reversal route, if any.
+
+See ROUTE
+See REMOVE-ROUTE
+See LIST-ROUTES")
+
+  (variable *route-mapping*
+    "An optimised vector of translator functions to iterate through when mapping a URI.
+
+See *ROUTE-REGISTRY*
+See REBUILD-ROUTE-VECTORS")
+
+  (variable *route-reversal*
+    "An optimised vector of translator functions to iterate through when reversing a URI.
+
+See *ROUTE-REGISTRY*
+See REBUILD-ROUTE-VECTORS")
+
+  (function ensure-path
+    "Coerces the argument to a slash separated path if it is a list.")
+
+  (function %route
+    "Wrapper for the documentable find-function.")
+
+  (function route
+    "Accesses the route instance of the given name and direction.
+
+Automatically calls REBUILD-ROUTE-VECTORS when
+a route is changed.
+
+See REBUILD-ROUTE-VECTORS
+See *ROUTE-REGISTRY*
+See REMOVE-ROUTE
+See LIST-ROUTES
+See ROUTE")
+
+  (function remove-route
+    "Removes the specified route, if any.
+
+Automatically calls REBUILD-ROUTE-VECTORS
+
+See REBUILD-ROUTE-VECTORS
+See *ROUTE-REGISTRY*
+See ROUTE
+See LIST-ROUTES")
+
+  (function list-routes
+    "Lists all the route instances that are registered.
+
+See *ROUTE-REGISTRY*
+See ROUTE
+See REMOVE-ROUTE")
+
+  (function rebuild-route-vectors
+    "Rebuilds the optimised route vectors.
+
+This should be called whenever the route table
+is changed.
+
+Higher priority routes come first.
+
+See LIST-ROUTES
+See *ROUTE-MAPPING*
+See *ROUTE-REVIERSAL*")
+
+  (function define-route
+    "Define a new route.
+
+DIRECTION has to be one of :MAPPING :REVERSAL
+where mapping routes transform URIs from the
+external to the internal representation and vice-
+versa.
+
+The body should modify the URI object it receives
+as it sees fit. While in general routes will be
+called in the context of a request, it is not
+absolutely necessary.
+
+See ROUTE
+See DEFINE-MATCHING-ROUTE
+See DEFINE-TARGET-ROUTE
+See DEFINE-STRING-ROUTE")
+
+  (function extract-vars-and-tests
+    "Turns the lambda-list into a 'pure' lambda-list, a list of tests, and a list of regex tests.
+
+See WITH-DESTRUCTURING-ROUTE-BIND")
+
+  (function with-destructuring-route-bind
+    "Destructure the value-form according to the test-form and conditionally execute/bind body.
+
+LAMBDA-LIST should be a destructuring-lambda-list with
+the following special treatment. Aside from symbols,
+numbers, strings, and lists are also allowed at any
+position with the following effects:
+
+  NUMBER  --- The body is only evaluated if the value at
+              that position of the lambda-list is = to
+              the argument it references.
+  STRING  --- The body is only evaluated if the value at
+              that position of the lambda-list is STRING=
+              to the argument it references.
+  LIST    --- The first item of the list is treated as a
+              regular expression and the rest must be
+              symbols that will be bound to the values of
+              the capture groups of the regex.
+
+This makes it succinct to write complex destructuring tests.
+
+See CL-PPCRE:REGISTER-GROUPS-BIND
+See EXTRACT-VARS-AND-TESTS")
+
+  (function with-route-part-bindings
+    "Ensures that body is only evaluated if the test passes.
+
+Depending on the type of the TEST-FORM, the body
+is wrapped differently.
+
+ (EQL *)      --- The body is emitted in a PROGN.
+ (INTEGER 0)  --- The value-form must match the test-form under =
+ STRING       --- The value-form must match the test-form under STRING=
+ LIST         --- The body is wrapped in a WITH-DESTRUCTURING-ROUTE-BIND
+ SYMBOL       --- The symbol held is bound to the value-form's value.
+
+See WITH-DESTRUCTURING-ROUTE-BIND")
+
+  (function with-route-test-bindings
+    "Binds each part of the URI for the duration of the body.
+
+See WITH-ROUTE-PART-BINDINGS")
+
+  (function define-matching-route
+    "Defines a route where the URI is bound to URIVAR and the body is only evaluated if the tests for the individual parts of the URI pass.
+
+See WITH-ROUTE-TEST-BINDINGS
+See DEFINE-ROUTE")
+
+  (function define-target-route
+    "Defines a route that attempts to automatically translate the URI according to the given test and result parts.
+
+The result parts can reference all variables introduced
+by the test parts.
+
+See DEFINE-MATCHING-ROUTE")
+
+  (function escape-regex-dots-not-in-group
+    "Escapes a dot in the string if it is not within a regex capture group.")
+
+  (function define-string-route
+    "Defines a route where the URI is analysed by the given regex and translated into the interpolated string representation.
+
+The target string can reference regex capture groups.
+
+See CL-PPCRE:REGEX-REPLACE")
+
+  (function internal-uri
+    "Modifies the URI by pushing it through all mapping routes so that it becomes an internal URI.
+
+See *ROUTE-MAPPING*")
+
+  (function external-uri
+    "Modifies the URI by pushing it through all reversal routes so that it becomes an external URI.
+
+See *ROUTE-REVERSAL*"))
 
 ;; standard-interfaces.lisp
 (docs:define-docs
@@ -1554,9 +1801,319 @@ See RESOURCE-LOCATOR")
 
 ;; toolkit.lisp
 (docs:define-docs
-  )
+  (variable *random-string-characters*
+    "A string that contains all the characters that can form a random-string.
+
+See MAKE-RANDOM-STRING")
+
+  (variable +unix-epoch-difference+
+    "The time difference between unix and universal time.")
+
+  (function enlist
+    "Ensure that VAR is a list, appending the other args if it is not yet one.")
+
+  (function universal-to-unix-time
+    "Translate the given universal-time to a unix-time
+
+See +UNIX-EPOCH-DIFFERENCE+")
+
+  (function unix-to-universal-time
+    "Translate the given unix-time to a universal-time
+
+See +UNIX-EPOCH-DIFFERENCE+")
+
+  (function get-unix-time
+    "Return the current time as a unix timestamp in seconds since 1970.")
+
+  (function format-relative-time
+    "Returns a string representing the given timestamp seconds as a relative time.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+It divides the time up into seconds, minutes,
+hours, days, weeks, months, years, decades,
+centuries, and finally æons.
+
+Example: 63 results in \"1 minute 3 seconds\"
+
+See FORMAT-TIME")
+
+  (function format-clock-time
+    "Returns a string representing the given timestamp in wall-clock time.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+The effective format is \"hh:mm:ss\"
+
+See FORMAT-MACHINE-DATE
+See FORMAT-HUMAN-DATE
+See FORMAT-FANCY-DATE")
+
+  (function format-machine-date
+    "Returns a string representing the given timestamp in machine-readable date.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+The effective format is \"YYYY-MM-DDThh:mm:ss\"
+
+See FORMAT-CLOCK-TIME
+See FORMAT-HUMAN-DATE
+See FORMAT-FANCY-DATE")
+
+  (function format-human-date
+    "Returns a string representing the given timestamp in human-readable date.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+The effective format is \"YYYY.MM.DD hh:mm:ss\"
+
+See FORMAT-CLOCK-TIME
+See FORMAT-MACHINE-DATE
+See FORMAT-FANCY-DATE
+See FORMAT-TIME")
+
+  (function format-fancy-date
+    "Returns a string representing the given timestamp in an extensive, fancy date.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+The effective format is \"WEEKDAY, DAY of MONTH Y, H:MM:SS UTC\"
+
+See FORMAT-CLOCK-TIME
+See FORMAT-MACHINE-DATE
+See FORMAT-HUMAN-DATE")
+
+  (function format-time
+    "Returns a string representing the given timestamp in an intuitive way.
+
+If the difference from the current time is below
+the RELATIVE-TIME-THRESHOLD, the time is formatted
+relatively, otherwise absolutely.
+
+See FORMAT-RELATIVE-TIME
+See FORMAT-HUMAN-DATE")
+
+  (function make-random-string
+    "Constructs a string composed of random characters.
+
+See *RANDOM-STRING-CHARACTERS*")
+
+  (function file-size
+    "Returns the file size in bytes.")
+
+  (function resolve-base
+    "Resolves the filesystem directory of the thing if possible.")
+
+  (function read-value
+    "Used to interactively read an evaluated form.")
+
+  (function or*
+    "Similar to OR, but treats empty strings as NIL.
+
+This is often handy in the context of query
+parameters from the outside world where an
+empty string represents no value.")
+
+  (function cut-get-part
+    "Returns the url string without the get part.")
+
+  (function static-file
+    "Returns the static file for the given base.
+
+The base will usually be your local module and thus
+this will use the static folder within its source
+directory.")
+
+  (function template
+    "Returns the template file for the given base.
+
+The base will usually be your local module and thus
+this will use the template folder within its source
+directory.")
+
+  (function perm
+    "Macro to encompass a permission.
+
+You should use this wherever you reference a permission.
+Using this will ensure that the permission is registered
+with your module and thus inspectable from the outside.")
+
+  (function copy-hash-table
+    "Copies the given hash-table as accurately as possible."))
 
 ;; uri.lisp
 (docs:define-docs
-  )
+  (type uri
+    "Class to represent a URI in the system.
 
+URIs are used to access and define resources that should
+be accessible both internally and externally.
+
+If MATCHER is T, then the matcher is automatically set
+to the scanner created from the path or an empty string
+should the path be NIL.
+
+See DOMAINS
+See PORT
+See PATH
+See MATCHER
+See MAKE-URI
+See COPY-URI
+See URI<
+See URI>
+See URI=
+See URI-MATCHES
+See MERGE-URIS
+See REPRESENT-URI
+See URI-TO-URL")
+
+  (function domains
+    "Accesses the list of (sub)domains of the URI.
+
+The domains are in order of increasing specificity.
+This means they are the reverse of standard URL
+syntax. This is done for ease of matching and
+because it is honestly the more sensible way to
+represent a domain.
+
+See URI")
+
+  (function port
+    "Accesses the port of the URI.
+
+Must be of type (OR (INTEGER 0 65535) NULL)
+
+See URI")
+
+  (function path
+    "Accesses the path of the URI.
+
+If the URI is meant to be matched against, the
+path can also be a regular expression as per
+cl-ppcre. In that case, the URI's MATCHER slot
+must be a cl-ppcre scanner function.
+
+See MATCHER
+See URI")
+
+  (function matcher
+    "Accesses the regex matcher function of the URI.
+
+The matcher only matches against the path part
+of a URI. The matcher should always act according
+to the regex stored in the PATH part of the URI.
+
+See PATH
+See URI")
+
+  (function uri-string
+    "Returns a parsable string representation of the URI.
+
+See URI")
+
+  (function make-uri
+    "Creates a new URI instance according t o the given parts.
+
+See URI")
+
+  (function ensure-uri
+    "Ensures that the object is a URI and returns it.
+
+If URI-ISH is a STRING, then it is parsed.
+
+See PARSE-URI
+See URI")
+
+  (function copy-uri
+    "Creates a full copy of the URI.
+
+If URI is a STRING, then it is parsed.
+
+See PARSE-URI
+See URI")
+
+  (variable *uri-regex*
+    "Stores the cl-ppcre parse function that is used to parse a URI from a string.")
+  
+  (function parse-uri
+    "Parses the given URI into a string if possible.
+
+Signals an error of type UNPARSABLE-URI-STRING
+if the string cannot be parsed.
+
+See URI")
+
+  (function read-uri
+    "Reads a URI as a string from the stream.
+
+See PARSE-URI
+See READ")
+
+  (variable *default-uri-defaults*
+    "Contains a default, neutral URI.")
+
+  (function uri<
+    "Returns T if A logically precedes B in specificity.
+
+In more detail (short-circuiting top to bottom):
+  T    A does not have a port, but B does
+  T    A's number of domains is less than B's
+  T    A's length of the path is greater than B's
+  NIL  for everything else
+
+See URI")
+
+  (function uri>
+    "Returns T if A logically follows B in specificity.
+
+See URI<")
+
+  (function uri=
+    "Returns T if A and B represent the same URIs.
+
+Specifically:
+  Ports must be EQL
+  Paths must be EQUAL
+  Domains must be the same order and be STRING-EQUAL
+
+See URI")
+
+  (function uri-matches
+    "Returns T if the URI matches the PATTERN-URI.
+
+Sepcifically, in order to match:
+  The matcher of the pattern must match the path of the uri.
+  All the domains must be in the same order and match by
+  STRING-EQUAL.
+  Either one of them does not have a port set, or the
+  ports must match by =.
+
+See MATCHER
+See URI")
+
+  (function merge-uris
+    "Creates a new URI by merging the given two.
+
+See URI")
+
+  (function represent-uri
+    "Returns a new URI that is represented accordingly.
+
+REPRESENTATION can be one of the following:
+  :AS-IS NIL          --- The URI is simply copied
+  :EXTERNAL :REVERSE  --- The URI is externalised
+  :INTERNAL :MAP      --- The URI is internalised
+
+See COPY-URI
+See EXTERNAL-URI
+See INTERNAL-URI")
+
+  (function uri-to-url
+    "Returns a URL representation of the URI assuming an HTTP context.
+
+See REPRESENT-URI"))

@@ -49,15 +49,14 @@
             collect option))))
 
 (defmacro define-option (type name args &body body)
-  (let ((name (intern (string name) :keyword))
-        (handler (gensym "HANDLER")))
+  (let ((handler (gensym "HANDLER")))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
        (flet ((,handler ,args
                 ,@body))
-         (setf (option ',type ,name)
+         (setf (option ',type ',name)
                (make-instance 'option
                               :type ',type
-                              :name ,name
+                              :name ',name
                               :expander #',handler
                               :documentation ,(form-fiddle:lambda-docstring
                                                `(lambda () ,@body))))))))

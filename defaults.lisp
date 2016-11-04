@@ -7,7 +7,7 @@
 (in-package #:org.shirakumo.radiance.core)
 
 ;; Sets up a default trigger for pages
-(define-option page with-trigger (name body uri &optional (value T))
+(define-option page :hook (name body uri &optional (value T))
   (declare (ignore uri))
   (assert (symbolp value))
   (if value
@@ -18,7 +18,7 @@
          `(define-hook (,name ,(package-name *package*)) ())))
       body))
 
-(define-option page uri-groups (name body uri &optional uri-groups)
+(define-option page :uri-groups (name body uri &optional uri-groups)
   (declare (ignore name))
   (if uri-groups
       `((cl-ppcre:register-groups-bind ,uri-groups (,(path uri) (path (uri *request*)))
@@ -33,19 +33,19 @@
           ,@body)
         body)))
 
-(define-option page access (name body uri &optional (branch T))
+(define-option page :access (name body uri &optional (branch T))
   (declare (ignore name uri))
   (transform-access-body body branch))
 
-(define-option api access (name body args &optional (branch T))
+(define-option api :access (name body args &optional (branch T))
   (declare (ignore name args))
   (transform-access-body body branch))
 
-(define-option admin:panel access (name body category &optional (branch T))
+(define-option admin:panel :access (name body category &optional (branch T))
   (declare (ignore name category))
   (transform-access-body body branch))
 
-(define-option profile:panel access (name body &optional (branch T))
+(define-option profile:panel :access (name body &optional (branch T))
   (declare (ignore name))
   (transform-access-body body branch))
 
