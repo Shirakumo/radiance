@@ -88,7 +88,9 @@
                           :translator (lambda (,urivar)
                                         (declare (type uri ,urivar))
                                         (block ,name
-                                          ,@body))))))
+                                          ,@body))
+                          :documentation ,(form-fiddle:lambda-docstring
+                                           `(lambda () ,@body))))))
 
 (defun extract-vars-and-tests (test-forms)
   (loop with basic-tests = ()

@@ -76,7 +76,9 @@
                              :name ',name
                              :dispatch-function #',dispatcher
                              :priority ,priority
-                             :matcher T))))))
+                             :matcher T
+                             :documentation ,(form-fiddle:lambda-docstring
+                                              `(lambda () ,@body))))))))
 
 (defun dispatch (uri)
   (declare (optimize speed))
