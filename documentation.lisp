@@ -1475,7 +1475,74 @@ See *REQUEST*"))
 
 ;; resource.lisp
 (docs:define-docs
-  )
+  (variable *resource-types*
+    "A map from names to resource-type instances.
+
+See RESOURCE-TYPE
+See REMOVE-RESOURCE-TYPE
+See LIST-RESOURCE-TYPES")
+
+  (type resource-type
+    "Container class for a resource type.
+
+See NAME
+See LOCATORS
+See RESOURCE-TYPE
+See DEFINE-RESOURCE-TYPE")
+
+  (function locators
+    "Accessor to the resource type's locator functions.")
+
+  (function resource-type
+    "Accessor for the resource types.
+
+If the requested type does not exist, an error is signalled.
+
+See *RESOURCE-TYPES*
+See RESOURCE-TYPE
+See REMOVE-RESOURCE-TYPE
+See LIST-RESOURCE-TYPES
+See DEFINE-RESOURCE-TYPE")
+
+  (function remove-resource-type
+    "Removes the given resource type, if it exists.
+
+See *RESOURCE-TYPES*
+See RESOURCE-TYPE
+See LIST-RESOURCE-TYPES")
+
+  (function list-resource-types
+    "Returns a list of names of defined resource types.
+
+See *RESOURCE-TYPES*
+See RESOURCE-TYPE
+See REMOVE-RESOURCE-TYPE")
+
+  (function resource-locator
+    "Accessor to a locator function on the given resource type.
+
+Signals an error if the ident is T and there is
+no default resource locator defined on the resource type.
+
+See RESOURCE-TYPE")
+
+  (function define-resource-type
+    "Define a new resource type.
+
+A resource-type defines a way to retrieve a certain kind of
+information from some place.
+
+If DEFAULT is given, a fallback function is defined with it.
+You can retrieve this fallback by using T as the indent.
+
+See DEFINE-RESOURCE-LOCATOR
+See RESOURCE-TYPE
+See RESOURCE-LOCATOR")
+
+  (function define-resource-locator
+    "Define a resource locator for a given resource type.
+
+"))
 
 ;; routing.lisp
 (docs:define-docs
