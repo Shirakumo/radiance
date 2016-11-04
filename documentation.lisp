@@ -201,7 +201,18 @@ See HANDLER
 See REQUEST-HANDLER
 See CALL-API
 See CALL-API-REQUEST
-See EXPAND-OPTIONS"))
+See EXPAND-OPTIONS")
+
+  (page api
+    "Standard page to handle and dispatch to API endpoints.
+
+Respects the \"browser\" post/get property, which if set to
+the string \"true\", causes a redirect to the referer on
+an api-error rather than displaying a machine-readable
+error output.
+
+See API-PAGE
+See CALL-API-REQUEST"))
 
 ;; conditions.lisp
 (docs:define-docs
@@ -443,7 +454,7 @@ captured.
 
 See MCONFIG")
 
-  (function defaulted-mconfig
+  (function defaulted-config
     "Shorthand to set/retrieve a defaulted value from the module's configuration.
 
 This has to be a macro so that the current package can be
