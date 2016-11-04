@@ -81,6 +81,8 @@
                                                        :package package))))))
 
 (defun staple ()
-  (staple:generate :radiance
+  (staple:generate :radiance-core
+                   :name "Radiance"
                    :packages '(:radiance-core)
-                   :if-exists :supersede))
+                   :if-exists :supersede
+                   :logo "static/radiance.png"))
