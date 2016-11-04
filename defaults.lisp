@@ -112,10 +112,10 @@
 
 ;; Default urls
 (define-page favicon ("/^favicon.ico$" 10) ()
-  (serve-file (data-file "static/favicon.ico")))
+  (serve-file (static-file "favicon.ico" :radiance-core)))
 
 (define-page robots ("/^robots.txt$" 10) ()
-  (serve-file (data-file "static/robots.txt")))
+  (serve-file (static-file "robots.txt" :radiance-core)))
 
 (define-page static ("/^static/.*" 1000) ()
   (let* ((path (path (uri *request*)))

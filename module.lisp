@@ -263,8 +263,6 @@
    #:external-uri)
   ;; toolkit.lisp
   (:export
-   #:*root*
-   #:*data-path*
    #:*random-string-characters*
    #:universal-to-unix-time
    #:unix-to-universal-time
@@ -277,8 +275,6 @@
    #:format-time
    #:make-random-string
    #:file-size
-   #:read-data-file
-   #:data-file
    #:resolve-base
    #:static-file
    #:template

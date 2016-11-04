@@ -6,13 +6,7 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-;; CCL does some weird shit with compiler macros
-;; So in order to make the DATA-FILE macro work we
-;; need to have *DATA-PATH* at compile time.
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defvar *root* (asdf:system-source-directory :radiance))
-  (defvar *data-path* (merge-pathnames (make-pathname :directory '(:relative "data")) *root*))
-  (defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789"))
+(defvar *random-string-characters* "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789")
 (defconstant +unix-epoch-difference+ (encode-universal-time 0 0 0 1 1 1970 0))
 
 (defun enlist (var &rest args)
@@ -107,23 +101,6 @@
   (with-open-file (in pathspec :direction :input :element-type '(unsigned-byte 8))
     (file-length in)))
 
-(defun read-data-file (pathspec &key (if-does-not-exist :ERROR))
-  (with-open-file (stream (merge-pathnames pathspec *data-path*) :if-does-not-exist if-does-not-exist)
-    (with-output-to-string (string)
-      (let ((buffer (make-array 4096 :element-type 'character)))
-        (loop for bytes = (read-sequence buffer stream)
-              do (write-sequence buffer string :start 0 :end bytes)
-              while (= bytes 4096))))))
-
-(defun data-file (pathname &optional (default *data-path*))
-  (merge-pathnames pathname default))
-
-(define-compiler-macro data-file (&whole whole &environment env pathname &optional (default *data-path* d-p))
-  (if (and (constantp pathname env)
-           (or (not d-p) (constantp default env)))
-      `(load-time-value (merge-pathnames ,pathname ,default))
-      whole))
-
 (defun resolve-base (thing)
   (etypecase thing
     (pathname thing)
@@ -147,33 +124,11 @@
 (defun cut-get-part (url)
   (subseq url 0 (position #\? url)))
 
-(defun %static-file (namestring base)
+(defun static-file (namestring &optional base)
   (merge-pathnames namestring (merge-pathnames "static/" (merge-pathnames (resolve-base base)))))
 
-(defun static-file (namestring &optional base)
-  (%static-file namestring base))
-
-(define-compiler-macro static-file (namestring &optional (base *package*))
-  (typecase base
-    ((or package string)
-     (if (stringp namestring)
-         (%static-file namestring base)
-         `(merge-pathnames ,namestring ,(merge-pathnames "static/" (merge-pathnames (resolve-base base))))))
-    (T `(%static-file ,namestring ,base))))
-
-(defun %template (namestring base)
-  (merge-pathnames namestring (merge-pathnames "template/" (merge-pathnames (resolve-base base)))))
-
 (defun template (namestring &optional base)
-  (%template namestring base))
-
-(define-compiler-macro template (namestring &optional (base *package*))
-  (typecase base
-    ((or package string)
-     (if (stringp namestring)
-         (%template namestring base)
-         `(merge-pathnames ,namestring ,(merge-pathnames "template/" (merge-pathnames (resolve-base base))))))
-    (T `(template ,namestring ,base))))
+  (merge-pathnames namestring (merge-pathnames "template/" (merge-pathnames (resolve-base base)))))
 
 (defmacro perm (&rest tree)
   (let ((perm (format NIL "~{~(~a~)~^.~}" tree)))
