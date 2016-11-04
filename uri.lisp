@@ -40,6 +40,7 @@
   (when (matcher uri)
     (setf (matcher uri) (cl-ppcre:create-scanner (or (path uri) "")))))
 
+(declaim (inline make-uri))
 (defun make-uri (&key domains port path matcher)
   (make-instance 'uri :domains domains :port port :path path :matcher matcher))
 
@@ -53,7 +54,8 @@
   (etypecase uri
     (uri (make-uri :domains (copy-seq (domains uri))
                    :port (port uri)
-                   :path (path uri)))
+                   :path (path uri)
+                   :matcher (matcher uri)))
     (string (parse-uri uri))))
 
 (defvar *uri-regex* (cl-ppcre:create-scanner "^(([a-z0-9\\-]+\\.)*[a-z0-9\\-]+)?(:(\\d{1,5}))?/(.*)" :case-insensitive-mode T))
