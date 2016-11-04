@@ -1,0 +1,1266 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Radiance-Core</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Core component of Radiance, an extensible web application environment."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+          text-align: center;
+      }
+      body>header img{
+          max-width: 50%;
+      }
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
+      a img{
+          border: none;
+      }
+      #documentation{
+          text-align: justify;
+      }
+      #documentation pre{
+          margin-left: 20px;
+          overflow: auto;
+      }
+      #documentation img{
+          margin: 5px;
+      }
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1><img alt="radiance-core" src="static/radiance.png"/></h1> <span class="version">0.0.1</span> <p class="description">Core component of Radiance, an extensible web application environment.</p> </header> <main> <article id="documentation">  <div><h2>About Radiance</h2> <p>An explanation about what exactly Radiance is will be here as soon as I figure out how to explain it quickly enough. In the most basic of words, it is a very featureful web-framework written in Common Lisp.</p> <p>Radiance is currently lacking in completeness, soundness, and specification to be advocated as a ready-to-use framework. Please be patient until the remaining <a href="https://github.com/Shirakumo/radiance/issues">issues</a> have been cleaned up. It is however already being used in a production setting for <a href="https://blog.tymoon.eu/">TymoonNET</a>. See the remaining <a href="https://github.com/Shirakumo">Shirakumo projects</a> for examples of applications built using Radiance.</p> <h2>Getting It</h2> <p>Radiance and associated modules and applications are distributed via Quicklisp in a separate dist. To install Radiance, do:</p> <pre><code>(ql-dist:install-dist &quot;http://dist.tymoon.eu/shirakumo.txt&quot;)
+(ql:quickload :radiance)
+</code></pre> <p>From there on out you should be able to load and use any kind of Radiance module like <a href="https://github.com/Shirakumo/purplish">Purplish</a> directly via Quicklisp's <code>quickload</code>.</p> <h2>Using It</h2> <h3>A Simple Example</h3> <p>TBD</p> <h3>Radiance Concepts</h3> <p>TBD</p> <h3>Request Lifecycle</h3> <p>TBD</p> <h3>Module Management</h3> <p>TBD</p> <h3>Interfaces &amp; You</h3> <p>TBD</p> <h2>Also See</h2> <ul> <li><a href="https://shinmera.github.io/modularize">modularize</a> For the primary package metadata system</li> <li><a href="https://shinmera.github.io/modularize-interfaces">modularize-interfaces</a> For the interface and implementations extensions</li> <li><a href="https://shinmera.github.io/modularize-hooks">modularize-hooks</a> For the hooks and triggers mechanisms</li> <li><a href="https://shinmera.github.io/ubiquitous">ubiquitous</a> For configuration management</li> </ul> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>radiance-core</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .    </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="RADIANCE-CORE" href="#RADIANCE-CORE">RADIANCE-CORE</a> <span class="nicknames">(RADIANCE MODULARIZE.MOD.RADIANCE-CORE ORG.SHIRAKUMO.RADIANCE.CORE)</span> </h3> <ul><li> <a name="RADIANCE-CORE:*DEBUGGER*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*DEBUGGER*">*DEBUGGER*</a></code></h4>  </header> <pre class="docstring">Whether the debugger should be invoked when an error occurs during a request execution.
+
+See HANDLE-CONDITION
+See EXECUTE-REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:*DEFAULT-API-FORMAT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*DEFAULT-API-FORMAT*">*DEFAULT-API-FORMAT*</a></code></h4>  </header> <pre class="docstring">The API format to use if no specific one is requested.
+
+See *API-FORMATS*</pre> </article> </li><li> <a name="RADIANCE-CORE:*DEFAULT-CONTENT-TYPE*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*DEFAULT-CONTENT-TYPE*">*DEFAULT-CONTENT-TYPE*</a></code></h4>  </header> <pre class="docstring">The default content-type to use to send out the data.
+
+See RESPONSE</pre> </article> </li><li> <a name="RADIANCE-CORE:*DEFAULT-EXTERNAL-FORMAT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*DEFAULT-EXTERNAL-FORMAT*">*DEFAULT-EXTERNAL-FORMAT*</a></code></h4>  </header> <pre class="docstring">The default external character encoding to use to send out the data.
+
+See RESPONSE</pre> </article> </li><li> <a name="RADIANCE-CORE:*MODULES-DIRECTORY*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*MODULES-DIRECTORY*">*MODULES-DIRECTORY*</a></code></h4>  </header> <pre class="docstring">Defines the path where modules should be created.</pre> </article> </li><li> <a name="RADIANCE-CORE:*RANDOM-STRING-CHARACTERS*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*RANDOM-STRING-CHARACTERS*">*RANDOM-STRING-CHARACTERS*</a></code></h4>  </header> <pre class="docstring">A string that contains all the characters that can form a random-string.
+
+See MAKE-RANDOM-STRING</pre> </article> </li><li> <a name="RADIANCE-CORE:*REQUEST*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*REQUEST*">*REQUEST*</a></code></h4>  </header> <pre class="docstring">Bound to the current request object in the context of a request.
+
+See EXECUTE-REQUEST
+See REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:*RESPONSE*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*RESPONSE*">*RESPONSE*</a></code></h4>  </header> <pre class="docstring">Bound to the current response object in the context of a request.
+
+See EXECUTE-REQUEST
+See RESPONSE</pre> </article> </li><li> <a name="RADIANCE-CORE:*STARTUP-TIME*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*STARTUP-TIME*">*STARTUP-TIME*</a></code></h4>  </header> <pre class="docstring">Keeps the universal-time of when STARTUP was called.
+
+See STARTUP
+See SHUTDOWN
+See UPTIME</pre> </article> </li><li> <a name="RADIANCE-CORE:API-PAGE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API-PAGE">API-PAGE</a></code></h4>  </header> <pre class="docstring">Container for an api endpoint.
+
+See NAME
+See HANDLER
+See ARGSLIST
+See REQUEST-HANDLER</pre> </article> </li><li> <a name="RADIANCE-CORE:COOKIE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:COOKIE">COOKIE</a></code></h4>  </header> <pre class="docstring">Container class for a cookie.
+
+See NAME
+See VALUE
+See DOMAIN
+See PATH
+See EXPIRES
+See HTTP-ONLY
+See SECURE
+See REQUEST
+See RESPONSE
+See COOKIE-HEADER
+See COOKIE</pre> </article> </li><li> <a name="RADIANCE-CORE:DOCUMENTABLE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:DOCUMENTABLE">DOCUMENTABLE</a></code></h4>  </header> <pre class="docstring">Superclass for all classes that can be documented.
+
+Use DOCUMENTATION to access the docstring.
+
+See CL:DOCUMENTATION
+See DEFINE-DOCUMENTABLE</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:MODULE">MODULE</a></code></h4>  </header> <pre class="docstring">ASDF system subclass for modules.
+
+See MODULARIZE:MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:OPTION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:OPTION">OPTION</a></code></h4>  </header> <pre class="docstring">Container class for an option expander.
+
+See OPTION-TYPE
+See NAME
+See EXPANDER
+See OPTION</pre> </article> </li><li> <a name="RADIANCE-CORE:REQUEST"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:REQUEST">REQUEST</a></code></h4>  </header> <pre class="docstring">Container class to represent a request that was made against radiance.
+
+See URI
+See HTP-METHOD
+See HEADERS
+See POST-DATA
+See GET-DATA
+See COOKIES
+See DOMAIN
+See REMOTE
+See DATA
+See ISSUE-TIME
+See REQUEST
+See USER-AGENT
+See REFERER
+See COOKIE
+See GET-VAR
+See POST-VAR
+See POST/GET
+See HEADER
+See FILE
+See REQUEST-RUN-TIME</pre> </article> </li><li> <a name="RADIANCE-CORE:RESOURCE-TYPE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:RESOURCE-TYPE">RESOURCE-TYPE</a></code></h4>  </header> <pre class="docstring">Container class for a resource type.
+
+See NAME
+See LOCATORS
+See RESOURCE-TYPE
+See DEFINE-RESOURCE-TYPE</pre> </article> </li><li> <a name="RADIANCE-CORE:RESPONSE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:RESPONSE">RESPONSE</a></code></h4>  </header> <pre class="docstring">Container class to represent a response that should be sent out for a request.
+
+See DATA
+See RETURN-CODE
+See CONTENT-TYPE
+See EXTERNAL-FORMAT
+See HEADERS
+See COOKIES
+See COOKIE
+See HEADER
+See REDIRECT
+See SERVE-FILE</pre> </article> </li><li> <a name="RADIANCE-CORE:ROUTE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:ROUTE">ROUTE</a></code></h4>  </header> <pre class="docstring">Container class for a URI translation route.
+
+See NAME
+See DIRECTION
+See PRIORITY
+See TRANSLATOR
+See ROUTE
+See REMOVE-ROUTE
+See LIST-ROUTES
+See DEFINE-ROUTE</pre> </article> </li><li> <a name="RADIANCE-CORE:URI"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:URI">URI</a></code></h4>  </header> <pre class="docstring">Class to represent a URI in the system.
+
+URIs are used to access and define resources that should
+be accessible both internally and externally.
+
+If MATCHER is T, then the matcher is automatically set
+to the scanner created from the path or an empty string
+should the path be NIL.
+
+See DOMAINS
+See PORT
+See PATH
+See MATCHER
+See MAKE-URI
+See COPY-URI
+See URI&lt;
+See URI&gt;
+See URI=
+See URI-MATCHES
+See MERGE-URIS
+See REPRESENT-URI
+See URI-TO-URL</pre> </article> </li><li> <a name="RADIANCE-CORE:URI-DISPATCHER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:URI-DISPATCHER">URI-DISPATCHER</a></code></h4>  </header> <pre class="docstring">Container object for a link between a uri and a page function.
+
+A uri-dispatcher should be called from a request and is then
+responsible for generating the content of the response.
+
+See NAME
+See DISPATCH-FUNCTION
+See PRIORITY
+See DISPATCH
+See URI-DISPATCHER</pre> </article> </li><li> <a name="RADIANCE-CORE:API"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API">API</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that is a representation of the path on which the given API endpoint can be called.
+
+It expects one or more arguments, where the first is the
+endpoint's name and the rest are key-value pairs of the
+arguments for the call.</pre> </article> </li><li> <a name="RADIANCE-CORE:DOMAIN"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:DOMAIN">DOMAIN</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that is a representation of the domain on which the module operates.</pre> </article> </li><li> <a name="RADIANCE-CORE:PAGE"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:PAGE">PAGE</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that points to the requested page.
+
+By default a page with the name corresponding to the symbol
+of the given name in the module's package is used if available.
+
+However, a module or interface may special-case certain page
+names to provide a specified name to point to a page of
+particular interest.</pre> </article> </li><li> <a name="RADIANCE-CORE:STATIC"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:STATIC">STATIC</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that is a representation of the requested static resource.
+
+Requires a single argument, namely the name of the resource.</pre> </article> </li><li> <a name="RADIANCE-CORE:ACCESS"> </a> <article> <header class="option page"> <span class="type">option page</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:ACCESS">:ACCESS</a></code></h4>  </header> <pre class="docstring">Ensures that the page is only accessible if the user requesting it has the appropriate permission branch.</pre> </article> </li><li> <a name="RADIANCE-CORE:ACCESS"> </a> <article> <header class="option api"> <span class="type">option api</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:ACCESS">:ACCESS</a></code></h4>  </header> <pre class="docstring">Ensures that the page is only accessible if the user requesting it has the appropriate permission branch.</pre> </article> </li><li> <a name="RADIANCE-CORE:DOMAIN"> </a> <article> <header class="route"> <span class="type">route</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:DOMAIN">DOMAIN</a></code></h4>  </header> <pre class="docstring">Ensures that the appropriate top-level domain is added to the uri.</pre> </article> </li><li> <a name="RADIANCE-CORE:DOMAIN"> </a> <article> <header class="route"> <span class="type">route</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:DOMAIN">DOMAIN</a></code></h4>  </header> <pre class="docstring">Ensures that top-level domains are stripped from the uri.
+
+Depends on *DOMAIN-INTERNALIZERS*</pre> </article> </li><li> <a name="RADIANCE-CORE:VIRTUAL-MODULE"> </a> <article> <header class="route"> <span class="type">route</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:VIRTUAL-MODULE">VIRTUAL-MODULE</a></code></h4>  </header> <pre class="docstring">Properly reverses the uri if the current request context was made under a virtual-module.
+
+Uses the request's data field called VIRTUAL-MODULE to know
+where we came from.</pre> </article> </li><li> <a name="RADIANCE-CORE:VIRTUAL-MODULE"> </a> <article> <header class="route"> <span class="type">route</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:VIRTUAL-MODULE">VIRTUAL-MODULE</a></code></h4>  </header> <pre class="docstring">Allows using a path of /!/module/path to simulate a call to a subdomain.
+
+This translates the path by prepending the module to the subdomains
+of the uri and resetting the path to the sub-path. The module is also
+stored in the request's data field called VIRTUAL-MODULE.</pre> </article> </li><li> <a name="RADIANCE-CORE:API-ARGUMENT-INVALID"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API-ARGUMENT-INVALID">API-ARGUMENT-INVALID</a></code></h4>  </header> <pre class="docstring">Error signalled when an argument was not of a permitted value.
+
+Contains an ARGUMENT slot that holds the name of the invalid
+argument.
+
+See API-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:API-ARGUMENT-MISSING"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API-ARGUMENT-MISSING">API-ARGUMENT-MISSING</a></code></h4>  </header> <pre class="docstring">Error signalled when a required argument for the api endpoint was not supplied.
+
+Contains an ARGUMENT slot that holds the name of the missing
+argument.
+
+See API-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:API-AUTH-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API-AUTH-ERROR">API-AUTH-ERROR</a></code></h4>  </header> <pre class="docstring">Error signalled when a request to an api endpoint was unauthorised.
+
+See API-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:API-CALL-NOT-FOUND"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API-CALL-NOT-FOUND">API-CALL-NOT-FOUND</a></code></h4>  </header> <pre class="docstring">Error signalled when an api endpoint was requested that does not exist.
+
+See API-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:API-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API-ERROR">API-ERROR</a></code></h4>  </header> <pre class="docstring">Base condition class for api related errors.
+
+See REQUEST-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:API-RESPONSE-EMPTY"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API-RESPONSE-EMPTY">API-RESPONSE-EMPTY</a></code></h4>  </header> <pre class="docstring">Error signalled when an api endpoint didn't return any data.
+
+See API-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:API-UNKNOWN-FORMAT"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API-UNKNOWN-FORMAT">API-UNKNOWN-FORMAT</a></code></h4>  </header> <pre class="docstring">Error signalled when an api format was required that is unknown.
+
+Contains a FORMAT slot that holds the name of the requested
+but missing api format.
+
+See API-FORMAT
+See API-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:ENVIRONMENT-NOT-SET"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:ENVIRONMENT-NOT-SET">ENVIRONMENT-NOT-SET</a></code></h4>  </header> <pre class="docstring">Error signalled when an action was performed that requires an initialised environment, but no environment has been configured yet.
+
+See ENVIRONMENT
+See RADIANCE-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:INTERFACE-IMPLEMENTATION-NOT-SET"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:INTERFACE-IMPLEMENTATION-NOT-SET">INTERFACE-IMPLEMENTATION-NOT-SET</a></code></h4>  </header> <pre class="docstring">Error signalled when an implementation for an interface was attempted to be loaded, but no corresponding implementation is configured.
+
+See INTERFACE-CONDITION
+See RADIANCE-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:INTERNAL-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:INTERNAL-ERROR">INTERNAL-ERROR</a></code></h4>  </header> <pre class="docstring">Base condition class for internal errors that are unrecoverable.
+
+See RADIANCE-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:NO-SUCH-POST-PARAMETER"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:NO-SUCH-POST-PARAMETER">NO-SUCH-POST-PARAMETER</a></code></h4>  </header> <pre class="docstring">Error signalled when a post parameter was requested that does not exist.
+
+Contains a PARAMETER slot that holds the name of the requested
+slot.
+
+See REQUEST-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:POST-PARAMETER-NOT-A-FILE"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:POST-PARAMETER-NOT-A-FILE">POST-PARAMETER-NOT-A-FILE</a></code></h4>  </header> <pre class="docstring">Error signalled when a post parameter was attempted to be interpreted as a file, while it is not actually one.
+
+Contains a PARAMETER slots that holds the name of the requested
+slot.
+
+See REQUEST-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:RADIANCE-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:RADIANCE-CONDITION">RADIANCE-CONDITION</a></code></h4>  </header> <pre class="docstring">Base condition class for all conditions related to radiance.
+
+Contains a MESSAGE slot that may hold a string that
+explains the reason around the condition in human-
+readable format.
+
+See MESSAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:REQUEST-DENIED"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:REQUEST-DENIED">REQUEST-DENIED</a></code></h4>  </header> <pre class="docstring">Error signalled when a resource was requested that cannot be displayed to the requestor as they do not have sufficient permission.
+
+See REQUEST-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:REQUEST-EMPTY"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:REQUEST-EMPTY">REQUEST-EMPTY</a></code></h4>  </header> <pre class="docstring">Error signalled when the reply body to the request was empty.
+
+See REQUEST-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:REQUEST-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:REQUEST-ERROR">REQUEST-ERROR</a></code></h4>  </header> <pre class="docstring">Base condition class for errors related to requests.
+
+Contains a REQUEST slot that holds the request that caused
+the issue.
+
+See RADIANCE-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:REQUEST-NOT-FOUND"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:REQUEST-NOT-FOUND">REQUEST-NOT-FOUND</a></code></h4>  </header> <pre class="docstring">Error signalled when a resource was requested that does not exist.
+
+See REQUEST-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:UNPARSABLE-URI-STRING"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:UNPARSABLE-URI-STRING">UNPARSABLE-URI-STRING</a></code></h4>  </header> <pre class="docstring">Error signalled when a string was attempted to be turned into an URI object that could not be parsed according to the URI rules.
+
+Contains a STRING slot that holds the string that was attempted
+to be parsed.
+
+See URI
+See RADIANCE-ERROR</pre> </article> </li><li> <a name="RADIANCE-CORE:API-FORMAT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:API-FORMAT">API-FORMAT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Accessor to the api formats.
+
+The api format function should accept a single argument, the
+object to translate, and should configure the response to
+output the correct data, or in the very least return an
+acceptable value for the response's data.
+
+The name must be a string designator.
+
+See *API-FORMATS*
+See REMOVE-API-FORMAT
+See LIST-API-FORMATS
+See DEFINE-API-FORMAT
+See API-OUTPUT</pre> </article> </li><li> <a name="RADIANCE-CORE:API-PAGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:API-PAGE">API-PAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PATH</code><code>)</code>  </header> <pre class="docstring">Accessor to the api-page instances.
+
+See API-PAGE
+See REMOVE-API-PAGE
+See LIST-API-PAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:ARGSLIST"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:ARGSLIST">ARGSLIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the lambda-list of the api-page's handler.
+
+This describes the public interface's arguments.
+Arguments are usually received as GET or POST
+parameters of the same name as the argument symbol and it
+thus only makes sense for the lambda-list to contain 
+required and optional arguments.
+
+See API-PAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:CONTENT-TYPE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:CONTENT-TYPE">CONTENT-TYPE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the HTTP content-type to send out.
+
+Defaults to *DEFAULT-CONTENT-TYPE*
+
+See *DEFAULT-CONTENT-TYPE*
+See RESPONSE</pre> </article> </li><li> <a name="RADIANCE-CORE:COOKIE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:COOKIE">COOKIE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;OPTIONAL (REQUEST/RESPONSE *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Accesses the cookie instance of the request.
+
+The SETF function will construct the proper cookie instance for you.
+
+See COOKIES
+See COOKIE
+See *RESPONSE*
+See *REQUEST*</pre> </article> </li><li> <a name="RADIANCE-CORE:COOKIES"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:COOKIES">COOKIES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the table of cookies that the request received or the response should send out.
+
+See REQUEST
+See RESPONSE</pre> </article> </li><li> <a name="RADIANCE-CORE:DATA"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DATA">DATA</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the table of internal data that the request should keep and the data that the response should send out.
+
+For the response, the data is allowed to be of type
+ PATHNAME
+ STRING
+ (ARRAY (UNSINGED-BYTE 8))
+
+See REQUEST
+See RESPONSE</pre> </article> </li><li> <a name="RADIANCE-CORE:DIRECTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DIRECTION">DIRECTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the direction in which the route operates.
+
+Has to be one of :MAPPING :REVERSAL
+
+See ROUTE</pre> </article> </li><li> <a name="RADIANCE-CORE:DISPATCH-FUNCTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DISPATCH-FUNCTION">DISPATCH-FUNCTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the function that performs the actual response building of the dispatch.
+
+The function should not take any arguments.
+The body should either set the data of the *RESPONSE*
+object or return suitable data for it.
+
+See URI-DISPATCHER</pre> </article> </li><li> <a name="RADIANCE-CORE:DOMAIN"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DOMAIN">DOMAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Accesses the domain that the request arrived on or the cookie is active on.
+
+See REQUEST
+See COOKIE</pre> </article> </li><li> <a name="RADIANCE-CORE:DOMAINS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DOMAINS">DOMAINS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the list of (sub)domains of the URI.
+
+The domains are in order of increasing specificity.
+This means they are the reverse of standard URL
+syntax. This is done for ease of matching and
+because it is honestly the more sensible way to
+represent a domain.
+
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:ENVIRONMENT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:ENVIRONMENT">ENVIRONMENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Accessor to the current environment.
+
+The environment decides the namespace for the configuration
+files of Radiance and all modules that use its configuration
+system.
+
+Note that changing the environment after one has already
+been loaded and modules have been loaded with it, is currently
+not supported and will lead to strange behaviour.
+
+See *ENVIRONMENT*
+See CHECK-ENVIRONMENT
+See MCONFIG-PATHNAME</pre> </article> </li><li> <a name="RADIANCE-CORE:EXPANDER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:EXPANDER">EXPANDER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the actual expansion function of the object.
+
+See OPTION</pre> </article> </li><li> <a name="RADIANCE-CORE:EXPIRES"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:EXPIRES">EXPIRES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses when the cookie will expire, if at all.
+
+See COOKIE</pre> </article> </li><li> <a name="RADIANCE-CORE:EXTERNAL-FORMAT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:EXTERNAL-FORMAT">EXTERNAL-FORMAT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the external-format to use to serialise the text data.
+
+Defaults to *DEFAULT-EXTERNAL-FORMAT*
+
+See *DEFAULT-EXTERNAL-FORMAT*
+See RESPONSE</pre> </article> </li><li> <a name="RADIANCE-CORE:GET-DATA"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:GET-DATA">GET-DATA</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the table of GET variables that the request received.
+
+See REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:HANDLER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:HANDLER">HANDLER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the handler function of the api-page.
+
+The handler-function must have the same lambda-list as
+the api-page's ARGSLIST. It must call API-OUTPUT
+at some point during its evaluation to emit data.
+
+See API-PAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:HEADER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:HEADER">HEADER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;OPTIONAL (REQUEST/RESPONSE *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Accesses the value of the header in the request or response.
+
+This is case-insensitive
+
+See HEADERS
+See *REQUEST*
+See *RESPONSE*</pre> </article> </li><li> <a name="RADIANCE-CORE:HEADERS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:HEADERS">HEADERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the table of headers that the request received or the response should send out.
+
+See REQUEST
+See RESPONSE</pre> </article> </li><li> <a name="RADIANCE-CORE:HTTP-METHOD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:HTTP-METHOD">HTTP-METHOD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the HTTP method that was used to request the page.
+
+Should be one of :GET :HEAD :POST :PUT :DELETE :TRACE :CONNECT
+
+See REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:HTTP-ONLY"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:HTTP-ONLY">HTTP-ONLY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses whether the cookie should get the http-only flag.
+
+See COOKIE</pre> </article> </li><li> <a name="RADIANCE-CORE:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">INTERFACE</code><code>)</code>  </header> <pre class="docstring">Returns the currently active implementation of the interface.</pre> </article> </li><li> <a name="RADIANCE-CORE:ISSUE-TIME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:ISSUE-TIME">ISSUE-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the universal-time at which the request was issued.
+
+See REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:LOCATORS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:LOCATORS">LOCATORS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the resource type's locator functions.</pre> </article> </li><li> <a name="RADIANCE-CORE:MATCHER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MATCHER">MATCHER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the regex matcher function of the URI.
+
+The matcher only matches against the path part
+of a URI. The matcher should always act according
+to the regex stored in the PATH part of the URI.
+
+See PATH
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:MCONFIG"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MCONFIG">MCONFIG</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE &amp;REST PATH</code><code>)</code>  </header> <pre class="docstring">Accesses a configuration variable for the given module's storage.
+
+See UBIQUITOUS:VALUE
+See MCONFIG-STORAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:MESSAGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MESSAGE">MESSAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Accessor to the message of the condition.
+
+See RADIANCE-CONDITION</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-PERMISSIONS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-PERMISSIONS">MODULE-PERMISSIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the list of permissions that are known to exist for the module.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See PERM
+See MODULARIZE:MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-STORAGE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-STORAGE">MODULE-STORAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE &amp;OPTIONAL (KEY NIL K-S)</code><code>)</code>  </header> <pre class="docstring">Returns the module storage table of the module or a field from it if a key is passed.</pre> </article> </li><li> <a name="RADIANCE-CORE:NAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:NAME">NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the name of the object.
+
+May be a symbol or a string depending on the object.</pre> </article> </li><li> <a name="RADIANCE-CORE:OPTION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:OPTION">OPTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TYPE NAME</code><code>)</code>  </header> <pre class="docstring">Accessor to an option instance.
+
+See OPTION
+See *OPTIONS*
+See REMOVE-OPTION
+See LIST-OPTIONS</pre> </article> </li><li> <a name="RADIANCE-CORE:OPTION-TYPE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:OPTION-TYPE">OPTION-TYPE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the type of option that this option object belongs to.
+
+See OPTION</pre> </article> </li><li> <a name="RADIANCE-CORE:PATH"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:PATH">PATH</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the path of the URI.
+
+If the URI is meant to be matched against, the
+path can also be a regular expression as per
+cl-ppcre. In that case, the URI's MATCHER slot
+must be a cl-ppcre scanner function.
+
+See MATCHER
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:PORT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:PORT">PORT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the port of the URI.
+
+Must be of type (OR (INTEGER 0 65535) NULL)
+
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:POST-DATA"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:POST-DATA">POST-DATA</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the table of POST-body variables that the request received.
+
+See REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:PRIORITY"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:PRIORITY">PRIORITY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the priority, which may be NIL or an INTEGER.
+
+See URI-DISPATCHER
+See DISPATCH
+See ROUTE</pre> </article> </li><li> <a name="RADIANCE-CORE:REFERER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REFERER">REFERER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (REQUEST *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Accesses the referer header of the request.
+
+See HEADERS
+See *REQUEST*</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOTE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOTE">REMOTE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the remote address that the request was sent out from.
+
+See REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:REQUEST-HANDLER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REQUEST-HANDLER">REQUEST-HANDLER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the function to handle a direct request object and transform it into a proper api call.
+
+This function is usually automatically generated.
+It should read out the parameters from the request object
+and turn them into arguments for a call to the api-page's 
+handler function. The function only takes a single argument
+namely the request object to handle.
+
+See HANDLER
+See API-PAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:RESOURCE-LOCATOR"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:RESOURCE-LOCATOR">RESOURCE-LOCATOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TYPE IDENT</code><code>)</code>  </header> <pre class="docstring">Accessor to a locator function on the given resource type.
+
+Signals an error if the ident is T and there is
+no default resource locator defined on the resource type.
+
+See RESOURCE-TYPE</pre> </article> </li><li> <a name="RADIANCE-CORE:RESOURCE-TYPE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:RESOURCE-TYPE">RESOURCE-TYPE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Accessor for the resource types.
+
+If the requested type does not exist, an error is signalled.
+
+See *RESOURCE-TYPES*
+See RESOURCE-TYPE
+See REMOVE-RESOURCE-TYPE
+See LIST-RESOURCE-TYPES
+See DEFINE-RESOURCE-TYPE</pre> </article> </li><li> <a name="RADIANCE-CORE:RETURN-CODE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:RETURN-CODE">RETURN-CODE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the HTTP return code to send out.
+
+Defaults to 200.
+
+See RESPONSE</pre> </article> </li><li> <a name="RADIANCE-CORE:ROUTE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:ROUTE">ROUTE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME DIRECTION</code><code>)</code>  </header> <pre class="docstring">Accesses the route instance of the given name and direction.
+
+Automatically calls REBUILD-ROUTE-VECTORS when
+a route is changed.
+
+See REBUILD-ROUTE-VECTORS
+See *ROUTE-REGISTRY*
+See REMOVE-ROUTE
+See LIST-ROUTES
+See ROUTE</pre> </article> </li><li> <a name="RADIANCE-CORE:SECURE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:SECURE">SECURE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses whether the cookie should get the secure flag.
+
+See COOKIE</pre> </article> </li><li> <a name="RADIANCE-CORE:TRANSLATOR"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:TRANSLATOR">TRANSLATOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accessor to the route's translation function.
+
+The function should accept a single URI object
+as an argument and modify it as it sees fit.
+
+See ROUTE</pre> </article> </li><li> <a name="RADIANCE-CORE:URI"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:URI">URI</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the URI that the request operates on.
+
+Depending on the stage of the request, the URI may be either
+internal or external.
+
+See REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:URI-DISPATCHER"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:URI-DISPATCHER">URI-DISPATCHER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Accessor to the registered uri-dispatcher instances.
+
+Setting this automatically invokes a rebuild of the
+*uri-priority* vector.
+
+See *URI-REGISTRY*
+See URI-DISPATCHER
+See REMOVE-URI-DISPATCHER
+See LIST-URI-DISPATCHERS
+See REBUILD-URI-PRIORITY</pre> </article> </li><li> <a name="RADIANCE-CORE:USER-AGENT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:USER-AGENT">USER-AGENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (REQUEST *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Accesses the user-agent header of the request.
+
+See HEADERS
+See *REQUEST*</pre> </article> </li><li> <a name="RADIANCE-CORE:VALUE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:VALUE">VALUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Accesses the cookie value.
+
+See COOKIE</pre> </article> </li><li> <a name="RADIANCE-CORE:VIRTUAL-MODULE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:VIRTUAL-MODULE">VIRTUAL-MODULE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">IDENTIFIER</code><code>)</code>  </header> <pre class="docstring">Returns the virtual module instance associated with the identifier if one was found, otherwise NIL.</pre> </article> </li><li> <a name="RADIANCE-CORE:VIRTUAL-MODULE-NAME"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:VIRTUAL-MODULE-NAME">VIRTUAL-MODULE-NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="RADIANCE-CORE:*REQUEST*"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:*REQUEST*">*REQUEST*</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns the value of *REQUEST*
+
+See *REQUEST*</pre> </article> </li><li> <a name="RADIANCE-CORE:*RESPONSE*"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:*RESPONSE*">*RESPONSE*</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns the value of *RESPONSE*
+
+See *RESPONSE*</pre> </article> </li><li> <a name="RADIANCE-CORE:ADD-DOMAIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:ADD-DOMAIN">ADD-DOMAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DOMAIN</code><code>)</code>  </header> <pre class="docstring">Adds a new top-level domain to the list of recognised domains.
+
+Adds the name to (MCONFIG :RADIANCE :SERVER :DOMAINS)
+
+The top-level domain as thought of by radiance is any
+domain that does not contain any subdomains in its name.
+For example, if your website is hosted on example.com
+then that would be a top-level domain. Or, if your domain
+is some.deep.thing.network.internal then that too would be
+a top-level domain.
+
+Radiance needs to know this in order to be able to distinguish
+when subdomains for its own purposes start and end since it
+is not generally predictable for an arbitrary domain name.
+
+See MCONFIG
+See REMOVE-DOMAIN</pre> </article> </li><li> <a name="RADIANCE-CORE:API-OUTPUT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:API-OUTPUT">API-OUTPUT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DATA &amp;KEY (STATUS 200) (MESSAGE &quot;Ok.&quot;) (FORMAT (POST/GET &quot;data-format&quot;))</code><code>)</code>  </header> <pre class="docstring">Emits the given data as a response.
+
+This function should be called for any and all return data
+from an api endpoint. It ensures the data proper structure,
+failure handling, and data translation to the desired output
+format.
+
+See API-FORMAT</pre> </article> </li><li> <a name="RADIANCE-CORE:CALL-API"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:CALL-API">CALL-API</a></code></h4> <code class="qualifiers"></code> <code class="arguments">API-PAGE &amp;REST ARGUMENTS</code><code>)</code>  </header> <pre class="docstring">Calls the given api-page directly with the supplied arguments.
+
+See HANDLER
+See ENSURE-API-PAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:CALL-API-REQUEST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:CALL-API-REQUEST">CALL-API-REQUEST</a></code></h4> <code class="qualifiers"></code> <code class="arguments">API-PAGE &amp;OPTIONAL (REQUEST *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Calls the given api-page with the given request.
+
+This rebinds *REQUEST*.
+
+See REQUEST-HANDLER
+See ENSURE-API-PAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:CHECK-ENVIRONMENT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:CHECK-ENVIRONMENT">CHECK-ENVIRONMENT</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Checks whether the environment is properly configured.
+
+If no environment is present, an error of type
+ENVIRONMENT-NOT-SET is signalled. Two restarts will
+be present at the time:
+  CONTINUE         --- Sets the environment to &quot;default&quot;
+  SET-ENVIRONMENT  --- Sets the environment to the one
+                       passed in the argument.
+
+See ENVIRONMENT</pre> </article> </li><li> <a name="RADIANCE-CORE:COOKIE-HEADER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:COOKIE-HEADER">COOKIE-HEADER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COOKIE</code><code>)</code>  </header> <pre class="docstring">Returns a string representation of the cookie as a header.
+
+See COOKIE</pre> </article> </li><li> <a name="RADIANCE-CORE:COPY-URI"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:COPY-URI">COPY-URI</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI</code><code>)</code>  </header> <pre class="docstring">Creates a full copy of the URI.
+
+If URI is a STRING, then it is parsed.
+
+See PARSE-URI
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:CREATE-MODULE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:CREATE-MODULE">CREATE-MODULE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;KEY (BASE-FILE NAME) DEPENDENCIES (ROOT *MODULES-DIRECTORY*)</code><code>)</code>  </header> <pre class="docstring">Creates a new stub module.
+
+Creates the following files and directories:
+  name/
+  name/static
+  name/template
+  name/name.asd
+  name/name.lisp
+
+If Quicklisp is present, the local-projects are registered
+and the project is loaded after the files have been created.
+
+See *MODULES-DIRECTORY*</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFAULTED-MCONFIG"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFAULTED-MCONFIG">DEFAULTED-MCONFIG</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DEFAULT MODULE &amp;REST PATH</code><code>)</code>  </header> <pre class="docstring">Sets the configuration variable to the given default if it has not been set previously and returns the value.
+
+See UBIQUITOUS:DEFAULTED-VALUE
+See MCONFIG-STORAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:DELETE-MODULE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DELETE-MODULE">DELETE-MODULE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Attempts to completely delete the given module.
+
+This first calls the delete hooks, then demodularizes the package,
+ unbinds all symbols in the package from values and functions, and
+finally deletes the package.</pre> </article> </li><li> <a name="RADIANCE-CORE:DESCRIBE-MODULE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DESCRIBE-MODULE">DESCRIBE-MODULE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE STREAM</code><code>)</code>  </header> <pre class="docstring">Writes a human-readable description of the module to the stream.
+
+This is useful for inspection and debugging, to see a quick
+overview of what the module does or has. This function is
+called by DESCRIBE if it is called on a module.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULE-DOMAIN
+See MODULE-PERMISSIONS
+See MODULE-REQUIRED-INTERFACES
+See MODULE-REQUIRED-SYSTEMS
+See MODULE-PAGES
+See MODULE-API-ENDPOINTS
+See MODULARIZE:MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:DISPATCH"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DISPATCH">DISPATCH</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI</code><code>)</code>  </header> <pre class="docstring">Calls the appropriate uri-dispatcher that is set up to handle the given uri.
+
+Only a single uri-dispatcher will be called, if any.
+In order for a dispatcher to be called, the uri must
+match the dispatcher's by URI-MATCHES. In the case
+where two uri-dispatchers have a matching uri, then
+the one with the higher priority will be executed.
+This is achived by simply following the order present
+in the *uri-priority* vector.
+
+If no matching uri-dispatcher is available, the function
+in *URI-FALLBACK* will be called instead.
+
+See URI-MATCHES
+See URI-DISPATCHER&gt;
+See DISPATCH-FUNCTION
+See *URI-PRIORITY*
+See *URI-FALLBACK*</pre> </article> </li><li> <a name="RADIANCE-CORE:ENSURE-URI"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:ENSURE-URI">ENSURE-URI</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI-ISH</code><code>)</code>  </header> <pre class="docstring">Ensures that the object is a URI and returns it.
+
+If URI-ISH is a STRING, then it is parsed.
+
+See PARSE-URI
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:EXECUTE-REQUEST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:EXECUTE-REQUEST">EXECUTE-REQUEST</a></code></h4> <code class="qualifiers"></code> <code class="arguments">REQUEST &amp;OPTIONAL (RESPONSE (MAKE-INSTANCE 'RESPONSE))</code><code>)</code>  </header> <pre class="docstring">Directly executes the given request and response instances.
+
+If an error occurs during the execution, 
+HANDLE-CONDITION is called to handle it.
+The REQUEST hook is called at the beginning of execution.
+Then the request is dispatched on and the result converted
+into data for the response if applicable.
+
+See RESPONSE
+See REQUEST
+See DISPATCH
+See HANDLE-CONDITION</pre> </article> </li><li> <a name="RADIANCE-CORE:EXPAND-OPTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:EXPAND-OPTIONS">EXPAND-OPTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TYPE OPTIONS NAME BODY &amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Expands all options of the given type.
+
+Returns two values, the new body forms and the list of
+forms to output before the actual definition.
+
+See LIST-OPTIONS
+See DEFINE-OPTION</pre> </article> </li><li> <a name="RADIANCE-CORE:EXTERNAL-URI"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:EXTERNAL-URI">EXTERNAL-URI</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI</code><code>)</code>  </header> <pre class="docstring">Modifies the URI by pushing it through all reversal routes so that it becomes an external URI.
+
+See *ROUTE-REVERSAL*</pre> </article> </li><li> <a name="RADIANCE-CORE:FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:FILE">FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;OPTIONAL (REQUEST *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Returns the pathname to the file that was uploaded.
+
+Signals a NO-SUCH-POST-PARAMETER error if the given
+parameter was not present as a POST parameter at all.
+Signals a POST-PARAMETER-NOT-A-FILE error if the given
+parameter did not represent an uploaded file.
+
+See POST-VAR
+See *REQUEST*</pre> </article> </li><li> <a name="RADIANCE-CORE:FILE-SIZE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:FILE-SIZE">FILE-SIZE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PATHSPEC</code><code>)</code>  </header> <pre class="docstring">Returns the file size in bytes.</pre> </article> </li><li> <a name="RADIANCE-CORE:FIND-IMPLEMENTATION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:FIND-IMPLEMENTATION">FIND-IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">INTERFACE &amp;OPTIONAL (SYSTEM T)</code><code>)</code>  </header> <pre class="docstring">Attempts to find a suitable implementation for the given interface.
+
+This checks for the value of the configuration in
+ MCONFIG :RADIANCE :INTERFACES interface-name-as-keyword
+
+If SYSTEM is T, then the ASDF system object is returned
+otherwise the implementation's system name.
+
+If Quicklisp is available and the implementing system has
+not yet been installed, it is installed automatically.
+The system is not loaded, however.
+
+If no implementation has been configured for the interface,
+an INTERFACE-IMPLEMENTATION-NOT-SET error is signalled.</pre> </article> </li><li> <a name="RADIANCE-CORE:FORMAT-CLOCK-TIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:FORMAT-CLOCK-TIME">FORMAT-CLOCK-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">STAMP</code><code>)</code>  </header> <pre class="docstring">Returns a string representing the given timestamp in wall-clock time.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+The effective format is &quot;hh:mm:ss&quot;
+
+See FORMAT-MACHINE-DATE
+See FORMAT-HUMAN-DATE
+See FORMAT-FANCY-DATE</pre> </article> </li><li> <a name="RADIANCE-CORE:FORMAT-FANCY-DATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:FORMAT-FANCY-DATE">FORMAT-FANCY-DATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">STAMP</code><code>)</code>  </header> <pre class="docstring">Returns a string representing the given timestamp in an extensive, fancy date.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+The effective format is &quot;WEEKDAY, DAY of MONTH Y, H:MM:SS UTC&quot;
+
+See FORMAT-CLOCK-TIME
+See FORMAT-MACHINE-DATE
+See FORMAT-HUMAN-DATE</pre> </article> </li><li> <a name="RADIANCE-CORE:FORMAT-HUMAN-DATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:FORMAT-HUMAN-DATE">FORMAT-HUMAN-DATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">STAMP</code><code>)</code>  </header> <pre class="docstring">Returns a string representing the given timestamp in human-readable date.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+The effective format is &quot;YYYY.MM.DD hh:mm:ss&quot;
+
+See FORMAT-CLOCK-TIME
+See FORMAT-MACHINE-DATE
+See FORMAT-FANCY-DATE
+See FORMAT-TIME</pre> </article> </li><li> <a name="RADIANCE-CORE:FORMAT-MACHINE-DATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:FORMAT-MACHINE-DATE">FORMAT-MACHINE-DATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">STAMP</code><code>)</code>  </header> <pre class="docstring">Returns a string representing the given timestamp in machine-readable date.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+The effective format is &quot;YYYY-MM-DDThh:mm:ss&quot;
+
+See FORMAT-CLOCK-TIME
+See FORMAT-HUMAN-DATE
+See FORMAT-FANCY-DATE</pre> </article> </li><li> <a name="RADIANCE-CORE:FORMAT-RELATIVE-TIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:FORMAT-RELATIVE-TIME">FORMAT-RELATIVE-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">STAMP</code><code>)</code>  </header> <pre class="docstring">Returns a string representing the given timestamp seconds as a relative time.
+
+Bot universal-time stamp and local-time:timestamp
+are accepted.
+
+It divides the time up into seconds, minutes,
+hours, days, weeks, months, years, decades,
+centuries, and finally æons.
+
+Example: 63 results in &quot;1 minute 3 seconds&quot;
+
+See FORMAT-TIME</pre> </article> </li><li> <a name="RADIANCE-CORE:FORMAT-TIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:FORMAT-TIME">FORMAT-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">STAMP &amp;OPTIONAL (RELATIVE-TIME-THRESHOLD (* 60 60 24))</code><code>)</code>  </header> <pre class="docstring">Returns a string representing the given timestamp in an intuitive way.
+
+If the difference from the current time is below
+the RELATIVE-TIME-THRESHOLD, the time is formatted
+relatively, otherwise absolutely.
+
+See FORMAT-RELATIVE-TIME
+See FORMAT-HUMAN-DATE</pre> </article> </li><li> <a name="RADIANCE-CORE:GET-UNIX-TIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:GET-UNIX-TIME">GET-UNIX-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Return the current time as a unix timestamp in seconds since 1970.</pre> </article> </li><li> <a name="RADIANCE-CORE:GET-VAR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:GET-VAR">GET-VAR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;OPTIONAL (REQUEST *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Returns the value of the GET variable of the request.
+
+This is case-insensitive.
+
+See GET-DATA
+See *REQUEST*</pre> </article> </li><li> <a name="RADIANCE-CORE:HANDLE-CONDITION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:HANDLE-CONDITION">HANDLE-CONDITION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Responsible for handling a condition during a request execution.
+
+Invokes the debugger if *DEBUGGER* is non-NIL.
+Otherwise invokes the SET-DATA restart with the
+return-value of calling RENDER-ERROR-PAGE.
+
+See *DEBUGGER*
+See EXECUTE-REQUEST
+See RENDER-ERROR-PAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:IMPLEMENTS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:IMPLEMENTS">IMPLEMENTS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns a list of interfaces this module implements.</pre> </article> </li><li> <a name="RADIANCE-CORE:INTERFACE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:INTERFACE">INTERFACE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns the interface package module as identified by the object.
+See MODULE for more.</pre> </article> </li><li> <a name="RADIANCE-CORE:INTERFACE-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:INTERFACE-P">INTERFACE-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns T if the passed object is or names an interface, otherwise NIL.</pre> </article> </li><li> <a name="RADIANCE-CORE:INTERNAL-URI"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:INTERNAL-URI">INTERNAL-URI</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI</code><code>)</code>  </header> <pre class="docstring">Modifies the URI by pushing it through all mapping routes so that it becomes an internal URI.
+
+See *ROUTE-MAPPING*</pre> </article> </li><li> <a name="RADIANCE-CORE:LIST-API-FORMATS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:LIST-API-FORMATS">LIST-API-FORMATS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="RADIANCE-CORE:LIST-API-PAGES"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:LIST-API-PAGES">LIST-API-PAGES</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Lists all known api page instances.
+
+See API-PAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:LIST-HOOKS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:LIST-HOOKS">LIST-HOOKS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (MODULE *PACKAGE*)</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="RADIANCE-CORE:LIST-OPTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:LIST-OPTIONS">LIST-OPTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TYPE</code><code>)</code>  </header> <pre class="docstring">Lists all option instances that are registered.
+
+See OPTION
+See *OPTIONS*
+See REMOVE-OPTION</pre> </article> </li><li> <a name="RADIANCE-CORE:LIST-RESOURCE-TYPES"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:LIST-RESOURCE-TYPES">LIST-RESOURCE-TYPES</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of names of defined resource types.
+
+See *RESOURCE-TYPES*
+See RESOURCE-TYPE
+See REMOVE-RESOURCE-TYPE</pre> </article> </li><li> <a name="RADIANCE-CORE:LIST-ROUTES"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:LIST-ROUTES">LIST-ROUTES</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Lists all the route instances that are registered.
+
+See *ROUTE-REGISTRY*
+See ROUTE
+See REMOVE-ROUTE</pre> </article> </li><li> <a name="RADIANCE-CORE:LIST-URI-DISPATCHERS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:LIST-URI-DISPATCHERS">LIST-URI-DISPATCHERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of all uri-dispatchers that are registered.
+
+See *URI-REGISTRY*
+See URI-DISPATCHER</pre> </article> </li><li> <a name="RADIANCE-CORE:LOAD-IMPLEMENTATION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:LOAD-IMPLEMENTATION">LOAD-IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">INTERFACE</code><code>)</code>  </header> <pre class="docstring">Attempts to silently load the implementation for the interface if necessary.
+
+This function is called whenever an interface is requested
+as a dependency in an ASDF system definition.
+
+See FIND-IMPLEMENTATION</pre> </article> </li><li> <a name="RADIANCE-CORE:MAKE-RANDOM-STRING"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MAKE-RANDOM-STRING">MAKE-RANDOM-STRING</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (LENGTH 16) (CHARS *RANDOM-STRING-CHARACTERS*)</code><code>)</code>  </header> <pre class="docstring">Constructs a string composed of random characters.
+
+See *RANDOM-STRING-CHARACTERS*</pre> </article> </li><li> <a name="RADIANCE-CORE:MAKE-URI"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MAKE-URI">MAKE-URI</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;KEY DOMAINS PORT PATH MATCHER</code><code>)</code>  </header> <pre class="docstring">Creates a new URI instance according t o the given parts.
+
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:MCONFIG-PATHNAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MCONFIG-PATHNAME">MCONFIG-PATHNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE &amp;OPTIONAL (TYPE :LISP)</code><code>)</code>  </header> <pre class="docstring">Returns the proper pathname to the module according to the current environment.
+
+The path's base will come from Ubiquitous, the rest
+is decided according to the environment and the module.
+
+An environment must have been configured prior to calling
+this function.
+
+See UBIQUITOUS:CONFIG-PATHNAME
+See ENVIRONMENT</pre> </article> </li><li> <a name="RADIANCE-CORE:MCONFIG-STORAGE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MCONFIG-STORAGE">MCONFIG-STORAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the storage object for the given module.
+
+The storage object is cached and will only be loaded
+if it has not previously been loaded. This means that
+unless explicit cache purging occurs, changes to the
+underlying configuration file will be lost on
+subsequent writes.
+
+The object is cached in the module-storage slot :CONFIG
+
+See MODULARIZE:MODULE-STORAGE
+See MCONFIG-PATHNAME
+See UBIQUITOUS:RESTORE
+See UBIQUITOUS:OFFLOAD</pre> </article> </li><li> <a name="RADIANCE-CORE:MERGE-URIS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MERGE-URIS">MERGE-URIS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI &amp;OPTIONAL (DEFAULTS *DEFAULT-URI-DEFAULTS*)</code><code>)</code>  </header> <pre class="docstring">Creates a new URI by merging the given two.
+
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE">MODULE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL MODULE</code><code>)</code>  </header> <pre class="docstring">Coerces the requested module.
+
+See MODULARIZE:MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-API-ENDPOINTS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-API-ENDPOINTS">MODULE-API-ENDPOINTS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the list of names of the api endpoints that the module has registered.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULARIZE:MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-DEPENDENCIES"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-DEPENDENCIES">MODULE-DEPENDENCIES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the list of dependencies for the given module.
+
+Signals an error if the argument cannot be coerced to a module.
+Signals an error if the module does not have an associated
+virtual module.
+
+See ASDF:SYSTEM-DEPENDS-ON
+See MODULARIZE:MODULE
+See MODULARIZE:VIRTUAL-MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-DOMAIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-DOMAIN">MODULE-DOMAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the domain on which the module acts primarily.
+
+Signals an error if the argument cannot be coerced to a module.
+Signals an error of type INTERFACE-IMPLEMENTATION-NOT-PRESENT
+if an interface was passed that does not have an implementation
+yet.
+
+If not explicit domain was configured, the module's name is
+returned.
+
+See MODULARIZE:MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-IDENTIFIER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-IDENTIFIER">MODULE-IDENTIFIER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the identifier of the module.</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-NAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-NAME">MODULE-NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the name of the module.</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-P">MODULE-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns T if the passed object is or resolves to a module package, otherwise NIL.</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-PAGES"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-PAGES">MODULE-PAGES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the list of URIs for pages that the module has registered.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULARIZE:MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-REQUIRED-INTERFACES"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-REQUIRED-INTERFACES">MODULE-REQUIRED-INTERFACES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the list of interfaces that the module depends on.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULE-DEPENDENCIES
+See MODULARIZE:MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-REQUIRED-SYSTEMS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-REQUIRED-SYSTEMS">MODULE-REQUIRED-SYSTEMS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE</code><code>)</code>  </header> <pre class="docstring">Returns the list of systems that the module depends on.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULE-DEPENDENCIES
+See MODULARIZE:MODULE</pre> </article> </li><li> <a name="RADIANCE-CORE:MODULE-STORAGE-REMOVE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:MODULE-STORAGE-REMOVE">MODULE-STORAGE-REMOVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE KEY</code><code>)</code>  </header> <pre class="docstring">Removes a key from the module storage table.</pre> </article> </li><li> <a name="RADIANCE-CORE:PARSE-URI"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:PARSE-URI">PARSE-URI</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI-STRING</code><code>)</code>  </header> <pre class="docstring">Parses the given URI into a string if possible.
+
+Signals an error of type UNPARSABLE-URI-STRING
+if the string cannot be parsed.
+
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:POST-VAR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:POST-VAR">POST-VAR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;OPTIONAL (REQUEST *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Returns the value of the POST variable of the request.
+
+This is case-insensitive.
+
+See POST-DATA
+See *REQUEST*</pre> </article> </li><li> <a name="RADIANCE-CORE:POST/GET"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:POST/GET">POST/GET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;OPTIONAL (REQUEST *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Returns the value of the POST or the GET variable of the request.
+
+If both exist, then the POST variable is preferred.
+This is case-insensitive.
+
+See POST-DATA
+See GET-DATA
+See *REQUEST*</pre> </article> </li><li> <a name="RADIANCE-CORE:REDIRECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REDIRECT">REDIRECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NEW-ADDRESS &amp;OPTIONAL (REPRESENTATION :EXTERNAL) (CODE 307)
+ (RESPONSE *RESPONSE*)</code><code>)</code>  </header> <pre class="docstring">Sets the response up to cause a redirect to the given address.
+
+By default, if a URI instance is given, the URI is
+externalised.
+
+See URI-TO-URL
+See RETURN-CODE
+See *RESPONSE*</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOVE-API-FORMAT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOVE-API-FORMAT">REMOVE-API-FORMAT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Removes the named api format if it exists.
+
+The name must be a string designator.
+
+See *API-FORMATS*
+See API-FORMAT</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOVE-API-PAGE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOVE-API-PAGE">REMOVE-API-PAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PATH</code><code>)</code>  </header> <pre class="docstring">Removes the given api page again if it exists.
+
+See API-PAGE</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOVE-DOMAIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOVE-DOMAIN">REMOVE-DOMAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DOMAIN</code><code>)</code>  </header> <pre class="docstring">Removes a known top-level domain.
+
+See ADD-DOMAIN</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOVE-HOOK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOVE-HOOK">REMOVE-HOOK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;OPTIONAL (MODULE *PACKAGE*)</code><code>)</code>  </header> <pre class="docstring">Removes the hook as named.</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOVE-OPTION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOVE-OPTION">REMOVE-OPTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TYPE NAME</code><code>)</code>  </header> <pre class="docstring">Removes an option instance again, if it exists.
+
+See OPTION
+See *OPTIONS*
+See LIST-OPTIONS</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOVE-RESOURCE-TYPE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOVE-RESOURCE-TYPE">REMOVE-RESOURCE-TYPE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TYPE</code><code>)</code>  </header> <pre class="docstring">Removes the given resource type, if it exists.
+
+See *RESOURCE-TYPES*
+See RESOURCE-TYPE
+See LIST-RESOURCE-TYPES</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOVE-ROUTE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOVE-ROUTE">REMOVE-ROUTE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME DIRECTION</code><code>)</code>  </header> <pre class="docstring">Removes the specified route, if any.
+
+Automatically calls REBUILD-ROUTE-VECTORS
+
+See REBUILD-ROUTE-VECTORS
+See *ROUTE-REGISTRY*
+See ROUTE
+See LIST-ROUTES</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOVE-TRIGGER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOVE-TRIGGER">REMOVE-TRIGGER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HOOK &amp;OPTIONAL (IDENT *PACKAGE*) (MODULE (SYMBOL-PACKAGE HOOK))</code><code>)</code>  </header> <pre class="docstring">Attempts to remove the trigger from the hook.</pre> </article> </li><li> <a name="RADIANCE-CORE:REMOVE-URI-DISPATCHER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REMOVE-URI-DISPATCHER">REMOVE-URI-DISPATCHER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Removes the named uri-dispatcher, if any.
+
+See *URI-REGISTRY*
+See URI-DISPATCHER</pre> </article> </li><li> <a name="RADIANCE-CORE:RENDER-ERROR-PAGE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:RENDER-ERROR-PAGE">RENDER-ERROR-PAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">This function is responsible for rendering an appropriate response for the given condition.
+
+A module is allowed to redefine this function to do as
+it sees fit.
+
+See HANDLE-CONDITION</pre> </article> </li><li> <a name="RADIANCE-CORE:REPRESENT-URI"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REPRESENT-URI">REPRESENT-URI</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI REPRESENTATION</code><code>)</code>  </header> <pre class="docstring">Returns a new URI that is represented accordingly.
+
+REPRESENTATION can be one of the following:
+  :AS-IS NIL          --- The URI is simply copied
+  :EXTERNAL :REVERSE  --- The URI is externalised
+  :INTERNAL :MAP      --- The URI is internalised
+
+See COPY-URI
+See EXTERNAL-URI
+See INTERNAL-URI</pre> </article> </li><li> <a name="RADIANCE-CORE:REQUEST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REQUEST">REQUEST</a></code></h4> <code class="qualifiers"></code> <code class="arguments">TO-URI &amp;KEY (REPRESENTATION :INTERNAL) (HTTP-METHOD :GET) HEADERS POST GET
+ COOKIES (REMOTE &quot;unknown&quot;) (RESPONSE (MAKE-INSTANCE 'RESPONSE))</code><code>)</code>  </header> <pre class="docstring">Handle a request to the given URI with the given parameters.
+
+This creates an appropriate request object, translates the URI
+object if necessary, and then calls EXECUTE-REQUEST to actually
+perform the request proper.
+
+See REQUEST
+See ENSURE-REQUEST-HASH-TABLE
+See REPRESENT-URI
+See EXECUTE-REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:REQUEST-RUN-TIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:REQUEST-RUN-TIME">REQUEST-RUN-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (REQUEST *REQUEST*)</code><code>)</code>  </header> <pre class="docstring">Returns the number of seconds since the request was issued.
+
+See ISSUE-TIME
+See *REQUEST*</pre> </article> </li><li> <a name="RADIANCE-CORE:RESET-INTERFACE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:RESET-INTERFACE">RESET-INTERFACE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">INTERFACE</code><code>)</code>  </header> <pre class="docstring">Resets the interface by redefining it with stubs as per its component definitions.</pre> </article> </li><li> <a name="RADIANCE-CORE:RESOLVE-BASE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:RESOLVE-BASE">RESOLVE-BASE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">THING</code><code>)</code>  </header> <pre class="docstring">Resolves the filesystem directory of the thing if possible.</pre> </article> </li><li> <a name="RADIANCE-CORE:RESOURCE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:RESOURCE">RESOURCE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">MODULE TYPE &amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Returns the requested resource type on the given module.
+
+If the module does not have a specific locator, the default
+locator is called. If no default exists, an error is
+signalled.
+
+The applicable structure and number of the arguments is
+dependant on the locator being called.
+
+See LIST-RESOURCE-TYPES
+See DEFINE-RESOURCE-LOCATOR</pre> </article> </li><li> <a name="RADIANCE-CORE:SERVE-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:SERVE-FILE">SERVE-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PATHNAME &amp;OPTIONAL CONTENT-TYPE (RESPONSE *RESPONSE*)</code><code>)</code>  </header> <pre class="docstring">Sets the response up to serve the given file.
+
+The content-type, if not explicitly given, is attempted
+to be automatically discovered by MIMES:MIME-LOOKUP
+and falls back to application/octet-stream.
+
+See MIMES:MIME-LOOKUP
+See CONTENT-TYPE
+See DATA
+See *RESPONSE*</pre> </article> </li><li> <a name="RADIANCE-CORE:SHUTDOWN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:SHUTDOWN">SHUTDOWN</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Stops Radiance and cleans up all connections.
+
+If Radiance is not already running, an error is signalled.
+
+The shutdown sequence proceeds as follows:
+1. SHUTDOWN is triggered
+2. SERVER-STOP is triggered
+3. *RUNNING* is set to NIL
+4. SERVER-SHUTDOWN is triggered
+5. *STARTUP-TIME* is set to NIL
+6. SHUTDOWN-DONE is triggered
+
+See STARTUP
+See STARTED-P</pre> </article> </li><li> <a name="RADIANCE-CORE:STARTED-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:STARTED-P">STARTED-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns true if Radiance has been started up and is ready for use.
+
+See STARTUP
+See SHUTDOWN
+See *RUNNING*</pre> </article> </li><li> <a name="RADIANCE-CORE:STARTUP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:STARTUP">STARTUP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (ENVIRONMENT (OR *ENVIRONMENT* &quot;default&quot;))</code><code>)</code>  </header> <pre class="docstring">Starts up Radiance and prepares it for use.
+
+If Radiance is already running, an error is signalled.
+If ENVIRONMENT is not a string, an error is signalled.
+
+The startup sequence proceeds as follows:
+1. *STARTUP-TIME* is saved
+2. The environment is changed
+3. STARTUP is triggered
+4. The implementation for the LOGGER interface is loaded
+5. The implementation for the SERVER interface is loaded
+6. SERVER-START is triggered
+7. *RUNNING* is set to T
+8. SERVER-READY is triggered
+9. The systems in the (MCONFIG :RADIANCE :STARTUP)
+   configuration are loaded in sequence
+10. STARTUP-DONE is triggered
+
+See SHUTDOWN
+See STARTED-P</pre> </article> </li><li> <a name="RADIANCE-CORE:STATIC-FILE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:STATIC-FILE">STATIC-FILE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAMESTRING &amp;OPTIONAL BASE</code><code>)</code>  </header> <pre class="docstring">Returns the static file for the given base.
+
+The base will usually be your local module and thus
+this will use the static folder within its source
+directory.</pre> </article> </li><li> <a name="RADIANCE-CORE:TEMPLATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:TEMPLATE">TEMPLATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAMESTRING &amp;OPTIONAL BASE</code><code>)</code>  </header> <pre class="docstring">Returns the template file for the given base.
+
+The base will usually be your local module and thus
+this will use the template folder within its source
+directory.</pre> </article> </li><li> <a name="RADIANCE-CORE:TRIGGER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:TRIGGER">TRIGGER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HOOK &amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Calls all triggers registered on the hook with the given arguments.</pre> </article> </li><li> <a name="RADIANCE-CORE:UNIVERSAL-TO-UNIX-TIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:UNIVERSAL-TO-UNIX-TIME">UNIVERSAL-TO-UNIX-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">UNIVERSAL-TIME</code><code>)</code>  </header> <pre class="docstring">Translate the given universal-time to a unix-time
+
+See +UNIX-EPOCH-DIFFERENCE+</pre> </article> </li><li> <a name="RADIANCE-CORE:UNIX-TO-UNIVERSAL-TIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:UNIX-TO-UNIVERSAL-TIME">UNIX-TO-UNIVERSAL-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">UNIX-TIME</code><code>)</code>  </header> <pre class="docstring">Translate the given unix-time to a universal-time
+
+See +UNIX-EPOCH-DIFFERENCE+</pre> </article> </li><li> <a name="RADIANCE-CORE:UPTIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:UPTIME">UPTIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns the amount of seconds that radiance has been started for, if at all.
+
+See STARTUP
+See SHUTDOWN
+See *STARTUP-TIME*</pre> </article> </li><li> <a name="RADIANCE-CORE:URI-DISPATCHER&gt;"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:URI-DISPATCHER&gt;">URI-DISPATCHER&gt;</a></code></h4> <code class="qualifiers"></code> <code class="arguments">A B</code><code>)</code>  </header> <pre class="docstring">Returns true if the uri-dispatcher A has a higher priority than B.
+
+If neither A nor B have a priority set, the
+comparison is the same as URI&gt;. If only A has a
+priority set, then T is returned. If only B has a
+priority set, then NIL is returned. Otherwise T
+is returned if the priority of A is greater or equal
+to that of B.
+
+See URI&gt;</pre> </article> </li><li> <a name="RADIANCE-CORE:URI-MATCHES"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:URI-MATCHES">URI-MATCHES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI PATTERN-URI</code><code>)</code>  </header> <pre class="docstring">Returns T if the URI matches the PATTERN-URI.
+
+Sepcifically, in order to match:
+  The matcher of the pattern must match the path of the uri.
+  All the domains must be in the same order and match by
+  STRING-EQUAL.
+  Either one of them does not have a port set, or the
+  ports must match by =.
+
+See MATCHER
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:URI-STRING"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:URI-STRING">URI-STRING</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI</code><code>)</code>  </header> <pre class="docstring">Returns a parsable string representation of the URI.
+
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:URI-TO-URL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:URI-TO-URL">URI-TO-URL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">URI &amp;KEY (REPRESENTATION :AS-IS)</code><code>)</code>  </header> <pre class="docstring">Returns a URL representation of the URI assuming an HTTP context.
+
+See REPRESENT-URI</pre> </article> </li><li> <a name="RADIANCE-CORE:URI&lt;"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:URI&lt;">URI&lt;</a></code></h4> <code class="qualifiers"></code> <code class="arguments">A B</code><code>)</code>  </header> <pre class="docstring">Returns T if A logically precedes B in specificity.
+
+In more detail (short-circuiting top to bottom):
+  T    A does not have a port, but B does
+  T    A's number of domains is less than B's
+  T    A's length of the path is greater than B's
+  NIL  for everything else
+
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:URI="> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:URI=">URI=</a></code></h4> <code class="qualifiers"></code> <code class="arguments">A B</code><code>)</code>  </header> <pre class="docstring">Returns T if A and B represent the same URIs.
+
+Specifically:
+  Ports must be EQL
+  Paths must be EQUAL
+  Domains must be the same order and be STRING-EQUAL
+
+See URI</pre> </article> </li><li> <a name="RADIANCE-CORE:URI&gt;"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:URI&gt;">URI&gt;</a></code></h4> <code class="qualifiers"></code> <code class="arguments">A B</code><code>)</code>  </header> <pre class="docstring">Returns T if A logically follows B in specificity.
+
+See URI&lt;</pre> </article> </li><li> <a name="RADIANCE-CORE:"> </a> <article> <header class="api-endpoint"> <span class="type">api-endpoint</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:"></a></code></h4>  </header> <pre class="docstring">Fallback api endpoint that signals an API-CALL-NOT-FOUND error.</pre> </article> </li><li> <a name="RADIANCE-CORE:API"> </a> <article> <header class="uri-dispatcher"> <span class="type">uri-dispatcher</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:API">API</a></code></h4>  </header> <pre class="docstring">Standard page to handle and dispatch to API endpoints.
+
+Respects the &quot;browser&quot; post/get property, which if set to
+the string &quot;true&quot;, causes a redirect to the referer on
+an api-error rather than displaying a machine-readable
+error output.
+
+See API-PAGE
+See CALL-API-REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:FAVICON"> </a> <article> <header class="uri-dispatcher"> <span class="type">uri-dispatcher</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:FAVICON">FAVICON</a></code></h4>  </header> <pre class="docstring">Standard page for the favicon.ico root image.</pre> </article> </li><li> <a name="RADIANCE-CORE:ROBOTS"> </a> <article> <header class="uri-dispatcher"> <span class="type">uri-dispatcher</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:ROBOTS">ROBOTS</a></code></h4>  </header> <pre class="docstring">Standard page for the robots.txt root file.</pre> </article> </li><li> <a name="RADIANCE-CORE:STATIC"> </a> <article> <header class="uri-dispatcher"> <span class="type">uri-dispatcher</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:STATIC">STATIC</a></code></h4>  </header> <pre class="docstring">Standard delegate for static files.
+
+The address must be of the form /static/module/path
+where the path is translated to one relative to the
+module's static resource directory.
+
+See STATIC-FILE</pre> </article> </li><li> <a name="RADIANCE-CORE:API-SERIALIZE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:API-SERIALIZE">API-SERIALIZE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Cause the object to be serialised into a more favourable structure.
+
+This function should be used by api-format providers to
+transform objects that cannot be directly emitted into
+a structure that can.
+
+If the object is not serializable, an error of type
+API-UNSERIALIZABLE-OBJECT is signalled.</pre> </article> </li><li> <a name="RADIANCE-CORE:CONFIG"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:CONFIG">CONFIG</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Shorthand to access the current module's configuration.
+
+This has to be a macro so that the current package can be
+captured.
+
+See MCONFIG</pre> </article> </li><li> <a name="RADIANCE-CORE:CURRENT-MODULE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:CURRENT-MODULE">CURRENT-MODULE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Macro that expands to the module in the current package.
+Useful to establish a module context.</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFAULTED-CONFIG"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFAULTED-CONFIG">DEFAULTED-CONFIG</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Shorthand to set/retrieve a defaulted value from the module's configuration.
+
+This has to be a macro so that the current package can be
+captured.
+
+See DEFAULTED-MCONFIG</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFIMPL"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFIMPL">DEFIMPL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Expands to I-DEFMACRO, I-DEFMETHOD or I-DEFUN depending on what kind of symbol it names.</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-API"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-API">DEFINE-API</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a new api endpoint.
+
+NAME     --- The name of the endpoint. This also designates
+             where the endpoint will be reachable. By default
+             any endpoint can be reached on a /api/[name] path.
+ARGS     --- The lambda-list for the arguments to the api endpoint.
+             Usually, unless a specific request-handler is used,
+             only required and optional arguments can be used.
+             Their names correspond to the names that will be used
+             to read out their values from the POST/GET variables of
+             a request.
+OPTIONS  --- A list of options that modify the api endpoint in some
+             way.
+BODY     --- A number of body forms that compose the actual
+             functionality of the api endpoint. Should call API-OUTPUT
+             at some point.
+
+A standard uri-dispatcher called API is responsible for calling the
+api pages when the path /api/ is requested.
+
+Api definitions are transformed by options of the type API.
+
+See API-OUTPUT
+See API-PAGE
+See HANDLER
+See REQUEST-HANDLER
+See CALL-API
+See CALL-API-REQUEST
+See EXPAND-OPTIONS</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-API-FORMAT"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-API-FORMAT">DEFINE-API-FORMAT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a new api format.
+
+You should configure the *RESPONSE* to output the properly
+serialised content of the argument you receive.
+
+See API-FORMAT</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-DOCUMENTABLE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-DOCUMENTABLE">DEFINE-DOCUMENTABLE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a new documentable class.
+
+If the class-option :FIND-FUNCTION is given, shortcut
+functions for DOCUMENTATION are additionally created
+that allow using just the name of an instance to
+access the docstring. The find-function is called
+with a single argument, the name of the instance to find.
+
+See DOCUMENTABLE</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-HOOK"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-HOOK">DEFINE-HOOK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a new hook on which triggers can be defined.
+The name should be a symbol from the module that the hook should belong to.</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-HOOK-SWITCH"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-HOOK-SWITCH">DEFINE-HOOK-SWITCH</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-IMPLEMENT-HOOK"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-IMPLEMENT-HOOK">DEFINE-IMPLEMENT-HOOK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a trigger that will cause the body to be compiled and run once the interface becomes implemented.
+
+This is useful if you want to provide parts of a package
+that depend on an interface being implemented, but do not
+want to depend on the interface directly. Thus, using this
+you can achieve optional/soft dependencies.
+
+This depends on the IMPLEMENTED hook-switch present on every
+Radiance interface. Since it is a hook-switch, a trigger like
+this will be called automatically even if it is defined after
+the interface has already been implemented.
+
+Note that since the body is captured and quoted, and thus no
+compilation will occur until the hook is triggered. This means
+that you will potentially miss out on compilation errors or
+information until later.
+
+See DEFINE-INTERFACE</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-INTERFACE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-INTERFACE">DEFINE-INTERFACE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a new module interface.
+
+Unlike the native version of this macro, a hook-switch is
+always defined that provides an IMPLEMENTED and UNIMPLEMENTED
+hook, which will be called at the appropriate time. This
+lets you react to when an implementation becomes active and
+thus conditionally compile code without needing to incur a 
+hard dependency.
+
+See MODULARIZE-INTERFACES:DEFINE-INTERFACE
+See DEFINE-IMPLEMENT-HOOK</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-INTERFACE-EXTENSION"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-INTERFACE-EXTENSION">DEFINE-INTERFACE-EXTENSION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Currently not implemented.</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-MATCHING-ROUTE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-MATCHING-ROUTE">DEFINE-MATCHING-ROUTE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a route where the URI is bound to URIVAR and the body is only evaluated if the tests for the individual parts of the URI pass.
+
+See WITH-ROUTE-TEST-BINDINGS
+See DEFINE-ROUTE</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-MODULE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-MODULE">DEFINE-MODULE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a new module.
+
+This essentially defines a new package with the given name,
+calls MODULARIZE on it and then expands all options to extend
+the package/module.</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-MODULE-EXTENSION"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-MODULE-EXTENSION">DEFINE-MODULE-EXTENSION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a module extension.
+
+This gives the existing module new nicknames and expands the
+given options on it to add functionality.</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-OPTION"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-OPTION">DEFINE-OPTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a new option expander.
+
+Option expanders are used to present an extensible mechanism
+for adding functionality to various definition macros such
+as DEFINE-PAGE, DEFINE-API, etc.
+
+An option expander should return two values:
+ 1. The new list of body forms to use
+ 2. A single form to output before and outside of the
+    definition.
+
+The argument list must be congruent with the one defined by
+the option type plus a final, optional value argument.
+Usually the arglist will look like so:
+
+  NAME BODY ARGS* [VALUE]
+
+Where NAME is the definition name, BODY is the list of
+body forms, and ARGS is any number of additional arguments
+that the option type mandates.
+
+See OPTION
+See EXPAND-OPTIONS</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-PAGE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-PAGE">DEFINE-PAGE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a new page that can be requested.
+
+NAME     --- The name of the page. This is merely used to identify
+             it uniquely.
+URI      --- The actual URI on which the page will be found. This is
+             an internal URI. The path is a regex.
+OPTIONS  --- A list of options that modify the page definition in some
+             way.
+BODY     --- A number of body forms that compose the actual
+             functionality of the page. Should set or return suitable
+             data for the response.
+
+Page definitions are transformed by options of the type PAGE.
+
+See DEFINE-URI-DISPATCHER
+See EXPAND-OPTIONS</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-RESOURCE-LOCATOR"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-RESOURCE-LOCATOR">DEFINE-RESOURCE-LOCATOR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a resource locator for a given resource type.
+
+The arguments list can vary depending on the resource type
+and even between locators for the same resource. Ultimately
+the argument list is decided by the locator that ends up
+being called.
+
+Within the body, the local function CALL-DEFAULT-LOCATOR
+can be used to call the default locator for this resource
+type.
+
+If an attempt is made to define a locator for an inexistent
+resource type, an error is signalled.
+
+See DEFINE-RESOURCE-TYPE
+See RESOURCE</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-RESOURCE-TYPE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-RESOURCE-TYPE">DEFINE-RESOURCE-TYPE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a new resource type.
+
+A resource-type defines a way to retrieve a certain kind of
+information from a module.
+
+If DEFAULT is given, a fallback function is defined with it.
+You can retrieve this fallback by using T as the indent.
+
+The first argument of any resource call is always the module
+it was called for.
+
+See DEFINE-RESOURCE-LOCATOR
+See RESOURCE-TYPE
+See RESOURCE-LOCATOR
+See RESOURCE</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-ROUTE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-ROUTE">DEFINE-ROUTE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define a new route.
+
+DIRECTION has to be one of :MAPPING :REVERSAL
+where mapping routes transform URIs from the
+external to the internal representation and vice-
+versa.
+
+The body should modify the URI object it receives
+as it sees fit. While in general routes will be
+called in the context of a request, it is not
+absolutely necessary.
+
+See ROUTE
+See DEFINE-MATCHING-ROUTE
+See DEFINE-TARGET-ROUTE
+See DEFINE-STRING-ROUTE</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-STRING-ROUTE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-STRING-ROUTE">DEFINE-STRING-ROUTE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a route where the URI is analysed by the given regex and translated into the interpolated string representation.
+
+The target string can reference regex capture groups.
+
+See CL-PPCRE:REGEX-REPLACE</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-TARGET-ROUTE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-TARGET-ROUTE">DEFINE-TARGET-ROUTE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a route that attempts to automatically translate the URI according to the given test and result parts.
+
+The result parts can reference all variables introduced
+by the test parts.
+
+See DEFINE-MATCHING-ROUTE</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-TRIGGER"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-TRIGGER">DEFINE-TRIGGER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a new trigger on the hook.
+A trigger can either accept no arguments or it has to match the hook in its arguments list.
+The name of the trigger defaults to the *PACKAGE*. If you want to have multiple triggers for
+the same hook in the same package, use a list of the following structure as the HOOK argument:
+ (hook trigger-name hook-module)</pre> </article> </li><li> <a name="RADIANCE-CORE:DEFINE-URI-DISPATCHER"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DEFINE-URI-DISPATCHER">DEFINE-URI-DISPATCHER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a new uri-dispatcher.
+
+The body forms will be evaluated if DISPATCH is called
+with a URI object that matches the URI given in the 
+definition and if no other uri-dispatcher precedes this
+one in their priority.
+
+See URI-DISPATCHER
+See URI-DISPATCHER&gt;
+See DISPATCH-FUNCTION
+See DISPATCH</pre> </article> </li><li> <a name="RADIANCE-CORE:DO-MODELS"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:DO-MODELS">DO-MODELS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Iterates over a bunch of models, binding each in turn.
+
+See WITH-MODEL-FIELDS
+See DM:GET</pre> </article> </li><li> <a name="RADIANCE-CORE:I-DEFMACRO"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:I-DEFMACRO">I-DEFMACRO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Expands to an interface macro definition.</pre> </article> </li><li> <a name="RADIANCE-CORE:I-DEFMETHOD"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:I-DEFMETHOD">I-DEFMETHOD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Expands to an interface method definition.</pre> </article> </li><li> <a name="RADIANCE-CORE:I-DEFUN"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:I-DEFUN">I-DEFUN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Expands to an interface function definition.</pre> </article> </li><li> <a name="RADIANCE-CORE:OR*"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:OR*">OR*</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Similar to OR, but treats empty strings as NIL.
+
+This is often handy in the context of query
+parameters from the outside world where an
+empty string represents no value.</pre> </article> </li><li> <a name="RADIANCE-CORE:PERM"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:PERM">PERM</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Macro to encompass a permission.
+
+You should use this wherever you reference a permission.
+Using this will ensure that the permission is registered
+with your module and thus inspectable from the outside.</pre> </article> </li><li> <a name="RADIANCE-CORE:WITH-ACTIONS"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:WITH-ACTIONS">WITH-ACTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">A macro to help handle different actions in a submission context.
+
+ERROR and INFO are variables that hold objects that
+describe error and information messages that occurred
+during the handling of the action.
+
+First, the actual action is read out of the POST/GET
+variable &quot;action&quot;. Then the matching action-clause,
+if any, is evaluated. If an error occurs during the
+evaluation thereof, the error is stored in the ERROR
+variable. After the action clause processing has
+finished, the body forms are evaluated.
+
+ACTION-CLAUSES ::= (clause body-form*)
+CLAUSE         --- A string designator that names the action</pre> </article> </li><li> <a name="RADIANCE-CORE:WITH-MODEL"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:WITH-MODEL">WITH-MODEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Retrieves a model from the database and binds the slots.
+
+If QUERY is NIL, the model is a hull.
+
+See WITH-MODEL-FIELDS
+See DM:GET-ONE
+See DM:HULL</pre> </article> </li><li> <a name="RADIANCE-CORE:WITH-MODEL-FIELDS"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:WITH-MODEL-FIELDS">WITH-MODEL-FIELDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Analogous to WITH-SLOTS but for data-model fields.
+
+See CL:WITH-SLOTS
+See DM:FIELD</pre> </article> </li><li> <a name="RADIANCE-CORE:WITH-MODEL-SAVE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RADIANCE-CORE:WITH-MODEL-SAVE">WITH-MODEL-SAVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Same as WITH-MODEL but automatically saves the model at the end.
+
+If the model is initialised as a hull, INSERT is used.
+
+See WITH-MODEL
+See DM:SAVE
+See DM:INSERT</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
