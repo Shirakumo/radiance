@@ -122,8 +122,8 @@
 (defun represent-uri (uri representation)
   (ecase representation
     ((:as-is NIL) (copy-uri uri))
-    ((:external) (external-uri uri))
-    ((:internal) (internal-uri uri))))
+    ((:external :reverse) (external-uri uri))
+    ((:internal :map) (internal-uri uri))))
 
 (defun uri-to-url (uri &key (representation :as-is))
   (let* ((uri (represent-uri uri representation))
