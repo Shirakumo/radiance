@@ -200,7 +200,8 @@ See API-PAGE
 See HANDLER
 See REQUEST-HANDLER
 See CALL-API
-See CALL-API-REQUEST"))
+See CALL-API-REQUEST
+See EXPAND-OPTIONS"))
 
 ;; conditions.lisp
 (docs:define-docs
@@ -738,6 +739,83 @@ See DISPATCH-FUNCTION
 See *URI-PRIORITY*
 See *URI-FALLBACK*"))
 
+;; documentable.lisp
+(docs:define-docs
+  (type documentable
+    "Superclass for all classes that can be documented.
+
+Use DOCUMENTATION to access the docstring.
+
+See CL:DOCUMENTATION
+See DEFINE-DOCUMENTABLE")
+
+  (function define-documentable
+    "Defines a new documentable class.
+
+If the class-option :FIND-FUNCTION is given, shortcut
+functions for DOCUMENTATION are additionally created
+that allow using just the name of an instance to
+access the docstring. The find-function is called
+with a single argument, the name of the instance to find.
+
+See DOCUMENTABLE"))
+
+;; handle.lisp
+(docs:define-docs
+  (variable *debugger*
+    "Whether the debugger should be invoked when an error occurs during a request execution.
+
+See HANDLE-CONDITION
+See EXECUTE-REQUEST")
+
+  (function handle-condition
+    "Responsible for handling a condition during a request execution.
+
+Invokes the debugger if *DEBUGGER* is non-NIL.
+Otherwise invokes the SET-DATA restart with the
+return-value of calling RENDER-ERROR-PAGE.
+
+See *DEBUGGER*
+See EXECUTE-REQUEST
+See RENDER-ERROR-PAGE")
+
+  (function render-error-page
+    "This function is responsible for rendering an appropriate response for the given condition.
+
+A module is allowed to redefine this function to do as
+it sees fit.
+
+See HANDLE-CONDITION")
+
+  (function execute-request
+    "Directly executes the given request and response instances.
+
+If an error occurs during the execution, 
+HANDLE-CONDITION is called to handle it.
+The REQUEST hook is called at the beginning of execution.
+Then the request is dispatched on and the result converted
+into data for the response if applicable.
+
+See RESPONSE
+See REQUEST
+See DISPATCH
+See HANDLE-CONDITION")
+
+  (function ensure-request-hash-table
+    "Attempts to coerce the given thing into a hash table suitable for the request object.")
+
+  (function request
+    "Handle a request to the given URI with the given parameters.
+
+This creates an appropriate request object, translates the URI
+object if necessary, and then calls EXECUTE-REQUEST to actually
+perform the request proper.
+
+See REQUEST
+See ENSURE-REQUEST-HASH-TABLE
+See REPRESENT-URI
+See EXECUTE-REQUEST"))
+
 ;; init.lisp
 (docs:define-docs
   (variable *startup-time*
@@ -887,23 +965,513 @@ See DEFINE-INTERFACE"))
 
 ;; modules.lisp
 (docs:define-docs
-  )
+  (function module-domain
+    "Returns the domain on which the module acts primarily.
+
+Signals an error if the argument cannot be coerced to a module.
+Signals an error of type INTERFACE-IMPLEMENTATION-NOT-PRESENT
+if an interface was passed that does not have an implementation
+yet.
+
+If not explicit domain was configured, the module's name is
+returned.
+
+See MODULARIZE:MODULE")
+
+  (function module-permissions
+    "Returns the list of permissions that are known to exist for the module.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See PERM
+See MODULARIZE:MODULE")
+
+  (function module-dependencies
+    "Returns the list of dependencies for the given module.
+
+Signals an error if the argument cannot be coerced to a module.
+Signals an error if the module does not have an associated
+virtual module.
+
+See ASDF:SYSTEM-DEPENDS-ON
+See MODULARIZE:MODULE
+See MODULARIZE:VIRTUAL-MODULE")
+
+  (function module-required-interfaces
+    "Returns the list of interfaces that the module depends on.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULE-DEPENDENCIES
+See MODULARIZE:MODULE")
+
+  (function module-required-systems
+    "Returns the list of systems that the module depends on.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULE-DEPENDENCIES
+See MODULARIZE:MODULE")
+
+  (function module-pages
+    "Returns the list of URIs for pages that the module has registered.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULARIZE:MODULE")
+
+  (function module-api-endpoints
+    "Returns the list of names of the api endpoints that the module has registered.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULARIZE:MODULE")
+
+  (function describe-module
+    "Writes a human-readable description of the module to the stream.
+
+This is useful for inspection and debugging, to see a quick
+overview of what the module does or has. This function is
+called by DESCRIBE if it is called on a module.
+
+Signals an error if the argument cannot be coerced to a module.
+
+See MODULE-DOMAIN
+See MODULE-PERMISSIONS
+See MODULE-REQUIRED-INTERFACES
+See MODULE-REQUIRED-SYSTEMS
+See MODULE-PAGES
+See MODULE-API-ENDPOINTS
+See MODULARIZE:MODULE")
+
+  (variable *modules-directory*
+    "Defines the path where modules should be created.")
+
+  (function create-module
+    "Creates a new stub module.
+
+Creates the following files and directories:
+  name/
+  name/static
+  name/template
+  name/name.asd
+  name/name.lisp
+
+If Quicklisp is present, the local-projects are registered
+and the project is loaded after the files have been created.
+
+See *MODULES-DIRECTORY*"))
 
 ;; options.lisp
 (docs:define-docs
-  )
+  (variable *options*
+    "Map of names to option type tables.
+
+Each option type table maps from names to OPTION instances.
+
+See OPTION
+See REMOVE-OPTION
+See LIST-OPTIONS")
+
+  (type option
+    "Container class for an option expander.
+
+See OPTION-TYPE
+See NAME
+See EXPANDER
+See OPTION")
+
+  (function option-type
+    "Accesses the type of option that this option object belongs to.
+
+See OPTION")
+
+  (function expander
+    "Accesses the actual expansion function of the object.
+
+See OPTION")
+
+  (function %option
+    "Accessor wrapper for the purpose of the documentable.
+
+See OPTION")
+
+  (function option
+    "Accessor to an option instance.
+
+See OPTION
+See *OPTIONS*
+See REMOVE-OPTION
+See LIST-OPTIONS")
+
+  (function remove-option
+    "Removes an option instance again, if it exists.
+
+See OPTION
+See *OPTIONS*
+See LIST-OPTIONS")
+
+  (function list-options
+    "Lists all option instances that are registered.
+
+See OPTION
+See *OPTIONS*
+See REMOVE-OPTION")
+
+  (function define-option
+    "Define a new option expander.
+
+Option expanders are used to present an extensible mechanism
+for adding functionality to various definition macros such
+as DEFINE-PAGE, DEFINE-API, etc.
+
+An option expander should return two values:
+ 1. The new list of body forms to use
+ 2. A single form to output before and outside of the
+    definition.
+
+The argument list must be congruent with the one defined by
+the option type plus a final, optional value argument.
+Usually the arglist will look like so:
+
+  NAME BODY ARGS* [VALUE]
+
+Where NAME is the definition name, BODY is the list of
+body forms, and ARGS is any number of additional arguments
+that the option type mandates.
+
+See OPTION
+See EXPAND-OPTIONS")
+
+  (function expand-options
+    "Expands all options of the given type.
+
+Returns two values, the new body forms and the list of
+forms to output before the actual definition.
+
+See LIST-OPTIONS
+See DEFINE-OPTION"))
 
 ;; page.lisp
 (docs:define-docs
-  )
+  (function define-page
+    "Defines a new page that can be requested.
 
-;; pattern.lisp
-(docs:define-docs
-  )
+NAME     --- The name of the page. This is merely used to identify
+             it uniquely.
+URI      --- The actual URI on which the page will be found. This is
+             an internal URI. The path is a regex.
+OPTIONS  --- A list of options that modify the page definition in some
+             way.
+BODY     --- A number of body forms that compose the actual
+             functionality of the page. Should set or return suitable
+             data for the response.
+
+Page definitions are transformed by options of the type PAGE.
+
+See DEFINE-URI-DISPATCHER
+See EXPAND-OPTIONS"))
 
 ;; request.lisp
 (docs:define-docs
-  )
+  (variable *request*
+    "Bound to the current request object in the context of a request.
+
+See EXECUTE-REQUEST
+See REQUEST")
+
+  (variable *response*
+    "Bound to the current response object in the context of a request.
+
+See EXECUTE-REQUEST
+See RESPONSE")
+
+  (variable *default-external-format*
+    "The default external character encoding to use to send out the data.
+
+See RESPONSE")
+
+  (variable *default-content-type*
+    "The default content-type to use to send out the data.
+
+See RESPONSE")
+
+  (function *request*
+    "Returns the value of *REQUEST*
+
+See *REQUEST*")
+
+  (function *response*
+    "Returns the value of *RESPONSE*
+
+See *RESPONSE*")
+
+  (type request
+    "Container class to represent a request that was made against radiance.
+
+See URI
+See HTP-METHOD
+See HEADERS
+See POST-DATA
+See GET-DATA
+See COOKIES
+See DOMAIN
+See REMOTE
+See DATA
+See ISSUE-TIME
+See REQUEST
+See USER-AGENT
+See REFERER
+See COOKIE
+See GET-VAR
+See POST-VAR
+See POST/GET
+See HEADER
+See FILE
+See REQUEST-RUN-TIME")
+
+  (function uri
+    "Accesses the URI that the request operates on.
+
+Depending on the stage of the request, the URI may be either
+internal or external.
+
+See REQUEST")
+
+  (function http-method
+    "Accesses the HTTP method that was used to request the page.
+
+Should be one of :GET :HEAD :POST :PUT :DELETE :TRACE :CONNECT
+
+See REQUEST")
+
+  (function headers
+    "Accesses the table of headers that the request received or the response should send out.
+
+See REQUEST
+See RESPONSE")
+
+  (function post-data
+    "Accesses the table of POST-body variables that the request received.
+
+See REQUEST")
+
+  (function get-data
+    "Accesses the table of GET variables that the request received.
+
+See REQUEST")
+
+  (function cookies
+    "Accesses the table of cookies that the request received or the response should send out.
+
+See REQUEST
+See RESPONSE")
+
+  (function domain
+    "Accesses the domain that the request arrived on or the cookie is active on.
+
+See REQUEST
+See COOKIE")
+
+  (function remote
+    "Accesses the remote address that the request was sent out from.
+
+See REQUEST")
+
+  (function data
+    "Accesses the table of internal data that the request should keep and the data that the response should send out.
+
+For the response, the data is allowed to be of type
+ PATHNAME
+ STRING
+ (ARRAY (UNSINGED-BYTE 8))
+
+See REQUEST
+See RESPONSE")
+
+  (function issue-time
+    "Accesses the universal-time at which the request was issued.
+
+See REQUEST")
+
+  (type response
+    "Container class to represent a response that should be sent out for a request.
+
+See DATA
+See RETURN-CODE
+See CONTENT-TYPE
+See EXTERNAL-FORMAT
+See HEADERS
+See COOKIES
+See COOKIE
+See HEADER
+See REDIRECT
+See SERVE-FILE")
+
+  (function return-code
+    "Accesses the HTTP return code to send out.
+
+Defaults to 200.
+
+See RESPONSE")
+
+  (function content-type
+    "Accesses the HTTP content-type to send out.
+
+Defaults to *DEFAULT-CONTENT-TYPE*
+
+See *DEFAULT-CONTENT-TYPE*
+See RESPONSE")
+
+  (function external-format
+    "Accesses the external-format to use to serialise the text data.
+
+Defaults to *DEFAULT-EXTERNAL-FORMAT*
+
+See *DEFAULT-EXTERNAL-FORMAT*
+See RESPONSE")
+
+  (type cookie
+    "Container class for a cookie.
+
+See NAME
+See VALUE
+See DOMAIN
+See PATH
+See EXPIRES
+See HTTP-ONLY
+See SECURE
+See REQUEST
+See RESPONSE
+See COOKIE-HEADER
+See COOKIE")
+
+  (function value
+    "Accesses the cookie value.
+
+See COOKIE")
+
+  (function path
+    "Accesses the URI or cookie path.
+
+See URI
+See COOKIE")
+
+  (function expires
+    "Accesses when the cookie will expire, if at all.
+
+See COOKIE")
+
+  (function http-only
+    "Accesses whether the cookie should get the http-only flag.
+
+See COOKIE")
+
+  (function secure
+    "Accesses whether the cookie should get the secure flag.
+
+See COOKIE")
+
+  (function cookie-header
+    "Returns a string representation of the cookie as a header.
+
+See COOKIE")
+
+  (function user-agent
+    "Accesses the user-agent header of the request.
+
+See HEADERS
+See *REQUEST*")
+
+  (function referer
+    "Accesses the referer header of the request.
+
+See HEADERS
+See *REQUEST*")
+
+  (function cookie
+    "Accesses the cookie instance of the request.
+
+The SETF function will construct the proper cookie instance for you.
+
+See COOKIES
+See COOKIE
+See *RESPONSE*
+See *REQUEST*")
+
+  (function get-var
+    "Returns the value of the GET variable of the request.
+
+This is case-insensitive.
+
+See GET-DATA
+See *REQUEST*")
+
+  (function post-var
+    "Returns the value of the POST variable of the request.
+
+This is case-insensitive.
+
+See POST-DATA
+See *REQUEST*")
+
+  (function post/get
+    "Returns the value of the POST or the GET variable of the request.
+
+If both exist, then the POST variable is preferred.
+This is case-insensitive.
+
+See POST-DATA
+See GET-DATA
+See *REQUEST*")
+
+  (function header
+    "Accesses the value of the header in the request or response.
+
+This is case-insensitive
+
+See HEADERS
+See *REQUEST*
+See *RESPONSE*")
+
+  (function file
+    "Returns the pathname to the file that was uploaded.
+
+Signals a NO-SUCH-POST-PARAMETER error if the given
+parameter was not present as a POST parameter at all.
+Signals a POST-PARAMETER-NOT-A-FILE error if the given
+parameter did not represent an uploaded file.
+
+See POST-VAR
+See *REQUEST*")
+
+  (function redirect
+    "Sets the response up to cause a redirect to the given address.
+
+By default, if a URI instance is given, the URI is
+externalised.
+
+See URI-TO-URL
+See RETURN-CODE
+See *RESPONSE*")
+
+  (function serve-file
+    "Sets the response up to serve the given file.
+
+The content-type, if not explicitly given, is attempted
+to be automatically discovered by MIMES:MIME-LOOKUP
+and falls back to application/octet-stream.
+
+See MIMES:MIME-LOOKUP
+See CONTENT-TYPE
+See DATA
+See *RESPONSE*")
+
+  (Function request-run-time
+    "Returns the number of seconds since the request was issued.
+
+See ISSUE-TIME
+See *REQUEST*"))
 
 ;; resource.lisp
 (docs:define-docs
