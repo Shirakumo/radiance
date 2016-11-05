@@ -292,7 +292,9 @@
    #:file-size
    #:resolve-base
    #:static-file
-   #:template
+   #:@static
+   #:template-file
+   #:@template
    #:or*
    #:perm)
   ;; uri.lisp

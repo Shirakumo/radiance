@@ -1938,14 +1938,28 @@ empty string represents no value.")
 
 The base will usually be your local module and thus
 this will use the static folder within its source
-directory.")
+directory.
 
-  (function template
+See @STATIC")
+
+  (function @static
+    "Expands to a pathname to the static file in the current module.
+
+See STATIC-FILE")
+
+  (function template-file
     "Returns the template file for the given base.
 
 The base will usually be your local module and thus
 this will use the template folder within its source
-directory.")
+directory.
+
+See @TEMPLATE")
+
+  (function @template
+    "Expands to a pathname to the template file in the current module.
+
+See TEMPLATE-FILE")
 
   (function perm
     "Macro to encompass a permission.
