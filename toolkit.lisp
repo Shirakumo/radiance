@@ -158,3 +158,24 @@
     (maphash (lambda (k v) (setf (gethash k new) v)) table)
     new))
 
+(defun parse-path-safely (namestring)
+  (let ((name NIL)
+        (type NIL)
+        (path ()))
+    (flet ((process-segment (string)
+             (unless (string= string "")
+               (push string path)))
+           (process-filename (string)
+             (unless (string= string "")
+               (let ((endpos (position #\. string :from-end T)))
+                 (cond (endpos
+                        (setf name (subseq string 0 endpos))
+                        (setf type (subseq string (1+ endpos))))
+                       (T (setf name string)))))))
+      (loop with buf = (make-string-output-stream)
+            for char across namestring
+            do (case char
+                 (#\/ (process-segment (get-output-stream-string buf)))
+                 (T (write-char char buf)))
+            finally (process-filename (get-output-stream-string buf))))
+    (make-pathname :name name :type type :directory `(:relative ,@(nreverse path)))))

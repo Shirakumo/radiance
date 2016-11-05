@@ -122,8 +122,8 @@
          (slashpos (position #\/ path :start (length "static/")))
          (file (if slashpos
                    (ignore-errors
-                    (static-file (subseq path (1+ slashpos)) (string-upcase (subseq path (length "static/") slashpos))))
-                   (static-file (subseq path (length "static/")) :radiance-core))))
+                    (static-file (parse-path-safely (subseq path (1+ slashpos))) (string-upcase (subseq path (length "static/") slashpos))))
+                   (static-file (parse-path-safely (subseq path (length "static/"))) :radiance-core))))
     (if (and file (uiop:file-exists-p file))
         (serve-file file)
         (error 'request-not-found))))

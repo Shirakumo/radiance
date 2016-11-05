@@ -296,7 +296,8 @@
    #:template-file
    #:@template
    #:or*
-   #:perm)
+   #:perm
+   #:parse-path-safely)
   ;; uri.lisp
   (:export
    #:uri

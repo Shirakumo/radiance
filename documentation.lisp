@@ -1971,7 +1971,15 @@ Using this will ensure that the permission is registered
 with your module and thus inspectable from the outside.")
 
   (function copy-hash-table
-    "Copies the given hash-table as accurately as possible."))
+    "Copies the given hash-table as accurately as possible.")
+
+  (function parse-path-safely
+    "Parses the given namestring as a path that only understands relative directories, name, and type.
+
+Furthmore, no special path syntax is allowed and everything
+is parsed verbatim. This avoids exploits where an URL is
+turned into a pathname and uses special characters like ~
+or .."))
 
 ;; uri.lisp
 (docs:define-docs
