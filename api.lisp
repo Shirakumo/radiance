@@ -135,7 +135,7 @@
                   :argslist ',args
                   :handler #',handler
                   :request-handler ,(make-request-handler-function `#',handler args)
-                  :documentation ,(getf options :documentation))))))))
+                  :documentation ,(form-fiddle:lambda-docstring `(lambda () ,@body)))))))))
 
 (define-delete-hook (module 'radiance-destroy-apis)
   (dolist (page (module-storage module 'radiance-apis))
