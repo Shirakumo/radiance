@@ -1157,7 +1157,9 @@ See EXPAND-OPTIONS")
 Returns two values, the new body forms and the list of
 forms to output before the actual definition.
 
-See LIST-OPTIONS
+An error is signalled if an unknown option is used.
+
+See OPTION
 See DEFINE-OPTION"))
 
 ;; page.lisp

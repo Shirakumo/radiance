@@ -64,8 +64,9 @@
 (defun expand-options (type options name body &rest args)
   (let ((no-value (gensym "NO-VALUE")))
     (loop with forms = ()
-          for option in (list-options type)
-          for value = (getf options (name option) no-value)
+          for (option-name value) on options by #'cddr
+          for option = (or (option type option-name)
+                           (error "No such option ~s for type ~s." option-name type))
           do (multiple-value-bind (new-body new-form)
                  (if (eql value no-value)
                      (apply (expander option) name body args)
