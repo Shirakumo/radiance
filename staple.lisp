@@ -1,4 +1,9 @@
 (in-package #:cl-user)
+(defpackage #:radiance-staple
+  (:nicknames #:org.shirakumo.radiance.staple)
+  (:use #:cl)
+  (:export #:generate))
+(in-package #:org.shirakumo.radiance.staple)
 
 (defclass symb-api-endpoint (staple:symb-function)
   ())
@@ -80,7 +85,7 @@
                                                        :direction :reversal
                                                        :package package))))))
 
-(defun staple ()
+(defun generate ()
   (staple:generate :radiance-core
                    :name "Radiance"
                    :packages '(:radiance-core)
