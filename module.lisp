@@ -194,6 +194,7 @@
   ;; page.lisp
   (:export
    #:page
+   #:remove-page
    #:define-page)
   ;; request.lisp
   (:export

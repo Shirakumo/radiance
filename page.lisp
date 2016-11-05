@@ -12,6 +12,9 @@
 (defmethod (setf documentation) (string (name symbol) (type (eql 'page)))
   (setf (documentation name 'uri-dispatcher) string))
 
+(defun remove-page (name)
+  (remove-uri-dispatcher name))
+
 (defmacro define-page (name uri options &body body)
   (destructuring-bind (uri &optional priority) (enlist uri)
     (multiple-value-bind (body forms) (expand-options 'page options name body uri)
