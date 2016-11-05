@@ -135,9 +135,11 @@
 (defvar *modules-directory* (or #+quicklisp (first ql:*local-project-directories*)
                                 #-quicklisp *default-pathname-defaults*))
 
-(defun create-module (name &key (base-file name) dependencies (root *modules-directory*))
+(defun create-module (name &key (base-file name) dependencies root)
   (let* ((name (string-downcase name))
-         (base-file (string-downcase base-file)))
+         (base-file (string-downcase base-file))
+         (root (or root (merge-pathnames (make-pathname :directory `(:relative ,name))
+                                         *modules-directory*))))
     ;; Create directories
     (ensure-directories-exist root)
     (ensure-directories-exist (merge-pathnames "template/" root))
