@@ -111,10 +111,30 @@ Refresh the page, and voilà, now it's got some pizzas to it too. You'll probabl
 
 ### Radiance Concepts
 #### URI
+One of the most central concepts in Radiance is that of a URI. A URI is an object that consists of a list of domains, an optional port number, and a path (see `uri`). It is essentially a stripped down version of a general URI, and as such doesn't include a schema, query, or fragment part. Another important difference is that the `domains`  URIs are used at several points throughout the framework, both to capture locations and to handle dispatch matching.
 
-#### Route
+Note that URIs are mutable. This is important for performance, as URI modifications have to happen in several parts that lie on the critical path. However, in the usual case it is not expected that URIs are modified outside of a few select functions. Modifying a URI's parts in unexpected ways may lead to strange behaviour.
+
+URIs have a unique string representation and can be serialised to string and parsed back into a full URI object again. URIs can also be dumped to FASL files as literals, so emitting them from macros is fine. The syntax for a URI is as follows:
+
+```BNF
+URI     ::= DOMAINS (':' PORT)? '/' PATH
+DOMAINS ::= DOMAIN ('.' DOMAIN)*
+DOMAIN  ::= ('a'..'Z' | '0'..'9' | '-')
+PORT    ::= ('0'..'9'){1, 5}
+PATH    ::= .*
+```
+
+You can use `uri-to-url` to turn a URI into a concrete URL. Reversal, encoding, and proper formatting of all the parts is handled for you automatically there.
+
+See `uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`.
 
 #### Request and Response
+In order to encapsulate the data that is sent to  and from, we have the idea of a Request (`request`) and Response (`response`) object. The Request object holds the URI that represents to which location the request goes, and all the data contained in the HTTP payload like post, get, header, and cookie variables. The Response object holds the return-code, headers, cookies, and the actual body data.
+
+During the processing of a request, these two objects must always be present and bound to the `*request*` and `*response*` variables. They encapsulate a lot of very vital information that is necessary to generate dynamic pages. Additionally, they contain an opaque `data` table in which you can store arbitrary data. This is useful when you need to exchange pieces of information between individual parts of the system that may be reached during the request execution.
+
+#### Route
 
 #### Dispatcher / Page
 
