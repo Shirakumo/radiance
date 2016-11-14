@@ -125,14 +125,18 @@
     ((:external :reverse) (external-uri uri))
     ((:internal :map) (internal-uri uri))))
 
-(defun uri-to-url (uri &key (representation :as-is))
+(defun uri-to-url (uri &key (representation :as-is)
+                            schema
+                            query
+                            fragment)
   (let* ((uri (represent-uri uri representation))
-         (proto (case (port uri)
-                  ((443) "https")
-                  ((80 NIL) "http")
-                  (T "http")))
+         (schema (or schema
+                     (case (port uri)
+                       ((443) "https")
+                       ((80 NIL) "http")
+                       (T "http"))))
          (port (case (port uri)
                  ((443 80) NIL)
                  (T (port uri)))))
-    (format NIL "~a://~{~a~^.~}~@[:~a~]/~a"
-            proto (reverse (domains uri)) port (or (path uri) ""))))
+    (format NIL "~a://~{~a~^.~}~@[:~a~]/~/radiance-core::format-urlpart/~@[?~/radiance-core::format-query/~]~@[#~/radiance-core::format-urlpart/~]"
+            schema (reverse (domains uri)) port (or (path uri) "") query fragment)))

@@ -1979,7 +1979,13 @@ with your module and thus inspectable from the outside.")
 Furthmore, no special path syntax is allowed and everything
 is parsed verbatim. This avoids exploits where an URL is
 turned into a pathname and uses special characters like ~
-or .."))
+or ..")
+
+  (function url-encode
+    "Encodes the given string to the stream in url-encoded format.
+
+This means that characters that are not one of a-Z 0-9 - . _ ~
+are written down in percent-encoded schema."))
 
 ;; uri.lisp
 (docs:define-docs
@@ -2149,6 +2155,16 @@ See EXTERNAL-URI
 See INTERNAL-URI")
 
   (function uri-to-url
-    "Returns a URL representation of the URI assuming an HTTP context.
+    "Returns a URL representation of the URI.
 
-See REPRESENT-URI"))
+The QUERY argument takes an alist of keys and variables
+to be used in the query part of the resulting URL. The
+fragment is the optional fragment part. The schema is,
+unless explicitly given, automatically chosen as HTTPS
+if the port is 443, and HTTP if the port is anything else.
+
+The path, query, and fragment are url-encoded as
+necessary.
+
+See REPRESENT-URI
+See URL-ENCODE"))

@@ -297,7 +297,8 @@
    #:@template
    #:or*
    #:perm
-   #:parse-path-safely)
+   #:parse-path-safely
+   #:url-encode)
   ;; uri.lisp
   (:export
    #:uri

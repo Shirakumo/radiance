@@ -47,4 +47,5 @@
                :lambda-fiddle
                :form-fiddle
                :bordeaux-threads
-               :documentation-utils))
+               :documentation-utils
+               :babel))

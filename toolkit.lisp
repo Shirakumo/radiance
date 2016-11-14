@@ -179,3 +179,32 @@
                  (T (write-char char buf)))
             finally (process-filename (get-output-stream-string buf))))
     (make-pathname :name name :type type :directory `(:relative ,@(nreverse path)))))
+
+(defun url-encode (thing &key (stream NIL) (external-format *default-external-format*))
+  (flet ((%url-encode (stream)
+           (loop for octet across (babel:string-to-octets thing :encoding external-format)
+                 for char = (code-char octet)
+                 do (cond ((or (char<= #\0 char #\9)
+                               (char<= #\a char #\z)
+                               (char<= #\A char #\Z)
+                               (find char "-._~" :test #'char=))
+                           (write-char char stream))
+                          (T (format stream "%~2,'0x" (char-code char)))))))
+    (if stream
+        (%url-encode stream)
+        (with-output-to-string (stream)
+          (%url-encode stream)))))
+
+(defun format-query (stream arg &rest args)
+  (declare (ignore args))
+  (loop for cons on arg
+        for (key . val) = (car cons)
+        do (url-encode key :stream stream)
+           (write-char #\= stream)
+           (url-encode val :stream stream)
+           (when (cdr cons)
+             (write-char #\& stream))))
+
+(defun format-urlpart (stream arg &rest args)
+  (declare (ignore args))
+  (url-encode arg :stream stream))
