@@ -20,6 +20,7 @@
   (setf (content-type *response*) "text/plain")
   (format NIL "Internal error: ~s" condition))
 
+;;; FIXME!!! Add support for STREAMs in data of response.
 (define-hook request (request response))
 (defun execute-request (request &optional (response (make-instance 'response)))
   (declare (optimize (speed 3)))
@@ -32,10 +33,11 @@
             (trigger 'request request response)
             (let ((result (dispatch (uri request))))
               (typecase result
-                (response (setf *response* result))
-                (pathname (serve-file result))
                 (string (setf (data *response*) result))
-                ((array (unsigned-byte 8)) (setf (data *response*) result)))))
+                (pathname (serve-file result))
+                ((array (unsigned-byte 8)) (setf (data *response*) result))
+                (stream (setf (data *response*) result))
+                (response (setf *response* result)))))
         (set-data (data)
           :report "Set the response data."
           :interactive read-value
