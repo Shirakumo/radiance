@@ -46,28 +46,28 @@
   (error 'api-unserializable-object :object (first args)))
 
 ;;; Pages
-(defvar *api-pages* (make-hash-table :test 'equalp))
+(defvar *api-endpoints* (make-hash-table :test 'equalp))
 
-(defun api-page (path)
-  (gethash (string path) *api-pages*))
+(defun api-endpoint (path)
+  (gethash (string path) *api-endpoints*))
 
-(defun (setf api-page) (page path)
-  (setf (gethash (string path) *api-pages*) page))
+(defun (setf api-endpoint) (page path)
+  (setf (gethash (string path) *api-endpoints*) page))
 
-(defun remove-api-page (path)
-  (remhash (string path) *api-pages*))
+(defun remove-api-endpoint (path)
+  (remhash (string path) *api-endpoints*))
 
-(defun list-api-pages ()
-  (loop for page being the hash-values of *api-pages* collect page))
+(defun list-api-endpoints ()
+  (loop for page being the hash-values of *api-endpoints* collect page))
 
-(defun ensure-api-page (thing)
+(defun ensure-api-endpoint (thing)
   (etypecase thing
-    (string (or (api-page thing)
-                (error "No such api-page ~s." thing)))
-    (symbol (api-page (string thing)))
-    (api-page thing)))
+    (string (or (api-endpoint thing)
+                (error "No such api-endpoint ~s." thing)))
+    (symbol (api-endpoint (string thing)))
+    (api-endpoint thing)))
 
-(define-documentable api-page ()
+(define-documentable api-endpoint ()
   ((name :initarg :name :accessor name)
    (handler :initarg :handler :accessor handler)
    (argslist :initarg :argslist :accessor argslist)
@@ -77,7 +77,7 @@
    :handler (error "HANDLER function required")
    :argslist ()
    :request-handler ())
-  (:find-function api-page))
+  (:find-function api-endpoint))
 
 (defun make-request-handler-function (function &optional (arglist (arg:arglist function)))
   (let ((request (gensym "REQUEST")))
@@ -97,7 +97,7 @@
                       collect (parse arg in-optional))
            (funcall ,function ,@(extract-lambda-vars arglist)))))))
 
-(defmethod initialize-instance :after ((page api-page) &key)
+(defmethod initialize-instance :after ((page api-endpoint) &key)
   (unless (slot-boundp page 'argslist)
     (setf (slot-value page 'argslist)
           (arg:arglist (handler page))))
@@ -105,17 +105,17 @@
     (setf (slot-value page 'request-handler)
           (compile NIL (make-request-handler-function (handler page) (argslist page))))))
 
-(defmethod print-object ((api api-page) stream)
+(defmethod print-object ((api api-endpoint) stream)
   (print-unreadable-object (api stream :type T)
     (format stream "~a ~s" (name api) (argslist api))))
 
-(defun call-api-request (api-page &optional (request *request*))
+(defun call-api-request (api-endpoint &optional (request *request*))
   (let ((*request* request))
-    (funcall (request-handler (ensure-api-page api-page))
+    (funcall (request-handler (ensure-api-endpoint api-endpoint))
              request)))
 
-(defun call-api (api-page &rest arguments)
-  (apply (handler (ensure-api-page api-page))
+(defun call-api (api-endpoint &rest arguments)
+  (apply (handler (ensure-api-endpoint api-endpoint))
          arguments))
 
 (defmacro define-api (name args options &body body)
@@ -128,9 +128,9 @@
          (flet ((,handler ,args
                   (block ,(when (symbolp name) name)
                     ,@body)))
-           (setf (api-page ,(string name))
+           (setf (api-endpoint ,(string name))
                  (make-instance
-                  'api-page
+                  'api-endpoint
                   :name ,(string name)
                   :argslist ',args
                   :handler #',handler
@@ -139,16 +139,16 @@
 
 (define-delete-hook (module 'radiance-destroy-apis)
   (dolist (page (module-storage module 'radiance-apis))
-    (remove-api-page page)))
+    (remove-api-endpoint page)))
 
 ;;; Actual page handler
 (define-uri-dispatcher api ("/api/.*" 100)
   (let* ((path (path (uri *request*)))
          (slashpos (position #\/ path))
          (subpath (subseq path (1+ slashpos)))
-         (api-page (or (api-page subpath) (api-page ""))))
+         (api-endpoint (or (api-endpoint subpath) (api-endpoint ""))))
     (handler-case
-        (call-api-request api-page *request*)
+        (call-api-request api-endpoint *request*)
       (api-error (err)
         (let ((message (or (message err)
                            (princ-to-string err))))

@@ -70,41 +70,41 @@ a structure that can.
 If the object is not serializable, an error of type
 API-UNSERIALIZABLE-OBJECT is signalled.")
 
-  (variable *api-pages*
-    "A map from names to api-pages.
+  (variable *api-endpoints*
+    "A map from names to api-endpoints.
 
-See API-PAGE")
+See API-ENDPOINT")
 
-  (function api-page
-    "Accessor to the api-page instances.
+  (function api-endpoint
+    "Accessor to the api-endpoint instances.
 
-See API-PAGE
-See REMOVE-API-PAGE
-See LIST-API-PAGE")
+See API-ENDPOINT
+See REMOVE-API-ENDPOINT
+See LIST-API-ENDPOINT")
 
-  (function remove-api-page
+  (function remove-api-endpoint
     "Removes the given api page again if it exists.
 
-See API-PAGE")
+See API-ENDPOINT")
 
-  (function list-api-pages
+  (function list-api-endpoints
     "Lists all known api page instances.
 
-See API-PAGE")
+See API-ENDPOINT")
 
-  (function ensure-api-page
-    "Ensures to return the api-page instance for the name.
+  (function ensure-api-endpoint
+    "Ensures to return the api-endpoint instance for the name.
 
 Accepted types are:
   STRING    --- Looks up the api page by its name
   SYMBOL    --- Coerces to string and tries again
-  API-PAGE  --- Returns the argument
+  API-ENDPOINT  --- Returns the argument
 
 If the page cannot be looked up, an error is signalled.
 
-See API-PAGE")
+See API-ENDPOINT")
 
-  (type api-page
+  (type api-endpoint
     "Container for an api endpoint.
 
 See NAME
@@ -118,16 +118,16 @@ See REQUEST-HANDLER")
 May be a symbol or a string depending on the object.")
 
   (function handler
-    "Accesses the handler function of the api-page.
+    "Accesses the handler function of the api-endpoint.
 
 The handler-function must have the same lambda-list as
-the api-page's ARGSLIST. It must call API-OUTPUT
+the api-endpoint's ARGSLIST. It must call API-OUTPUT
 at some point during its evaluation to emit data.
 
-See API-PAGE")
+See API-ENDPOINT")
 
   (function argslist
-    "Accesses the lambda-list of the api-page's handler.
+    "Accesses the lambda-list of the api-endpoint's handler.
 
 This describes the public interface's arguments.
 Arguments are usually received as GET or POST
@@ -135,22 +135,22 @@ parameters of the same name as the argument symbol and it
 thus only makes sense for the lambda-list to contain 
 required and optional arguments.
 
-See API-PAGE")
+See API-ENDPOINT")
 
   (function request-handler
     "Accesses the function to handle a direct request object and transform it into a proper api call.
 
 This function is usually automatically generated.
 It should read out the parameters from the request object
-and turn them into arguments for a call to the api-page's 
+and turn them into arguments for a call to the api-endpoint's 
 handler function. The function only takes a single argument
 namely the request object to handle.
 
 See HANDLER
-See API-PAGE")
+See API-ENDPOINT")
 
   (function make-request-handler-function
-    "Constructs a standard request handler function for api-pages.
+    "Constructs a standard request handler function for api-endpoints.
 
 This constructs a lambda expression that extracts the
 values from the request's post/get variables and turns
@@ -159,18 +159,18 @@ them into arguments for a call to the given function.
 See REQUEST-HANDLER")
 
   (function call-api-request
-    "Calls the given api-page with the given request.
+    "Calls the given api-endpoint with the given request.
 
 This rebinds *REQUEST*.
 
 See REQUEST-HANDLER
-See ENSURE-API-PAGE")
+See ENSURE-API-ENDPOINT")
 
   (function call-api
-    "Calls the given api-page directly with the supplied arguments.
+    "Calls the given api-endpoint directly with the supplied arguments.
 
 See HANDLER
-See ENSURE-API-PAGE")
+See ENSURE-API-ENDPOINT")
 
   (function define-api
     "Defines a new api endpoint.
@@ -196,7 +196,7 @@ api pages when the path /api/ is requested.
 Api definitions are transformed by options of the type API.
 
 See API-OUTPUT
-See API-PAGE
+See API-ENDPOINT
 See HANDLER
 See REQUEST-HANDLER
 See CALL-API
@@ -211,7 +211,7 @@ the string \"true\", causes a redirect to the referer on
 an api-error rather than displaying a machine-readable
 error output.
 
-See API-PAGE
+See API-ENDPOINT
 See CALL-API-REQUEST"))
 
 ;; conditions.lisp
@@ -541,7 +541,7 @@ See CL-PPCRE:REGISTER-GROUPS-BIND")
   (option (profile:panel :access)
     #1#)
 
-  (api-page ||
+  (api-endpoint ||
     "Fallback api endpoint that signals an API-CALL-NOT-FOUND error.")
 
   (page favicon

@@ -9,15 +9,15 @@
   ())
 
 (defmethod staple:symb-function ((symb symb-api-endpoint))
-  (radiance::handler (radiance:api-page (staple:symb-symbol symb))))
+  (radiance::handler (radiance:api-endpoint (staple:symb-symbol symb))))
 
 (defmethod staple:symb-documentation ((symb symb-api-endpoint))
-  (documentation (staple:symb-symbol symb) 'radiance:api-page))
+  (documentation (staple:symb-symbol symb) 'radiance:api-endpoint))
 
 (defmethod staple:symb-type-order ((symb (eql 'symb-api-endpoint)))
   (+ 1 (staple:symb-type-order 'staple:symb-function)))
 
-(staple:define-simple-converter symb-api-endpoint radiance:api-page)
+(staple:define-simple-converter symb-api-endpoint radiance:api-endpoint)
 
 (defclass symb-uri-dispatcher (staple:symb-function)
   ())

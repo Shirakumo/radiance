@@ -56,10 +56,10 @@
    #:define-api-format
    #:api-output
    #:api-serialize
-   #:api-page
-   #:remove-api-page
-   #:list-api-pages
-   #:api-page
+   #:api-endpoint
+   #:remove-api-endpoint
+   #:list-api-endpoints
+   #:api-endpoint
    #:name
    #:handler
    #:argslist
