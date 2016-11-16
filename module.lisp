@@ -40,11 +40,7 @@
    #:implementation
    #:implements
    #:reset-interface
-   #:define-interface-extension
-   #:defimpl
-   #:i-defun
-   #:i-defmacro
-   #:i-defmethod)
+   #:define-interface-extension)
   ;; api.lisp
   (:export
    #:api
