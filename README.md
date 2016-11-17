@@ -223,6 +223,11 @@ This allows Radiance to identify and associate ASDF system information to your m
 See `virtual-module`, `virtual-module-name`, `define-module`, `define-module-extension`, `delete-module`, `module`, `module-p`, `module-storage`, `module-storage-remove`, `module-identifier`, `module-name`, `current-module`, `module-domain`, `module-permissions`, `module-dependencies`, `module-required-interfaces`, `module-required-systems`, `module-pages`, `module-api-endpoints`, `describe-module`, `find-modules-directory`, `*modules-directory*`, `create-module`
 
 #### Hooks
+One of the mechanisms that Radiance provides to allow integrating modules into each other is hooks. Hooks allow you to run an arbitrary function in response to some kind of event. For example, a forum software might set up a hook that is triggered whenever a new post is created. An extension could then define a trigger on that hook that performs additional tasks.
+
+A hook can have an arbitrary number of triggers defined on it, but you should ensure that a trigger does not take too long, as triggering a hook is a blocking operation that won't finish until all of the triggers have completed. As such, a long-running trigger operation might delay a request response for too long.
+
+Sometimes hooks should function more like switches, where they can be "on" for a long time, until they're turned "off" again later. If new triggers are defined during that time, they should be called automatically. This is what the `define-hook-switch` facilitates. It produces two hooks. Once the first one has been triggered, any trigger that is defined on it later is called automatically until the second hook is triggered. This allows triggers on hooks like `server-start` to function properly even if the trigger is only defined after the server has already been started.
 
 See `list-hooks`, `define-hook`, `remove-hook`, `define-trigger`, `remove-trigger`, `trigger`, `define-hook-switch`
 
