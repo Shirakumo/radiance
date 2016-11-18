@@ -88,6 +88,18 @@
 (defun generate ()
   (staple:generate :radiance-core
                    :name "Radiance"
-                   :packages '(:radiance-core)
+                   :packages '(:radiance-core
+                               :ban
+                               :rate
+                               :admin
+                               :cache
+                               :auth
+                               :session
+                               :user
+                               :profile
+                               :server
+                               :logger
+                               :database
+                               :data-model)
                    :if-exists :supersede
                    :logo "static/radiance.png"))
