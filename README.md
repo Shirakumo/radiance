@@ -11,8 +11,7 @@ Radiance and associated modules and applications are distributed via Quicklisp i
 
 From there on out you should be able to load and use any kind of Radiance module like [Purplish](https://github.com/Shirakumo/purplish) directly via Quicklisp's `quickload`.
 
-## Using Radiance
-### A Simple Example
+## A Simple Example
 The most basic thing you most likely want to do is serve some kind of HTML. So let's work towards that and gradually extend it. Before we can begin, we need to start up Radiance.
 
 ```common-lisp
@@ -109,8 +108,8 @@ Next we need to modify our HTML to actually link to the style sheet. In order to
 
 Refresh the page, and voilà, now it's got some pizzas to it too. You'll probably want an explanation for the whole `uri-to-url` business. Explaining it in full is handled by the sections following this one, but the gist of it is that it ensures that the link to the static file is properly resolved under any setup.
 
-### Radiance Concepts & Parts
-#### URI
+## Radiance Concepts & Parts
+### URI
 One of the most central concepts in Radiance is that of a URI. A URI is an object that consists of a list of domains, an optional port number, and a path (see `uri`). It is essentially a stripped down version of a general URI, and as such doesn't include a schema, query, or fragment part. Another important difference is that the `domains`  URIs are used at several points throughout the framework, both to capture locations and to handle dispatch matching.
 
 Note that URIs are mutable. This is important for performance, as URI modifications have to happen in several parts that lie on the critical path. However, in the usual case it is not expected that URIs are modified outside of a few select functions. Modifying a URI's parts in unexpected ways may lead to strange behaviour.
@@ -129,7 +128,7 @@ You can use `uri-to-url` to turn a URI into a concrete URL. Reversal, encoding, 
 
 See `uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`.
 
-#### Request and Response
+### Request and Response
 In order to encapsulate the data that is sent to  and from, we have the idea of a Request (`request`) and Response (`response`) object. The Request object holds the URI that represents to which location the request goes, and all the data contained in the HTTP payload like post, get, header, and cookie variables. The Response object holds the return-code, headers, cookies, and the actual body data.
 
 During the processing of a request, these two objects must always be present and bound to the `*request*` and `*response*` variables. They encapsulate a lot of very vital information that is necessary to generate dynamic pages. Additionally, the Request contains an opaque `data` table in which you can store arbitrary data. This is useful when you need to exchange pieces of information between individual parts of the system that may be reached during the request execution.
@@ -140,7 +139,7 @@ For the actual handling of a request, see dispatchers, pages, and API endpoints.
 
 See `*request*`, `*response*`, `*default-external-format*`, `*default-content-type*  `, `request`, `uri`, `http-method`, `headers`, `post-data`, `get-data`, `cookies`, `user-agent`, `referer`, `domain`, `remote`, `data`, `issue-time`, `response`, `data`, `return-code`, `content-type`, `external-format`, `headers`, `cookies`, `cookie`, `name`, `value`, `domain`, `path`, `expires`, `http-only`, `secure`, `cookie-header`, `cookie`, `get-var`, `post-var`, `post/get`, `header`, `file`, `redirect`, `serve-file`, `request-run-time`, `*debugger*`, `handle-condition`, `render-error-page`, `execute-request`, `set-data`, `request`
 
-#### Route
+### Route
 Before a Request can be dispatched on, it goes through something called the routing system. Unlike in other frameworks, where 'routes' designate what handles a request, in Radiance a Route (`route`) is a form of URI translator. This part of the system is what's responsible for creating and upholding two "universes", an internal and an external one.
 
 The internal universe is the one actual web applications live in. The external universe is the one the HTTP server and a user of the website lives in. This distinction is necessary in order to allow you to, one one hand, write web applications without having to worry about what a potential setup on a server might look like at some point. You don't have to worry about what kind of domain, port, path setup may be necessary to run your application. On the other hand, it allows you, as a webadmin, to customise and run the system to your exact desires without fear of breaking things.
@@ -151,7 +150,7 @@ Routes can perform arbitrary work. At the most basic level, they are merely func
 
 See `route`, `name`, `direction`, `priority`, `translator`, `route`, `remove-route`, `list-routes`, `define-route`, `define-matching-route`, `define-target-route`, `define-string-route`, `internal-uri`, `external-uri`
 
-#### URI Dispatcher
+### URI Dispatcher
 Finally we come to the part that actually generates content for a request. URI dispatchers are a subclass of URI that also carry a name, a function, and a priority. The live in a priority-sorted list, which is processed whenever a request arrives. The Request's URI is matched against each dispatcher. The function of the first dispatcher that matches is then executed.
 
 And that's it. The dispatcher's function is responsible for setting the necessary values in the Response object to deliver the page content. In order to do this it can either directly set the `data` field of the Response object, or you can return an appropriate value from the function. Radiance only accepts four types of values: `stream`, `pathname`, `string`, and `(array (unsigned-byte 8))`.
@@ -160,7 +159,7 @@ If a URI dispatcher does not have an explicit priority number, its priority over
 
 See `uri-dispatcher`, `name`, `dispatch-function`, `priority`, `uri-dispatcher`, `remove-uri-dispatcher`, `list-uri-dispatchers`, `uri-dispatcher>`, `define-uri-dispatcher`, `dispatch`
 
-#### Page
+### Page
 Pages are what you will likely use to define your actual content serving functions. However, a page is just a uri-dispatcher with some extra functionality in the definition macro that makes things easier on you. Most notably are the extensible options, for which you can find an explanation below.
 
 There are a couple of default pages set up by Radiance itself. First there's the `favicon` and `robots` page, which simply serve the respective files from the `data/` directory. You'll probably want to either provide your own pages for that or update the files on your production server.
@@ -171,7 +170,7 @@ Finally there's the `api` page, which is responsible for handling the dispatch o
 
 See `page`, `remove-page`, `define-page`
 
-#### API Endpoint
+### API Endpoint
 Radiance provides integrated support for REST API definition. This is not just a tacked-on feature, but rather because most modern applications want to provide an API of some kind, and because Radiance advises a certain way of writing your applications that necessarily involves API endpoints.
 
 Conceptually, API endpoints are functions that are callable through a browser request. Their response is then serialised to a format that is readable by the requester, whatever that may be. Important to remember however is that API endpoints should be usable by both users and programs. Radiance encourages this because usually any kind of action that can be performed programmatically through an API will also have to be performed by the user in some way. In order to avoid duplication, the two can be conflated.
@@ -196,7 +195,7 @@ Similarly to pages, API endpoint definitions also accept extensible options that
 
 See `api`, `*default-api-format*`, `*serialize-fallback*`, `api-format`, `remove-api-format`, `list-api-formats`, `define-api-format`, `api-output`, `api-serialize`, `api-endpoint`, `remove-api-endpoint`, `list-api-endpoints`, `api-endpoint`, `name`, `handler`, `argslist`, `request-handler`, `call-api-request`, `call-api`, `define-api`
 
-#### Options
+### Options
 Options are a way of providing an extensible definition macro. This is useful when a framework provides a common way of defining something, but other parts may want to provide extensions to that in order to make common operations shorter. For example, a common task is to restrict a page or API endpoint to people who have the required access credentials.
 
 In order to facilitate this, Radiance provides a rather generic options mechanism. Options are divided up by an option type that designates to which definition macro the option belongs. Radiance provides the `api` and `page` option types out of the box.
@@ -205,7 +204,7 @@ Each option has a keyword for a name and an expander function that must accept a
 
 See `option`, `option-type`, `name`, `expander`, `option`, `remove-option`, `list-options`, `define-option`, `expand-options`
 
-#### Module
+### Module
 The concept of a module is essential to Radiance. It serves as the representation of a "part" of the whole. On a technical level, a module is a package that has special metadata attached to it. It is provided by the `modularize` system and is used to facilitate hooks and triggers, interfaces, and the tracking of a few other pieces of information.
 
 What this means for you is that instead of a standard `defpackage` you should use a `define-module` form to define your primary package. The syntax is the same as `defpackage`, but includes some extra options like `:domain`, which allows you to specify the primary domain on which this module should operate (if any).
@@ -222,7 +221,7 @@ This allows Radiance to identify and associate ASDF system information to your m
 
 See `virtual-module`, `virtual-module-name`, `define-module`, `define-module-extension`, `delete-module`, `module`, `module-p`, `module-storage`, `module-storage-remove`, `module-identifier`, `module-name`, `current-module`, `module-domain`, `module-permissions`, `module-dependencies`, `module-required-interfaces`, `module-required-systems`, `module-pages`, `module-api-endpoints`, `describe-module`, `find-modules-directory`, `*modules-directory*`, `create-module`
 
-#### Hooks
+### Hooks
 One of the mechanisms that Radiance provides to allow integrating modules into each other is hooks. Hooks allow you to run an arbitrary function in response to some kind of event. For example, a forum software might set up a hook that is triggered whenever a new post is created. An extension could then define a trigger on that hook that performs additional tasks.
 
 A hook can have an arbitrary number of triggers defined on it, but you should ensure that a trigger does not take too long, as triggering a hook is a blocking operation that won't finish until all of the triggers have completed. As such, a long-running trigger operation might delay a request response for too long.
@@ -231,23 +230,63 @@ Sometimes hooks should function more like switches, where they can be "on" for a
 
 See `list-hooks`, `define-hook`, `remove-hook`, `define-trigger`, `remove-trigger`, `trigger`, `define-hook-switch`
 
-#### Interface
+### Interface
+In order to avoid becoming monolithic, and in order to allow extensible backends, Radiance includes an interface system. In the most general sense, an interface provides a promise as to how some functions, macros, variables, etc. should work, but does not actually implement them. The actual functionality that makes everything that the interface outlines work is pushed off to an implementation. This allows users to code against an interface and make use of its provided functionality, without tying themselves to any particular backend.
+
+For a concrete example, let's say there's an interface for a database. This is sensible, since there are many different kinds of databases, that all offer many differing ways of interaction, but still all also offer some very common operations: storing data, retrieving data, and modifying the data. Thus we create an interface that offers these common operations. It is then up to an implementation for a specific kind of database to make the actual operations work. As an application writer, you can then make use of the database interface, and with it, make your application automatically work with lots of different databases.
+
+Aside from giving application writers an advantage, the decoupling that the interfaces provide also mean that a system administrator can write their own implementation with relative ease, should their particular requirements not be met by existing implementations. Thanks to the opaqueness of the interfaces, an implementation can both provide a bridge to something that runs in the lisp process, and something that is completely external. This leaves a lot of choice open for the administrator of a production system to allow them to pick exactly what they need.
+
+In practise, interfaces are special kinds of modules, and thus special kinds of packages. As part of their definition, they include a series of definitions for other bindings like functions, variables, etc. Since it is a package, as a user you can use the interface's components just like you would use anything else in any other package. There is no difference. As an implementation writer, you then simply redefine all the definitions that the interface outlines.
+
+In order to actually load a module that makes use of an interface, an implementation for the interface has to be loaded beforehand. Otherwise, macros could not work properly. Thus, in order to allow depending on interfaces in your ASDF system definition without having to refer to a specific implementation, Radiance provides an ASDF extension. This extension makes it possible to add a list like `(:interface :foo)` to your `:depends-on` list. Radiance will then resolve the interface to a concrete implementation thereof when the module is loaded.
+
+Radiance provides a bunch of standard interfaces. Each of those interfaces has at least one standard implementation provided by [radiance-contribs](https://shirakumo.org/projects/radiance-contribs). The interfaces are:
+
+* `ban`  
+  Allows banning users from the site by their IP address.
+* `rate`  
+  Allows rate limitation for access to certain resources.
+* `admin`  
+  Provides an extensible administration site.
+* `cache`  
+  Provides a very simple caching interface.
+* `auth`  
+  Handles everything about authentication and login.
+* `session`  
+  Ensures persistent sessions for users to allow tracking them.
+* `user`  
+  Provides user accounts and permissions.
+* `profile`  
+  Provides an extensible user profile site and user fields.
+* `server`  
+  The interface that bridges to a server to connect Radiance with an external universe.
+* `logger`  
+  A simple logging interface to allow printing debug and information messages.
+* `database`  
+  A flexible database interface that allows both object-stores and relational databases as backends.
+* `data-model`  
+  Provides a very simple object wrapper around database results to allow handling them in a more convenient manner.
 
 See `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-hook`
 
-#### Environment
+### Environment
+In order to permit running multiple instances of Radiance with different setups on the same machine, Radiance provides what it calls an Environment system. The Environment is basically the set of configuration files for Radiance itself and all of the loaded modules. The Radiance configuration also includes the mapping of interface to chosen implementation and thus decides what should be picked if an interface is requested.
+
+The particular environment that is used is chosen at the latest when `startup` is called, and the earliest when a module is loaded. In the latter case, interactive restarts are provided to allow you to pick an environment. This is necessary, as otherwise Radiance won't be able to resolve the interface mapping.
+
+As part of the environment system, Radiance provides you with a configuration system that you can --and probably should-- use for your application. It ensures that the settings are properly multiplexed for each environment, and that the settings are always persistent. It also uses a human-readable storage format, such that the files can be read and modified without requiring any special tools.
+
+See [ubiquitous](https://shinmera.github.io/ubiquitous) for the actual handling and use-instructions of the configuration storage. Just note that instead of the `value` functions, Radiance provides `config` functions.
 
 See `environment-change`, `environment`, `check-environment`, `set-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`
 
-#### Server Management
+### Instance Management
+Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.
+
+While you can start a server manually by using the appropriate interface function, you should not expect applications to run properly if you do it that way. Many of them will expect certain hooks to be called in order to work properly. This is why you should always, unless you exactly know what you're doing, use `startup` and `shutdown` to manage a Radiance instance. The documentation of the two functions should explain exactly which hooks are triggered and in which order.
 
 See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`
-
-### Request Lifecycle
-
-### Modules and Environments
-
-### Interfaces & You
 
 ## Also See
 
@@ -255,3 +294,4 @@ See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `
 * [modularize-interfaces](https://shinmera.github.io/modularize-interfaces) For the interface and implementations extensions
 * [modularize-hooks](https://shinmera.github.io/modularize-hooks) For the hooks and triggers mechanisms
 * [ubiquitous](https://shinmera.github.io/ubiquitous) For configuration management
+* [radiance-contribs](https://shirakumo.org/projects/radiance-contribs) Default interface implementations and other convenience modules for Radiance
