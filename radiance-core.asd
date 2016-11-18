@@ -39,7 +39,7 @@
                (:file "documentation"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
-               :ubiquitous
+               :ubiquitous-concurrent
                :trivial-indent
                :cl-ppcre
                :trivial-mimes
