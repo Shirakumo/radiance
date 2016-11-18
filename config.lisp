@@ -82,8 +82,16 @@
     (ubiquitous:with-local-storage (module :storage (mconfig-storage module))
       (apply #'ubiquitous:defaulted-value default path))))
 
+(defun remmconfig (module &rest path)
+  (let ((module (module module)))
+    (ubiquitous:with-local-storage (module :storage (mconfig-storage module))
+      (apply #'ubiquitous:remvalue path))))
+
 (defmacro config (&rest path)
   `(mconfig ,*package* ,@path))
 
 (defmacro defaulted-config (default &rest path)
   `(defaulted-mconfig ,default ,*package* ,@path))
+
+(defmacro remconfig (&rest path)
+  `(remmconfig ,*package* ,@path))

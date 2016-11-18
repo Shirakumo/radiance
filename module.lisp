@@ -96,8 +96,10 @@
    #:mconfig-storage
    #:mconfig
    #:defaulted-mconfig
+   #:remmconfig
    #:config
-   #:defaulted-config)
+   #:defaulted-config
+   #:remconfig)
   ;; convenience.lisp
   (:export
    #:with-model
