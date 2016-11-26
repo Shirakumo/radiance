@@ -372,105 +372,6 @@ slot.
 
 See REQUEST-ERROR"))
 
-;; config.lisp
-(docs:define-docs
-  (variable *environment-root*
-    "Holds a pathname to the root of the environment configuration files.
-
-The default is decided by UBIQUITOUS:CONFIG-PATHNAME
-
-See UBIQUITOUS:CONFIG-PATHNAME
-See ENVIRONMENT")
-    
-  (variable *environment*
-    "Holds the currently configured environment name, if any.
-
-See ENVIRONMENT")
-
-  (function environment
-    "Accessor to the current environment.
-
-The environment decides the namespace for the configuration
-files of Radiance and all modules that use its configuration
-system.
-
-Note that changing the environment after one has already
-been loaded and modules have been loaded with it, is currently
-not supported and will lead to strange behaviour.
-
-See *ENVIRONMENT-ROOT*
-See *ENVIRONMENT*
-See CHECK-ENVIRONMENT
-See MCONFIG-PATHNAME")
-
-  (function check-environment
-    "Checks whether the environment is properly configured.
-
-If no environment is present, an error of type
-ENVIRONMENT-NOT-SET is signalled. Two restarts will
-be present at the time:
-  CONTINUE         --- Sets the environment to \"default\"
-  SET-ENVIRONMENT  --- Sets the environment to the one
-                       passed in the argument.
-
-See ENVIRONMENT")
-
-  (function mconfig-pathname
-    "Returns the proper pathname to the module according to the current environment.
-
-The path's base will come from *ENVIRONMENT-ROOT*, the rest
-is decided according to the environment and the module.
-
-An environment must have been configured prior to calling
-this function.
-
-See *ENVIRONMENT-ROOT*
-See ENVIRONMENT")
-
-  (function mconfig-storage
-    "Returns the storage object for the given module.
-
-The storage object is cached and will only be loaded
-if it has not previously been loaded. This means that
-unless explicit cache purging occurs, changes to the
-underlying configuration file will be lost on
-subsequent writes.
-
-The object is cached in the module-storage slot :CONFIG
-
-See MODULARIZE:MODULE-STORAGE
-See MCONFIG-PATHNAME
-See UBIQUITOUS:RESTORE
-See UBIQUITOUS:OFFLOAD")
-
-  (function mconfig
-    "Accesses a configuration variable for the given module's storage.
-
-See UBIQUITOUS:VALUE
-See MCONFIG-STORAGE")
-
-  (function defaulted-mconfig
-    "Sets the configuration variable to the given default if it has not been set previously and returns the value.
-
-See UBIQUITOUS:DEFAULTED-VALUE
-See MCONFIG-STORAGE")
-
-  (function config
-    "Shorthand to access the current module's configuration.
-
-This has to be a macro so that the current package can be
-captured.
-
-See MCONFIG")
-
-  (function defaulted-config
-    "Shorthand to set/retrieve a defaulted value from the module's configuration.
-
-This has to be a macro so that the current package can be
-captured.
-
-See DEFAULTED-MCONFIG"))
-
 ;; convenience.lisp
 (docs:define-docs
   (function ensure-query-form
@@ -776,6 +677,105 @@ access the docstring. The find-function is called
 with a single argument, the name of the instance to find.
 
 See DOCUMENTABLE"))
+
+;; environment.lisp
+(docs:define-docs
+    (variable *environment-root*
+              "Holds a pathname to the root of the environment configuration files.
+
+The default is decided by UBIQUITOUS:CONFIG-PATHNAME
+
+See UBIQUITOUS:CONFIG-PATHNAME
+See ENVIRONMENT")
+    
+    (variable *environment*
+              "Holds the currently configured environment name, if any.
+
+See ENVIRONMENT")
+
+  (function environment
+            "Accessor to the current environment.
+
+The environment decides the namespace for the configuration
+files of Radiance and all modules that use its configuration
+system.
+
+Note that changing the environment after one has already
+been loaded and modules have been loaded with it, is currently
+not supported and will lead to strange behaviour.
+
+See *ENVIRONMENT-ROOT*
+See *ENVIRONMENT*
+See CHECK-ENVIRONMENT
+See MCONFIG-PATHNAME")
+
+  (function check-environment
+            "Checks whether the environment is properly configured.
+
+If no environment is present, an error of type
+ENVIRONMENT-NOT-SET is signalled. Two restarts will
+be present at the time:
+  CONTINUE         --- Sets the environment to \"default\"
+  SET-ENVIRONMENT  --- Sets the environment to the one
+                       passed in the argument.
+
+See ENVIRONMENT")
+
+  (function mconfig-pathname
+            "Returns the proper pathname to the module according to the current environment.
+
+The path's base will come from *ENVIRONMENT-ROOT*, the rest
+is decided according to the environment and the module.
+
+An environment must have been configured prior to calling
+this function.
+
+See *ENVIRONMENT-ROOT*
+See ENVIRONMENT")
+
+  (function mconfig-storage
+            "Returns the storage object for the given module.
+
+The storage object is cached and will only be loaded
+if it has not previously been loaded. This means that
+unless explicit cache purging occurs, changes to the
+underlying configuration file will be lost on
+subsequent writes.
+
+The object is cached in the module-storage slot :CONFIG
+
+See MODULARIZE:MODULE-STORAGE
+See MCONFIG-PATHNAME
+See UBIQUITOUS:RESTORE
+See UBIQUITOUS:OFFLOAD")
+
+  (function mconfig
+            "Accesses a configuration variable for the given module's storage.
+
+See UBIQUITOUS:VALUE
+See MCONFIG-STORAGE")
+
+  (function defaulted-mconfig
+            "Sets the configuration variable to the given default if it has not been set previously and returns the value.
+
+See UBIQUITOUS:DEFAULTED-VALUE
+See MCONFIG-STORAGE")
+
+  (function config
+            "Shorthand to access the current module's configuration.
+
+This has to be a macro so that the current package can be
+captured.
+
+See MCONFIG")
+
+  (function defaulted-config
+            "Shorthand to set/retrieve a defaulted value from the module's configuration.
+
+This has to be a macro so that the current package can be
+captured.
+
+See DEFAULTED-MCONFIG"))
 
 ;; handle.lisp
 (docs:define-docs

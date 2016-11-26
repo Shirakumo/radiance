@@ -19,7 +19,7 @@
                (:file "toolkit")
                (:file "conditions")
                (:file "documentable")
-               (:file "config")
+               (:file "environment")
                (:file "interfaces")
                (:file "modules")
                (:file "uri")
