@@ -46,10 +46,12 @@
   (merge-pathnames
    (if (and (module-p module) (module-storage module :config-pathname))
        (module-storage module :config-pathname)
-       (make-pathname :name (if (module-p module)
-                                (module-name module)
-                                (package-name module))
-                      :directory `(:relative "radiance" ,*environment*)))
+       (let ((name (string-downcase
+                    (if (module-p module)
+                        (module-name module)
+                        (package-name module)))))
+         (make-pathname :name name
+                        :directory `(:relative "radiance" ,*environment* ,name))))
    (make-pathname :type (format NIL "conf.~(~a~)" type) :defaults *environment-root*)))
 
 (defmethod ubiquitous:designator-pathname ((designator package) type)
