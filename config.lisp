@@ -6,6 +6,7 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
+(defvar *environment-root* (ubiquitous:config-pathname :lisp))
 (defvar *environment* NIL)
 
 (define-hook environment-change ())
@@ -49,7 +50,7 @@
                                 (module-name module)
                                 (package-name module))
                       :directory `(:relative "radiance" ,*environment*)))
-   (ubiquitous:config-pathname type)))
+   (make-pathname :type (format NIL "conf.~(~a~)" type) :defaults *environment-root*)))
 
 (defmethod ubiquitous:designator-pathname ((designator package) type)
   (mconfig-pathname designator type))

@@ -88,6 +88,7 @@
    #:post-parameter-not-a-file)
   ;; config.lisp
   (:export
+   #:*environment-root*
    #:environment-change
    #:environment
    #:check-environment

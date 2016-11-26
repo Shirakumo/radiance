@@ -374,6 +374,14 @@ See REQUEST-ERROR"))
 
 ;; config.lisp
 (docs:define-docs
+  (variable *environment-root*
+    "Holds a pathname to the root of the environment configuration files.
+
+The default is decided by UBIQUITOUS:CONFIG-PATHNAME
+
+See UBIQUITOUS:CONFIG-PATHNAME
+See ENVIRONMENT")
+    
   (variable *environment*
     "Holds the currently configured environment name, if any.
 
@@ -390,6 +398,7 @@ Note that changing the environment after one has already
 been loaded and modules have been loaded with it, is currently
 not supported and will lead to strange behaviour.
 
+See *ENVIRONMENT-ROOT*
 See *ENVIRONMENT*
 See CHECK-ENVIRONMENT
 See MCONFIG-PATHNAME")
@@ -409,13 +418,13 @@ See ENVIRONMENT")
   (function mconfig-pathname
     "Returns the proper pathname to the module according to the current environment.
 
-The path's base will come from Ubiquitous, the rest
+The path's base will come from *ENVIRONMENT-ROOT*, the rest
 is decided according to the environment and the module.
 
 An environment must have been configured prior to calling
 this function.
 
-See UBIQUITOUS:CONFIG-PATHNAME
+See *ENVIRONMENT-ROOT*
 See ENVIRONMENT")
 
   (function mconfig-storage
