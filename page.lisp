@@ -17,13 +17,14 @@
 
 (defmacro define-page (name uri options &body body)
   (destructuring-bind (uri &optional priority) (enlist uri)
-    (multiple-value-bind (body forms) (expand-options 'page options name body uri)
-      `(eval-when (:compile-toplevel :load-toplevel :execute)
-         ,@forms
-         ,@(when (module)
-             `((pushnew ',name (module-storage ,(module) 'radiance-pages))))
-         (define-uri-dispatcher ,name (,uri ,priority)
-           ,@body)))))
+    (let ((uri (ensure-uri uri)))
+      (multiple-value-bind (body forms) (expand-options 'page options name body uri)
+        `(eval-when (:compile-toplevel :load-toplevel :execute)
+           ,@forms
+           ,@(when (module)
+               `((pushnew ',name (module-storage ,(module) 'radiance-pages))))
+           (define-uri-dispatcher ,name (,uri ,priority)
+             ,@body))))))
 
 (define-delete-hook (module 'radiance-destroy-pages)
   (dolist (page (module-storage module 'radiance-pages))
