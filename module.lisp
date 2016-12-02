@@ -254,6 +254,7 @@
    #:resource-locator
    #:define-resource-type
    #:define-resource-locator
+   #:call-default-locator
    #:resource
    #:domain
    #:api
