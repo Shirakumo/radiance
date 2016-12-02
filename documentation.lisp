@@ -1611,6 +1611,13 @@ Requires a single argument, namely the name of the resource.")
   (resource-type page
     "Returns an internal URI that points to the requested page.
 
+The following values are returned:
+1. URI
+2. QUERY-ALIST
+3. FRAGMENT
+
+The QUERY-ALIST and FRAGMENT can be used as arguments to URI-TO-URL.
+
 By default a page with the name corresponding to the symbol
 of the given name in the module's package is used if available.
 
