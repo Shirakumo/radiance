@@ -180,14 +180,14 @@
             finally (process-filename (get-output-stream-string buf))))
     (make-pathname :name name :type type :directory `(:relative ,@(nreverse path)))))
 
-(defun url-encode (thing &key (stream NIL) (external-format *default-external-format*))
+(defun url-encode (thing &key (stream NIL) (external-format *default-external-format*) (allowed "-._~"))
   (flet ((%url-encode (stream)
            (loop for octet across (babel:string-to-octets thing :encoding external-format)
                  for char = (code-char octet)
                  do (cond ((or (char<= #\0 char #\9)
                                (char<= #\a char #\z)
                                (char<= #\A char #\Z)
-                               (find char "-._~" :test #'char=))
+                               (find char allowed :test #'char=))
                            (write-char char stream))
                           (T (format stream "%~2,'0x" (char-code char)))))))
     (if stream
@@ -207,4 +207,4 @@
 
 (defun format-urlpart (stream arg &rest args)
   (declare (ignore args))
-  (url-encode arg :stream stream))
+  (url-encode arg :stream stream :allowed "-._~!$&()*+,;=:@/"))
