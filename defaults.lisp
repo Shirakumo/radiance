@@ -65,7 +65,7 @@
     table))
 
 ;; Api catchall page
-(define-api || (&rest args) ()
+(define-api || () ()
   (error 'api-call-not-found))
 
 ;; Api standard format
