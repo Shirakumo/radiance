@@ -208,3 +208,9 @@
 (defun format-urlpart (stream arg &rest args)
   (declare (ignore args))
   (url-encode arg :stream stream :allowed "-._~!$&()*+,;=:@/"))
+
+(defun ecompile (name &optional definition)
+  (multiple-value-bind (function warnings-p failure-p) (compile name definition)
+    (if failure-p
+        (error "Compilation of ~a with definition~%  ~s~%failed." name definition)
+        (values function warnings-p failure-p))))

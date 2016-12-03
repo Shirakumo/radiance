@@ -103,7 +103,7 @@
           (arg:arglist (handler page))))
   (unless (request-handler page)
     (setf (slot-value page 'request-handler)
-          (compile NIL (make-request-handler-function (handler page) (argslist page))))))
+          (ecompile NIL (make-request-handler-function (handler page) (argslist page))))))
 
 (defmethod print-object ((api api-endpoint) stream)
   (print-unreadable-object (api stream :type T)

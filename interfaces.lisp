@@ -91,9 +91,8 @@
 
 (defmacro define-implement-hook (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (enlist interface)
-    (let ((interface (interface interface))
-          (hook (find-symbol "IMPLEMENTED" (interface interface))))
+    (let ((hook (find-symbol "IMPLEMENTED" (interface interface))))
       `(eval-when (:compile-toplevel :load-toplevel :execute)
          (define-trigger (,hook ,ident) ()
            (let ((*package* ,*package*)) ;; capture package env
-             (funcall (compile NIL '(lambda () ,@body)))))))))
+             (funcall (ecompile NIL '(lambda () ,@body)))))))))
