@@ -49,6 +49,8 @@
             collect option))))
 
 (defmacro define-option (type name args &body body)
+  (check-type type symbol)
+  (check-type name keyword)
   (let ((handler (gensym "HANDLER")))
     `(eval-when (:compile-toplevel :load-toplevel :execute)
        (flet ((,handler ,args
