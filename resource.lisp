@@ -64,6 +64,7 @@
            (lambda (,moduleg &rest ,argsg)
              (flet ((call-default-locator ()
                       (apply (resource-locator ,type T) ,moduleg ,argsg)))
+               (declare (ignorable call-default-locator))
                (destructuring-bind ,args ,argsg
                  ,@body))))))
 
