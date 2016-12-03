@@ -22,10 +22,10 @@
 ;; To be specced
 (define-interface admin
   (define-resource-locator page (name &rest args))
-  (defun panel (category name))
-  (defun (setf panel) (function category name))
+  (defun list-panels ())
   (defun remove-panel (category name))
-  (defmacro define-panel (name category options &body body)))
+  (defmacro define-panel (name category options &body body))
+  (define-option-type panel))
 
 ;; To be specced
 (define-interface cache
@@ -93,10 +93,10 @@
   (defun name (user))
   (defun fields ())
   (defun add-field (name &key (type :text) default (editable T)))
-  (defun panel (name))
-  (defun (setf panel) (function name))
+  (defun list-panels ())
   (defun remove-panel (name))
-  (defmacro define-panel (name options &body body)))
+  (defmacro define-panel (name options &body body))
+  (define-option-type panel))
 
 ;; To be specced
 (define-interface server

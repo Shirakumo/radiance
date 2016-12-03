@@ -23,3 +23,7 @@
      (declare (ignore ,@(lambda-fiddle:extract-lambda-vars args)))
      (error "Resource locator ~a not implemented for interface ~a!"
             ,(string-upcase type) ,(package-name interface))))
+
+(define-component-expander define-option-type (interface name)
+  `',(or (find-symbol (string name) interface)
+         (intern (string name) interface)))

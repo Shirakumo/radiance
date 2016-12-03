@@ -159,7 +159,8 @@
   (:export
    #:define-hook
    #:define-hook-switch
-   #:define-resource-locator)
+   #:define-resource-locator
+   #:define-option-type)
   ;; interfaces.lisp
   (:export
    #:find-implementation
