@@ -147,6 +147,9 @@
   (defun iterate (collection query function &key fields (skip 0) amount sort accumulate))
   (defun select (collection query &key fields (skip 0) amount sort))
   (defun count (collection query))
+  ;; FIXME: How to deal with selecting data by ID when the ID datatype is unspecified?
+  ;;        As in, if the ID comes from the web (always string-coerced), how do we know
+  ;;        what format to convert it to to retrieve the associated data?
   (defun insert (collection data))
   (defun remove (collection query &key (skip 0) amount sort))
   (defun update (collection query data &key (skip 0) amount sort))
