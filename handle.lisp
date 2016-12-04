@@ -10,10 +10,13 @@
 
 (defun handle-condition (condition)
   (l:warn :radiance "Handling stray condition: ~a" condition)
-  (cond (*debugger*
-         (invoke-debugger condition))
-        (T
-         (invoke-restart 'set-data (render-error-page condition)))))
+  (restart-case
+      (if *debugger*
+          (invoke-debugger condition)
+          (abort))
+    (abort ()
+      :report "Render error page."
+      (invoke-restart 'set-data (render-error-page condition)))))
 
 (defun render-error-page (condition)
   (setf (return-code *response*) 500)
