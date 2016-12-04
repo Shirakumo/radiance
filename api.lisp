@@ -148,7 +148,9 @@
          (subpath (subseq path (1+ slashpos)))
          (api-endpoint (or (api-endpoint subpath) (api-endpoint ""))))
     (handler-case
-        (call-api-request api-endpoint *request*)
+        (handler-bind ((error (lambda (err)
+                                (when *debugger* (invoke-debugger err)))))
+          (call-api-request api-endpoint *request*))
       (api-error (err)
         (let ((message (or (message err)
                            (princ-to-string err))))
