@@ -140,3 +140,12 @@
                  (T (port uri)))))
     (format NIL "~a://~{~a~^.~}~@[:~a~]/~/radiance-core::format-urlpart/~@[?~/radiance-core::format-query/~]~@[#~/radiance-core::format-urlpart/~]"
             schema (reverse (domains uri)) port (or (path uri) "") query fragment)))
+
+(defun make-url (&key domains port path schema query fragment (representation :external))
+  (uri-to-url (make-uri :domains domains
+                        :port port
+                        :path path)
+              :representation representation
+              :schema schema
+              :query query
+              :fragment fragment))

@@ -318,7 +318,8 @@
    #:uri-matches
    #:merge-uris
    #:represent-uri
-   #:uri-to-url))
+   #:uri-to-url
+   #:make-url))
 
 (define-module #:radiance-user
   (:nicknames #:rad-user)

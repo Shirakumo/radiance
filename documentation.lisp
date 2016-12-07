@@ -2183,4 +2183,16 @@ The path, query, and fragment are url-encoded as
 necessary.
 
 See REPRESENT-URI
-See URL-ENCODE"))
+See URL-ENCODE
+See MAKE-URL")
+
+  (function make-url
+    "A shorthand function for constructing URL strings.
+
+This basically encompasses the combination of a MAKE-URI
+and a URI-TO-URL rather directly. The representation is
+set to :EXTERNAL for convenience as that is usually the
+preferred option for use-cases of this function.
+
+See MAKE-URI
+See URI-TO-URL"))
