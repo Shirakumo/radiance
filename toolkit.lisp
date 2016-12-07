@@ -12,6 +12,10 @@
 (defun enlist (var &rest args)
   (if (listp var) var (list* var args)))
 
+(defun starts-with (start string)
+  (and (<= (length start) (length string))
+       (string= start string :end2 (length start))))
+
 (declaim (inline universal-to-unix-time))
 (defun universal-to-unix-time (universal-time)
   (- universal-time +unix-epoch-difference+))

@@ -205,6 +205,10 @@
                ;; since we're trying to cross-reference a resource.
                (setf (path uri) (format NIL "!/~a/~a" last (path uri))
                      (domains uri) (butlast (domains uri))))
+              ((starts-with "api/" (path uri))
+               ;; API requests need to retain the virtual module in case of
+               ;; redirects back.
+               (setf (path uri) (format NIL "!/~a/~a" virtual (path uri))))
               (T
-               ;; Static resource refer, no change.
+               ;; Other refer, no change.
                ))))))
