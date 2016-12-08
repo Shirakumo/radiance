@@ -203,6 +203,11 @@ See CALL-API
 See CALL-API-REQUEST
 See EXPAND-OPTIONS")
 
+  (function api-error
+    "Shorthand for (ERROR 'API-ERROR :MESSAGE (FORMAT NIL ..))
+
+See API-ERROR")
+
   (page api
     "Standard page to handle and dispatch to API endpoints.
 

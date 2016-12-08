@@ -141,6 +141,9 @@
   (dolist (page (module-storage module 'radiance-apis))
     (remove-api-endpoint page)))
 
+(defmacro api-error (format-string &rest format-args)
+  `(error 'api-error :message (format NIL ,format-string ,@format-args)))
+
 ;;; Actual page handler
 (define-uri-dispatcher api ("/api/.*" 100)
   (let* ((path (path (uri *request*)))

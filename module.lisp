@@ -62,7 +62,8 @@
    #:request-handler
    #:call-api-request
    #:call-api
-   #:define-api)
+   #:define-api
+   #:api-error)
   ;; conditions.lisp
   (:export
    #:*debugger*
