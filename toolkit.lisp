@@ -152,7 +152,7 @@
     `(load-time-value
       (progn
         (pushnew ,perm (module-permissions ,(module)) :test #'string=)
-        ,perm))))
+        ',tree))))
 
 (defun copy-hash-table (table &key (test (hash-table-test table))
                                    (size (hash-table-size table))
