@@ -23,7 +23,8 @@
    #:module-storage-remove
    #:module-identifier
    #:module-name
-   #:current-module)
+   #:current-module
+   #:list-modules)
   ;; re-export from hooks
   (:export
    #:list-hooks
