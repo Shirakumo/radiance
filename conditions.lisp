@@ -25,8 +25,9 @@ configuration and use the SETF ENVIRONMENT restart to set an explicit environmen
   (:report (lambda (c s) (format s "An internal error has ocurred.~@[ ~a~]" (message c)))))
 
 (define-condition request-error (radiance-error)
-  ((request :initarg :request :initform (symbol-value '*request*)))
-  (:report (lambda (c s) (format s "An error has ocurred while processing the request ~a.~@[ ~a~]"
+  ((request :initarg :request :initform (when (boundp '*request*)
+                                          (symbol-value '*request*))))
+  (:report (lambda (c s) (format s "An error has ocurred while processing~@[ the request ~a~].~@[ ~a~]"
                                  (slot-value c 'request) (message c)))))
 
 (define-condition request-empty (request-error) ()
