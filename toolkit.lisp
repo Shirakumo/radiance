@@ -204,8 +204,9 @@
   (loop for cons on arg
         for (key . val) = (car cons)
         do (url-encode key :stream stream)
-           (write-char #\= stream)
-           (url-encode val :stream stream)
+           (when (or* val)
+             (write-char #\= stream)
+             (url-encode val :stream stream))
            (when (cdr cons)
              (write-char #\& stream))))
 
