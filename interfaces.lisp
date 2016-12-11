@@ -89,6 +89,7 @@
      (define-hook-switch implemented unimplemented ())
      ,@components))
 
+;; FIXME: Rename to define-implement-trigger for consistency
 (defmacro define-implement-hook (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (enlist interface)
     (let ((hook (find-symbol "IMPLEMENTED" (interface interface))))
