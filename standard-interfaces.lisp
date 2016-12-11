@@ -86,7 +86,7 @@
   (defun actions (user n &key (public T) oldest-first))
   (define-hook remove (username))
   (define-hook action (user action public))
-  (define-hook ready ()))
+  (define-hook-switch ready unready ()))
 
 ;; To be specced
 (define-interface profile
