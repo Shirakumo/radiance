@@ -15,9 +15,9 @@
 
 ;; To be specced
 (define-interface rate
-  (defmacro define-rate (name (time-left &key (timeout 60) (limit 1)) &body on-limit-exceeded))
-  (defun rate-left (rate &key (ip (remote *request*))))
-  (defmacro with-rate-limitation ((rate) &body body)))
+  (defmacro define-limit (name (time-left &key (timeout 60) (limit 1)) &body on-limit-exceeded))
+  (defun left (rate &key (ip (remote *request*))))
+  (defmacro with-limitation ((rate) &body body)))
 
 ;; To be specced
 (define-interface admin
