@@ -30,9 +30,6 @@
     (load-implementation 'logger))
 
   (l:info :radiance "Starting up.")
-  (dolist (definition (config :routes))
-    (eval `(define-string-route ,@definition)))
-  
   (l:info :radiance "Ensuring prerequisites.")
   (unless (implementation 'server)
     (load-implementation 'server))

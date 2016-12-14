@@ -157,6 +157,16 @@
 (define-trigger (environment-change 'compile-domain-internalizers) ()
   (setf *domain-internalizers* (compile-domain-internalizers)))
 
+(defvar *config-routes* ())
+(define-trigger (environment-change 'compile-config-routes) ()
+  (loop for (name direction) in *config-routes*
+        do (remove-route name direction))
+  (setf *config-routes* NIL)
+  (loop for (name direction from to) in (config :routes)
+        do (with-simple-restart (continue "Ignore the route definition.")
+             (funcall (ecompile NIL `(lambda () (define-string-route ,name ,direction ,from ,to))))
+             (push (list name direction) *config-routes*))))
+
 (define-route domain (:mapping most-positive-fixnum) (uri)
   (loop for internalizer in *domain-internalizers*
         until (multiple-value-bind (domain subdomains) (funcall internalizer uri)
