@@ -726,6 +726,15 @@ be present at the time:
 
 See ENVIRONMENT")
 
+  (function reload-environment
+            "Reloads the current environment from disk.
+
+Note that configuration files are reloaded lazily, with the
+exception of the radiance-core configuration.
+
+See CHECK-ENVIRONMENT
+See ENVIRONMENT")
+
   (function mconfig-pathname
             "Returns the proper pathname to the module according to the current environment.
 

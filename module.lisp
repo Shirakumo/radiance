@@ -88,21 +88,6 @@
    #:unparsable-uri-string
    #:no-such-post-parameter
    #:post-parameter-not-a-file)
-  ;; config.lisp
-  (:export
-   #:*environment-root*
-   #:environment-change
-   #:environment
-   #:check-environment
-   #:set-environment
-   #:mconfig-pathname
-   #:mconfig-storage
-   #:mconfig
-   #:defaulted-mconfig
-   #:remmconfig
-   #:config
-   #:defaulted-config
-   #:remconfig)
   ;; convenience.lisp
   (:export
    #:with-model
@@ -136,6 +121,21 @@
   (:export
    #:documentable
    #:define-documentable)
+  ;; environment.lisp
+  (:export
+   #:*environment-root*
+   #:environment-change
+   #:environment
+   #:check-environment
+   #:reload-environment
+   #:mconfig-pathname
+   #:mconfig-storage
+   #:mconfig
+   #:defaulted-mconfig
+   #:remmconfig
+   #:config
+   #:defaulted-config
+   #:remconfig)
   ;; handle.lisp
   (:export
    #:*debugger*

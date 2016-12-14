@@ -41,6 +41,10 @@
       :interactive (lambda () (read *query-io*))
       (setf (environment) environment))))
 
+(defun reload-environment ()
+  (check-environment)
+  (setf (environment) (environment)))
+
 (defun mconfig-pathname (module &optional (type :lisp))
   (check-environment)
   (merge-pathnames
