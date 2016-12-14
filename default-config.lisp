@@ -13,4 +13,5 @@
  (:server
   (:domains . ("radiance" "localhost" "127.0.0.1" "::1"))
   (:instances . (((:port . 8080)))))
- (:startup :r-welcome :r-simple-errors))
+ (:startup :r-welcome :r-simple-errors)
+ (:routes))
