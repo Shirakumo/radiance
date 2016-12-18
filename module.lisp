@@ -116,7 +116,8 @@
    #:list-uri-dispatchers
    #:uri-dispatcher>
    #:define-uri-dispatcher
-   #:dispatch)
+   #:dispatch
+   #:abort-handling)
   ;; documentable.lisp
   (:export
    #:documentable

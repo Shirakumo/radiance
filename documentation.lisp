@@ -645,13 +645,16 @@ See DISPATCH")
   (function dispatch
     "Calls the appropriate uri-dispatcher that is set up to handle the given uri.
 
-Only a single uri-dispatcher will be called, if any.
-In order for a dispatcher to be called, the uri must
-match the dispatcher's by URI-MATCHES. In the case
-where two uri-dispatchers have a matching uri, then
-the one with the higher priority will be executed.
-This is achived by simply following the order present
-in the *uri-priority* vector.
+Usually, only a single uri-dispatcher will be called, if any.
+In order for a dispatcher to be called, the uri must match
+the dispatcher's by URI-MATCHES. In the case where two
+uri-dispatchers have a matching uri, then the one with the
+higher priority will be executed. This is achived by simply
+following the order present in the *URI-PRIORITY* vector.
+
+A uri-dispatcher that has been dispatched may call the
+ABORT-HANDLING restart, in which case it is considered as 
+not having matched, and the dispatching continues.
 
 If no matching uri-dispatcher is available, the function
 in *URI-FALLBACK* will be called instead.
@@ -659,8 +662,17 @@ in *URI-FALLBACK* will be called instead.
 See URI-MATCHES
 See URI-DISPATCHER>
 See DISPATCH-FUNCTION
+See ABORT-HANDLING
 See *URI-PRIORITY*
-See *URI-FALLBACK*"))
+See *URI-FALLBACK*")
+
+  (function abort-handling
+    "Aborts the current handling and continues dispatch.
+
+This is a wrapper function that simply invokes the
+ABORT-HANDLING restart.
+
+See DISPATCH"))
 
 ;; documentable.lisp
 (docs:define-docs

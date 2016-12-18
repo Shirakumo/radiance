@@ -84,5 +84,9 @@
   (declare (optimize speed))
   (loop for dispatcher across *uri-priority*
         when (uri-matches uri dispatcher)
-        do (return (funcall (dispatch-function dispatcher)))
+        do (with-simple-restart (abort-handling "Abort the current handler and continue dispatching.")
+             (return (funcall (dispatch-function dispatcher))))
         finally (return (funcall *uri-fallback*))))
+
+(defun abort-handling ()
+  (invoke-restart 'abort-handling))
