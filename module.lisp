@@ -169,7 +169,7 @@
    #:find-implementation
    #:load-implementation
    #:define-interface
-   #:define-implement-hook)
+   #:define-implement-trigger)
   ;; modules.lisp
   (:export
    #:module-domain

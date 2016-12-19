@@ -984,9 +984,9 @@ thus conditionally compile code without needing to incur a
 hard dependency.
 
 See MODULARIZE-INTERFACES:DEFINE-INTERFACE
-See DEFINE-IMPLEMENT-HOOK")
+See DEFINE-IMPLEMENT-TRIGGER")
 
-  (function define-implement-hook
+  (function define-implement-trigger
     "Defines a trigger that will cause the body to be compiled and run once the interface becomes implemented.
 
 This is useful if you want to provide parts of a package

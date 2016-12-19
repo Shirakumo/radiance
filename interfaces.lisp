@@ -83,16 +83,14 @@
             #+:quicklisp
             (ql:quickload implementation)))))))
 
-;; FIXME: Currently we have no way of triggering the unimplemented hook...
 (defmacro define-interface (name &body components)
   `(interfaces:define-interface ,name
      (define-hook-switch implemented unimplemented ())
      ,@components))
 
-;; FIXME: Rename to define-implement-trigger for consistency
-(defmacro define-implement-hook (interface &body body)
+(defmacro define-implement-trigger (interface &body body)
   (destructuring-bind (interface &optional (ident *package*)) (enlist interface)
-    (let ((hook (find-symbol "IMPLEMENTED" (interface interface))))
+    (let ((hook (find-symbol (string :implemented) (interface interface))))
       `(eval-when (:compile-toplevel :load-toplevel :execute)
          (define-trigger (,hook ,ident) ()
            (let ((*package* ,*package*)) ;; capture package env
