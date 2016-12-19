@@ -80,7 +80,6 @@
   (defun check (user branch))
   (defun grant (user &rest branches))
   (defun revoke (user &rest branches))
-  ;; FIXME: how to cope with retroactively granting default permissions?
   (defun add-default-permissions (&rest branch))
   (defun action (user action public))
   (defun actions (user n &key (public T) oldest-first))
