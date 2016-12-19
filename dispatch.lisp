@@ -80,7 +80,8 @@
                              :documentation ,(form-fiddle:lambda-docstring
                                               `(lambda () ,@body))))))))
 
-;; FIXME: continuation based dispatching (CALL-NEXT-DISPATCHER)
+;; TODO: Continuation based dispatching (CALL-NEXT-DISPATCHER)
+;;       Only do this if it doesn't slow down the common case.
 (defun dispatch (uri)
   (declare (optimize speed))
   (loop for dispatcher across *uri-priority*
