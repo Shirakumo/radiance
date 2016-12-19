@@ -118,6 +118,7 @@
   (defun fatal (category log-string &rest format-args)))
 
 ;; As per spec (needs updating)
+;; FIXME: database collection names should accept symbols only, and respect packages.
 (define-interface (database db)
   (define-condition condition (radiance-condition)
     ())

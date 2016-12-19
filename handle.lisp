@@ -23,7 +23,8 @@
   (setf (content-type *response*) "text/plain")
   (format NIL "Internal error: ~s" condition))
 
-;;; FIXME!!! Add support for STREAMs in data of response.
+;; FIXME: Add support for STREAMs in data of response to the implementations.
+;; FIXME: Access to the input stream of the body without parsing, somehow?
 (define-hook request (request response))
 (defun execute-request (request &optional (response (make-instance 'response)))
   (declare (optimize (speed 3)))
