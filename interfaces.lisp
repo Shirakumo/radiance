@@ -41,8 +41,14 @@
 
 (defmethod asdf:perform :after ((op asdf:load-op) (module module))
   (loop for interface in (module-storage (module (virtual-module-name module)) :implements)
-        do (trigger (find-symbol "IMPLEMENTED" (interface interface)))
+        do (trigger (find-symbol (string :implemented) (interface interface)))
            (future l debug :interfaces "~a now implemented by ~a" (module-name interface) (module-name (virtual-module-name module)))))
+
+(define-delete-hook (module 'unimplement)
+  (loop for interface in (module-storage module :implements)
+        do (trigger (find-symbol (string :unimplemented) (interface interface)))
+           (reset-interface (interface interface))
+           (future l debug :interfaces "~a now no longer implemented by ~a" (module-name interface) (module-name (virtual-module-name module)))))
 
 (defun find-implementation (interface &optional (system T))
   (check-environment)
