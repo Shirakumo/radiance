@@ -6,7 +6,7 @@
 
 (in-package #:cl-user)
 (asdf:defsystem radiance-core
-  :class "modularize:module"
+  :class "modularize:virtual-module"
   :defsystem-depends-on (:modularize)
   :module-name "RADIANCE-CORE"
   :version "0.0.1"

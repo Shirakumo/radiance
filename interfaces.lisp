@@ -7,10 +7,10 @@
 (in-package #:org.shirakumo.radiance.core)
 
 ;; Subclass so we can have another AFTER method on ASDF:PERFORM
-(defclass module (modularize:module) ())
+(defclass virtual-module (modularize:virtual-module) ())
 ;; Redefine function too since we shadowed that binding
-(defun module (&optional module)
-  (modularize:module module))
+(defun virtual-module (module)
+  (modularize:virtual-module module))
 
 ;; Ho boy here we go!
 ;; Hack into parse-dependency-def and add the interface
@@ -27,7 +27,7 @@
 
 (if (find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf)
     (eval
-     `(defmethod ,(find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf) ((module module) (combinator (eql :interface)) args)
+     `(defmethod ,(find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf) ((virtual-module virtual-module) (combinator (eql :interface)) args)
         (find-implementation (first args))))
     (error "Radiance cannot support this version of ASDF. Sorry!"))
 
@@ -39,10 +39,10 @@
            (load-implementation ,(string package-designator)))
          (funcall ,symbol ,@args)))))
 
-(defmethod asdf:perform :after ((op asdf:load-op) (module module))
-  (loop for interface in (module-storage (module (virtual-module-name module)) :implements)
+(defmethod asdf:perform :after ((op asdf:load-op) (virtual-module virtual-module))
+  (loop for interface in (module-storage (module (virtual-module-name virtual-module)) :implements)
         do (trigger (find-symbol (string :implemented) (interface interface)))
-           (future l debug :interfaces "~a now implemented by ~a" (module-name interface) (module-name (virtual-module-name module)))))
+           (future l debug :interfaces "~a now implemented by ~a" (module-name interface) (module-name (virtual-module-name virtual-module)))))
 
 (define-delete-hook (module 'unimplement)
   (loop for interface in (module-storage module :implements)

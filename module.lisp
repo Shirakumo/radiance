@@ -9,7 +9,7 @@
   (:use #:cl #:modularize #:modularize-interfaces #:modularize-hooks
         #:lambda-fiddle)
   (:nicknames #:radiance #:org.shirakumo.radiance.core)
-  (:shadow #:define-interface #:module)
+  (:shadow #:define-interface #:virtual-module)
   ;; re-export from modularize
   (:export
    #:virtual-module

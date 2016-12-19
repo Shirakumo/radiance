@@ -80,6 +80,7 @@
                              :documentation ,(form-fiddle:lambda-docstring
                                               `(lambda () ,@body))))))))
 
+;; FIXME: continuation based dispatching (CALL-NEXT-DISPATCHER)
 (defun dispatch (uri)
   (declare (optimize speed))
   (loop for dispatcher across *uri-priority*

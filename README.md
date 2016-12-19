@@ -213,7 +213,7 @@ The module system also allows the tying of an ASDF system to a module. If that i
 
 ```commonlisp
 :defsystem-depends-on (:radiance)
-:class "radiance:module"
+:class "radiance:virtual-module"
 :module-name "MY-MODULE"
 ```
 
