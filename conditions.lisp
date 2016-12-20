@@ -7,7 +7,9 @@
 (in-package #:org.shirakumo.radiance.core)
 
 (define-condition radiance-condition (condition)
-  ((message :initarg :message :initform NIL :accessor message)))
+  ((message :initarg :message :initform NIL :accessor message))
+  (:report (lambda (c s) (format s "Condition of type ~s.~@[~%~a~]"
+                                 (type-of c) (message c)))))
 
 (define-condition radiance-error (error radiance-condition)
   ())
