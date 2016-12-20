@@ -80,36 +80,36 @@
       (is = 2 (db:count "test" (db:query :all)))
       (of-type db:id (db:ensure-id (princ-to-string id))))
     ;; Test count and primitive query
-    (dotimes (i 100)
-      (of-type db:id (db:insert "test" `((number . ,(+ 5 i))
+    (dotimes (i 10)
+      (of-type db:id (db:insert "test" `((number . ,i)
                                          (name . "Tester")))))
-    (is = 102 (db:count "test" (db:query :all)))
-    (is = 100 (db:count "test" (db:query (:= 'name "Tester"))))
-    (is =  50 (db:count "test" (db:query (:< 'number 50))))
+    (is = 12 (db:count "test" (db:query :all)))
+    (is = 10 (db:count "test" (db:query (:= 'name "Tester"))))
+    (is =  7 (db:count "test" (db:query (:< 'number 5))))
     ;; Test emptying
     (finish (db:empty "test"))
     (is = 0 (db:count "test" (db:query :all)))
     ;; Test removal
-    (dotimes (i 100)
+    (dotimes (i 10)
       (of-type db:id (db:insert "test" `((number . ,i)
                                          (name . "Tester")))))
-    (is = 100 (db:count "test" (db:query :all)))
-    (finish (db:remove "test" (db:query (:= 'number 50))))
-    (is =  99 (db:count "test" (db:query :all)))
-    (is =   0 (db:count "test" (db:query (:= 'number 50))))
+    (is = 10 (db:count "test" (db:query :all)))
+    (finish (db:remove "test" (db:query (:= 'number 5))))
+    (is =  9 (db:count "test" (db:query :all)))
+    (is =  0 (db:count "test" (db:query (:= 'number 5))))
     ;; Test update
-    (finish (db:update "test" (db:query (:= 'number 99)) '((number . 50))))
-    (is =  99 (db:count "test" (db:query :all)))
-    (is =   1 (db:count "test" (db:query (:= 'numer 50))))
+    (finish (db:update "test" (db:query (:= 'number 9)) '((number . 5))))
+    (is =  9 (db:count "test" (db:query :all)))
+    (is =  1 (db:count "test" (db:query (:= 'number 5))))
     ;; Test selection
-    (is =  99 (length (db:select "test" (db:query :all))))
+    (is =  9 (length (db:select "test" (db:query :all))))
     (dolist (record (db:select "test" (db:query :all)))
-      (is equal "Tester" (gethash record "name")))
+      (is equal "Tester" (gethash "name" record)))
     (loop for record in (db:select "test" (db:query :all) :sort '((number :asc)))
-          for i from 0 below 99
+          for i from 0 below 9
           do (is = i (gethash "number" record)))
     (loop for record in (db:select "test" (db:query :all) :sort '((number :asc)) :skip 5)
-          for i from 5 below 99
+          for i from 5 below 9
           do (is = i (gethash "number" record)))
     (loop for record in (db:select "test" (db:query :all) :sort '((number :asc)) :amount 5)
           for i from 0 below 5
@@ -117,24 +117,31 @@
     ;; Test iteration
     (db:iterate "test" (db:query :all)
                 (lambda (record)
-                  (of-type (integer 0 98) (gethash "number" record))
+                  (of-type (integer 0 8) (gethash "number" record))
                   (is equal "Tester" (gethash "name" record))
                   (false (gethash "text" record))))
     (is equal
-        (loop repeat 99 collect "Tester")
+        (loop repeat 9 collect "Tester")
         (db:iterate "test" (db:query :all) (lambda (r) (gethash "name" r)) :accumulate T))
     (is =
-        (loop for i from 0 below 99 sum i)
+        (loop for i from 0 below 9 sum i)
         (reduce #'+ (db:iterate "test" (db:query :all) (lambda (r) (gethash "number" r)) :accumulate T)))
     ;; Test update (again)
-    (finish (db:update "test" (db:query (:< 'number 50)) '(("name" . "retseT"))))
-    (is = 50 (db:count "test" (db:query (:= 'name "retseT"))))
+    (finish (db:update "test" (db:query (:< 'number 5)) '(("name" . "retseT"))))
+    (is = 5 (db:count "test" (db:query (:= 'name "retseT"))))
     ;; Test removal (again)
-    (finish (db:remove "test" (db:query (:= 'name "retseT")) :limit 5))
-    (is = 45 (db:count "test" (db:query (:= 'name "retseT"))))))
+    (finish (db:remove "test" (db:query (:= 'name "retseT")) :amount 2))
+    (is = 3 (db:count "test" (db:query (:= 'name "retseT"))))
+    ;; Test ID (again)
+    (let ((id (db:insert "test" '((number . 1)
+                                  (name . "foo")
+                                  (text . "bar")))))
+      (is = 1 (gethash "number" (first (db:select "test" (db:query (:= '_id id))))))
+      (is equal "foo" (gethash "name" (first (db:select "test" (db:query (:= '_id id))))))
+      (is equal "bar" (gethash "text" (first (db:select "test" (db:query (:= '_id id)))))))))
 
-;; (define-test transactions
-;;   :parent database
-;;   :depends-on (record)
-;;   (with-clean-database ("test")
-;;     ))
+(define-test transactions
+  :parent database
+  :depends-on (record)
+  (with-clean-database ("test")
+    (db:create "test" '((number :integer)))))

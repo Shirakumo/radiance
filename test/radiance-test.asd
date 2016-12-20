@@ -30,5 +30,6 @@
                (:interface :database)
                (:interface :data-model)
                :parachute
-               :alexandria)
-  :perform (asdf:test-op (op c) (uiop:symbol-call :parachute :test :radiance-test)))
+               :alexandria
+               :verbose)
+  :perform (asdf:test-op (op c) (uiop:symbol-call :radiance-test :run-test)))

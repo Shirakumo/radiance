@@ -6,10 +6,13 @@
 
 (in-package #:org.shirakumo.radiance.test)
 
+(defun run-test (&key (report 'parachute:plain))
+  (v:with-muffled-logging ()
+    (parachute:test 'radiance :report report)))
+
 (define-test radiance
   (unless (radiance:started-p)
-    (radiance:startup))
-  (setf (v:repl-categories) NIL))
+    (radiance:startup)))
 
 (define-test interfaces
   :parent radiance)
