@@ -55,7 +55,7 @@
   (let* ((interface (interface interface))
          (configured-implementation (config :interfaces (intern (string (module-name interface)) :KEYWORD))))
     (unless configured-implementation
-      (error 'interface-implementation-not-set :requested interface))
+      (error 'interface-implementation-not-set :interface interface))
     ;; If quicklisp is available, the system might be loadable, but
     ;; may not have been installed yet. Check for this and install if
     ;; necessary.
