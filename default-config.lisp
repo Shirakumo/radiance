@@ -1,4 +1,5 @@
 ((:interfaces
+  (:ban . "r-simple-ban")
   (:cache . "r-simple-cache")
   (:logger . "i-verbose")
   (:user . "r-simple-users")
