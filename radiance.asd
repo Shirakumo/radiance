@@ -12,4 +12,5 @@
   :description "A web application environment."
   :serial T
   :depends-on (:modularize
-               :radiance-core))
+               :radiance-core)
+  :in-order-to ((asdf:test-op (asdf:test-op :radiance-core))))

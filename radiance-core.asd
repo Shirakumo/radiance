@@ -48,4 +48,5 @@
                :form-fiddle
                :bordeaux-threads
                :documentation-utils
-               :babel))
+               :babel)
+  :in-order-to ((asdf:test-op (asdf:test-op :radiance-test))))
