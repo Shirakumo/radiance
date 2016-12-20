@@ -144,4 +144,22 @@
   :parent database
   :depends-on (record)
   (with-clean-database ("test")
-    (db:create "test" '((number :integer)))))
+    (db:create "test" '((number :integer)))
+    (finish (db:with-transaction ()
+              (db:insert "test" '((number . 0)))))
+    (is = 1 (db:count "test" (db:query :all)))
+    (fail (db:with-transaction ()
+            (db:insert "test" '((number . 1)))
+            (error "Exit transaction")))
+    (is = 1 (db:count "test" (db:query :all)))))
+
+(define-test benchmark
+  :parent database
+  :depends-on (record)
+  (with-clean-database ("test")
+    (db:create "test" '((number :integer)))
+    (finish (dotimes (i 1000)
+              (db:insert "test" '((number . 0)))))
+    (finish (db:count "test" (db:query :all)))
+    (finish (db:select "test" (db:query (:= 'number 1))))
+    (finish (db:remove "test" (db:query :all) :amount 500))))
