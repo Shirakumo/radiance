@@ -88,13 +88,6 @@
    #:unparsable-uri-string
    #:no-such-post-parameter
    #:post-parameter-not-a-file)
-  ;; convenience.lisp
-  (:export
-   #:with-model
-   #:with-model-fields
-   #:with-model-save
-   #:do-models
-   #:with-actions)
   ;; defaults.lisp
   (:export
    #:||
@@ -302,7 +295,8 @@
    #:or*
    #:perm
    #:parse-path-safely
-   #:url-encode)
+   #:url-encode
+   #:with-actions)
   ;; uri.lisp
   (:export
    #:uri

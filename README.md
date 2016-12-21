@@ -265,8 +265,6 @@ Radiance provides a bunch of standard interfaces. Each of those interfaces has a
   A simple logging interface to allow printing debug and information messages.
 * `database`  
   A flexible database interface that allows both object-stores and relational databases as backends.
-* `data-model`  
-  Provides a very simple object wrapper around database results to allow handling them in a more convenient manner.
 
 See `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`
 

@@ -34,7 +34,6 @@
                (:file "standard-interfaces")
                (:file "handle")
                (:file "defaults")
-               (:file "convenience")
                (:file "init")
                (:file "documentation"))
   :depends-on (:modularize-hooks

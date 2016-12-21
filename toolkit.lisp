@@ -12,6 +12,9 @@
 (defun enlist (var &rest args)
   (if (listp var) var (list* var args)))
 
+(defun delist (var &optional (n 0))
+  (if (listp var) (nth n var) var))
+
 (defun starts-with (start string)
   (and (<= (length start) (length string))
        (string= start string :end2 (length start))))
@@ -219,3 +222,18 @@
     (if failure-p
         (error "Compilation of ~a with definition~%  ~s~%failed." name definition)
         (values function warnings-p failure-p))))
+
+(defmacro with-actions ((error info) action-clauses &body body)
+  (let ((action (gensym "ACTION")))
+    `(let ((,error) (,info)
+           (,action (post/get "action")))
+       (declare (ignorable ,error ,info))
+       (handler-case
+           (cond
+             ,@(loop for (clause . body) in action-clauses
+                     collect `((string-equal ,action ,(string clause)) ,@body)))
+         (,error (err)
+           (setf ,error err)))
+       ,@body)))
+
+(indent:define-indentation with-actions (6 (&whole 4 &rest) &body))

@@ -99,7 +99,8 @@
                                :profile
                                :server
                                :logger
-                               :database
-                               :data-model)
+                               :database)
                    :if-exists :supersede
                    :logo "static/radiance.png"))
+
+(generate)

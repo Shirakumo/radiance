@@ -377,58 +377,6 @@ slot.
 
 See REQUEST-ERROR"))
 
-;; convenience.lisp
-(docs:define-docs
-  (function ensure-query-form
-    "Ensures a proper query form.")
-
-  (function with-model-fields
-    "Analogous to WITH-SLOTS but for data-model fields.
-
-See CL:WITH-SLOTS
-See DM:FIELD")
-
-  (function with-model
-    "Retrieves a model from the database and binds the slots.
-
-If QUERY is NIL, the model is a hull.
-
-See WITH-MODEL-FIELDS
-See DM:GET-ONE
-See DM:HULL")
-
-  (function with-model-save
-    "Same as WITH-MODEL but automatically saves the model at the end.
-
-If the model is initialised as a hull, INSERT is used.
-
-See WITH-MODEL
-See DM:SAVE
-See DM:INSERT")
-
-  (function do-models
-    "Iterates over a bunch of models, binding each in turn.
-
-See WITH-MODEL-FIELDS
-See DM:GET")
-
-  (function with-actions
-    "A macro to help handle different actions in a submission context.
-
-ERROR and INFO are variables that hold objects that
-describe error and information messages that occurred
-during the handling of the action.
-
-First, the actual action is read out of the POST/GET
-variable \"action\". Then the matching action-clause,
-if any, is evaluated. If an error occurs during the
-evaluation thereof, the error is stored in the ERROR
-variable. After the action clause processing has
-finished, the body forms are evaluated.
-
-ACTION-CLAUSES ::= (clause body-form*)
-CLAUSE         --- A string designator that names the action"))
-
 ;; defaults.lisp
 (docs:define-docs
   (option (page :hook)
@@ -2027,7 +1975,24 @@ or ..")
     "Encodes the given string to the stream in url-encoded format.
 
 This means that characters that are not one of a-Z 0-9 - . _ ~
-are written down in percent-encoded schema."))
+are written down in percent-encoded schema.")
+
+  (function with-actions
+            "A macro to help handle different actions in a submission context.
+
+ERROR and INFO are variables that hold objects that
+describe error and information messages that occurred
+during the handling of the action.
+
+First, the actual action is read out of the POST/GET
+variable \"action\". Then the matching action-clause,
+if any, is evaluated. If an error occurs during the
+evaluation thereof, the error is stored in the ERROR
+variable. After the action clause processing has
+finished, the body forms are evaluated.
+
+ACTION-CLAUSES ::= (clause body-form*)
+CLAUSE         --- A string designator that names the action"))
 
 ;; uri.lisp
 (docs:define-docs
