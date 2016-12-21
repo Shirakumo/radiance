@@ -85,6 +85,7 @@
   (defun name (user))
   (defun fields ())
   (defun add-field (name &key (type :text) default (editable T)))
+  (defun remove-field (name))
   (defun list-panels ())
   (defun remove-panel (name))
   (defmacro define-panel (name options &body body))
