@@ -6,6 +6,8 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
+;; FIXME: Documentation for hooks
+
 ;; api.lisp
 (docs:define-docs
   (variable *api-formats*
@@ -2187,3 +2189,310 @@ preferred option for use-cases of this function.
 
 See MAKE-URI
 See URI-TO-URL"))
+
+;;; Interfaces
+;; Ban
+(docs:define-docs
+  (function ban:jail
+    "Ban the given IP.
+
+The IP may be in IPv4 or IPv6 format as a string.
+
+The duration must be either an integer denoting the
+number of seconds to ban for, or T in which case the
+duration is taken as being infinite. If no duration is
+given, an implementation-dependant default is chosen.
+
+If the IP is already banned, the ban duration is extended
+by the given amount.
+
+See BAN:LIST
+See BAN:RELEASE")
+
+  (function ban:list
+    "Returns a list of banned IP addresses.
+
+See BAN:JAIL-TIME")
+  
+  (function ban:jail-time
+    "Returns the number of seconds the IP has left on its ban, T for infinity, or NIL for none.
+
+See BAN:JAIL
+See BAN:RELEASE")
+
+  (function release
+    "Unbans the given IP.
+
+See BAN:JAIL"))
+
+;; Rate
+(docs:define-docs
+  (function rate:define-limit
+    "")
+
+  (function rate:left
+    "")
+
+  (function rate:with-limitation
+    ""))
+
+;; Admin
+(docs:define-docs
+  (function admin:list-panels
+    "")
+
+  (function admin:remove-panel
+    "")
+
+  (function admin:define-panel
+    ""))
+
+;; Cache
+(docs:define-docs
+  (function cache:get
+    "")
+
+  (function cache:renew
+    "")
+
+  (function cache:with-cache
+    ""))
+
+;; Auth
+(docs:define-docs
+  (variable auth:*login-timeout*
+    "")
+
+  (function auth:current
+    "")
+
+  (function auth:associate
+    ""))
+
+;; Session
+(docs:define-docs
+  (variable session:*default-timeout*
+    "")
+
+  (type session:session
+    "")
+
+  (function session:=
+    "")
+
+  (function session:start
+    "")
+
+  (function session:get
+    "")
+
+  (function session:list
+    "")
+
+  (function session:id
+    "")
+
+  (function session:field
+    "")
+
+  (function session:timeout
+    "")
+
+  (function session:end
+    "")
+
+  (function session:active-p
+    ""))
+
+;; User
+(docs:define-docs
+  (type user:condition
+    "")
+
+  (type user:not-found
+    "")
+
+  (type user:user
+    "")
+
+  (function user:=
+    "")
+
+  (function user:list
+    "")
+
+  (function user:get
+    "")
+
+  (function user:username
+    "")
+
+  (function user:fields
+    "")
+
+  (function user:field
+    "")
+
+  (function user:save
+    "")
+
+  (function user:saved-p
+    "")
+
+  (function user:discard
+    "")
+
+  (function user:remove
+    "")
+
+  (function user:check
+    "")
+
+  (function user:grant
+    "")
+
+  (function user:revoke
+    "")
+
+  (function user:add-default-permissions
+    "")
+
+  (function user:action
+    "")
+
+  (function user:actions
+    ""))
+
+;; Profile
+(docs:define-docs
+  (function profile:avatar
+    "")
+  
+  (function profile:name
+    "")
+
+  (function profile:fields
+    "")
+
+  (function profile:add-field
+    "")
+
+  (function profile:list-panels
+    "")
+
+  (function profile:remove-panel
+    "")
+
+  (function profile:define-panel
+    ""))
+
+;; Server
+(docs:define-docs
+  (function server:start
+    "")
+
+  (function server:stop
+    "")
+
+  (function server:listeners
+    ""))
+
+;; Logger
+(docs:define-docs
+  (function logger:log
+    "")
+  
+  (function logger:trace
+    "")
+  
+  (function logger:debug
+    "")
+  
+  (function logger:info
+    "")
+  
+  (function logger:warn
+    "")
+  
+  (function logger:error
+    "")
+  
+  (function logger:severe
+    "")
+  
+  (function logger:fatal
+    ""))
+
+;; Database
+(docs:define-docs
+  (type database:condition
+    "")
+  
+  (type database:connection-failed
+    "")
+  
+  (type database:connection-already-open
+    "")
+  
+  (type database:collection-condition
+    "")
+  
+  (type database:invalid-collection
+    "")
+  
+  (type database:collection-already-exists
+    "")
+  
+  (type database:invalid-field
+    "")
+
+  (function database:connect
+    "")
+
+  (function database:disconnect
+    "")
+
+  (function database:connected-p
+    "")
+
+  (function database:collections
+    "")
+
+  (function database:collection-exists-p
+    "")
+
+  (function database:create
+    "")
+
+  (function database:structure
+    "")
+
+  (function database:empty
+    "")
+
+  (function database:drop
+    "")
+
+  (function database:iterate
+    "")
+
+  (function database:select
+    "")
+
+  (function database:count
+    "")
+
+  (function database:insert
+    "")
+
+  (function database:remove
+    "")
+
+  (function database:update
+    "")
+
+  (function database:with-transaction
+    "")
+
+  (function database:query
+    ""))
