@@ -24,7 +24,7 @@
   (define-resource-locator page (name &rest args))
   (defun list-panels ())
   (defun remove-panel (category name))
-  (defmacro define-panel (name category options &body body))
+  (defmacro define-panel (category name options &body body))
   (define-option-type panel))
 
 ;; To be specced
