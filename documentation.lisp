@@ -2268,35 +2268,113 @@ See RATE:DEFINE-LIMIT"))
 ;; Admin
 (docs:define-docs
   (function admin:list-panels
-    "")
+    "Returns an alist of panel categories and their panels.
+
+See ADMIN:DEFINE-PANEL
+See ADMIN:REMOVE-PANEL")
 
   (function admin:remove-panel
-    "")
+    "Removes the specified panel if it exists.
+
+See ADMIN:DEFINE-PANEL")
 
   (function admin:define-panel
-    ""))
+    "Defines a new administration panel.
+
+Category and panel names are case-insensitive.
+
+This is similar to DEFINE-PAGE, except it defines a panel
+within the administration interface. The body code should
+return HTML data to be emitted into the interface. Do not
+emit root elements such as <HTML> or <BODY>.
+
+The panel definition can be extended through the ADMIN:PANEL
+option. By default, the following options are guaranteed to
+exist:
+
+  :ACCESS   Will restrict access to it to users that pass
+            the permission check. See USER:CHECK.
+  :ICON     Selects an icon to use for the panel in the
+            administration's menu. The accepted range of
+            values is implementation-dependant.
+  :TOOLTIP  A tooltip string to show when hovering over the
+            panel entry in the administration's menu.
+
+In order to obtain the internal URI to an admin panel, use
+the PAGE resource with the category and panel names as
+arguments.
+
+See ADMIN:LIST-PANELS
+See ADMIN:REMOVE-PANEL"))
 
 ;; Cache
 (docs:define-docs
   (function cache:get
-    "")
+    "Returns the contents cached under the given name, if any.
+
+See CACHE:WITH-CACHE")
 
   (function cache:renew
-    "")
+    "Clears out the cache under the given name and potentially refreshes it.
+
+The refresh may be deferred until the next time the associated
+WITH-CACHE form is evaluated.
+
+See CACHE:GET
+See CACHE:WITH-CACHE")
 
   (function cache:with-cache
-    ""))
+    "Caches the return value produced by the body under the name.
+
+Every time this form is evaluated, the TEST-FORM is evaluated.
+If it returns non-NIL, the body is evaluated and its return
+value is cached under the given name. If it returns T and the
+body has not yet been cached, then it is evaluated as well. 
+Otherwise, the body is not evaluated and the cached value is
+returned instead.
+
+See CACHE:RENEW
+See CACHE:GET"))
 
 ;; Auth
 (docs:define-docs
   (variable auth:*login-timeout*
-    "")
+    "The time, in seconds, for which an authenticated user should remain authenticated.")
 
   (function auth:current
-    "")
+    "Returns the user object that is authenticated with the given session.
+
+If no session is passed, the one of the current request is
+retrieved by SESSION:GET.
+
+If the session is not authenticated, NIL is returned instead.
+NIL should correspond to the \"anonymous\" standard user.
+
+See SESSION:GET
+See AUTH:ASSOCIATE")
 
   (function auth:associate
-    ""))
+    "Associates (authenticates) the user with the given session.
+
+If no session is passed, the one of the current request is
+retrieved by SESSION:GET.
+
+This effectively logs the session in as the user and makes it
+gain all permissions the user has. If the session was associated
+with a user already, the associated user is replaced.
+
+The auth interface must also provide a way for a user to
+authenticate themselves through a page. You can gain an internal
+URI to that page by the page resource and the page name \"login\".
+It accepts a single extra argument, which is t he URI or URL to
+redirect to after a successful login. If this argument is the
+string \"#\" the value of the current request's REFERER is used.
+
+The exact means by which a user can authenticate themselves on
+said page are implementation dependant.
+
+See SESSION:GET
+See AUTH:CURRENT"))
 
 ;; Session
 (docs:define-docs
@@ -2418,39 +2496,94 @@ See RATE:DEFINE-LIMIT"))
 ;; Server
 (docs:define-docs
   (function server:start
-    "")
+    "Starts a listener server on the given PORT.
+
+The server may support SSL mode if the SSL options are passed.
+
+If no address is passed, 0.0.0.0 is assumed.
+
+On successful start, the SERVER:STARTED hook is triggered.
+On unsuccessful start, an error is signalled.
+
+The server implementation must take care to invoke REQUEST
+with the proper arguments on an incoming request, and to
+send the data contained in the returned response object
+back over the wire.
+
+See SERVER:STOP
+See SERVER:LISTENERS
+See REQUEST
+See RESPONSE")
 
   (function server:stop
-    "")
+    "Stops the listener server on the given PORT.
+
+On successful stop, the SERVER:STOPPED hook is triggered.
+On unsuccessful stop, an error is signalled.
+
+See SERVER:START
+See SERVER:LISTENERS")
 
   (function server:listeners
-    ""))
+    "Returns a list of active listener instances.
+
+If no address is passed, 0.0.0.0 is assumed.
+
+Each item in the list is a string of the following format:
+  IP:PORT
+
+See SERVER:START
+See SERVER:STOP"))
 
 ;; Logger
 (docs:define-docs
   (function logger:log
-    "")
+    "Logs the given message under the level.
+
+LEVEL has to be one of :TRACE :DEBUG :INFO :WARN :ERROR :SEVERE :FATAL.
+
+See LOGGER:TRACE
+See LOGGER:DEBUG
+See LOGGER:INFO
+See LOGGER:WARN
+See LOGGER:ERROR
+See LOGGER:SEVERE
+See LOGGER:FATAL")
   
   (function logger:trace
-    "")
+    "Logs the given message in the category as a trace message.
+
+See LOGGER:LOG")
   
   (function logger:debug
-    "")
+    "Logs the given message in the category as a debug message.
+
+See LOGGER:LOG")
   
   (function logger:info
-    "")
+    "Logs the given message in the category as an information message.
+
+See LOGGER:LOG")
   
   (function logger:warn
-    "")
+    "Logs the given message in the category as a warning message.
+
+See LOGGER:LOG")
   
   (function logger:error
-    "")
+    "Logs the given message in the category as an error message.
+
+See LOGGER:LOG")
   
   (function logger:severe
-    "")
+    "Logs the given message in the category as a severe message.
+
+See LOGGER:LOG")
   
   (function logger:fatal
-    ""))
+    "Logs the given message in the category as a fatal message.
+
+See LOGGER:LOG"))
 
 ;; Database
 (docs:define-docs
