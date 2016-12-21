@@ -106,7 +106,10 @@ Next we need to modify our HTML to actually link to the style sheet. In order to
              (:main (:p "Trust me on this one.")))))))
 ```
 
-Refresh the page, and voilà, now it's got some pizzas to it too. You'll probably want an explanation for the whole `uri-to-url` business. Explaining it in full is handled by the sections following this one, but the gist of it is that it ensures that the link to the static file is properly resolved under any setup.
+Refresh the page, and voilà, now it's got some pizzazz to it too. You'll probably want an explanation for the whole `uri-to-url` business. Explaining it in full is handled by the sections following this one, but the gist of it is that it ensures that the link to the static file is properly resolved under any setup.
+
+## A Lengthy and In-Depth Example
+You can find a tutorial that introduces Radiance and most of the important concepts, and explores how to write a web application in general, [here](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md). It should give you a good feeling for how to go about things, and give you pointers about where to look if you need a particular feature. In the last part it'll also go into the actual setup and deployment of a Radiance installation on a production server.
 
 ## Radiance Concepts & Parts
 ### URI
