@@ -21,7 +21,7 @@
 
 ;; To be specced
 (define-interface admin
-  (define-resource-locator page (name &rest args))
+  (define-resource-locator page (category panel &rest args))
   (defun list-panels ())
   (defun remove-panel (category name))
   (defmacro define-panel (category name options &body body))
