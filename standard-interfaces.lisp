@@ -6,20 +6,17 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-;; To be specced
 (define-interface ban
   (defun jail (ip &key duration))
   (defun list ())
   (defun jail-time (&optional (ip (remote *request*))))
   (defun release (ip)))
 
-;; To be specced
 (define-interface rate
   (defmacro define-limit (name (time-left &key (timeout 60) (limit 1)) &body on-limit-exceeded))
   (defun left (rate &key (ip (remote *request*))))
   (defmacro with-limitation ((limit) &body body)))
 
-;; To be specced
 (define-interface admin
   (define-resource-locator page (category panel &rest args))
   (defun list-panels ())
@@ -27,13 +24,11 @@
   (defmacro define-panel (category name options &body body))
   (define-option-type panel))
 
-;; To be specced
 (define-interface cache
   (defun get (name))
   (defun renew (name))
   (defmacro with-cache (name-form test-form &body request-generator)))
 
-;; To be specced
 (define-interface auth
   (defvar *login-timeout* (* 60 60 24 365))
   (define-resource-locator page (name &rest args))
@@ -41,7 +36,6 @@
   (defun associate (user &optional session))
   (define-hook associate (session)))
 
-;; To be specced
 (define-interface session
   (defvar *default-timeout* (* 60 60 24))
   (defclass session () ())
@@ -58,7 +52,6 @@
   (defun active-p (&optional session))
   (define-hook create (session)))
 
-;; To be specced
 (define-interface user
   (define-condition condition (radiance-condition)
     ())
@@ -86,7 +79,6 @@
   (define-hook action (user action public))
   (define-hook-switch ready unready ()))
 
-;; To be specced
 (define-interface profile
   (define-resource-locator page (user &optional tab))
   (defun avatar (user size))
@@ -98,14 +90,12 @@
   (defmacro define-panel (name options &body body))
   (define-option-type panel))
 
-;; To be specced
 (define-interface server
   (defun start (port &key address ssl-cert ssl-key ssl-pass))
   (defun stop (port &optional address))
   (defun listeners ())
   (define-hook-switch started stopped (port &optional address)))
 
-;; To be specced
 (define-interface (logger l)
   (defun log (level category log-string &rest format-args))
   (defun trace (category log-string &rest format-args))
@@ -116,7 +106,6 @@
   (defun severe (category log-string &rest format-args))
   (defun fatal (category log-string &rest format-args)))
 
-;; As per spec (needs updating)
 (define-interface (database db)
   (define-condition condition (radiance-condition)
     ((database :initarg :database :initform (error "DATABASE required."))))
