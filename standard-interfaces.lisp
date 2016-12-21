@@ -39,7 +39,6 @@
   (define-resource-locator page (name &rest args))
   (defun current (&optional session))
   (defun associate (user &optional session))
-  (defun login! (&optional (landing-page (referer *request*))))
   (define-hook associate (session)))
 
 ;; To be specced
