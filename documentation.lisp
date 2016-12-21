@@ -2379,37 +2379,122 @@ See AUTH:CURRENT"))
 ;; Session
 (docs:define-docs
   (variable session:*default-timeout*
-    "")
+    "The default number of seconds a session can stay live for without being used.
+
+See SESSION:TIMEOUT")
 
   (type session:session
-    "")
+    "The session object that encapsulates the connection a particular client has to the system.
+
+A session uniquely identifies a \"client\" that connects to the
+server. The means by which clients are distinguished from each-
+other and the means by which associated sessions are tracked are
+implementation-dependant.
+
+A session is \"active\" for a certain period of time. This timeout
+is reset every time a request is made to the server by the client
+that is tied to the session. Once the timeout is reached, the
+session object is no longer considered active and may be removed
+entirely at any time.
+
+Sessions must be able to store arbitrary fields that can be used
+to store data associated with the session. Each session also has
+a globally unique ID string that can be used to coerce session
+objects to storage.
+
+See SESSION:=
+See SESSION:GET
+See SESSION:LIST
+See SESSION:ID
+See SESSION:FIELD
+See SESSION:TIMEOUT
+See SESSION:END
+See SESSION:ACTIVE-P")
 
   (function session:=
-    "")
+    "Compares the two session objects and returns true if they represent the same session identity.
+
+See SESSION:SESSION")
 
   (function session:start
-    "")
+    "Starts a new session in the current request context and returns it.
+
+If the request already has a session associated with it, it is
+replaced.
+
+Once a session has been started, the client must receive
+the same session on future requests to the server. How this
+client tracking is achieved is implementation-dependant.
+
+See SESSION:SESSION
+See SESSION:GET
+See SESSION:END")
 
   (function session:get
-    "")
+    "Retrieves the current session, or a particular one.
+
+If no SESSION-ID is given, the session associated with the
+current client is returned, if any. The SESSION-ID must be
+a string that is STRING= to one previously obtained by a call
+to SESSION:ID.
+
+See SESSION:SESSION
+See SESSION:ID")
 
   (function session:list
-    "")
+    "Returns a fresh list of all known session objects.
+
+The sessions may not all be active.
+
+Invoking this function may be expensive.
+
+See SESSION:SESSION
+See SESSION:ACTIVE-P")
 
   (function session:id
-    "")
+    "Returns the globally unique ID of the session as a string.
+
+If no SESSION-ID is given, the session associated with the
+current client is used.
+
+The ID must be unique in such a way that no two sessions that are
+known to the implementation at any time may have the same ID.
+
+See SESSION:SESSION")
 
   (function session:field
-    "")
+    "Accessor to an arbitrary data storage field for a session object.
+
+If no SESSION-ID is given, the session associated with the
+current client is used.
+
+The keys must be objects comparable under EQL.
+
+See SESSION:SESSION")
 
   (function session:timeout
-    "")
+    "Accessor to the timeout, in seconds, of the session object.
+
+If no SESSION-ID is given, the session associated with the
+current client is used.
+
+See SESSION:SESSION
+See SESSION:ACTIVE-P")
 
   (function session:end
-    "")
+    "Ends the session immediately, making it inactive.
+
+See SESSION:SESSION
+See SESSION:START
+See SESSION:ACTIVE-P")
 
   (function session:active-p
-    ""))
+    "Returns whether the session is currently active or not.
+
+An inactive session will no longer be tied to any future
+client requests and may be removed at any time.
+
+See SESSION:SESSION"))
 
 ;; User
 (docs:define-docs
@@ -2473,25 +2558,95 @@ See AUTH:CURRENT"))
 ;; Profile
 (docs:define-docs
   (function profile:avatar
-    "")
+    "Returns a full URL to an avatar image for the user.
+
+The size of the image should approximate the one passed
+as an argument, in pixels. It must however not be exact.
+You have to take care to scale the image to the appropriate
+size on the client regardless. The size specified here is
+only useful to optimise the image size for transfer speed.")
   
   (function profile:name
-    "")
+    "Returns the \"display name\" of the user.
+
+The display name is a name that, unlike the username,
+can be changed and the user deems preferable over the
+username.")
 
   (function profile:fields
-    "")
+    "Returns a list of defined fields.
+
+Each field is an alist with the following keys defined:
+ :NAME :TYPE :DEFAULT :EDITABLE
+
+The actual value of the fields can be accessed through the
+USER:FIELD accessor.
+
+See PROFILE:ADD-FIELD
+See PROFILE:REMOVE-FIELD
+See USER:FIELD")
 
   (function profile:add-field
-    "")
+    "Adds a custom profile field that is visible on the user's profile.
+
+These fields can be used to store public information such
+as counters, stats, birthday, bio, etc.
+
+If EDITABLE is non-NIL, the user is allowed to change the
+field themselves.
+
+TYPE can be one of the following:
+  text textarea password email url time date datetime-local
+  month week color number range checkbox radio file tel
+
+The type is mostly useful for the display presentation to
+the user. The actual lisp data type used to store the field
+is a string.
+
+Note that this only stores the intended interpretation of a
+field, not the field itself.
+
+See PROFILE:FIELDS
+See PROFILE:REMOVE-FIELD")
+
+  (function profile:remove-field
+    "Removes the given field information, if it exists.
+
+See PROFILE:ADD-FIELD
+See PROFILE:FIELDS")
 
   (function profile:list-panels
-    "")
+    "Returns a list of profile panel names.
+
+See PROFILE:REMOVE-PANEL
+See PROFILE:DEFINE-PANEL")
 
   (function profile:remove-panel
-    "")
+    "Removes the panel of the given name.
+
+See PROFILE:LIST-PANELS
+See PROFILE:DEFINE-PANEL")
 
   (function profile:define-panel
-    ""))
+    "Defines a new panel to be shown on the user profile.
+
+This is similar to DEFINE-PAGE, except it defines a panel
+within the user profile interface. The body code should
+return HTML data to be emitted into the interface. Do not
+emit root elements such as <HTML> or <BODY>.
+
+The panel definition can be extended through the PROFILE:PANEL
+option. By default, the following options are guaranteed to
+exist:
+
+  :ACCESS   Will restrict access to it to users that pass
+            the permission check. See USER:CHECK.
+
+In order to obtain the internal URI to a profile panel, use
+the PAGE resource with the user and panel name as arguments.
+
+See PROFILE:LIST-PANELS
+See PROFILE:REMOVE-PANEL"))
 
 ;; Server
 (docs:define-docs
