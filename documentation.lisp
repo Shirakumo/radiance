@@ -2228,13 +2228,42 @@ See BAN:JAIL"))
 ;; Rate
 (docs:define-docs
   (function rate:define-limit
-    "")
+    "Define the behaviour for a rate limitation.
+
+TIME-LEFT will be bound to the number of seconds left
+until the timeout is lifted. The body is the code that
+will be evaluated when the rate limit was hit. It
+should probably display an error page and perhaps
+record the infraction.
+
+TIMEOUT should be the interval of rate limiting. LIMIT
+is the number of attempts that can be made within the
+TIMEOUT. More straight-forwardly put: A timeout of 30
+and limit of 3 means a user can make 3 attempts
+within 30 seconds. If he tries to make more, he is
+blocked until the time since the last attempt has
+reached TIMEOUT seconds.
+
+See RATE:LEFT
+See RATE:WITH-LIMITATION")
 
   (function rate:left
-    "")
+    "Returns two values, the number of attempts left, and the number of seconds left until the timeout is over.
+
+The user is rate limited if the number of attempts left
+is zero.")
 
   (function rate:with-limitation
-    ""))
+    "Evaluates the body within a rate limited environment.
+
+The limit must be defined beforehand.
+
+The rules defined by the named limit are applied. If
+the user exceeds the allowed number of attempts and is
+within rate limitation, the body is not evaluated.
+
+See RATE:LEFT
+See RATE:DEFINE-LIMIT"))
 
 ;; Admin
 (docs:define-docs
