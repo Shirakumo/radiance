@@ -71,26 +71,3 @@
 
 (defun started-p ()
   *running*)
-
-;; Handle default server startup.
-;; FIXME: Not sure if this is the right place for this.
-(define-trigger (server-start 'launch-listeners) ()
-  (defaulted-config '(((:port 8080))) :server :instances)
-  (dotimes (i (length (config :server :instances)))
-    (unless (find (format NIL "~a:~a"
-                          (config :server :instances i :address)
-                          (config :server :instances i :port))
-                  (server:listeners)
-                  :test #'string-equal)
-      (server:start (config :server :instances i :port)
-                    :address (config :server :instances i :address)
-                    :ssl-key (config :server :instances i :ssl-key)
-                    :ssl-cert (config :server :instances i :ssl-cert)
-                    :ssl-pass (config :server :instances i :ssl-pass)))))
-
-(define-trigger (server-stop 'stop-listeners) ()
-  (loop for name in (server:listeners)
-        do (let* ((pos (position #\: name))
-                  (port (parse-integer (subseq name (1+ pos))))
-                  (address (subseq name 0 pos)))
-             (server:stop port (unless (string= address "NIL") address)))))

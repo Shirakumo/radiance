@@ -91,10 +91,10 @@
   (define-option-type panel))
 
 (define-interface server
-  (defun start (port &key address ssl-cert ssl-key ssl-pass))
-  (defun stop (port &optional address))
+  (defun start (name &key))
+  (defun stop (name))
   (defun listeners ())
-  (define-hook-switch started stopped (port &optional address)))
+  (define-hook-switch started stopped (name &key)))
 
 (define-interface (logger l)
   (defun log (level category log-string &rest format-args))

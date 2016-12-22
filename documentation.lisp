@@ -2769,11 +2769,20 @@ See PROFILE:REMOVE-PANEL"))
 ;; Server
 (docs:define-docs
   (function server:start
-    "Starts a listener server on the given PORT.
+    "Starts a listener server.
 
-The server may support SSL mode if the SSL options are passed.
+The name must be a keyword.
 
-If no address is passed, 0.0.0.0 is assumed.
+Note that the implementation must include additional
+keyword arguments that specify the actual instance
+behaviour such as the port, address, and so forth. However,
+in order to also allow exotic servers such as pipe-based
+ones, no such arguments are specified.
+
+See the documentation of your implementation of choice.
+
+If a server that is similar to the requested one (by name
+or the provided options), an error is signalled.
 
 On successful start, the SERVER:STARTED hook is triggered.
 On unsuccessful start, an error is signalled.
@@ -2791,6 +2800,11 @@ See RESPONSE")
   (function server:stop
     "Stops the listener server on the given PORT.
 
+The name must be a keyword.
+
+If no listener with the requested name is found, an error
+may be signalled.
+
 On successful stop, the SERVER:STOPPED hook is triggered.
 On unsuccessful stop, an error is signalled.
 
@@ -2799,11 +2813,6 @@ See SERVER:LISTENERS")
 
   (function server:listeners
     "Returns a list of active listener instances.
-
-If no address is passed, 0.0.0.0 is assumed.
-
-Each item in the list is a string of the following format:
-  IP:PORT
 
 See SERVER:START
 See SERVER:STOP"))
