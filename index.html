@@ -1514,7 +1514,7 @@ If the session is not authenticated, NIL is returned instead.
 NIL should correspond to the &quot;anonymous&quot; standard user.
 
 See SESSION:GET
-See AUTH:ASSOCIATE</pre> </article> </li><li> <a name="AUTH:LOGIN!"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#AUTH:LOGIN!">LOGIN!</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (LANDING-PAGE (REFERER *REQUEST*))</code><code>)</code>  </header> <pre class="docstring"/> </article> </li></ul> </li><li class="package"> <h3> <a name="SESSION" href="#SESSION">SESSION</a> <span class="nicknames">(MODULARIZE.MOD.SESSION MODULARIZE.INT.SESSION)</span> </h3> <ul><li> <a name="SESSION:*DEFAULT-TIMEOUT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SESSION:*DEFAULT-TIMEOUT*">*DEFAULT-TIMEOUT*</a></code></h4>  </header> <pre class="docstring">The default number of seconds a session can stay live for without being used.
+See AUTH:ASSOCIATE</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="SESSION" href="#SESSION">SESSION</a> <span class="nicknames">(MODULARIZE.MOD.SESSION MODULARIZE.INT.SESSION)</span> </h3> <ul><li> <a name="SESSION:*DEFAULT-TIMEOUT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SESSION:*DEFAULT-TIMEOUT*">*DEFAULT-TIMEOUT*</a></code></h4>  </header> <pre class="docstring">The default number of seconds a session can stay live for without being used.
 
 See SESSION:TIMEOUT</pre> </article> </li><li> <a name="SESSION:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SESSION:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="SESSION:SESSION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#SESSION:SESSION">SESSION</a></code></h4>  </header> <pre class="docstring">The session object that encapsulates the connection a particular client has to the system.
 
@@ -1599,7 +1599,131 @@ client tracking is achieved is implementation-dependant.
 
 See SESSION:SESSION
 See SESSION:GET
-See SESSION:END</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="USER" href="#USER">USER</a> <span class="nicknames">(MODULARIZE.MOD.USER MODULARIZE.INT.USER)</span> </h3> <ul><li> <a name="USER:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#USER:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="USER:USER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#USER:USER">USER</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#USER:CONDITION">CONDITION</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:NOT-FOUND"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#USER:NOT-FOUND">NOT-FOUND</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:FIELD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#USER:FIELD">FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER FIELD</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#USER:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="USER:="> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:=">=</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER-A USER-B</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:ACTION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ACTION">ACTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER ACTION PUBLIC</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:ACTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ACTIONS">ACTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER N &amp;KEY (PUBLIC T) OLDEST-FIRST</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:ADD-DEFAULT-PERMISSIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ADD-DEFAULT-PERMISSIONS">ADD-DEFAULT-PERMISSIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST BRANCH</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:CHECK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:CHECK">CHECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER BRANCH</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:DISCARD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:DISCARD">DISCARD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:FIELDS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:FIELDS">FIELDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:GET"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:GET">GET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USERNAME &amp;KEY (IF-DOES-NOT-EXIST NIL)</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:GRANT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:GRANT">GRANT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER &amp;REST BRANCHES</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:LIST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:LIST">LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:REMOVE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REMOVE">REMOVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:REVOKE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REVOKE">REVOKE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER &amp;REST BRANCHES</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:SAVE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:SAVE">SAVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:SAVED-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:SAVED-P">SAVED-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="USER:USERNAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:USERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li></ul> </li><li class="package"> <h3> <a name="PROFILE" href="#PROFILE">PROFILE</a> <span class="nicknames">(MODULARIZE.MOD.PROFILE MODULARIZE.INT.PROFILE)</span> </h3> <ul><li> <a name="PROFILE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#PROFILE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="PROFILE:PAGE"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#PROFILE:PAGE">PAGE</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that points to the requested page.
+See SESSION:END</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="USER" href="#USER">USER</a> <span class="nicknames">(MODULARIZE.MOD.USER MODULARIZE.INT.USER)</span> </h3> <ul><li> <a name="USER:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#USER:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="USER:USER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#USER:USER">USER</a></code></h4>  </header> <pre class="docstring">Container for a user.
+
+A user is an object that represents a certain person with
+access to the system. Each user has a uniquely identifying
+username string of 1-32 case-insensitive characters of the
+following range:
+
+  &quot;abcdefghijklmnopqrstuvwxyz0123456789_-.&quot;
+
+Each user object can store arbitrary information in fields.
+
+A user has a set of permissions that describe which
+protected resources the user should be granted access to.
+These permissions are laid out in the form of trees,
+where each permission describes a certain path down a
+tree. For example, the following permission
+
+  foo.bar
+
+would grant access to the permissions foo.bar, foo.bar.baz
+and so forth, but not to foo or foo.bam . Permissions can
+be denoted by either dot-delimited strings, or lists.
+
+Note that the user system may need to be readied up first
+before it can be reliably used. Attempting to perform any
+user operations before the USER:READY hook has been
+triggered or after the USER:UNREADY hook has been triggered
+will result in undefined behaviour.
+
+See PERM
+See USER:=
+See USER:LIST
+See USER:GET
+See USER:USERNAME
+See USER:FIELDS
+See USER:FIELD
+See USER:REMOVE
+See USER:CHECK
+See USER:GRANT
+See USER:REVOKE</pre> </article> </li><li> <a name="USER:CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#USER:CONDITION">CONDITION</a></code></h4>  </header> <pre class="docstring">Base condition type for conditions related to the user interface.</pre> </article> </li><li> <a name="USER:NOT-FOUND"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#USER:NOT-FOUND">NOT-FOUND</a></code></h4>  </header> <pre class="docstring">Condition signalled when an unknown user was requested.
+
+See USER:CONDITION
+See USER:GET</pre> </article> </li><li> <a name="USER:FIELD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#USER:FIELD">FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD USER</code><code>)</code>  </header> <pre class="docstring">Accessor to a field on the user.
+
+Keys must be strings of a maximum length of 64.
+Values must be strings, but can be of arbitrary length.
+
+See USER:USER
+See USER:REMOVE-FIELD
+See USER:FIELDS</pre> </article> </li><li> <a name="USER:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#USER:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="USER:="> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:=">=</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER-A USER-B</code><code>)</code>  </header> <pre class="docstring">Compares two user object to see if they're the same.
+
+See USER:USER</pre> </article> </li><li> <a name="USER:ACTION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ACTION">ACTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER ACTION PUBLIC</code><code>)</code>  </header> <pre class="docstring">Records that the named action has been performed on the user.
+
+This is used to keep a record of user actions. The ACTION
+can be an arbitrary string that should primarily be human-
+readable. PUBLIC denotes whether the action should be
+publicly visible-- in other words, it does not contain
+potentially sensitive information.
+
+See USER:ACTIONS</pre> </article> </li><li> <a name="USER:ACTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ACTIONS">ACTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER N &amp;KEY (PUBLIC T) OLDEST-FIRST</code><code>)</code>  </header> <pre class="docstring">Returns a truncated list of actions that the user performed.
+
+If PUBLIC is non-NIL, only actions that can be publicly
+shown are returned. If OLDEST-FIRST is non-NIL, actions
+are returned sorted from oldest to newest; otherwise they
+are sorted newest to oldest.
+
+See USER:ACTION</pre> </article> </li><li> <a name="USER:ADD-DEFAULT-PERMISSIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ADD-DEFAULT-PERMISSIONS">ADD-DEFAULT-PERMISSIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST BRANCH</code><code>)</code>  </header> <pre class="docstring">Adds the given branches as default permissions to be granted to newly created users.
+
+Note that this will not retroactively grant permissions and
+only comes into effect for users created after a call to
+this has been run.
+
+See USER:USER
+See USER:GRANT</pre> </article> </li><li> <a name="USER:CHECK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:CHECK">CHECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER BRANCH</code><code>)</code>  </header> <pre class="docstring">Checks whether the user is permitted access to the given permission branch.
+
+See USER:USER
+See USER:GRANT
+See USER:REVOKE</pre> </article> </li><li> <a name="USER:FIELDS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:FIELDS">FIELDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Returns an alist of field names to values of the user.
+
+See USER:USER
+See USER:FIELD
+See USER:REMOVE-FIELD</pre> </article> </li><li> <a name="USER:GET"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:GET">GET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USERNAME &amp;KEY (IF-DOES-NOT-EXIST NIL)</code><code>)</code>  </header> <pre class="docstring">Returns the requested user object.
+
+IF-DOES-NOT-EXIST may be one of the following values,
+which decides on the behaviour in the case where the
+requested user is not known.
+
+  :CREATE     The user is created.
+  :ERROR      An error of type USER:NOT-FOUND is signalled.
+  :ANONYMOUS  The anonymous standard user is returned.
+  NIL         NIL is returned.
+
+When a new user is created, the USER:CREATE hook is
+triggered.
+
+Note that fetching users while the user system is not
+yet ready will result in undefined behaviour.
+
+See USER:READY
+See USER:UNREADY
+See USER:USER</pre> </article> </li><li> <a name="USER:GRANT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:GRANT">GRANT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER &amp;REST BRANCHES</code><code>)</code>  </header> <pre class="docstring">Grants the user access to the given permission branches.
+
+See USER:USER
+See USER:CHECK
+See USER:REVOKE</pre> </article> </li><li> <a name="USER:LIST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:LIST">LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a fresh list of all known user objects.
+
+This may be a very costly operation.
+
+See USER:USER</pre> </article> </li><li> <a name="USER:REMOVE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REMOVE">REMOVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Removes the given user.
+
+This deletes all associated data of the user.
+
+On successful deletion, the USER:REMOVE hook is triggered.
+
+See USER:USER</pre> </article> </li><li> <a name="USER:REMOVE-FIELD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REMOVE-FIELD">REMOVE-FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD USER</code><code>)</code>  </header> <pre class="docstring">Removes the requested field from the user.
+
+See USER:USER
+See USER:FIELD
+See USER:FIELDS</pre> </article> </li><li> <a name="USER:REVOKE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REVOKE">REVOKE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER &amp;REST BRANCHES</code><code>)</code>  </header> <pre class="docstring">Revokes access from the given permission branches.
+
+See USER:USER
+See USER:CHECK
+See USER:GRANT</pre> </article> </li><li> <a name="USER:USERNAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:USERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Returns the username of the requested user.
+
+See USER:USER</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="PROFILE" href="#PROFILE">PROFILE</a> <span class="nicknames">(MODULARIZE.MOD.PROFILE MODULARIZE.INT.PROFILE)</span> </h3> <ul><li> <a name="PROFILE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#PROFILE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="PROFILE:PAGE"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#PROFILE:PAGE">PAGE</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that points to the requested page.
 
 The following values are returned:
 1. URI
@@ -1723,6 +1847,9 @@ See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:LOG"> </a> <article> <
 
 LEVEL has to be one of :TRACE :DEBUG :INFO :WARN :ERROR :SEVERE :FATAL.
 
+Note that the exact means by which the message is presented
+or logged is up to the implementation.
+
 See LOGGER:TRACE
 See LOGGER:DEBUG
 See LOGGER:INFO
@@ -1735,4 +1862,417 @@ See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:TRACE"> </a> <article>
 
 See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:WARN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:WARN">WARN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a warning message.
 
-See LOGGER:LOG</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="DATABASE" href="#DATABASE">DATABASE</a> <span class="nicknames">(MODULARIZE.INT.DATABASE MODULARIZE.MOD.DATABASE DB)</span> </h3> <ul><li> <a name="DATABASE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#DATABASE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:COLLECTION-ALREADY-EXISTS"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:COLLECTION-ALREADY-EXISTS">COLLECTION-ALREADY-EXISTS</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:COLLECTION-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:COLLECTION-CONDITION">COLLECTION-CONDITION</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:CONDITION">CONDITION</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:CONNECTION-ALREADY-OPEN"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:CONNECTION-ALREADY-OPEN">CONNECTION-ALREADY-OPEN</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:CONNECTION-FAILED"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:CONNECTION-FAILED">CONNECTION-FAILED</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:DATABASE-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:DATABASE-CONDITION">DATABASE-CONDITION</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:ID"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:ID">ID</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:INVALID-COLLECTION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:INVALID-COLLECTION">INVALID-COLLECTION</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:INVALID-FIELD"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:INVALID-FIELD">INVALID-FIELD</a></code></h4>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:ID"> </a> <article> <header class="structure"> <span class="type">structure</span>  <h4 class="name"><code><a href="#DATABASE:ID">ID</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:COLLECTION-EXISTS-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:COLLECTION-EXISTS-P">COLLECTION-EXISTS-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:COLLECTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:COLLECTIONS">COLLECTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:CONNECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:CONNECT">CONNECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DATABASE-NAME</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:CONNECTED-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:CONNECTED-P">CONNECTED-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:COUNT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:COUNT">COUNT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:CREATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:CREATE">CREATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION STRUCTURE &amp;KEY INDICES (IF-EXISTS :IGNORE)</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:DISCONNECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:DISCONNECT">DISCONNECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:DROP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:DROP">DROP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:EMPTY"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:EMPTY">EMPTY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:ENSURE-ID"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:ENSURE-ID">ENSURE-ID</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID-ISH</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:INSERT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:INSERT">INSERT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION DATA</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:ITERATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:ITERATE">ITERATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY FUNCTION &amp;KEY FIELDS (SKIP 0) AMOUNT SORT ACCUMULATE</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:REMOVE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:REMOVE">REMOVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY &amp;KEY (SKIP 0) AMOUNT SORT</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:SELECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:SELECT">SELECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY &amp;KEY FIELDS (SKIP 0) AMOUNT SORT</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:STRUCTURE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:STRUCTURE">STRUCTURE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:UPDATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:UPDATE">UPDATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY DATA &amp;KEY (SKIP 0) AMOUNT SORT</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:QUERY"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:QUERY">QUERY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li><li> <a name="DATABASE:WITH-TRANSACTION"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:WITH-TRANSACTION">WITH-TRANSACTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring"></pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
+See LOGGER:LOG</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="DATABASE" href="#DATABASE">DATABASE</a> <span class="nicknames">(MODULARIZE.INT.DATABASE MODULARIZE.MOD.DATABASE DB)</span> </h3> <ul><li> <a name="DATABASE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#DATABASE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:COLLECTION-ALREADY-EXISTS"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:COLLECTION-ALREADY-EXISTS">COLLECTION-ALREADY-EXISTS</a></code></h4>  </header> <pre class="docstring">Error signalled when a new collection is attempted to be created where an old one already exists.
+
+See DATABASE:COLLECTION-CONDITION</pre> </article> </li><li> <a name="DATABASE:COLLECTION-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:COLLECTION-CONDITION">COLLECTION-CONDITION</a></code></h4>  </header> <pre class="docstring">Base condition type for collection related conditions.
+
+See DATABASE:CONDITION
+See DATABASE:INVALID-COLLECTION
+See DATABASE:COLLECTION-ALREADY-EXISTS
+See DATABASE:INVALID-FIELD</pre> </article> </li><li> <a name="DATABASE:CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:CONDITION">CONDITION</a></code></h4>  </header> <pre class="docstring">Base condition type for all database related conditions.
+
+See DATABASE:CONNECTION-FAILED
+See DATABASE:CONNECTION-ALREADY-OPEN
+See DATABASE:COLLECTION-CONDITION
+See DATABASE:INVALID-COLLECTION
+See DATABASE:COLLECTION-ALREADY-EXISTS
+See DATABASE:INVALID-FIELD</pre> </article> </li><li> <a name="DATABASE:CONNECTION-ALREADY-OPEN"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:CONNECTION-ALREADY-OPEN">CONNECTION-ALREADY-OPEN</a></code></h4>  </header> <pre class="docstring">Warning signalled when a new connection is established while an old one was already open.
+
+See DATABASE:CONDITION</pre> </article> </li><li> <a name="DATABASE:CONNECTION-FAILED"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:CONNECTION-FAILED">CONNECTION-FAILED</a></code></h4>  </header> <pre class="docstring">Error signalled upon a failed connection attempt.
+
+See DATABASE:CONDITION</pre> </article> </li><li> <a name="DATABASE:ID"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:ID">ID</a></code></h4>  </header> <pre class="docstring">Effective type of values for ID-type fields in a collection.
+
+See DATABASE:ENSURE-ID</pre> </article> </li><li> <a name="DATABASE:INVALID-COLLECTION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:INVALID-COLLECTION">INVALID-COLLECTION</a></code></h4>  </header> <pre class="docstring">Error signalled when an invalidly named, or inexistent collection is accessed.
+
+See DATABASE:COLLECTION-CONDITION</pre> </article> </li><li> <a name="DATABASE:INVALID-FIELD"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:INVALID-FIELD">INVALID-FIELD</a></code></h4>  </header> <pre class="docstring">Error signalled when an invalid field name or type is used.
+
+See DATABASE:COLLECTION-CONDITION</pre> </article> </li><li> <a name="DATABASE:ID"> </a> <article> <header class="structure"> <span class="type">structure</span>  <h4 class="name"><code><a href="#DATABASE:ID">ID</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:COLLECTION-EXISTS-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:COLLECTION-EXISTS-P">COLLECTION-EXISTS-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION</code><code>)</code>  </header> <pre class="docstring">Returns true if a collection of the given name already exists.
+
+Signals an error of type INVALID-COLLECTION if the name
+is not of the proper collection name format.
+
+See DATABASE:CREATE</pre> </article> </li><li> <a name="DATABASE:COLLECTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:COLLECTIONS">COLLECTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of names for all known collections.
+
+The names may be either symbols or strings.
+
+See DATABASE:CREATE</pre> </article> </li><li> <a name="DATABASE:CONNECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:CONNECT">CONNECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DATABASE-NAME</code><code>)</code>  </header> <pre class="docstring">Establishes a connection to the database of the given name.
+
+The database connection must be configured by some 
+implementation-defined manner beforehand. If the
+implementation cannot automatically configure itself,
+or cannot find a database of the requested name, an
+error of type DATABASE:CONNECTION-FAILED is signalled.
+
+If a previous connection is already open and a new one is
+attempted, a warning of type DATABASE:CONNECTION-ALREADY-OPEN
+is signalled, the previous connection is closed, and the
+new one is opened.
+
+If the connection fails for some other reason, an error
+of type DATABASE:CONNECTION-FAILED is signalled.
+
+Upon successful connection, the DATABASE:CONNECTED hook
+is triggered.
+
+Attempting to perform any database operations aside from
+connecting or disconnecting before a connection has been
+established results in undefined behaviour.
+
+See DATABASE:CONNECTED
+See DATABASE:DISCONNECT
+See DATABASE:CONNECTION-FAILED
+See DATABASE:CONNECTION-ALREADY-OPEN</pre> </article> </li><li> <a name="DATABASE:CONNECTED-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:CONNECTED-P">CONNECTED-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns true if the database is currently connected.
+
+See DATABASE:CONNECT
+See DATABASE:DISCONNECT</pre> </article> </li><li> <a name="DATABASE:COUNT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:COUNT">COUNT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY</code><code>)</code>  </header> <pre class="docstring">Returns the number of records in the collection that match the query.
+
+The QUERY must be a value returned by the DATABASE:QUERY
+macro.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:QUERY
+See DATABASE:INVALID-COLLECTION</pre> </article> </li><li> <a name="DATABASE:CREATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:CREATE">CREATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION STRUCTURE &amp;KEY INDICES (IF-EXISTS :IGNORE)</code><code>)</code>  </header> <pre class="docstring">Creates a new collection on the database.
+
+COLLECTION must be a valid collection name. Namely, it
+must be either a symbol or a string, limited to the
+following set of characters:
+
+  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  abcdefghijklmnopqrstuvwxyz
+  0123456789-_/
+
+Symbol names are coerced to string names in the following
+manner: A slash and the name of the symbol's package are
+prepended to the symbol's name. Thus, a symbol's name and
+package must be limited to the above set of characters in
+order to be usable as a collection name.
+
+The structure denotes the schema of the collection and
+must be of the following structure:
+
+  STRUCTURE ::= (FIELD*)
+  FIELD     ::= (NAME TYPE)
+  TYPE      ::= :id | :text | :float
+                | VARCHAR | INTEGER
+  INTEGER   ::= :integer | (:integer BYTES)
+  VARCHAR   ::= (:varchar LENGTH)
+
+A valid name can be either a symbol or a string, where
+the symbol's name/string must underlie the same character
+restrictions as a collection name.
+
+The types of a field are specified as follows:
+
+   :ID       An implementation-defined type that is used
+             to uniquely identify a record within a
+             collection.
+   :TEXT     A string of arbitrary length.
+   :FLOAT    A double-float.
+   :INTEGER  A signed integer within the range denoted by
+             the number of bytes of its size in one's
+             complement. Attempting to store a value
+             outside of this range leads to undefined
+             behaviour. The default number of bytes is 4.
+             The maximum number of bytes that can be
+             requested is 8.
+   :VARCHAR  A string of variable size but with a maximum
+             length. Attempting to store a string beyond
+             that length leads to undefined behaviour.
+
+If an invalid field name or field type is specified, an
+error of type DATABASE:INVALID-FIELD is signalled.
+
+The implementation is allowed to upgrade any field type
+to a type that can encompass the specified range and more.
+For example, an implementation is permitted to upgrade an
+(:integer 4) to an (:integer 8) or a (:varchar 5) to :text.
+
+The implementation may or may not permit you to store data
+in fields outside of the ones specified in the structure
+of the collection.
+
+Each collection will always include a field called &quot;_id&quot;
+of type :ID that is filled by the implementation on record
+creation. IT stores the unique ID of the record within the
+collection. The concrete type of the ID is implementation-
+dependant.
+
+INDICES is a list of field names that should be indexed
+for fast access. The implementation is urged to optimise
+access to the fields, but is not required to.
+
+IF-EXISTS denotes the behaviour in case a collection of
+the same name already exists. The behaviour is as follows:
+
+  :IGNORE     Return NIL. This is the default.
+  :ERROR      Signal an error of type DATABASE:COLLECTION-ALREADY-EXISTS.
+  :SUPERSEDE  Drop the old collection and create a new one.
+
+If a new collection is created successfully, a non-NIL
+value is returned.
+
+See DATABASE:ID
+See DATABASE:STRUCTURE
+See DATABASE:COLLECTIONS
+See DATABASE:COLLECTION-EXISTS-P
+See DATABASE:DROP
+See DATABASE:INVALID-COLLECTION
+See DATABASE:COLLECTION-ALREADY-EXISTS
+See DATABASE:INVALID-FIELD</pre> </article> </li><li> <a name="DATABASE:DISCONNECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:DISCONNECT">DISCONNECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Closes the current database connection, if any.
+
+Upon successful disconnect, the DATABASE:DISCONNECTED
+hook is triggered.
+
+See DATABASE:CONNECT
+See DATABASE:DISCONNECTED</pre> </article> </li><li> <a name="DATABASE:DROP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:DROP">DROP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION</code><code>)</code>  </header> <pre class="docstring">Deletes the collection entirely, including all of its data.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE</pre> </article> </li><li> <a name="DATABASE:EMPTY"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:EMPTY">EMPTY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION</code><code>)</code>  </header> <pre class="docstring">Clears all records from the collection, making it empty.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+Note that this may also clear the ID sequence, meaning
+that IDs produced for records after the emptying of the
+collection may be equal to IDs produced before the
+emptying.
+
+See DATABASE:CREATE</pre> </article> </li><li> <a name="DATABASE:ENSURE-ID"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:ENSURE-ID">ENSURE-ID</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ID-ISH</code><code>)</code>  </header> <pre class="docstring">Coerces the given string into an ID, if possible.
+
+May signal an error on invalidly structured or invalid ID.
+
+The return value is of type DATABASE:ID
+
+See DATABASE:ID</pre> </article> </li><li> <a name="DATABASE:INSERT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:INSERT">INSERT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION DATA</code><code>)</code>  </header> <pre class="docstring">Inserts a new record into the collection.
+
+The DATA can be formatted as either an alist or a hash-
+table. If the data includes fields that are not defined
+in the structure of the collection, the implementation
+may signal an error of type DATABASE:INVALID-FIELD. If
+the data does not include a field that is defined in the
+structure of the collection, the field's value is set to
+NIL.
+
+If a data value is specified that does not match the
+field's type, an error of type DATABASE:INVALID-FIELD
+may be signalled.
+
+If the insertion of the record fails for whatever reason,
+an error of type DATABASE:CONDITION is signalled.
+
+On successful insert, the value of the &quot;_id&quot; field for
+the newly created record is returned.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:CONDITION
+See DATABASE:INVALID-COLLECTION</pre> </article> </li><li> <a name="DATABASE:ITERATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:ITERATE">ITERATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY FUNCTION &amp;KEY FIELDS (SKIP 0) AMOUNT SORT ACCUMULATE</code><code>)</code>  </header> <pre class="docstring">Iterates over the records in the collection that match the clauses.
+
+Effectively, FUNCTION is called with a single argument--
+a hash-table filled with the requested field values-- for
+each record in the collection that satisfies the QUERY.
+The fields in the table are keyed by their name as a
+string with the case converted downwards.
+
+The QUERY must be a value returned by the DATABASE:QUERY
+macro.
+
+If FIELDS is NIL, all fields are included. Otherwise it
+can be a list of field names to include in each record.
+The database may store more fields than were requested,
+but never less.
+
+If SORT is NIL, the order in which the records are passed
+is unpredictable and may be random with every call.
+Otherwise, SORT should be a list of lists, where each
+inner list should contain the name of a field, and either
+:ASC or :DSC for ascending or descending order.
+
+SKIP specifies the number of records to skip.
+
+If AMOUNT is NIL, all matching records are passed.
+Otherwise it poses an upper bound on the number of records
+that the function is called with.
+
+If ACCUMULATE is non-NIL, then the values returned by the
+function call are accumulated into a list and returned
+by the DATABASE:ITERATE call.
+
+If an invalid or inexistent field name is specified, an
+error of type DATABASE:INVALID-FIELD is signalled.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:SELECT
+See DATABASE:QUERY
+See DATABASE:INVALID-COLLECTION
+See DATABASE:INVALID-FIELD</pre> </article> </li><li> <a name="DATABASE:REMOVE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:REMOVE">REMOVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY &amp;KEY (SKIP 0) AMOUNT SORT</code><code>)</code>  </header> <pre class="docstring">Removes the records in the collection that match the clauses.
+
+See DATABASE:ITERATE for an explanation of the options.
+
+If the removal of the records fails for whatever reason,
+an error of type DATABASE:CONDITION is signalled.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:ITERATE
+See DATABASE:INVALID-COLLECTION</pre> </article> </li><li> <a name="DATABASE:SELECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:SELECT">SELECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY &amp;KEY FIELDS (SKIP 0) AMOUNT SORT</code><code>)</code>  </header> <pre class="docstring">Returns a list of hash-tables for the records that match the clauses.
+
+See DATABASE:ITERATE for an explanation of the options.
+
+The QUERY must be a value returned by the DATABASE:QUERY
+macro.
+
+If an invalid or inexistent field name is requested, an
+error of type DATABASE:INVALID-FIELD is signalled.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:ITERATE
+See DATABASE:QUERY
+See DATABASE:INVALID-COLLECTION
+See DATABASE:INVALID-FIELD</pre> </article> </li><li> <a name="DATABASE:STRUCTURE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:STRUCTURE">STRUCTURE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION</code><code>)</code>  </header> <pre class="docstring">Returns the structure of the collection.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+Note that the value returned by this does not have to be
+identical to the structure used to create the collection.
+The types in the returned structure may be upgraded
+variants of the defined types. The types returned do not
+have to correspond to the concrete types used to actually
+store the data.
+
+See DATABASE:CREATE</pre> </article> </li><li> <a name="DATABASE:UPDATE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:UPDATE">UPDATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">COLLECTION QUERY DATA &amp;KEY (SKIP 0) AMOUNT SORT</code><code>)</code>  </header> <pre class="docstring">Updates the records in the collection that match the clauses with the new data.
+
+See DATABASE:ITERATE for an explanation of the options.
+
+The DATA can be formatted as either an alist or a hash-
+table. If the data includes fields that are not defined
+in the structure of the collection, the implementation
+may signal an error of type DATABASE:INVALID-FIELD. If
+the data does not include a field that is defined in the
+structure of the collection, the field's value is not
+changed.
+
+If a data value is specified that does not match the
+field's type, an error of type DATABASE:INVALID-FIELD
+may be signalled.
+
+If the updating of the records fails for whatever
+reason, an error of type DATABASE:CONDITION is signalled.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:ITERATE
+See DATABASE:INVALID-COLLECTION</pre> </article> </li><li> <a name="DATABASE:QUERY"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:QUERY">QUERY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Constructs a value to be used for the QUERY argument in database operations.
+
+The query form must be of the following structure:
+
+FORM     ::= COMBINE | CLAUSE
+COMBINE  ::= (:and FORM*) | (:or FORM*) | (:not FORM)
+CLAUSE   ::= (OPERATOR VALUE VALUE) | (:in VALUE VALUE*)
+OPERATOR ::= := | :!= | :&gt; | :&lt; | :&lt;= | :&gt;= | :MATCHES
+VALUE    ::= (:field NAME) | 'NAME | LFORM
+NAME     --- A field name.
+LFORM    --- A lisp form that evaluates to a lisp value.
+
+Where the combinators have the following effect:
+
+  :AND  The form is true if all of the subforms are true.
+  :OR   The form is true if one of the subforms is true.
+  :NOT  The form is true if the subform is not true.
+
+And the clauses have the following comparison behaviour:
+
+  :=        True if the two values are EQUAL.
+  :!=       True if the two values are not EQUAL.
+  :&gt;        True if the two values are &gt; if they are both
+            of type :integer or :float, or STRING&gt; if they
+            are both of type :varchar or :text.
+  :&lt;        True if the two values are &lt; if they are both
+            of type :integer or :float, or STRING&lt; if they
+            are both of type :varchar or :text
+  :&lt;=       True if the two values are &lt;= if they are both
+            of type :integer or :float, or STRING&lt;= if they
+            are both of type :varchar or :text
+  :&gt;=       True if the two values are &gt; if they are both
+            of type :integer or :float, or STRING&gt;= if they
+            are both of type :varchar or :text
+  :MATCHES  True if the first value matches the regular
+            expression of the second value. The extend of
+            regular-expression syntax support are up to the
+            implementation, but the following basic operators
+            must be understood:
+              . [] [^] * + ? () {} \
+            The following character classes must be understood
+            as well:
+              \d \w \s \D \W \S
+  :IN       True if the first value is EQUAL to one of the
+            remaining values.
+
+If the form does not correspond to the above description,
+an error is signalled at macro expansion time.
+
+Note that a special exception is made in the case of fields
+of type ID, where the equality comparison (:=, :!=, :IN) is
+performed in an implementation-dependant manner. The other
+comparison operators cannot be used with ID type fields.
+
+Examples for queries:
+
+   (db:query (:= 'name &quot;Hans&quot;))
+
+Matches all records with a name field of &quot;Hans&quot;.
+
+   (db:query (:= '_id id))
+
+Matches the record with the ID equivalent to the one stored
+in the ID variable.
+
+   (db:query (:and (:= 'health 0) (:= 'lives 0)))
+
+Matches all records where the health and lives fields are 0.
+
+   (db:query (:IN 'name &quot;Guybrush&quot; &quot;Elaine&quot; &quot;LeChuck&quot;))
+
+Matches all records where the name is one of &quot;Guybrush&quot;,
+&quot;Elaine&quot;, or &quot;LeChuck&quot;.
+
+   (db:query (:MATCHES 'tags &quot;,?foo,?&quot;))
+
+Matches all records whose tags includes the &quot;foo&quot; tag.
+
+See DATABASE:CREATE
+See DATABASE:ITERATE
+See DATABASE:SELECT
+See DATABASE:COUNT
+See DATABASE:REMOVE
+See DATABASE:UPDATE</pre> </article> </li><li> <a name="DATABASE:WITH-TRANSACTION"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#DATABASE:WITH-TRANSACTION">WITH-TRANSACTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Performs the database operations in its body within a transaction that ensures coherence.
+
+If two transactions occur in parallel that would each
+modify the same set of data and conflict in some manner,
+one of the two transactions must be aborted by way of
+an error being signalled.
+
+If the transaction body is exited abnormally, which is
+to say exited before the last form in the body has
+finished execution and can return its value, all the
+database operations that were performed within the body
+are reverted in such a way that it appears as if they
+had never been performed in the first place.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
