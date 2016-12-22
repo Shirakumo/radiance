@@ -1,8 +1,6 @@
 ## About Radiance
 Radiance is a web application environment, which is sort of like a web framework, but more general, more flexible. It should let you write personal websites and generally deployable applications easily and in such a way that they can be used on practically any setup without having to undergo special adaptations.
 
-Radiance is currently lacking in documentation to be advocated as a ready-to-use framework. Please be patient until the remaining [issues](https://github.com/Shirakumo/radiance/issues) have been cleaned up. It is however already being used in a production setting for [TymoonNET](https://blog.tymoon.eu/). See the remaining [Shirakumo projects](https://github.com/Shirakumo) for examples of applications built using Radiance.
-
 ## Getting It
 Radiance and associated modules and applications are distributed via Quicklisp in a separate dist. To install Radiance, do:
 
