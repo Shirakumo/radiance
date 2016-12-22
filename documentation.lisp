@@ -2576,6 +2576,10 @@ requested user is not known.
 When a new user is created, the USER:CREATE hook is
 triggered.
 
+The user named \"anonymous\" must always exist and is
+automatically created by the implementation. It is
+intended to be used for unauthenticated users.
+
 Note that fetching users while the user system is not
 yet ready will result in undefined behaviour.
 
