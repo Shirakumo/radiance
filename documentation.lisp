@@ -2499,61 +2499,179 @@ See SESSION:SESSION"))
 ;; User
 (docs:define-docs
   (type user:condition
-    "")
+    "Base condition type for conditions related to the user interface.")
 
   (type user:not-found
-    "")
+    "Condition signalled when an unknown user was requested.
+
+See USER:CONDITION
+See USER:GET")
 
   (type user:user
-    "")
+    "Container for a user.
+
+A user is an object that represents a certain person with
+access to the system. Each user has a uniquely identifying
+username string of 1-32 case-insensitive characters of the
+following range:
+
+  \"abcdefghijklmnopqrstuvwxyz0123456789_-.\"
+
+Each user object can store arbitrary information in fields.
+
+A user has a set of permissions that describe which
+protected resources the user should be granted access to.
+These permissions are laid out in the form of trees,
+where each permission describes a certain path down a
+tree. For example, the following permission
+
+  foo.bar
+
+would grant access to the permissions foo.bar, foo.bar.baz
+and so forth, but not to foo or foo.bam . Permissions can
+be denoted by either dot-delimited strings, or lists.
+
+Note that the user system may need to be readied up first
+before it can be reliably used. Attempting to perform any
+user operations before the USER:READY hook has been
+triggered or after the USER:UNREADY hook has been triggered
+will result in undefined behaviour.
+
+See PERM
+See USER:=
+See USER:LIST
+See USER:GET
+See USER:USERNAME
+See USER:FIELDS
+See USER:FIELD
+See USER:REMOVE
+See USER:CHECK
+See USER:GRANT
+See USER:REVOKE")
 
   (function user:=
-    "")
+    "Compares two user object to see if they're the same.
+
+See USER:USER")
 
   (function user:list
-    "")
+    "Returns a fresh list of all known user objects.
+
+This may be a very costly operation.
+
+See USER:USER")
 
   (function user:get
-    "")
+    "Returns the requested user object.
+
+IF-DOES-NOT-EXIST may be one of the following values,
+which decides on the behaviour in the case where the
+requested user is not known.
+
+  :CREATE     The user is created.
+  :ERROR      An error of type USER:NOT-FOUND is signalled.
+  :ANONYMOUS  The anonymous standard user is returned.
+  NIL         NIL is returned.
+
+When a new user is created, the USER:CREATE hook is
+triggered.
+
+Note that fetching users while the user system is not
+yet ready will result in undefined behaviour.
+
+See USER:READY
+See USER:UNREADY
+See USER:USER")
 
   (function user:username
-    "")
+    "Returns the username of the requested user.
+
+See USER:USER")
 
   (function user:fields
-    "")
+    "Returns an alist of field names to values of the user.
+
+See USER:USER
+See USER:FIELD
+See USER:REMOVE-FIELD")
 
   (function user:field
-    "")
+    "Accessor to a field on the user.
 
-  (function user:save
-    "")
+Keys must be strings of a maximum length of 64.
+Values must be strings, but can be of arbitrary length.
 
-  (function user:saved-p
-    "")
+See USER:USER
+See USER:REMOVE-FIELD
+See USER:FIELDS")
 
-  (function user:discard
-    "")
+  (function user:remove-field
+    "Removes the requested field from the user.
+
+See USER:USER
+See USER:FIELD
+See USER:FIELDS")
 
   (function user:remove
-    "")
+    "Removes the given user.
+
+This deletes all associated data of the user.
+
+On successful deletion, the USER:REMOVE hook is triggered.
+
+See USER:USER")
 
   (function user:check
-    "")
+    "Checks whether the user is permitted access to the given permission branch.
+
+See USER:USER
+See USER:GRANT
+See USER:REVOKE")
 
   (function user:grant
-    "")
+    "Grants the user access to the given permission branches.
+
+See USER:USER
+See USER:CHECK
+See USER:REVOKE")
 
   (function user:revoke
-    "")
+    "Revokes access from the given permission branches.
+
+See USER:USER
+See USER:CHECK
+See USER:GRANT")
 
   (function user:add-default-permissions
-    "")
+    "Adds the given branches as default permissions to be granted to newly created users.
+
+Note that this will not retroactively grant permissions and
+only comes into effect for users created after a call to
+this has been run.
+
+See USER:USER
+See USER:GRANT")
 
   (function user:action
-    "")
+    "Records that the named action has been performed on the user.
+
+This is used to keep a record of user actions. The ACTION
+can be an arbitrary string that should primarily be human-
+readable. PUBLIC denotes whether the action should be
+publicly visible-- in other words, it does not contain
+potentially sensitive information.
+
+See USER:ACTIONS")
 
   (function user:actions
-    ""))
+    "Returns a truncated list of actions that the user performed.
+
+If PUBLIC is non-NIL, only actions that can be publicly
+shown are returned. If OLDEST-FIRST is non-NIL, actions
+are returned sorted from oldest to newest; otherwise they
+are sorted newest to oldest.
+
+See USER:ACTION"))
 
 ;; Profile
 (docs:define-docs
