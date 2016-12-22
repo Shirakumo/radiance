@@ -290,49 +290,92 @@ While you can start a server manually by using the appropriate interface functio
 See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`
 
 ## Standard Interfaces
-### ban
+These interfaces are distributed with Radiance and are part of the core package. Libraries may provide for additional interfaces, however. For implementations of standard interfaces, the following relaxations of interface definition constraints are allowed:
 
-See `ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`
-
-### rate
-
-See `rate:define-limit`, `rate:left`, `rate:with-limitation`
+The lambda-lists that contain `&key` arguments can be extended by further, implementation-dependant keyword arguments. Lambda-lists that contain `&optional` but no `&key` or `&rest` may be extended by further optional arguments. Lambda-lists that contain only required arguments may be extended by further optional or keyword arguments.
 
 ### admin
+This interface provides for an administration page. It should be used for any kind of user-configurable settings, or system information display. Note that despite being called "administration", this is not intended solely for administrators of the system. The page should be usable for any user.
+
+The administration page is required to be able to display a categorised menu, and a panel. The panels are provided by other modules and can be added through `admin:define-panel`. Panels that give access to sensitive operations should be appropriately restricted through the `:access` option and a non-default permission. See the user interface for an explanation on the permissions.
+
+In order to link to the administration page, or a specific panel on it, use the `page` resource type.
 
 See `admin:list-panels`, `admin:remove-panel`, `admin:define-panel`, `admin:panel`
 
-### cache
-
-See `cache:get`, `cache:renew`, `cache:with-cache`
-
 ### auth
+The authentication interface is responsible for tying a user to a request. For this reason it must provide some manner by which a user can authenticate themselves against the system. How this is done exactly is up to the implementation. The implementation must however provide a page on which the authentication process is initiated. You can get a URI to it through the `page` resource and passing `"login"` as argument.
+
+You can test for the user currently tied to the request by `auth:current`. This may also return `NIL`, in which case the user should be interpreted as being `"anonymous"`. See the user interface for more information.
 
 See `auth:*login-timeout*`, `auth:page`, `auth:current`, `auth:associate`
 
+### ban
+This interface provides for IP-banning. It must prevent any client connecting through a banned IP from seeing the content of the actual page they're requesting. Bans can be lifted manually or automatically after a timeout. The implementation may or may not exert additional effort to track users across IPs.
+
+See `ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`
+
+### cache
+The cache interface provides for a generic caching mechanism with a customisable invalidation test. You can explicitly renew the cache by `cache:renew`. To define a cached block, simply use `cache:with-cache`, which will cause the cached value of the body to be returned if the test form evaluates to true.
+
+The exact manner by which the cached value is stored is up to the implementation.
+
+See `cache:get`, `cache:renew`, `cache:with-cache`
+
+### database
+This interface provides you with a data persistence layer, usually called a database. This does not have to be a relational database, but may be one. In order to preserve implementation variance, only basic database operations are supported (no joins, triggers, etc). Data types are also restricted to integers, floats, and strings. Despite these constraints, the database interface is sufficiently useful for most applications.
+
+Note that particular terminology is used to distance from traditional RDBMS terms: a schema is called a "structure". A table is called a "collection". A row is called a "record".
+
+Performing database operations before the database is connected results in undefined behaviour. Thus, you should put your collection creation forms (`db:create`) within a trigger on `db:connected`. Radiance ensures that the database is connected while Radiance is running, so using the database interface in any page, api, or uri dispatcher definitions is completely fine.
+
+The functions for actually performing data storage are, intuitively enough, called `db:insert`, `db:remove`, `db:update`, `db:select`, and `db:iterate`. The behaviour thereof should be pretty much what you'd expect. See the respective docstrings for a close inspection. Also see the docstring of `db:create` for a lengthy explanation on how to create a collection and what kind of restrictions are imposed.
+
+The database must ensure that once a data manipulation operation has completed, the changes caused by it will be persisted across a restart of Radiance, the lisp image, or the machine, even in the case of an unforeseen crash.
+
+See `database:condition`, `database:connection-failed`, `database:connection-already-open`, `database:collection-condition`, `database:invalid-collection`, `database:collection-already-exists`, `database:invalid-field`, `database:id`, `database:ensure-id`, `database:connect`, `database:disconnect`, `database:connected-p`, `database:collections`, `database:collection-exists-p`, `database:create`, `database:structure`, `database:empty`, `database:drop`, `database:iterate`, `database:select`, `database:count`, `database:insert`, `database:remove`, `database:update`, `database:with-transaction`, `database:query`, `database:connected`, `database:disconnected`
+
+### logger
+This interface provides primitive logging functions so that you can log messages about relevant happenings in the system. The actual configuration of what gets logged where and how is up to the implementation and the administrator of the system.
+
+See `logger:log`, `logger:trace`, `logger:debug`, `logger:info`, `logger:warn`, `logger:error`, `logger:severe`, `logger:fatal`
+
+### profile
+The profile interface provides extensions to the user interface that are commonly used in applications that want users to have some kind of presence. As part of this, the interface must provide for a page on which a user's "profile" can be displayed. The profile must show panels of some kind. The panels are provided by other modules and can be added by `profile:define-panel`.
+
+You can get a URI pointing to the profile page of a user through the `page` resource type.
+
+The interface also provides access to an "avatar image" to visually identify the user (`profile:avatar`), a customisable name that the user can change (`profile:name`), and field types to what kind of data is contained in a user's field and whether it should be public information or not (`profile:fields` `profile:add-field` `profile:remove-field`).
+
+See `profile:page`, `profile:avatar`, `profile:name`, `profile:fields`, `profile:add-field`, `profile:remove-field`, `profile:list-panels`, `profile:remove-panel`, `profile:define-panel`, `profile:panel`
+
+### rate
+This interface provides for a rate limitation mechanism to prevent spamming or overly eager access to potentially sensitive or costly resources. This happens in two steps. First, the behaviour of the rate limitation is defined for a particular resource by `rate:define-limit`. Then the resource is protected through the `rate:with-limitation` macro. If the access to the block by a certain user is too frequent, the block is not called, and the code in the limit definition is evaluated instead.
+
+Note that rate limitation is per-client, -user, or -session depending on the implementation, but certainly not global.
+
+See `rate:define-limit`, `rate:left`, `rate:with-limitation`
+
+### server
+This and the logger interface are the only interfaces Radiance requires an implementation for in order to start. It is responsible for accepting and replying to requests in some manner. The implementation must accept requests and relay them to the Radiance `request` function, and then relay the returned `response` back to the requester.
+
+Note that the actual arguments that specify the listener behaviour are implementation-dependant, as is configuration thereof. However, if applicable, the implementation must provide for a standard listener that is accessible on `localhost:8080` and is started when `radiance:startup` is called.
+
+See `server:start`, `server:stop`, `server:listeners`, `server:started`, `server:stopped`
+
 ### session
+The session interface provides for tracking a client over the course of multiple requests. It however cannot guarantee to track clients perfectly, as they may do several things in order to cloak or mask themselves or falsify information. Still, for most users, the session tracking should work fine enough.
+
+The session interface is usually used by other interfaces or lower-lying libraries in order to provide persistence of information such as user authentication.
 
 See `session:*default-timeout*`, `session:session`, `session:=`, `session:start`, `session:get`, `session:list`, `session:id`, `session:field`, `session:timeout`, `session:end`, `session:active-p`, `session:create`
 
 ### user
+This interface provides for persistent user objects and a permissions system. It does not take care of authentication, identification, tracking, or anything of the sort. It merely provides a user object upon which to build and with which permissions can be managed.
+
+See `user:user` for a description of permissions and their behaviour.
 
 See `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:action`, `user:actions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`
-
-### profile
-
-See `profile:page`, `profile:avatar`, `profile:name`, `profile:fields`, `profile:add-field`, `profile:remove-field`, `profile:list-panels`, `profile:remove-panel`, `profile:define-panel`, `profile:panel`
-
-### server
-
-See `server:start`, `server:stop`, `server:listeners`, `server:started`, `server:stopped`
-
-### logger
-
-See `logger:log`, `logger:trace`, `logger:debug`, `logger:info`, `logger:warn`, `logger:error`, `logger:severe`, `logger:fatal`
-
-### database
-
-See `database:condition`, `database:connection-failed`, `database:connection-already-open`, `database:collection-condition`, `database:invalid-collection`, `database:collection-already-exists`, `database:invalid-field`, `database:id`, `database:ensure-id`, `database:connect`, `database:disconnect`, `database:connected-p`, `database:collections`, `database:collection-exists-p`, `database:create`, `database:structure`, `database:empty`, `database:drop`, `database:iterate`, `database:select`, `database:count`, `database:insert`, `database:remove`, `database:update`, `database:with-transaction`, `database:query`, `database:connected`, `database:disconnected`
 
 ## Also See
 

@@ -2624,6 +2624,14 @@ See USER:USER")
   (function user:check
     "Checks whether the user is permitted access to the given permission branch.
 
+See USER:USER for a description of permission branches.
+
+Note that a permission is granted as long as there is
+a granted permission on the user that is /higher/ than
+that which is checked against. Eg, if the user has the
+permission of foo granted, then checking whether any of
+foo.bar, foo.bar.baz, etc. are granted will yield true.
+
 See USER:USER
 See USER:GRANT
 See USER:REVOKE")

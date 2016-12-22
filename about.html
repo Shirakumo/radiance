@@ -123,7 +123,7 @@ DOMAIN  ::= ('a'..'Z' | '0'..'9' | '-')
 PORT    ::= ('0'..'9'){1, 5}
 PATH    ::= .*</code></pre> <p>You can use <code><a href="#RADIANCE-CORE:URI-TO-URL">uri-to-url</a></code> to turn a URI into a concrete URL. Reversal, encoding, and proper formatting of all the parts is handled for you automatically there.</p> <p>See <code><a href="#RADIANCE-CORE:URI">uri</a></code>, <code><a href="#RADIANCE-CORE:DOMAINS">domains</a></code>, <code><a href="#RADIANCE-CORE:PORT">port</a></code>, <code><a href="#RADIANCE-CORE:PATH">path</a></code>, <code><a href="#RADIANCE-CORE:MATCHER">matcher</a></code>, <code><a href="#RADIANCE-CORE:URI-STRING">uri-string</a></code>, <code><a href="#RADIANCE-CORE:MAKE-URI">make-uri</a></code>, <code><a href="#RADIANCE-CORE:MAKE-URL">make-url</a></code>, <code><a href="#RADIANCE-CORE:ENSURE-URI">ensure-uri</a></code>, <code><a href="#RADIANCE-CORE:COPY-URI">copy-uri</a></code>, <code><a href="#RADIANCE-CORE:PARSE-URI">parse-uri</a></code>, <code><a href="#RADIANCE-CORE:URI&lt;">uri&lt;</a></code>, <code><a href="#RADIANCE-CORE:URI&gt;">uri&gt;</a></code>, <code><a href="#RADIANCE-CORE:URI=">uri=</a></code>, <code><a href="#RADIANCE-CORE:URI-MATCHES">uri-matches</a></code>, <code><a href="#RADIANCE-CORE:MERGE-URIS">merge-uris</a></code>, <code><a href="#RADIANCE-CORE:REPRESENT-URI">represent-uri</a></code>, <code><a href="#RADIANCE-CORE:URI-TO-URL">uri-to-url</a></code>.</p> <h3>Request and Response</h3> <p>In order to encapsulate the data that is sent to  and from, we have the idea of a Request (<code><a href="#RADIANCE-CORE:REQUEST">request</a></code>) and Response (<code><a href="#RADIANCE-CORE:RESPONSE">response</a></code>) object. The Request object holds the URI that represents to which location the request goes, and all the data contained in the HTTP payload like post, get, header, and cookie variables. The Response object holds the return-code, headers, cookies, and the actual body data.</p> <p>During the processing of a request, these two objects must always be present and bound to the <code><a href="#RADIANCE-CORE:*REQUEST*">*request*</a></code> and <code><a href="#RADIANCE-CORE:*RESPONSE*">*response*</a></code> variables. They encapsulate a lot of very vital information that is necessary to generate dynamic pages. Additionally, the Request contains an opaque <code><a href="#RADIANCE-CORE:DATA">data</a></code> table in which you can store arbitrary data. This is useful when you need to exchange pieces of information between individual parts of the system that may be reached during the request execution.</p> <p>Requests don't necessarily have to come from the HTTP server. In order to test things you can also construct a request yourself and send it out programmatically. Whatever the case, the primary interface to dispatch a request is called <code><a href="#RADIANCE-CORE:REQUEST">request</a></code>. This will construct a Request and Response object for you and appropriately handle the URI. If you want to do that yourself and <em>really</em> just send out a complete Request object, you can use <code><a href="#RADIANCE-CORE:EXECUTE-REQUEST">execute-request</a></code>.</p> <p>For the actual handling of a request, see dispatchers, pages, and API endpoints.</p> <p>See <code><a href="#RADIANCE-CORE:*REQUEST*">*request*</a></code>, <code><a href="#RADIANCE-CORE:*RESPONSE*">*response*</a></code>, <code><a href="#RADIANCE-CORE:*DEFAULT-EXTERNAL-FORMAT*">*default-external-format*</a></code>, <code><a href="#RADIANCE-CORE:*DEFAULT-CONTENT-TYPE*">*default-content-type*</a></code>, <code><a href="#RADIANCE-CORE:REQUEST">request</a></code>, <code><a href="#RADIANCE-CORE:URI">uri</a></code>, <code><a href="#RADIANCE-CORE:HTTP-METHOD">http-method</a></code>, <code><a href="#RADIANCE-CORE:HEADERS">headers</a></code>, <code><a href="#RADIANCE-CORE:POST-DATA">post-data</a></code>, <code><a href="#RADIANCE-CORE:GET-DATA">get-data</a></code>, <code><a href="#RADIANCE-CORE:COOKIES">cookies</a></code>, <code><a href="#RADIANCE-CORE:USER-AGENT">user-agent</a></code>, <code><a href="#RADIANCE-CORE:REFERER">referer</a></code>, <code><a href="#RADIANCE-CORE:DOMAIN">domain</a></code>, <code><a href="#RADIANCE-CORE:REMOTE">remote</a></code>, <code><a href="#RADIANCE-CORE:DATA">data</a></code>, <code><a href="#RADIANCE-CORE:ISSUE-TIME">issue-time</a></code>, <code><a href="#RADIANCE-CORE:RESPONSE">response</a></code>, <code><a href="#RADIANCE-CORE:DATA">data</a></code>, <code><a href="#RADIANCE-CORE:RETURN-CODE">return-code</a></code>, <code><a href="#RADIANCE-CORE:CONTENT-TYPE">content-type</a></code>, <code><a href="#RADIANCE-CORE:EXTERNAL-FORMAT">external-format</a></code>, <code><a href="#RADIANCE-CORE:HEADERS">headers</a></code>, <code><a href="#RADIANCE-CORE:COOKIES">cookies</a></code>, <code><a href="#RADIANCE-CORE:COOKIE">cookie</a></code>, <code><a href="#RADIANCE-CORE:NAME">name</a></code>, <code><a href="#RADIANCE-CORE:VALUE">value</a></code>, <code><a href="#RADIANCE-CORE:DOMAIN">domain</a></code>, <code><a href="#RADIANCE-CORE:PATH">path</a></code>, <code><a href="#RADIANCE-CORE:EXPIRES">expires</a></code>, <code><a href="#RADIANCE-CORE:HTTP-ONLY">http-only</a></code>, <code><a href="#RADIANCE-CORE:SECURE">secure</a></code>, <code><a href="#RADIANCE-CORE:COOKIE-HEADER">cookie-header</a></code>, <code><a href="#RADIANCE-CORE:COOKIE">cookie</a></code>, <code><a href="#RADIANCE-CORE:GET-VAR">get-var</a></code>, <code><a href="#RADIANCE-CORE:POST-VAR">post-var</a></code>, <code><a href="#RADIANCE-CORE:POST/GET">post/get</a></code>, <code><a href="#RADIANCE-CORE:HEADER">header</a></code>, <code><a href="#RADIANCE-CORE:FILE">file</a></code>, <code><a href="#RADIANCE-CORE:REDIRECT">redirect</a></code>, <code><a href="#RADIANCE-CORE:SERVE-FILE">serve-file</a></code>, <code><a href="#RADIANCE-CORE:REQUEST-RUN-TIME">request-run-time</a></code>, <code><a href="#RADIANCE-CORE:*DEBUGGER*">*debugger*</a></code>, <code><a href="#RADIANCE-CORE:HANDLE-CONDITION">handle-condition</a></code>, <code><a href="#RADIANCE-CORE:RENDER-ERROR-PAGE">render-error-page</a></code>, <code><a href="#RADIANCE-CORE:EXECUTE-REQUEST">execute-request</a></code>, <code><a href="#RADIANCE-CORE:SET-DATA">set-data</a></code>, <code><a href="#RADIANCE-CORE:REQUEST">request</a></code></p> <h3>Route</h3> <p>Before a Request can be dispatched on, it goes through something called the routing system. Unlike in other frameworks, where 'routes' designate what handles a request, in Radiance a Route (<code><a href="#RADIANCE-CORE:ROUTE">route</a></code>) is a form of URI translator. This part of the system is what's responsible for creating and upholding two &quot;universes&quot;, an internal and an external one.</p> <p>The internal universe is the one actual web applications live in. The external universe is the one the HTTP server and a user of the website lives in. This distinction is necessary in order to allow you to, one one hand, write web applications without having to worry about what a potential setup on a server might look like at some point. You don't have to worry about what kind of domain, port, path setup may be necessary to run your application. On the other hand, it allows you, as a webadmin, to customise and run the system to your exact desires without fear of breaking things.</p> <p>This all is facilitated by routes, of which there are two kinds: mapping, and reversal routes. Mapping routes are responsible for turning a URI from the external universe into one of the internal universe. Usually this involves cutting away the top-level domain and perhaps doing a mapping of subdomains. Reversal routes do the opposite-- they go from the internal universe to the external. This is necessary in order to make links in your served pages refer to resources that are actually accessible from the outside. Usually this involves reversing the subdomain mapping and adding the top-level domain again.</p> <p>Routes can perform arbitrary work. At the most basic level, they are merely functions that modify a URI in some fashion. This allows you to create a very flexible system that should be powerful enough to accommodate to all of your needs as an administrator. As an application writer, you just need to make sure to use <code><a href="#RADIANCE-CORE:EXTERNAL-URI">external-uri</a></code> or <code><a href="#RADIANCE-CORE:URI-TO-URL">uri-to-url</a></code> on all of the links that you put into your pages.</p> <p>See <code><a href="#RADIANCE-CORE:ROUTE">route</a></code>, <code><a href="#RADIANCE-CORE:NAME">name</a></code>, <code><a href="#RADIANCE-CORE:DIRECTION">direction</a></code>, <code><a href="#RADIANCE-CORE:PRIORITY">priority</a></code>, <code><a href="#RADIANCE-CORE:TRANSLATOR">translator</a></code>, <code><a href="#RADIANCE-CORE:ROUTE">route</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-ROUTE">remove-route</a></code>, <code><a href="#RADIANCE-CORE:LIST-ROUTES">list-routes</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-ROUTE">define-route</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-MATCHING-ROUTE">define-matching-route</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-TARGET-ROUTE">define-target-route</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-STRING-ROUTE">define-string-route</a></code>, <code><a href="#RADIANCE-CORE:INTERNAL-URI">internal-uri</a></code>, <code><a href="#RADIANCE-CORE:EXTERNAL-URI">external-uri</a></code></p> <h3>URI Dispatcher</h3> <p>Finally we come to the part that actually generates content for a request. URI dispatchers are a subclass of URI that also carry a name, a function, and a priority. The live in a priority-sorted list, which is processed whenever a request arrives. The Request's URI is matched against each dispatcher. The function of the first dispatcher that matches is then executed.</p> <p>And that's it. The dispatcher's function is responsible for setting the necessary values in the Response object to deliver the page content. In order to do this it can either directly set the <code><a href="#RADIANCE-CORE:DATA">data</a></code> field of the Response object, or you can return an appropriate value from the function. Radiance only accepts four types of values: <code><a href="http://l1sp.org/cl/stream">stream</a></code>, <code><a href="http://l1sp.org/cl/pathname">pathname</a></code>, <code><a href="http://l1sp.org/cl/string">string</a></code>, and <code>(<a href="http://l1sp.org/cl/array">array</a> (<a href="http://l1sp.org/cl/unsigned-byte">unsigned-byte</a> 8))</code>.</p> <p>If a URI dispatcher does not have an explicit priority number, its priority over others is determined by the specificity of the URI. See the URI sorting function <code><a href="#RADIANCE-CORE:URI&gt;">uri&gt;</a></code> for an explanation on how exactly this is calculated.</p> <p>See <code><a href="#RADIANCE-CORE:URI-DISPATCHER">uri-dispatcher</a></code>, <code><a href="#RADIANCE-CORE:NAME">name</a></code>, <code><a href="#RADIANCE-CORE:DISPATCH-FUNCTION">dispatch-function</a></code>, <code><a href="#RADIANCE-CORE:PRIORITY">priority</a></code>, <code><a href="#RADIANCE-CORE:URI-DISPATCHER">uri-dispatcher</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-URI-DISPATCHER">remove-uri-dispatcher</a></code>, <code><a href="#RADIANCE-CORE:LIST-URI-DISPATCHERS">list-uri-dispatchers</a></code>, <code><a href="#RADIANCE-CORE:URI-DISPATCHER&gt;">uri-dispatcher&gt;</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-URI-DISPATCHER">define-uri-dispatcher</a></code>, <code><a href="#RADIANCE-CORE:DISPATCH">dispatch</a></code></p> <h3>Page</h3> <p>Pages are what you will likely use to define your actual content serving functions. However, a page is just a uri-dispatcher with some extra functionality in the definition macro that makes things easier on you. Most notably are the extensible options, for which you can find an explanation below.</p> <p>There are a couple of default pages set up by Radiance itself. First there's the <code><a href="#RADIANCE-CORE:FAVICON">favicon</a></code> and <code><a href="#RADIANCE-CORE:ROBOTS">robots</a></code> page, which simply serve the respective files from the <code>data/</code> directory. You'll probably want to either provide your own pages for that or update the files on your production server.</p> <p>Then there's the <code><a href="#RADIANCE-CORE:STATIC">static</a></code> page, which is responsible for serving static contents for all web applications and modules. It should be active on any domain and always on the path <code>/static/...</code> where <code>...</code> must have a form where the first directory is the name of a module, and the rest is a path within that module's <code>static/</code> directory. This allows you to always be able to refer to static files like CSS, JS, and images through a common path.</p> <p>Finally there's the <code><a href="#RADIANCE-CORE:API">api</a></code> page, which is responsible for handling the dispatch of API endpoints, which are explained in the following section. The page acts similarly to the static one by capturing the <code>/api/...</code> path on all domains.</p> <p>See <code><a href="#RADIANCE-CORE:PAGE">page</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-PAGE">remove-page</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-PAGE">define-page</a></code></p> <h3>API Endpoint</h3> <p>Radiance provides integrated support for REST API definition. This is not just a tacked-on feature, but rather because most modern applications want to provide an API of some kind, and because Radiance advises a certain way of writing your applications that necessarily involves API endpoints.</p> <p>Conceptually, API endpoints are functions that are callable through a browser request. Their response is then serialised to a format that is readable by the requester, whatever that may be. Important to remember however is that API endpoints should be usable by both users and programs. Radiance encourages this because usually any kind of action that can be performed programmatically through an API will also have to be performed by the user in some way. In order to avoid duplication, the two can be conflated.</p> <p>As such, usually any kind of data modification action should be provided through an API endpoint that reacts slightly differently depending on whether a user or an application requests it. In the case of a user, it should usually redirect back to an appropriate page, and in the case of an application it should provide a data payload in a readable format.</p> <p>The first part of all of this is the API format system, which is responsible for serialising data to some specified format. By default only an S-expression based format is supplied, but a contrib to get JSON output can easily be loaded.</p> <p>The second part is the specification of the <code>browser</code> POST/GET parameter. If that parameter contains the exact string <code>&quot;true&quot;</code>, then the API request is treated as coming from a user, and thus a redirect rather than a data payload should be outputted.</p> <p>Your application should make use of those things in order to provide a properly integrated api. Now, an actual endpoint definition is composed of a name, a raw function, a lambda-list describing the arguments of the function, and a request parsing function. Typically for your arguments, only required and optional arguments make sense. After all, an HTTP request only has &quot;keyword arguments&quot; that it can provide, and those can either be present or missing.</p> <p>The name of an API endpoint also serves as the identifier that tells you where you can reach it. API endpoints live on the <code>/api/</code> path, followed by the name of the endpoint. As such, you are responsible for prefixing your endpoints with the name of your module or application in order to avoid accidentally tripping over other endpoints. This is unlike in uri dispatchers, because API endpoints have to match exactly and don't allow any ambiguity or processing of the path. Thus every endpoint must have a unique path, which can also immediately serve as the name.</p> <p>The raw function is the function that the API provides an interface for. It is responsible for performing the requested action and returning the appropriate data as described above. For returning formatted API data, see <code><a href="#RADIANCE-CORE:API-OUTPUT">api-output</a></code>. For redirecting in the case of a browser request, see <code><a href="#RADIANCE-CORE:REDIRECT">redirect</a></code>.</p> <p>Finally, the request parsing function is responsible for taking a Request object, extracting the arguments the function needs from it, and finally calling that function with the appropriate arguments-- if possible. The parsing function may signal an <code><a href="#RADIANCE-CORE:API-ARGUMENT-MISSING">api-argument-missing</a></code> error if a required argument is missing. Superfluous arguments should be ignored.</p> <p>You can also programmatically call an API endpoint using <code><a href="#RADIANCE-CORE:CALL-API">call-api</a></code>, or simulate a Request call with <code><a href="#RADIANCE-CORE:CALL-API-REQUEST">call-api-request</a></code>, without having to go through the whole URI dispatch mechanism.</p> <p>Similarly to pages, API endpoint definitions also accept extensible options that make definition simpler. See the following section for an explanation of options.</p> <p>See <code><a href="#RADIANCE-CORE:API">api</a></code>, <code><a href="#RADIANCE-CORE:*DEFAULT-API-FORMAT*">*default-api-format*</a></code>, <code><a href="#RADIANCE-CORE:*SERIALIZE-FALLBACK*">*serialize-fallback*</a></code>, <code><a href="#RADIANCE-CORE:API-FORMAT">api-format</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-API-FORMAT">remove-api-format</a></code>, <code><a href="#RADIANCE-CORE:LIST-API-FORMATS">list-api-formats</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-API-FORMAT">define-api-format</a></code>, <code><a href="#RADIANCE-CORE:API-OUTPUT">api-output</a></code>, <code><a href="#RADIANCE-CORE:API-SERIALIZE">api-serialize</a></code>, <code><a href="#RADIANCE-CORE:API-ENDPOINT">api-endpoint</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-API-ENDPOINT">remove-api-endpoint</a></code>, <code><a href="#RADIANCE-CORE:LIST-API-ENDPOINTS">list-api-endpoints</a></code>, <code><a href="#RADIANCE-CORE:API-ENDPOINT">api-endpoint</a></code>, <code><a href="#RADIANCE-CORE:NAME">name</a></code>, <code><a href="#RADIANCE-CORE:HANDLER">handler</a></code>, <code><a href="#RADIANCE-CORE:ARGSLIST">argslist</a></code>, <code><a href="#RADIANCE-CORE:REQUEST-HANDLER">request-handler</a></code>, <code><a href="#RADIANCE-CORE:CALL-API-REQUEST">call-api-request</a></code>, <code><a href="#RADIANCE-CORE:CALL-API">call-api</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-API">define-api</a></code></p> <h3>Options</h3> <p>Options are a way of providing an extensible definition macro. This is useful when a framework provides a common way of defining something, but other parts may want to provide extensions to that in order to make common operations shorter. For example, a common task is to restrict a page or API endpoint to people who have the required access credentials.</p> <p>In order to facilitate this, Radiance provides a rather generic options mechanism. Options are divided up by an option type that designates to which definition macro the option belongs. Radiance provides the <code><a href="#RADIANCE-CORE:API">api</a></code> and <code><a href="#RADIANCE-CORE:PAGE">page</a></code> option types out of the box.</p> <p>Each option has a keyword for a name and an expander function that must accept a number of arguments, depending on the option type. Always provided as arguments are the name of the thing being defined, the list of body forms of the definition, and a final, optional, value that was provided to the option in the options list, if it was mentioned at all. This expansion function is then responsible for transforming the body forms of the definition macro in some way. It can also emit a second form that is placed outside of the definition itself, in order to allow setting up the environment in some manner.</p> <p>See <code><a href="#RADIANCE-CORE:OPTION">option</a></code>, <code><a href="#RADIANCE-CORE:OPTION-TYPE">option-type</a></code>, <code><a href="#RADIANCE-CORE:NAME">name</a></code>, <code><a href="#RADIANCE-CORE:EXPANDER">expander</a></code>, <code><a href="#RADIANCE-CORE:OPTION">option</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-OPTION">remove-option</a></code>, <code><a href="#RADIANCE-CORE:LIST-OPTIONS">list-options</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-OPTION">define-option</a></code>, <code><a href="#RADIANCE-CORE:EXPAND-OPTIONS">expand-options</a></code></p> <h3>Module</h3> <p>The concept of a module is essential to Radiance. It serves as the representation of a &quot;part&quot; of the whole. On a technical level, a module is a package that has special metadata attached to it. It is provided by the <code>modularize</code> system and is used to facilitate hooks and triggers, interfaces, and the tracking of a few other pieces of information.</p> <p>What this means for you is that instead of a standard <code><a href="http://l1sp.org/cl/defpackage">defpackage</a></code> you should use a <code><a href="#RADIANCE-CORE:DEFINE-MODULE">define-module</a></code> form to define your primary package. The syntax is the same as <code><a href="http://l1sp.org/cl/defpackage">defpackage</a></code>, but includes some extra options like <code>:domain</code>, which allows you to specify the primary domain on which this module should operate (if any).</p> <p>The module system also allows the tying of an ASDF system to a module. If that is done, then the ASDF system becomes a &quot;virtual module&quot;. In order to do this, you must add three options to your system definition:</p> <pre><code><span class="code">:defsystem-depends-on <span class="paren1">(<span class="code"><span class="keyword">:radiance</span></span>)</span>
 :class &quot;radiance:virtual-module&quot;
-:module-name &quot;MY-MODULE&quot;</span></code></pre> <p>This allows Radiance to identify and associate ASDF system information to your module. For automated creation of the necessary system and module definitions for a new module, see <code><a href="#RADIANCE-CORE:CREATE-MODULE">create-module</a></code>.</p> <p>See <code><a href="#RADIANCE-CORE:VIRTUAL-MODULE">virtual-module</a></code>, <code><a href="#RADIANCE-CORE:VIRTUAL-MODULE-NAME">virtual-module-name</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-MODULE">define-module</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-MODULE-EXTENSION">define-module-extension</a></code>, <code><a href="#RADIANCE-CORE:DELETE-MODULE">delete-module</a></code>, <code><a href="#RADIANCE-CORE:MODULE">module</a></code>, <code><a href="#RADIANCE-CORE:MODULE-P">module-p</a></code>, <code><a href="#RADIANCE-CORE:MODULE-STORAGE">module-storage</a></code>, <code><a href="#RADIANCE-CORE:MODULE-STORAGE-REMOVE">module-storage-remove</a></code>, <code><a href="#RADIANCE-CORE:MODULE-IDENTIFIER">module-identifier</a></code>, <code><a href="#RADIANCE-CORE:MODULE-NAME">module-name</a></code>, <code><a href="#RADIANCE-CORE:CURRENT-MODULE">current-module</a></code>, <code><a href="#RADIANCE-CORE:MODULE-DOMAIN">module-domain</a></code>, <code><a href="#RADIANCE-CORE:MODULE-PERMISSIONS">module-permissions</a></code>, <code><a href="#RADIANCE-CORE:MODULE-DEPENDENCIES">module-dependencies</a></code>, <code><a href="#RADIANCE-CORE:MODULE-REQUIRED-INTERFACES">module-required-interfaces</a></code>, <code><a href="#RADIANCE-CORE:MODULE-REQUIRED-SYSTEMS">module-required-systems</a></code>, <code><a href="#RADIANCE-CORE:MODULE-PAGES">module-pages</a></code>, <code><a href="#RADIANCE-CORE:MODULE-API-ENDPOINTS">module-api-endpoints</a></code>, <code><a href="#RADIANCE-CORE:DESCRIBE-MODULE">describe-module</a></code>, <code><a href="#RADIANCE-CORE:FIND-MODULES-DIRECTORY">find-modules-directory</a></code>, <code><a href="#RADIANCE-CORE:*MODULES-DIRECTORY*">*modules-directory*</a></code>, <code><a href="#RADIANCE-CORE:CREATE-MODULE">create-module</a></code></p> <h3>Hooks</h3> <p>One of the mechanisms that Radiance provides to allow integrating modules into each other is hooks. Hooks allow you to run an arbitrary function in response to some kind of event. For example, a forum software might set up a hook that is triggered whenever a new post is created. An extension could then define a trigger on that hook that performs additional tasks.</p> <p>A hook can have an arbitrary number of triggers defined on it, but you should ensure that a trigger does not take too long, as triggering a hook is a blocking operation that won't finish until all of the triggers have completed. As such, a long-running trigger operation might delay a request response for too long.</p> <p>Sometimes hooks should function more like switches, where they can be &quot;on&quot; for a long time, until they're turned &quot;off&quot; again later. If new triggers are defined during that time, they should be called automatically. This is what the <code><a href="#RADIANCE-CORE:DEFINE-HOOK-SWITCH">define-hook-switch</a></code> facilitates. It produces two hooks. Once the first one has been triggered, any trigger that is defined on it later is called automatically until the second hook is triggered. This allows triggers on hooks like <code><a href="#RADIANCE-CORE:SERVER-START">server-start</a></code> to function properly even if the trigger is only defined after the server has already been started.</p> <p>See <code><a href="#RADIANCE-CORE:LIST-HOOKS">list-hooks</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-HOOK">define-hook</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-HOOK">remove-hook</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-TRIGGER">define-trigger</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-TRIGGER">remove-trigger</a></code>, <code><a href="#RADIANCE-CORE:TRIGGER">trigger</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-HOOK-SWITCH">define-hook-switch</a></code></p> <h3>Interface</h3> <p>In order to avoid becoming monolithic, and in order to allow extensible backends, Radiance includes an interface system. In the most general sense, an interface provides a promise as to how some functions, macros, variables, etc. should work, but does not actually implement them. The actual functionality that makes everything that the interface outlines work is pushed off to an implementation. This allows users to code against an interface and make use of its provided functionality, without tying themselves to any particular backend.</p> <p>For a concrete example, let's say there's an interface for a database. This is sensible, since there are many different kinds of databases, that all offer many differing ways of interaction, but still all also offer some very common operations: storing data, retrieving data, and modifying the data. Thus we create an interface that offers these common operations. It is then up to an implementation for a specific kind of database to make the actual operations work. As an application writer, you can then make use of the database interface, and with it, make your application automatically work with lots of different databases.</p> <p>Aside from giving application writers an advantage, the decoupling that the interfaces provide also mean that a system administrator can write their own implementation with relative ease, should their particular requirements not be met by existing implementations. Thanks to the opaqueness of the interfaces, an implementation can both provide a bridge to something that runs in the lisp process, and something that is completely external. This leaves a lot of choice open for the administrator of a production system to allow them to pick exactly what they need.</p> <p>In practise, interfaces are special kinds of modules, and thus special kinds of packages. As part of their definition, they include a series of definitions for other bindings like functions, variables, etc. Since it is a package, as a user you can use the interface's components just like you would use anything else in any other package. There is no difference. As an implementation writer, you then simply redefine all the definitions that the interface outlines.</p> <p>In order to actually load a module that makes use of an interface, an implementation for the interface has to be loaded beforehand. Otherwise, macros could not work properly. Thus, in order to allow depending on interfaces in your ASDF system definition without having to refer to a specific implementation, Radiance provides an ASDF extension. This extension makes it possible to add a list like <code>(:interface :foo)</code> to your <code>:depends-on</code> list. Radiance will then resolve the interface to a concrete implementation thereof when the module is loaded.</p> <p>Radiance provides a bunch of standard interfaces. Each of those interfaces has at least one standard implementation provided by <a href="https://shirakumo.org/projects/radiance-contribs">radiance-contribs</a>. The interfaces are:</p> <ul> <li><code>ban</code><br/> Allows banning users from the site by their IP address.</li> <li><code>rate</code><br/> Allows rate limitation for access to certain resources.</li> <li><code>admin</code><br/> Provides an extensible administration site.</li> <li><code>cache</code><br/> Provides a very simple caching interface.</li> <li><code>auth</code><br/> Handles everything about authentication and login.</li> <li><code><a href="#SESSION:SESSION">session</a></code><br/> Ensures persistent sessions for users to allow tracking them.</li> <li><code><a href="#USER:USER">user</a></code><br/> Provides user accounts and permissions.</li> <li><code>profile</code><br/> Provides an extensible user profile site and user fields.</li> <li><code>server</code><br/> The interface that bridges to a server to connect Radiance with an external universe.</li> <li><code>logger</code><br/> A simple logging interface to allow printing debug and information messages.</li> <li><code>database</code><br/> A flexible database interface that allows both object-stores and relational databases as backends.</li> </ul> <p>The interfaces are described in-depth below.</p> <p>See <code><a href="#RADIANCE-CORE:INTERFACE">interface</a></code>, <code><a href="#RADIANCE-CORE:INTERFACE-P">interface-p</a></code>, <code><a href="#RADIANCE-CORE:IMPLEMENTATION">implementation</a></code>, <code><a href="#RADIANCE-CORE:IMPLEMENTS">implements</a></code>, <code><a href="#RADIANCE-CORE:RESET-INTERFACE">reset-interface</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-INTERFACE-EXTENSION">define-interface-extension</a></code>, <code><a href="#RADIANCE-CORE:FIND-IMPLEMENTATION">find-implementation</a></code>, <code><a href="#RADIANCE-CORE:LOAD-IMPLEMENTATION">load-implementation</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-INTERFACE">define-interface</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-IMPLEMENT-TRIGGER">define-implement-trigger</a></code></p> <h3>Environment</h3> <p>In order to permit running multiple instances of Radiance with different setups on the same machine, Radiance provides what it calls an Environment system. The Environment is basically the set of configuration files for Radiance itself and all of the loaded modules. The Radiance configuration also includes the mapping of interface to chosen implementation and thus decides what should be picked if an interface is requested.</p> <p>The particular environment that is used is chosen at the latest when <code><a href="#RADIANCE-CORE:STARTUP">startup</a></code> is called, and the earliest when a module is loaded. In the latter case, interactive restarts are provided to allow you to pick an environment. This is necessary, as otherwise Radiance won't be able to resolve the interface mapping.</p> <p>As part of the environment system, Radiance provides you with a configuration system that you can --and probably should-- use for your application. It ensures that the settings are properly multiplexed for each environment, and that the settings are always persistent. It also uses a human-readable storage format, such that the files can be read and modified without requiring any special tools.</p> <p>See <a href="https://shinmera.github.io/ubiquitous">ubiquitous</a> for the actual handling and use-instructions of the configuration storage. Just note that instead of the <code><a href="#RADIANCE-CORE:VALUE">value</a></code> functions, Radiance provides <code><a href="#RADIANCE-CORE:CONFIG">config</a></code> functions.</p> <p>See <code><a href="#RADIANCE-CORE:ENVIRONMENT-CHANGE">environment-change</a></code>, <code><a href="#RADIANCE-CORE:ENVIRONMENT">environment</a></code>, <code><a href="#RADIANCE-CORE:CHECK-ENVIRONMENT">check-environment</a></code>, <code><a href="#RADIANCE-CORE:MCONFIG-PATHNAME">mconfig-pathname</a></code>, <code><a href="#RADIANCE-CORE:MCONFIG-STORAGE">mconfig-storage</a></code>, <code><a href="#RADIANCE-CORE:MCONFIG">mconfig</a></code>, <code><a href="#RADIANCE-CORE:DEFAULTED-MCONFIG">defaulted-mconfig</a></code>, <code><a href="#RADIANCE-CORE:CONFIG">config</a></code>, <code><a href="#RADIANCE-CORE:DEFAULTED-CONFIG">defaulted-config</a></code></p> <h3>Instance Management</h3> <p>Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.</p> <p>While you can start a server manually by using the appropriate interface function, you should not expect applications to run properly if you do it that way. Many of them will expect certain hooks to be called in order to work properly. This is why you should always, unless you exactly know what you're doing, use <code><a href="#RADIANCE-CORE:STARTUP">startup</a></code> and <code><a href="#RADIANCE-CORE:SHUTDOWN">shutdown</a></code> to manage a Radiance instance. The documentation of the two functions should explain exactly which hooks are triggered and in which order.</p> <p>See <code><a href="#RADIANCE-CORE:*STARTUP-TIME*">*startup-time*</a></code>, <code><a href="#RADIANCE-CORE:UPTIME">uptime</a></code>, <code><a href="#RADIANCE-CORE:SERVER-START">server-start</a></code>, <code><a href="#RADIANCE-CORE:SERVER-READY">server-ready</a></code>, <code><a href="#RADIANCE-CORE:SERVER-STOP">server-stop</a></code>, <code><a href="#RADIANCE-CORE:SERVER-SHUTDOWN">server-shutdown</a></code>, <code><a href="#RADIANCE-CORE:STARTUP">startup</a></code>, <code><a href="#RADIANCE-CORE:STARTUP-DONE">startup-done</a></code>, <code><a href="#RADIANCE-CORE:SHUTDOWN">shutdown</a></code>, <code><a href="#RADIANCE-CORE:SHUTDOWN-DONE">shutdown-done</a></code>, <code><a href="#RADIANCE-CORE:STARTED-P">started-p</a></code></p> <h2>Standard Interfaces</h2> <h3>ban</h3> <p>See <code><a href="#BAN:JAIL">ban:jail</a></code>, <code><a href="#BAN:LIST">ban:list</a></code>, <code><a href="#BAN:JAIL-TIME">ban:jail-time</a></code>, <code><a href="#BAN:RELEASE">ban:release</a></code></p> <h3>rate</h3> <p>See <code><a href="#RATE:DEFINE-LIMIT">rate:define-limit</a></code>, <code><a href="#RATE:LEFT">rate:left</a></code>, <code><a href="#RATE:WITH-LIMITATION">rate:with-limitation</a></code></p> <h3>admin</h3> <p>See <code><a href="#ADMIN:LIST-PANELS">admin:list-panels</a></code>, <code><a href="#ADMIN:REMOVE-PANEL">admin:remove-panel</a></code>, <code><a href="#ADMIN:DEFINE-PANEL">admin:define-panel</a></code>, <code><a href="#ADMIN:PANEL">admin:panel</a></code></p> <h3>cache</h3> <p>See <code><a href="#CACHE:GET">cache:get</a></code>, <code><a href="#CACHE:RENEW">cache:renew</a></code>, <code><a href="#CACHE:WITH-CACHE">cache:with-cache</a></code></p> <h3>auth</h3> <p>See <code><a href="#AUTH:*LOGIN-TIMEOUT*">auth:*login-timeout*</a></code>, <code><a href="#AUTH:PAGE">auth:page</a></code>, <code><a href="#AUTH:CURRENT">auth:current</a></code>, <code><a href="#AUTH:ASSOCIATE">auth:associate</a></code></p> <h3>session</h3> <p>See <code><a href="#SESSION:*DEFAULT-TIMEOUT*">session:*default-timeout*</a></code>, <code><a href="#SESSION:SESSION">session:session</a></code>, <code><a href="#SESSION:=">session:=</a></code>, <code><a href="#SESSION:START">session:start</a></code>, <code><a href="#SESSION:GET">session:get</a></code>, <code><a href="#SESSION:LIST">session:list</a></code>, <code><a href="#SESSION:ID">session:id</a></code>, <code><a href="#SESSION:FIELD">session:field</a></code>, <code><a href="#SESSION:TIMEOUT">session:timeout</a></code>, <code><a href="#SESSION:END">session:end</a></code>, <code><a href="#SESSION:ACTIVE-P">session:active-p</a></code>, <code><a href="#SESSION:CREATE">session:create</a></code></p> <h3>user</h3> <p>See <code><a href="#USER:CONDITION">user:condition</a></code>, <code><a href="#USER:NOT-FOUND">user:not-found</a></code>, <code><a href="#USER:USER">user:user</a></code>, <code><a href="#USER:=">user:=</a></code>, <code><a href="#USER:LIST">user:list</a></code>, <code><a href="#USER:GET">user:get</a></code>, <code><a href="#USER:USERNAME">user:username</a></code>, <code><a href="#USER:FIELDS">user:fields</a></code>, <code><a href="#USER:FIELD">user:field</a></code>, <code><a href="#USER:REMOVE-FIELD">user:remove-field</a></code>, <code><a href="#USER:REMOVE">user:remove</a></code>, <code><a href="#USER:CHECK">user:check</a></code>, <code><a href="#USER:GRANT">user:grant</a></code>, <code><a href="#USER:REVOKE">user:revoke</a></code>, <code><a href="#USER:ADD-DEFAULT-PERMISSIONS">user:add-default-permissions</a></code>, <code><a href="#USER:ACTION">user:action</a></code>, <code><a href="#USER:ACTIONS">user:actions</a></code>, <code><a href="#USER:CREATE">user:create</a></code>, <code><a href="#USER:REMOVE">user:remove</a></code>, <code><a href="#USER:ACTION">user:action</a></code>, <code><a href="#USER:READY">user:ready</a></code>, <code><a href="#USER:UNREADY">user:unready</a></code></p> <h3>profile</h3> <p>See <code><a href="#PROFILE:PAGE">profile:page</a></code>, <code><a href="#PROFILE:AVATAR">profile:avatar</a></code>, <code><a href="#PROFILE:NAME">profile:name</a></code>, <code><a href="#PROFILE:FIELDS">profile:fields</a></code>, <code><a href="#PROFILE:ADD-FIELD">profile:add-field</a></code>, <code><a href="#PROFILE:REMOVE-FIELD">profile:remove-field</a></code>, <code><a href="#PROFILE:LIST-PANELS">profile:list-panels</a></code>, <code><a href="#PROFILE:REMOVE-PANEL">profile:remove-panel</a></code>, <code><a href="#PROFILE:DEFINE-PANEL">profile:define-panel</a></code>, <code><a href="#PROFILE:PANEL">profile:panel</a></code></p> <h3>server</h3> <p>See <code><a href="#SERVER:START">server:start</a></code>, <code><a href="#SERVER:STOP">server:stop</a></code>, <code><a href="#SERVER:LISTENERS">server:listeners</a></code>, <code><a href="#SERVER:STARTED">server:started</a></code>, <code><a href="#SERVER:STOPPED">server:stopped</a></code></p> <h3>logger</h3> <p>See <code><a href="#LOGGER:LOG">logger:log</a></code>, <code><a href="#LOGGER:TRACE">logger:trace</a></code>, <code><a href="#LOGGER:DEBUG">logger:debug</a></code>, <code><a href="#LOGGER:INFO">logger:info</a></code>, <code><a href="#LOGGER:WARN">logger:warn</a></code>, <code><a href="#LOGGER:ERROR">logger:error</a></code>, <code><a href="#LOGGER:SEVERE">logger:severe</a></code>, <code><a href="#LOGGER:FATAL">logger:fatal</a></code></p> <h3>database</h3> <p>See <code><a href="#DATABASE:CONDITION">database:condition</a></code>, <code><a href="#DATABASE:CONNECTION-FAILED">database:connection-failed</a></code>, <code><a href="#DATABASE:CONNECTION-ALREADY-OPEN">database:connection-already-open</a></code>, <code><a href="#DATABASE:COLLECTION-CONDITION">database:collection-condition</a></code>, <code><a href="#DATABASE:INVALID-COLLECTION">database:invalid-collection</a></code>, <code><a href="#DATABASE:COLLECTION-ALREADY-EXISTS">database:collection-already-exists</a></code>, <code><a href="#DATABASE:INVALID-FIELD">database:invalid-field</a></code>, <code><a href="#DATABASE:ID">database:id</a></code>, <code><a href="#DATABASE:ENSURE-ID">database:ensure-id</a></code>, <code><a href="#DATABASE:CONNECT">database:connect</a></code>, <code><a href="#DATABASE:DISCONNECT">database:disconnect</a></code>, <code><a href="#DATABASE:CONNECTED-P">database:connected-p</a></code>, <code><a href="#DATABASE:COLLECTIONS">database:collections</a></code>, <code><a href="#DATABASE:COLLECTION-EXISTS-P">database:collection-exists-p</a></code>, <code><a href="#DATABASE:CREATE">database:create</a></code>, <code><a href="#DATABASE:STRUCTURE">database:structure</a></code>, <code><a href="#DATABASE:EMPTY">database:empty</a></code>, <code><a href="#DATABASE:DROP">database:drop</a></code>, <code><a href="#DATABASE:ITERATE">database:iterate</a></code>, <code><a href="#DATABASE:SELECT">database:select</a></code>, <code><a href="#DATABASE:COUNT">database:count</a></code>, <code><a href="#DATABASE:INSERT">database:insert</a></code>, <code><a href="#DATABASE:REMOVE">database:remove</a></code>, <code><a href="#DATABASE:UPDATE">database:update</a></code>, <code><a href="#DATABASE:WITH-TRANSACTION">database:with-transaction</a></code>, <code><a href="#DATABASE:QUERY">database:query</a></code>, <code><a href="#DATABASE:CONNECTED">database:connected</a></code>, <code><a href="#DATABASE:DISCONNECTED">database:disconnected</a></code></p> <h2>Also See</h2> <ul> <li><a href="https://shinmera.github.io/modularize">modularize</a> For the primary package metadata system</li> <li><a href="https://shinmera.github.io/modularize-interfaces">modularize-interfaces</a> For the interface and implementations extensions</li> <li><a href="https://shinmera.github.io/modularize-hooks">modularize-hooks</a> For the hooks and triggers mechanisms</li> <li><a href="https://shinmera.github.io/ubiquitous">ubiquitous</a> For configuration management</li> <li><a href="https://shirakumo.org/projects/radiance-contribs">radiance-contribs</a> Default interface implementations and other convenience modules for Radiance</li> </ul> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>radiance-core</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .    </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="RADIANCE-CORE" href="#RADIANCE-CORE">RADIANCE-CORE</a> <span class="nicknames">(RADIANCE MODULARIZE.MOD.RADIANCE-CORE ORG.SHIRAKUMO.RADIANCE.CORE)</span> </h3> <ul><li> <a name="RADIANCE-CORE:*DEBUGGER*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*DEBUGGER*">*DEBUGGER*</a></code></h4>  </header> <pre class="docstring">Whether the debugger should be invoked when an error occurs during a request execution.
+:module-name &quot;MY-MODULE&quot;</span></code></pre> <p>This allows Radiance to identify and associate ASDF system information to your module. For automated creation of the necessary system and module definitions for a new module, see <code><a href="#RADIANCE-CORE:CREATE-MODULE">create-module</a></code>.</p> <p>See <code><a href="#RADIANCE-CORE:VIRTUAL-MODULE">virtual-module</a></code>, <code><a href="#RADIANCE-CORE:VIRTUAL-MODULE-NAME">virtual-module-name</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-MODULE">define-module</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-MODULE-EXTENSION">define-module-extension</a></code>, <code><a href="#RADIANCE-CORE:DELETE-MODULE">delete-module</a></code>, <code><a href="#RADIANCE-CORE:MODULE">module</a></code>, <code><a href="#RADIANCE-CORE:MODULE-P">module-p</a></code>, <code><a href="#RADIANCE-CORE:MODULE-STORAGE">module-storage</a></code>, <code><a href="#RADIANCE-CORE:MODULE-STORAGE-REMOVE">module-storage-remove</a></code>, <code><a href="#RADIANCE-CORE:MODULE-IDENTIFIER">module-identifier</a></code>, <code><a href="#RADIANCE-CORE:MODULE-NAME">module-name</a></code>, <code><a href="#RADIANCE-CORE:CURRENT-MODULE">current-module</a></code>, <code><a href="#RADIANCE-CORE:MODULE-DOMAIN">module-domain</a></code>, <code><a href="#RADIANCE-CORE:MODULE-PERMISSIONS">module-permissions</a></code>, <code><a href="#RADIANCE-CORE:MODULE-DEPENDENCIES">module-dependencies</a></code>, <code><a href="#RADIANCE-CORE:MODULE-REQUIRED-INTERFACES">module-required-interfaces</a></code>, <code><a href="#RADIANCE-CORE:MODULE-REQUIRED-SYSTEMS">module-required-systems</a></code>, <code><a href="#RADIANCE-CORE:MODULE-PAGES">module-pages</a></code>, <code><a href="#RADIANCE-CORE:MODULE-API-ENDPOINTS">module-api-endpoints</a></code>, <code><a href="#RADIANCE-CORE:DESCRIBE-MODULE">describe-module</a></code>, <code><a href="#RADIANCE-CORE:FIND-MODULES-DIRECTORY">find-modules-directory</a></code>, <code><a href="#RADIANCE-CORE:*MODULES-DIRECTORY*">*modules-directory*</a></code>, <code><a href="#RADIANCE-CORE:CREATE-MODULE">create-module</a></code></p> <h3>Hooks</h3> <p>One of the mechanisms that Radiance provides to allow integrating modules into each other is hooks. Hooks allow you to run an arbitrary function in response to some kind of event. For example, a forum software might set up a hook that is triggered whenever a new post is created. An extension could then define a trigger on that hook that performs additional tasks.</p> <p>A hook can have an arbitrary number of triggers defined on it, but you should ensure that a trigger does not take too long, as triggering a hook is a blocking operation that won't finish until all of the triggers have completed. As such, a long-running trigger operation might delay a request response for too long.</p> <p>Sometimes hooks should function more like switches, where they can be &quot;on&quot; for a long time, until they're turned &quot;off&quot; again later. If new triggers are defined during that time, they should be called automatically. This is what the <code><a href="#RADIANCE-CORE:DEFINE-HOOK-SWITCH">define-hook-switch</a></code> facilitates. It produces two hooks. Once the first one has been triggered, any trigger that is defined on it later is called automatically until the second hook is triggered. This allows triggers on hooks like <code><a href="#RADIANCE-CORE:SERVER-START">server-start</a></code> to function properly even if the trigger is only defined after the server has already been started.</p> <p>See <code><a href="#RADIANCE-CORE:LIST-HOOKS">list-hooks</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-HOOK">define-hook</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-HOOK">remove-hook</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-TRIGGER">define-trigger</a></code>, <code><a href="#RADIANCE-CORE:REMOVE-TRIGGER">remove-trigger</a></code>, <code><a href="#RADIANCE-CORE:TRIGGER">trigger</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-HOOK-SWITCH">define-hook-switch</a></code></p> <h3>Interface</h3> <p>In order to avoid becoming monolithic, and in order to allow extensible backends, Radiance includes an interface system. In the most general sense, an interface provides a promise as to how some functions, macros, variables, etc. should work, but does not actually implement them. The actual functionality that makes everything that the interface outlines work is pushed off to an implementation. This allows users to code against an interface and make use of its provided functionality, without tying themselves to any particular backend.</p> <p>For a concrete example, let's say there's an interface for a database. This is sensible, since there are many different kinds of databases, that all offer many differing ways of interaction, but still all also offer some very common operations: storing data, retrieving data, and modifying the data. Thus we create an interface that offers these common operations. It is then up to an implementation for a specific kind of database to make the actual operations work. As an application writer, you can then make use of the database interface, and with it, make your application automatically work with lots of different databases.</p> <p>Aside from giving application writers an advantage, the decoupling that the interfaces provide also mean that a system administrator can write their own implementation with relative ease, should their particular requirements not be met by existing implementations. Thanks to the opaqueness of the interfaces, an implementation can both provide a bridge to something that runs in the lisp process, and something that is completely external. This leaves a lot of choice open for the administrator of a production system to allow them to pick exactly what they need.</p> <p>In practise, interfaces are special kinds of modules, and thus special kinds of packages. As part of their definition, they include a series of definitions for other bindings like functions, variables, etc. Since it is a package, as a user you can use the interface's components just like you would use anything else in any other package. There is no difference. As an implementation writer, you then simply redefine all the definitions that the interface outlines.</p> <p>In order to actually load a module that makes use of an interface, an implementation for the interface has to be loaded beforehand. Otherwise, macros could not work properly. Thus, in order to allow depending on interfaces in your ASDF system definition without having to refer to a specific implementation, Radiance provides an ASDF extension. This extension makes it possible to add a list like <code>(:interface :foo)</code> to your <code>:depends-on</code> list. Radiance will then resolve the interface to a concrete implementation thereof when the module is loaded.</p> <p>Radiance provides a bunch of standard interfaces. Each of those interfaces has at least one standard implementation provided by <a href="https://shirakumo.org/projects/radiance-contribs">radiance-contribs</a>. The interfaces are:</p> <ul> <li><code>ban</code><br/> Allows banning users from the site by their IP address.</li> <li><code>rate</code><br/> Allows rate limitation for access to certain resources.</li> <li><code>admin</code><br/> Provides an extensible administration site.</li> <li><code>cache</code><br/> Provides a very simple caching interface.</li> <li><code>auth</code><br/> Handles everything about authentication and login.</li> <li><code><a href="#SESSION:SESSION">session</a></code><br/> Ensures persistent sessions for users to allow tracking them.</li> <li><code><a href="#USER:USER">user</a></code><br/> Provides user accounts and permissions.</li> <li><code>profile</code><br/> Provides an extensible user profile site and user fields.</li> <li><code>server</code><br/> The interface that bridges to a server to connect Radiance with an external universe.</li> <li><code>logger</code><br/> A simple logging interface to allow printing debug and information messages.</li> <li><code>database</code><br/> A flexible database interface that allows both object-stores and relational databases as backends.</li> </ul> <p>The interfaces are described in-depth below.</p> <p>See <code><a href="#RADIANCE-CORE:INTERFACE">interface</a></code>, <code><a href="#RADIANCE-CORE:INTERFACE-P">interface-p</a></code>, <code><a href="#RADIANCE-CORE:IMPLEMENTATION">implementation</a></code>, <code><a href="#RADIANCE-CORE:IMPLEMENTS">implements</a></code>, <code><a href="#RADIANCE-CORE:RESET-INTERFACE">reset-interface</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-INTERFACE-EXTENSION">define-interface-extension</a></code>, <code><a href="#RADIANCE-CORE:FIND-IMPLEMENTATION">find-implementation</a></code>, <code><a href="#RADIANCE-CORE:LOAD-IMPLEMENTATION">load-implementation</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-INTERFACE">define-interface</a></code>, <code><a href="#RADIANCE-CORE:DEFINE-IMPLEMENT-TRIGGER">define-implement-trigger</a></code></p> <h3>Environment</h3> <p>In order to permit running multiple instances of Radiance with different setups on the same machine, Radiance provides what it calls an Environment system. The Environment is basically the set of configuration files for Radiance itself and all of the loaded modules. The Radiance configuration also includes the mapping of interface to chosen implementation and thus decides what should be picked if an interface is requested.</p> <p>The particular environment that is used is chosen at the latest when <code><a href="#RADIANCE-CORE:STARTUP">startup</a></code> is called, and the earliest when a module is loaded. In the latter case, interactive restarts are provided to allow you to pick an environment. This is necessary, as otherwise Radiance won't be able to resolve the interface mapping.</p> <p>As part of the environment system, Radiance provides you with a configuration system that you can --and probably should-- use for your application. It ensures that the settings are properly multiplexed for each environment, and that the settings are always persistent. It also uses a human-readable storage format, such that the files can be read and modified without requiring any special tools.</p> <p>See <a href="https://shinmera.github.io/ubiquitous">ubiquitous</a> for the actual handling and use-instructions of the configuration storage. Just note that instead of the <code><a href="#RADIANCE-CORE:VALUE">value</a></code> functions, Radiance provides <code><a href="#RADIANCE-CORE:CONFIG">config</a></code> functions.</p> <p>See <code><a href="#RADIANCE-CORE:ENVIRONMENT-CHANGE">environment-change</a></code>, <code><a href="#RADIANCE-CORE:ENVIRONMENT">environment</a></code>, <code><a href="#RADIANCE-CORE:CHECK-ENVIRONMENT">check-environment</a></code>, <code><a href="#RADIANCE-CORE:MCONFIG-PATHNAME">mconfig-pathname</a></code>, <code><a href="#RADIANCE-CORE:MCONFIG-STORAGE">mconfig-storage</a></code>, <code><a href="#RADIANCE-CORE:MCONFIG">mconfig</a></code>, <code><a href="#RADIANCE-CORE:DEFAULTED-MCONFIG">defaulted-mconfig</a></code>, <code><a href="#RADIANCE-CORE:CONFIG">config</a></code>, <code><a href="#RADIANCE-CORE:DEFAULTED-CONFIG">defaulted-config</a></code></p> <h3>Instance Management</h3> <p>Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.</p> <p>While you can start a server manually by using the appropriate interface function, you should not expect applications to run properly if you do it that way. Many of them will expect certain hooks to be called in order to work properly. This is why you should always, unless you exactly know what you're doing, use <code><a href="#RADIANCE-CORE:STARTUP">startup</a></code> and <code><a href="#RADIANCE-CORE:SHUTDOWN">shutdown</a></code> to manage a Radiance instance. The documentation of the two functions should explain exactly which hooks are triggered and in which order.</p> <p>See <code><a href="#RADIANCE-CORE:*STARTUP-TIME*">*startup-time*</a></code>, <code><a href="#RADIANCE-CORE:UPTIME">uptime</a></code>, <code><a href="#RADIANCE-CORE:SERVER-START">server-start</a></code>, <code><a href="#RADIANCE-CORE:SERVER-READY">server-ready</a></code>, <code><a href="#RADIANCE-CORE:SERVER-STOP">server-stop</a></code>, <code><a href="#RADIANCE-CORE:SERVER-SHUTDOWN">server-shutdown</a></code>, <code><a href="#RADIANCE-CORE:STARTUP">startup</a></code>, <code><a href="#RADIANCE-CORE:STARTUP-DONE">startup-done</a></code>, <code><a href="#RADIANCE-CORE:SHUTDOWN">shutdown</a></code>, <code><a href="#RADIANCE-CORE:SHUTDOWN-DONE">shutdown-done</a></code>, <code><a href="#RADIANCE-CORE:STARTED-P">started-p</a></code></p> <h2>Standard Interfaces</h2> <p>These interfaces are distributed with Radiance and are part of the core package. Libraries may provide for additional interfaces, however. For implementations of standard interfaces, the following relaxations of interface definition constraints are allowed:</p> <p>The lambda-lists that contain <code><a href="http://l1sp.org/cl/&amp;key">&amp;key</a></code> arguments can be extended by further, implementation-dependant keyword arguments. Lambda-lists that contain <code><a href="http://l1sp.org/cl/&amp;optional">&amp;optional</a></code> but no <code><a href="http://l1sp.org/cl/&amp;key">&amp;key</a></code> or <code><a href="http://l1sp.org/cl/&amp;rest">&amp;rest</a></code> may be extended by further optional arguments. Lambda-lists that contain only required arguments may be extended by further optional or keyword arguments.</p> <h3>admin</h3> <p>This interface provides for an administration page. It should be used for any kind of user-configurable settings, or system information display. Note that despite being called &quot;administration&quot;, this is not intended solely for administrators of the system. The page should be usable for any user.</p> <p>The administration page is required to be able to display a categorised menu, and a panel. The panels are provided by other modules and can be added through <code><a href="#ADMIN:DEFINE-PANEL">admin:define-panel</a></code>. Panels that give access to sensitive operations should be appropriately restricted through the <code>:access</code> option and a non-default permission. See the user interface for an explanation on the permissions.</p> <p>In order to link to the administration page, or a specific panel on it, use the <code><a href="#RADIANCE-CORE:PAGE">page</a></code> resource type.</p> <p>See <code><a href="#ADMIN:LIST-PANELS">admin:list-panels</a></code>, <code><a href="#ADMIN:REMOVE-PANEL">admin:remove-panel</a></code>, <code><a href="#ADMIN:DEFINE-PANEL">admin:define-panel</a></code>, <code><a href="#ADMIN:PANEL">admin:panel</a></code></p> <h3>auth</h3> <p>The authentication interface is responsible for tying a user to a request. For this reason it must provide some manner by which a user can authenticate themselves against the system. How this is done exactly is up to the implementation. The implementation must however provide a page on which the authentication process is initiated. You can get a URI to it through the <code><a href="#RADIANCE-CORE:PAGE">page</a></code> resource and passing <code>&quot;login&quot;</code> as argument.</p> <p>You can test for the user currently tied to the request by <code><a href="#AUTH:CURRENT">auth:current</a></code>. This may also return <code>NIL</code>, in which case the user should be interpreted as being <code>&quot;anonymous&quot;</code>. See the user interface for more information.</p> <p>See <code><a href="#AUTH:*LOGIN-TIMEOUT*">auth:*login-timeout*</a></code>, <code><a href="#AUTH:PAGE">auth:page</a></code>, <code><a href="#AUTH:CURRENT">auth:current</a></code>, <code><a href="#AUTH:ASSOCIATE">auth:associate</a></code></p> <h3>ban</h3> <p>This interface provides for IP-banning. It must prevent any client connecting through a banned IP from seeing the content of the actual page they're requesting. Bans can be lifted manually or automatically after a timeout. The implementation may or may not exert additional effort to track users across IPs.</p> <p>See <code><a href="#BAN:JAIL">ban:jail</a></code>, <code><a href="#BAN:LIST">ban:list</a></code>, <code><a href="#BAN:JAIL-TIME">ban:jail-time</a></code>, <code><a href="#BAN:RELEASE">ban:release</a></code></p> <h3>cache</h3> <p>The cache interface provides for a generic caching mechanism with a customisable invalidation test. You can explicitly renew the cache by <code><a href="#CACHE:RENEW">cache:renew</a></code>. To define a cached block, simply use <code><a href="#CACHE:WITH-CACHE">cache:with-cache</a></code>, which will cause the cached value of the body to be returned if the test form evaluates to true.</p> <p>The exact manner by which the cached value is stored is up to the implementation.</p> <p>See <code><a href="#CACHE:GET">cache:get</a></code>, <code><a href="#CACHE:RENEW">cache:renew</a></code>, <code><a href="#CACHE:WITH-CACHE">cache:with-cache</a></code></p> <h3>database</h3> <p>This interface provides you with a data persistence layer, usually called a database. This does not have to be a relational database, but may be one. In order to preserve implementation variance, only basic database operations are supported (no joins, triggers, etc). Data types are also restricted to integers, floats, and strings. Despite these constraints, the database interface is sufficiently useful for most applications.</p> <p>Note that particular terminology is used to distance from traditional RDBMS terms: a schema is called a &quot;structure&quot;. A table is called a &quot;collection&quot;. A row is called a &quot;record&quot;.</p> <p>Performing database operations before the database is connected results in undefined behaviour. Thus, you should put your collection creation forms (<code><a href="#DATABASE:CREATE">db:create</a></code>) within a trigger on <code><a href="#DATABASE:CONNECTED">db:connected</a></code>. Radiance ensures that the database is connected while Radiance is running, so using the database interface in any page, api, or uri dispatcher definitions is completely fine.</p> <p>The functions for actually performing data storage are, intuitively enough, called <code><a href="#DATABASE:INSERT">db:insert</a></code>, <code><a href="#DATABASE:REMOVE">db:remove</a></code>, <code><a href="#DATABASE:UPDATE">db:update</a></code>, <code><a href="#DATABASE:SELECT">db:select</a></code>, and <code><a href="#DATABASE:ITERATE">db:iterate</a></code>. The behaviour thereof should be pretty much what you'd expect. See the respective docstrings for a close inspection. Also see the docstring of <code><a href="#DATABASE:CREATE">db:create</a></code> for a lengthy explanation on how to create a collection and what kind of restrictions are imposed.</p> <p>The database must ensure that once a data manipulation operation has completed, the changes caused by it will be persisted across a restart of Radiance, the lisp image, or the machine, even in the case of an unforeseen crash.</p> <p>See <code><a href="#DATABASE:CONDITION">database:condition</a></code>, <code><a href="#DATABASE:CONNECTION-FAILED">database:connection-failed</a></code>, <code><a href="#DATABASE:CONNECTION-ALREADY-OPEN">database:connection-already-open</a></code>, <code><a href="#DATABASE:COLLECTION-CONDITION">database:collection-condition</a></code>, <code><a href="#DATABASE:INVALID-COLLECTION">database:invalid-collection</a></code>, <code><a href="#DATABASE:COLLECTION-ALREADY-EXISTS">database:collection-already-exists</a></code>, <code><a href="#DATABASE:INVALID-FIELD">database:invalid-field</a></code>, <code><a href="#DATABASE:ID">database:id</a></code>, <code><a href="#DATABASE:ENSURE-ID">database:ensure-id</a></code>, <code><a href="#DATABASE:CONNECT">database:connect</a></code>, <code><a href="#DATABASE:DISCONNECT">database:disconnect</a></code>, <code><a href="#DATABASE:CONNECTED-P">database:connected-p</a></code>, <code><a href="#DATABASE:COLLECTIONS">database:collections</a></code>, <code><a href="#DATABASE:COLLECTION-EXISTS-P">database:collection-exists-p</a></code>, <code><a href="#DATABASE:CREATE">database:create</a></code>, <code><a href="#DATABASE:STRUCTURE">database:structure</a></code>, <code><a href="#DATABASE:EMPTY">database:empty</a></code>, <code><a href="#DATABASE:DROP">database:drop</a></code>, <code><a href="#DATABASE:ITERATE">database:iterate</a></code>, <code><a href="#DATABASE:SELECT">database:select</a></code>, <code><a href="#DATABASE:COUNT">database:count</a></code>, <code><a href="#DATABASE:INSERT">database:insert</a></code>, <code><a href="#DATABASE:REMOVE">database:remove</a></code>, <code><a href="#DATABASE:UPDATE">database:update</a></code>, <code><a href="#DATABASE:WITH-TRANSACTION">database:with-transaction</a></code>, <code><a href="#DATABASE:QUERY">database:query</a></code>, <code><a href="#DATABASE:CONNECTED">database:connected</a></code>, <code><a href="#DATABASE:DISCONNECTED">database:disconnected</a></code></p> <h3>logger</h3> <p>This interface provides primitive logging functions so that you can log messages about relevant happenings in the system. The actual configuration of what gets logged where and how is up to the implementation and the administrator of the system.</p> <p>See <code><a href="#LOGGER:LOG">logger:log</a></code>, <code><a href="#LOGGER:TRACE">logger:trace</a></code>, <code><a href="#LOGGER:DEBUG">logger:debug</a></code>, <code><a href="#LOGGER:INFO">logger:info</a></code>, <code><a href="#LOGGER:WARN">logger:warn</a></code>, <code><a href="#LOGGER:ERROR">logger:error</a></code>, <code><a href="#LOGGER:SEVERE">logger:severe</a></code>, <code><a href="#LOGGER:FATAL">logger:fatal</a></code></p> <h3>profile</h3> <p>The profile interface provides extensions to the user interface that are commonly used in applications that want users to have some kind of presence. As part of this, the interface must provide for a page on which a user's &quot;profile&quot; can be displayed. The profile must show panels of some kind. The panels are provided by other modules and can be added by <code><a href="#PROFILE:DEFINE-PANEL">profile:define-panel</a></code>.</p> <p>You can get a URI pointing to the profile page of a user through the <code><a href="#RADIANCE-CORE:PAGE">page</a></code> resource type.</p> <p>The interface also provides access to an &quot;avatar image&quot; to visually identify the user (<code><a href="#PROFILE:AVATAR">profile:avatar</a></code>), a customisable name that the user can change (<code><a href="#PROFILE:NAME">profile:name</a></code>), and field types to what kind of data is contained in a user's field and whether it should be public information or not (<code><a href="#PROFILE:FIELDS">profile:fields</a></code> <code><a href="#PROFILE:ADD-FIELD">profile:add-field</a></code> <code><a href="#PROFILE:REMOVE-FIELD">profile:remove-field</a></code>).</p> <p>See <code><a href="#PROFILE:PAGE">profile:page</a></code>, <code><a href="#PROFILE:AVATAR">profile:avatar</a></code>, <code><a href="#PROFILE:NAME">profile:name</a></code>, <code><a href="#PROFILE:FIELDS">profile:fields</a></code>, <code><a href="#PROFILE:ADD-FIELD">profile:add-field</a></code>, <code><a href="#PROFILE:REMOVE-FIELD">profile:remove-field</a></code>, <code><a href="#PROFILE:LIST-PANELS">profile:list-panels</a></code>, <code><a href="#PROFILE:REMOVE-PANEL">profile:remove-panel</a></code>, <code><a href="#PROFILE:DEFINE-PANEL">profile:define-panel</a></code>, <code><a href="#PROFILE:PANEL">profile:panel</a></code></p> <h3>rate</h3> <p>This interface provides for a rate limitation mechanism to prevent spamming or overly eager access to potentially sensitive or costly resources. This happens in two steps. First, the behaviour of the rate limitation is defined for a particular resource by <code><a href="#RATE:DEFINE-LIMIT">rate:define-limit</a></code>. Then the resource is protected through the <code><a href="#RATE:WITH-LIMITATION">rate:with-limitation</a></code> macro. If the access to the block by a certain user is too frequent, the block is not called, and the code in the limit definition is evaluated instead.</p> <p>Note that rate limitation is per-client, -user, or -session depending on the implementation, but certainly not global.</p> <p>See <code><a href="#RATE:DEFINE-LIMIT">rate:define-limit</a></code>, <code><a href="#RATE:LEFT">rate:left</a></code>, <code><a href="#RATE:WITH-LIMITATION">rate:with-limitation</a></code></p> <h3>server</h3> <p>This and the logger interface are the only interfaces Radiance requires an implementation for in order to start. It is responsible for accepting and replying to requests in some manner. The implementation must accept requests and relay them to the Radiance <code><a href="#RADIANCE-CORE:REQUEST">request</a></code> function, and then relay the returned <code><a href="#RADIANCE-CORE:RESPONSE">response</a></code> back to the requester.</p> <p>Note that the actual arguments that specify the listener behaviour are implementation-dependant, as is configuration thereof. However, if applicable, the implementation must provide for a standard listener that is accessible on <code>localhost:8080</code> and is started when <code><a href="#RADIANCE-CORE:STARTUP">radiance:startup</a></code> is called.</p> <p>See <code><a href="#SERVER:START">server:start</a></code>, <code><a href="#SERVER:STOP">server:stop</a></code>, <code><a href="#SERVER:LISTENERS">server:listeners</a></code>, <code><a href="#SERVER:STARTED">server:started</a></code>, <code><a href="#SERVER:STOPPED">server:stopped</a></code></p> <h3>session</h3> <p>The session interface provides for tracking a client over the course of multiple requests. It however cannot guarantee to track clients perfectly, as they may do several things in order to cloak or mask themselves or falsify information. Still, for most users, the session tracking should work fine enough.</p> <p>The session interface is usually used by other interfaces or lower-lying libraries in order to provide persistence of information such as user authentication.</p> <p>See <code><a href="#SESSION:*DEFAULT-TIMEOUT*">session:*default-timeout*</a></code>, <code><a href="#SESSION:SESSION">session:session</a></code>, <code><a href="#SESSION:=">session:=</a></code>, <code><a href="#SESSION:START">session:start</a></code>, <code><a href="#SESSION:GET">session:get</a></code>, <code><a href="#SESSION:LIST">session:list</a></code>, <code><a href="#SESSION:ID">session:id</a></code>, <code><a href="#SESSION:FIELD">session:field</a></code>, <code><a href="#SESSION:TIMEOUT">session:timeout</a></code>, <code><a href="#SESSION:END">session:end</a></code>, <code><a href="#SESSION:ACTIVE-P">session:active-p</a></code>, <code><a href="#SESSION:CREATE">session:create</a></code></p> <h3>user</h3> <p>This interface provides for persistent user objects and a permissions system. It does not take care of authentication, identification, tracking, or anything of the sort. It merely provides a user object upon which to build and with which permissions can be managed.</p> <p>See <code><a href="#USER:USER">user:user</a></code> for a description of permissions and their behaviour.</p> <p>See <code><a href="#USER:CONDITION">user:condition</a></code>, <code><a href="#USER:NOT-FOUND">user:not-found</a></code>, <code><a href="#USER:USER">user:user</a></code>, <code><a href="#USER:=">user:=</a></code>, <code><a href="#USER:LIST">user:list</a></code>, <code><a href="#USER:GET">user:get</a></code>, <code><a href="#USER:USERNAME">user:username</a></code>, <code><a href="#USER:FIELDS">user:fields</a></code>, <code><a href="#USER:FIELD">user:field</a></code>, <code><a href="#USER:REMOVE-FIELD">user:remove-field</a></code>, <code><a href="#USER:REMOVE">user:remove</a></code>, <code><a href="#USER:CHECK">user:check</a></code>, <code><a href="#USER:GRANT">user:grant</a></code>, <code><a href="#USER:REVOKE">user:revoke</a></code>, <code><a href="#USER:ADD-DEFAULT-PERMISSIONS">user:add-default-permissions</a></code>, <code><a href="#USER:ACTION">user:action</a></code>, <code><a href="#USER:ACTIONS">user:actions</a></code>, <code><a href="#USER:CREATE">user:create</a></code>, <code><a href="#USER:REMOVE">user:remove</a></code>, <code><a href="#USER:ACTION">user:action</a></code>, <code><a href="#USER:READY">user:ready</a></code>, <code><a href="#USER:UNREADY">user:unready</a></code></p> <h2>Also See</h2> <ul> <li><a href="https://shinmera.github.io/modularize">modularize</a> For the primary package metadata system</li> <li><a href="https://shinmera.github.io/modularize-interfaces">modularize-interfaces</a> For the interface and implementations extensions</li> <li><a href="https://shinmera.github.io/modularize-hooks">modularize-hooks</a> For the hooks and triggers mechanisms</li> <li><a href="https://shinmera.github.io/ubiquitous">ubiquitous</a> For configuration management</li> <li><a href="https://shirakumo.org/projects/radiance-contribs">radiance-contribs</a> Default interface implementations and other convenience modules for Radiance</li> </ul> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>radiance-core</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .    </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="RADIANCE-CORE" href="#RADIANCE-CORE">RADIANCE-CORE</a> <span class="nicknames">(RADIANCE MODULARIZE.MOD.RADIANCE-CORE ORG.SHIRAKUMO.RADIANCE.CORE)</span> </h3> <ul><li> <a name="RADIANCE-CORE:*DEBUGGER*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*DEBUGGER*">*DEBUGGER*</a></code></h4>  </header> <pre class="docstring">Whether the debugger should be invoked when an error occurs during a request execution.
 
 See HANDLE-CONDITION
 See EXECUTE-REQUEST</pre> </article> </li><li> <a name="RADIANCE-CORE:*DEFAULT-API-FORMAT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RADIANCE-CORE:*DEFAULT-API-FORMAT*">*DEFAULT-API-FORMAT*</a></code></h4>  </header> <pre class="docstring">The API format to use if no specific one is requested.
@@ -1361,54 +1361,7 @@ variable. After the action clause processing has
 finished, the body forms are evaluated.
 
 ACTION-CLAUSES ::= (clause body-form*)
-CLAUSE         --- A string designator that names the action</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="BAN" href="#BAN">BAN</a> <span class="nicknames">(MODULARIZE.MOD.BAN MODULARIZE.INT.BAN)</span> </h3> <ul><li> <a name="BAN:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#BAN:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="BAN:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#BAN:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="BAN:JAIL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#BAN:JAIL">JAIL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">IP &amp;KEY DURATION</code><code>)</code>  </header> <pre class="docstring">Ban the given IP.
-
-The IP may be in IPv4 or IPv6 format as a string.
-
-The duration must be either an integer denoting the
-number of seconds to ban for, or T in which case the
-duration is taken as being infinite. If no duration is
-given, an implementation-dependant default is chosen.
-
-If the IP is already banned, the ban duration is extended
-by the given amount.
-
-See BAN:LIST
-See BAN:RELEASE</pre> </article> </li><li> <a name="BAN:JAIL-TIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#BAN:JAIL-TIME">JAIL-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (IP (REMOTE *REQUEST*))</code><code>)</code>  </header> <pre class="docstring">Returns the number of seconds the IP has left on its ban, T for infinity, or NIL for none.
-
-See BAN:JAIL
-See BAN:RELEASE</pre> </article> </li><li> <a name="BAN:LIST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#BAN:LIST">LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of banned IP addresses.
-
-See BAN:JAIL-TIME</pre> </article> </li><li> <a name="BAN:RELEASE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#BAN:RELEASE">RELEASE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">IP</code><code>)</code>  </header> <pre class="docstring"/> </article> </li></ul> </li><li class="package"> <h3> <a name="RATE" href="#RATE">RATE</a> <span class="nicknames">(MODULARIZE.MOD.RATE MODULARIZE.INT.RATE)</span> </h3> <ul><li> <a name="RATE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RATE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="RATE:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RATE:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="RATE:LEFT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RATE:LEFT">LEFT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">RATE &amp;KEY (IP (REMOTE *REQUEST*))</code><code>)</code>  </header> <pre class="docstring">Returns two values, the number of attempts left, and the number of seconds left until the timeout is over.
-
-The user is rate limited if the number of attempts left
-is zero.</pre> </article> </li><li> <a name="RATE:DEFINE-LIMIT"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RATE:DEFINE-LIMIT">DEFINE-LIMIT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define the behaviour for a rate limitation.
-
-TIME-LEFT will be bound to the number of seconds left
-until the timeout is lifted. The body is the code that
-will be evaluated when the rate limit was hit. It
-should probably display an error page and perhaps
-record the infraction.
-
-TIMEOUT should be the interval of rate limiting. LIMIT
-is the number of attempts that can be made within the
-TIMEOUT. More straight-forwardly put: A timeout of 30
-and limit of 3 means a user can make 3 attempts
-within 30 seconds. If he tries to make more, he is
-blocked until the time since the last attempt has
-reached TIMEOUT seconds.
-
-See RATE:LEFT
-See RATE:WITH-LIMITATION</pre> </article> </li><li> <a name="RATE:WITH-LIMITATION"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RATE:WITH-LIMITATION">WITH-LIMITATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Evaluates the body within a rate limited environment.
-
-The limit must be defined beforehand.
-
-The rules defined by the named limit are applied. If
-the user exceeds the allowed number of attempts and is
-within rate limitation, the body is not evaluated.
-
-See RATE:LEFT
-See RATE:DEFINE-LIMIT</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="ADMIN" href="#ADMIN">ADMIN</a> <span class="nicknames">(MODULARIZE.MOD.ADMIN MODULARIZE.INT.ADMIN)</span> </h3> <ul><li> <a name="ADMIN:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#ADMIN:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="ADMIN:PAGE"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#ADMIN:PAGE">PAGE</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that points to the requested page.
+CLAUSE         --- A string designator that names the action</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="ADMIN" href="#ADMIN">ADMIN</a> <span class="nicknames">(MODULARIZE.MOD.ADMIN MODULARIZE.INT.ADMIN)</span> </h3> <ul><li> <a name="ADMIN:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#ADMIN:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="ADMIN:PAGE"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#ADMIN:PAGE">PAGE</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that points to the requested page.
 
 The following values are returned:
 1. URI
@@ -1453,25 +1406,7 @@ the PAGE resource with the category and panel names as
 arguments.
 
 See ADMIN:LIST-PANELS
-See ADMIN:REMOVE-PANEL</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="CACHE" href="#CACHE">CACHE</a> <span class="nicknames">(MODULARIZE.MOD.CACHE MODULARIZE.INT.CACHE)</span> </h3> <ul><li> <a name="CACHE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#CACHE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="CACHE:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CACHE:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CACHE:GET"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CACHE:GET">GET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Returns the contents cached under the given name, if any.
-
-See CACHE:WITH-CACHE</pre> </article> </li><li> <a name="CACHE:RENEW"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CACHE:RENEW">RENEW</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Clears out the cache under the given name and potentially refreshes it.
-
-The refresh may be deferred until the next time the associated
-WITH-CACHE form is evaluated.
-
-See CACHE:GET
-See CACHE:WITH-CACHE</pre> </article> </li><li> <a name="CACHE:WITH-CACHE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#CACHE:WITH-CACHE">WITH-CACHE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Caches the return value produced by the body under the name.
-
-Every time this form is evaluated, the TEST-FORM is evaluated.
-If it returns non-NIL, the body is evaluated and its return
-value is cached under the given name. If it returns T and the
-body has not yet been cached, then it is evaluated as well. 
-Otherwise, the body is not evaluated and the cached value is
-returned instead.
-
-See CACHE:RENEW
-See CACHE:GET</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="AUTH" href="#AUTH">AUTH</a> <span class="nicknames">(MODULARIZE.MOD.AUTH MODULARIZE.INT.AUTH)</span> </h3> <ul><li> <a name="AUTH:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#AUTH:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="AUTH:*LOGIN-TIMEOUT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#AUTH:*LOGIN-TIMEOUT*">*LOGIN-TIMEOUT*</a></code></h4>  </header> <pre class="docstring">The time, in seconds, for which an authenticated user should remain authenticated.</pre> </article> </li><li> <a name="AUTH:PAGE"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#AUTH:PAGE">PAGE</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that points to the requested page.
+See ADMIN:REMOVE-PANEL</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="AUTH" href="#AUTH">AUTH</a> <span class="nicknames">(MODULARIZE.MOD.AUTH MODULARIZE.INT.AUTH)</span> </h3> <ul><li> <a name="AUTH:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#AUTH:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="AUTH:*LOGIN-TIMEOUT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#AUTH:*LOGIN-TIMEOUT*">*LOGIN-TIMEOUT*</a></code></h4>  </header> <pre class="docstring">The time, in seconds, for which an authenticated user should remain authenticated.</pre> </article> </li><li> <a name="AUTH:PAGE"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#AUTH:PAGE">PAGE</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that points to the requested page.
 
 The following values are returned:
 1. URI
@@ -1514,355 +1449,43 @@ If the session is not authenticated, NIL is returned instead.
 NIL should correspond to the &quot;anonymous&quot; standard user.
 
 See SESSION:GET
-See AUTH:ASSOCIATE</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="SESSION" href="#SESSION">SESSION</a> <span class="nicknames">(MODULARIZE.MOD.SESSION MODULARIZE.INT.SESSION)</span> </h3> <ul><li> <a name="SESSION:*DEFAULT-TIMEOUT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SESSION:*DEFAULT-TIMEOUT*">*DEFAULT-TIMEOUT*</a></code></h4>  </header> <pre class="docstring">The default number of seconds a session can stay live for without being used.
+See AUTH:ASSOCIATE</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="BAN" href="#BAN">BAN</a> <span class="nicknames">(MODULARIZE.MOD.BAN MODULARIZE.INT.BAN)</span> </h3> <ul><li> <a name="BAN:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#BAN:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="BAN:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#BAN:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="BAN:JAIL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#BAN:JAIL">JAIL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">IP &amp;KEY DURATION</code><code>)</code>  </header> <pre class="docstring">Ban the given IP.
 
-See SESSION:TIMEOUT</pre> </article> </li><li> <a name="SESSION:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SESSION:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="SESSION:SESSION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#SESSION:SESSION">SESSION</a></code></h4>  </header> <pre class="docstring">The session object that encapsulates the connection a particular client has to the system.
+The IP may be in IPv4 or IPv6 format as a string.
 
-A session uniquely identifies a &quot;client&quot; that connects to the
-server. The means by which clients are distinguished from each-
-other and the means by which associated sessions are tracked are
-implementation-dependant.
+The duration must be either an integer denoting the
+number of seconds to ban for, or T in which case the
+duration is taken as being infinite. If no duration is
+given, an implementation-dependant default is chosen.
 
-A session is &quot;active&quot; for a certain period of time. This timeout
-is reset every time a request is made to the server by the client
-that is tied to the session. Once the timeout is reached, the
-session object is no longer considered active and may be removed
-entirely at any time.
+If the IP is already banned, the ban duration is extended
+by the given amount.
 
-Sessions must be able to store arbitrary fields that can be used
-to store data associated with the session. Each session also has
-a globally unique ID string that can be used to coerce session
-objects to storage.
+See BAN:LIST
+See BAN:RELEASE</pre> </article> </li><li> <a name="BAN:JAIL-TIME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#BAN:JAIL-TIME">JAIL-TIME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (IP (REMOTE *REQUEST*))</code><code>)</code>  </header> <pre class="docstring">Returns the number of seconds the IP has left on its ban, T for infinity, or NIL for none.
 
-See SESSION:=
-See SESSION:GET
-See SESSION:LIST
-See SESSION:ID
-See SESSION:FIELD
-See SESSION:TIMEOUT
-See SESSION:END
-See SESSION:ACTIVE-P</pre> </article> </li><li> <a name="SESSION:FIELD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:FIELD">FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SESSION/FIELD &amp;OPTIONAL FIELD</code><code>)</code>  </header> <pre class="docstring">Accessor to an arbitrary data storage field for a session object.
+See BAN:JAIL
+See BAN:RELEASE</pre> </article> </li><li> <a name="BAN:LIST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#BAN:LIST">LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of banned IP addresses.
 
-If no SESSION-ID is given, the session associated with the
-current client is used.
+See BAN:JAIL-TIME</pre> </article> </li><li> <a name="BAN:RELEASE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#BAN:RELEASE">RELEASE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">IP</code><code>)</code>  </header> <pre class="docstring"/> </article> </li></ul> </li><li class="package"> <h3> <a name="CACHE" href="#CACHE">CACHE</a> <span class="nicknames">(MODULARIZE.MOD.CACHE MODULARIZE.INT.CACHE)</span> </h3> <ul><li> <a name="CACHE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#CACHE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="CACHE:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CACHE:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CACHE:GET"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CACHE:GET">GET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Returns the contents cached under the given name, if any.
 
-The keys must be objects comparable under EQL.
+See CACHE:WITH-CACHE</pre> </article> </li><li> <a name="CACHE:RENEW"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CACHE:RENEW">RENEW</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Clears out the cache under the given name and potentially refreshes it.
 
-See SESSION:SESSION</pre> </article> </li><li> <a name="SESSION:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="SESSION:TIMEOUT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:TIMEOUT">TIMEOUT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION</code><code>)</code>  </header> <pre class="docstring">Accessor to the timeout, in seconds, of the session object.
+The refresh may be deferred until the next time the associated
+WITH-CACHE form is evaluated.
 
-If no SESSION-ID is given, the session associated with the
-current client is used.
+See CACHE:GET
+See CACHE:WITH-CACHE</pre> </article> </li><li> <a name="CACHE:WITH-CACHE"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#CACHE:WITH-CACHE">WITH-CACHE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Caches the return value produced by the body under the name.
 
-See SESSION:SESSION
-See SESSION:ACTIVE-P</pre> </article> </li><li> <a name="SESSION:="> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:=">=</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SESSION-A SESSION-B</code><code>)</code>  </header> <pre class="docstring">Compares the two session objects and returns true if they represent the same session identity.
+Every time this form is evaluated, the TEST-FORM is evaluated.
+If it returns non-NIL, the body is evaluated and its return
+value is cached under the given name. If it returns T and the
+body has not yet been cached, then it is evaluated as well. 
+Otherwise, the body is not evaluated and the cached value is
+returned instead.
 
-See SESSION:SESSION</pre> </article> </li><li> <a name="SESSION:ACTIVE-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:ACTIVE-P">ACTIVE-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION</code><code>)</code>  </header> <pre class="docstring">Returns whether the session is currently active or not.
-
-An inactive session will no longer be tied to any future
-client requests and may be removed at any time.
-
-See SESSION:SESSION</pre> </article> </li><li> <a name="SESSION:END"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:END">END</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION</code><code>)</code>  </header> <pre class="docstring">Ends the session immediately, making it inactive.
-
-See SESSION:SESSION
-See SESSION:START
-See SESSION:ACTIVE-P</pre> </article> </li><li> <a name="SESSION:GET"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:GET">GET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION-ID</code><code>)</code>  </header> <pre class="docstring">Retrieves the current session, or a particular one.
-
-If no SESSION-ID is given, the session associated with the
-current client is returned, if any. The SESSION-ID must be
-a string that is STRING= to one previously obtained by a call
-to SESSION:ID.
-
-See SESSION:SESSION
-See SESSION:ID</pre> </article> </li><li> <a name="SESSION:ID"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:ID">ID</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION</code><code>)</code>  </header> <pre class="docstring">Returns the globally unique ID of the session as a string.
-
-If no SESSION-ID is given, the session associated with the
-current client is used.
-
-The ID must be unique in such a way that no two sessions that are
-known to the implementation at any time may have the same ID.
-
-See SESSION:SESSION</pre> </article> </li><li> <a name="SESSION:LIST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:LIST">LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a fresh list of all known session objects.
-
-The sessions may not all be active.
-
-Invoking this function may be expensive.
-
-See SESSION:SESSION
-See SESSION:ACTIVE-P</pre> </article> </li><li> <a name="SESSION:START"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:START">START</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Starts a new session in the current request context and returns it.
-
-If the request already has a session associated with it, it is
-replaced.
-
-Once a session has been started, the client must receive
-the same session on future requests to the server. How this
-client tracking is achieved is implementation-dependant.
-
-See SESSION:SESSION
-See SESSION:GET
-See SESSION:END</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="USER" href="#USER">USER</a> <span class="nicknames">(MODULARIZE.MOD.USER MODULARIZE.INT.USER)</span> </h3> <ul><li> <a name="USER:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#USER:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="USER:USER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#USER:USER">USER</a></code></h4>  </header> <pre class="docstring">Container for a user.
-
-A user is an object that represents a certain person with
-access to the system. Each user has a uniquely identifying
-username string of 1-32 case-insensitive characters of the
-following range:
-
-  &quot;abcdefghijklmnopqrstuvwxyz0123456789_-.&quot;
-
-Each user object can store arbitrary information in fields.
-
-A user has a set of permissions that describe which
-protected resources the user should be granted access to.
-These permissions are laid out in the form of trees,
-where each permission describes a certain path down a
-tree. For example, the following permission
-
-  foo.bar
-
-would grant access to the permissions foo.bar, foo.bar.baz
-and so forth, but not to foo or foo.bam . Permissions can
-be denoted by either dot-delimited strings, or lists.
-
-Note that the user system may need to be readied up first
-before it can be reliably used. Attempting to perform any
-user operations before the USER:READY hook has been
-triggered or after the USER:UNREADY hook has been triggered
-will result in undefined behaviour.
-
-See PERM
-See USER:=
-See USER:LIST
-See USER:GET
-See USER:USERNAME
-See USER:FIELDS
-See USER:FIELD
-See USER:REMOVE
-See USER:CHECK
-See USER:GRANT
-See USER:REVOKE</pre> </article> </li><li> <a name="USER:CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#USER:CONDITION">CONDITION</a></code></h4>  </header> <pre class="docstring">Base condition type for conditions related to the user interface.</pre> </article> </li><li> <a name="USER:NOT-FOUND"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#USER:NOT-FOUND">NOT-FOUND</a></code></h4>  </header> <pre class="docstring">Condition signalled when an unknown user was requested.
-
-See USER:CONDITION
-See USER:GET</pre> </article> </li><li> <a name="USER:FIELD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#USER:FIELD">FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD USER</code><code>)</code>  </header> <pre class="docstring">Accessor to a field on the user.
-
-Keys must be strings of a maximum length of 64.
-Values must be strings, but can be of arbitrary length.
-
-See USER:USER
-See USER:REMOVE-FIELD
-See USER:FIELDS</pre> </article> </li><li> <a name="USER:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#USER:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="USER:="> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:=">=</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER-A USER-B</code><code>)</code>  </header> <pre class="docstring">Compares two user object to see if they're the same.
-
-See USER:USER</pre> </article> </li><li> <a name="USER:ACTION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ACTION">ACTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER ACTION PUBLIC</code><code>)</code>  </header> <pre class="docstring">Records that the named action has been performed on the user.
-
-This is used to keep a record of user actions. The ACTION
-can be an arbitrary string that should primarily be human-
-readable. PUBLIC denotes whether the action should be
-publicly visible-- in other words, it does not contain
-potentially sensitive information.
-
-See USER:ACTIONS</pre> </article> </li><li> <a name="USER:ACTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ACTIONS">ACTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER N &amp;KEY (PUBLIC T) OLDEST-FIRST</code><code>)</code>  </header> <pre class="docstring">Returns a truncated list of actions that the user performed.
-
-If PUBLIC is non-NIL, only actions that can be publicly
-shown are returned. If OLDEST-FIRST is non-NIL, actions
-are returned sorted from oldest to newest; otherwise they
-are sorted newest to oldest.
-
-See USER:ACTION</pre> </article> </li><li> <a name="USER:ADD-DEFAULT-PERMISSIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ADD-DEFAULT-PERMISSIONS">ADD-DEFAULT-PERMISSIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST BRANCH</code><code>)</code>  </header> <pre class="docstring">Adds the given branches as default permissions to be granted to newly created users.
-
-Note that this will not retroactively grant permissions and
-only comes into effect for users created after a call to
-this has been run.
-
-See USER:USER
-See USER:GRANT</pre> </article> </li><li> <a name="USER:CHECK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:CHECK">CHECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER BRANCH</code><code>)</code>  </header> <pre class="docstring">Checks whether the user is permitted access to the given permission branch.
-
-See USER:USER
-See USER:GRANT
-See USER:REVOKE</pre> </article> </li><li> <a name="USER:FIELDS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:FIELDS">FIELDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Returns an alist of field names to values of the user.
-
-See USER:USER
-See USER:FIELD
-See USER:REMOVE-FIELD</pre> </article> </li><li> <a name="USER:GET"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:GET">GET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USERNAME &amp;KEY (IF-DOES-NOT-EXIST NIL)</code><code>)</code>  </header> <pre class="docstring">Returns the requested user object.
-
-IF-DOES-NOT-EXIST may be one of the following values,
-which decides on the behaviour in the case where the
-requested user is not known.
-
-  :CREATE     The user is created.
-  :ERROR      An error of type USER:NOT-FOUND is signalled.
-  :ANONYMOUS  The anonymous standard user is returned.
-  NIL         NIL is returned.
-
-When a new user is created, the USER:CREATE hook is
-triggered.
-
-Note that fetching users while the user system is not
-yet ready will result in undefined behaviour.
-
-See USER:READY
-See USER:UNREADY
-See USER:USER</pre> </article> </li><li> <a name="USER:GRANT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:GRANT">GRANT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER &amp;REST BRANCHES</code><code>)</code>  </header> <pre class="docstring">Grants the user access to the given permission branches.
-
-See USER:USER
-See USER:CHECK
-See USER:REVOKE</pre> </article> </li><li> <a name="USER:LIST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:LIST">LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a fresh list of all known user objects.
-
-This may be a very costly operation.
-
-See USER:USER</pre> </article> </li><li> <a name="USER:REMOVE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REMOVE">REMOVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Removes the given user.
-
-This deletes all associated data of the user.
-
-On successful deletion, the USER:REMOVE hook is triggered.
-
-See USER:USER</pre> </article> </li><li> <a name="USER:REMOVE-FIELD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REMOVE-FIELD">REMOVE-FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD USER</code><code>)</code>  </header> <pre class="docstring">Removes the requested field from the user.
-
-See USER:USER
-See USER:FIELD
-See USER:FIELDS</pre> </article> </li><li> <a name="USER:REVOKE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REVOKE">REVOKE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER &amp;REST BRANCHES</code><code>)</code>  </header> <pre class="docstring">Revokes access from the given permission branches.
-
-See USER:USER
-See USER:CHECK
-See USER:GRANT</pre> </article> </li><li> <a name="USER:USERNAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:USERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Returns the username of the requested user.
-
-See USER:USER</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="PROFILE" href="#PROFILE">PROFILE</a> <span class="nicknames">(MODULARIZE.MOD.PROFILE MODULARIZE.INT.PROFILE)</span> </h3> <ul><li> <a name="PROFILE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#PROFILE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="PROFILE:PAGE"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#PROFILE:PAGE">PAGE</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that points to the requested page.
-
-The following values are returned:
-1. URI
-2. QUERY-ALIST
-3. FRAGMENT
-
-The QUERY-ALIST and FRAGMENT can be used as arguments to URI-TO-URL.
-
-By default a page with the name corresponding to the symbol
-of the given name in the module's package is used if available.
-
-However, a module or interface may special-case certain page
-names to provide a specified name to point to a page of
-particular interest.</pre> </article> </li><li> <a name="PROFILE:ACCESS"> </a> <article> <header class="option panel"> <span class="type">option panel</span>  <h4 class="name"><code><a href="#PROFILE:ACCESS">:ACCESS</a></code></h4>  </header> <pre class="docstring">Ensures that the page is only accessible if the user requesting it has the appropriate permission branch.</pre> </article> </li><li> <a name="PROFILE:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="PROFILE:ADD-FIELD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:ADD-FIELD">ADD-FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;KEY (TYPE :TEXT) DEFAULT (EDITABLE T)</code><code>)</code>  </header> <pre class="docstring">Adds a custom profile field that is visible on the user's profile.
-
-These fields can be used to store public information such
-as counters, stats, birthday, bio, etc.
-
-If EDITABLE is non-NIL, the user is allowed to change the
-field themselves.
-
-TYPE can be one of the following:
-  text textarea password email url time date datetime-local
-  month week color number range checkbox radio file tel
-
-The type is mostly useful for the display presentation to
-the user. The actual lisp data type used to store the field
-is a string.
-
-Note that this only stores the intended interpretation of a
-field, not the field itself.
-
-See PROFILE:FIELDS
-See PROFILE:REMOVE-FIELD</pre> </article> </li><li> <a name="PROFILE:AVATAR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:AVATAR">AVATAR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER SIZE</code><code>)</code>  </header> <pre class="docstring">Returns a full URL to an avatar image for the user.
-
-The size of the image should approximate the one passed
-as an argument, in pixels. It must however not be exact.
-You have to take care to scale the image to the appropriate
-size on the client regardless. The size specified here is
-only useful to optimise the image size for transfer speed.</pre> </article> </li><li> <a name="PROFILE:FIELDS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:FIELDS">FIELDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of defined fields.
-
-Each field is an alist with the following keys defined:
- :NAME :TYPE :DEFAULT :EDITABLE
-
-The actual value of the fields can be accessed through the
-USER:FIELD accessor.
-
-See PROFILE:ADD-FIELD
-See PROFILE:REMOVE-FIELD
-See USER:FIELD</pre> </article> </li><li> <a name="PROFILE:LIST-PANELS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:LIST-PANELS">LIST-PANELS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of profile panel names.
-
-See PROFILE:REMOVE-PANEL
-See PROFILE:DEFINE-PANEL</pre> </article> </li><li> <a name="PROFILE:NAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:NAME">NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Returns the &quot;display name&quot; of the user.
-
-The display name is a name that, unlike the username,
-can be changed and the user deems preferable over the
-username.</pre> </article> </li><li> <a name="PROFILE:REMOVE-FIELD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:REMOVE-FIELD">REMOVE-FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Removes the given field information, if it exists.
-
-See PROFILE:ADD-FIELD
-See PROFILE:FIELDS</pre> </article> </li><li> <a name="PROFILE:REMOVE-PANEL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:REMOVE-PANEL">REMOVE-PANEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Removes the panel of the given name.
-
-See PROFILE:LIST-PANELS
-See PROFILE:DEFINE-PANEL</pre> </article> </li><li> <a name="PROFILE:DEFINE-PANEL"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:DEFINE-PANEL">DEFINE-PANEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a new panel to be shown on the user profile.
-
-This is similar to DEFINE-PAGE, except it defines a panel
-within the user profile interface. The body code should
-return HTML data to be emitted into the interface. Do not
-emit root elements such as &lt;HTML&gt; or &lt;BODY&gt;.
-
-The panel definition can be extended through the PROFILE:PANEL
-option. By default, the following options are guaranteed to
-exist:
-
-  :ACCESS   Will restrict access to it to users that pass
-            the permission check. See USER:CHECK.
-
-In order to obtain the internal URI to a profile panel, use
-the PAGE resource with the user and panel name as arguments.
-
-See PROFILE:LIST-PANELS
-See PROFILE:REMOVE-PANEL</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="SERVER" href="#SERVER">SERVER</a> <span class="nicknames">(MODULARIZE.MOD.SERVER MODULARIZE.INT.SERVER)</span> </h3> <ul><li> <a name="SERVER:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SERVER:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="SERVER:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#SERVER:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="SERVER:LISTENERS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SERVER:LISTENERS">LISTENERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of active listener instances.
-
-If no address is passed, 0.0.0.0 is assumed.
-
-Each item in the list is a string of the following format:
-  IP:PORT
-
-See SERVER:START
-See SERVER:STOP</pre> </article> </li><li> <a name="SERVER:START"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SERVER:START">START</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PORT &amp;KEY ADDRESS SSL-CERT SSL-KEY SSL-PASS</code><code>)</code>  </header> <pre class="docstring">Starts a listener server on the given PORT.
-
-The server may support SSL mode if the SSL options are passed.
-
-If no address is passed, 0.0.0.0 is assumed.
-
-On successful start, the SERVER:STARTED hook is triggered.
-On unsuccessful start, an error is signalled.
-
-The server implementation must take care to invoke REQUEST
-with the proper arguments on an incoming request, and to
-send the data contained in the returned response object
-back over the wire.
-
-See SERVER:STOP
-See SERVER:LISTENERS
-See REQUEST
-See RESPONSE</pre> </article> </li><li> <a name="SERVER:STOP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SERVER:STOP">STOP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PORT &amp;OPTIONAL ADDRESS</code><code>)</code>  </header> <pre class="docstring">Stops the listener server on the given PORT.
-
-On successful stop, the SERVER:STOPPED hook is triggered.
-On unsuccessful stop, an error is signalled.
-
-See SERVER:START
-See SERVER:LISTENERS</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="LOGGER" href="#LOGGER">LOGGER</a> <span class="nicknames">(MODULARIZE.INT.LOGGER MODULARIZE.MOD.LOGGER L)</span> </h3> <ul><li> <a name="LOGGER:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#LOGGER:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="LOGGER:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="LOGGER:DEBUG"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:DEBUG">DEBUG</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a debug message.
-
-See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:ERROR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:ERROR">ERROR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as an error message.
-
-See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:FATAL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:FATAL">FATAL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a fatal message.
-
-See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:INFO"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:INFO">INFO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as an information message.
-
-See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:LOG"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:LOG">LOG</a></code></h4> <code class="qualifiers"></code> <code class="arguments">LEVEL CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message under the level.
-
-LEVEL has to be one of :TRACE :DEBUG :INFO :WARN :ERROR :SEVERE :FATAL.
-
-Note that the exact means by which the message is presented
-or logged is up to the implementation.
-
-See LOGGER:TRACE
-See LOGGER:DEBUG
-See LOGGER:INFO
-See LOGGER:WARN
-See LOGGER:ERROR
-See LOGGER:SEVERE
-See LOGGER:FATAL</pre> </article> </li><li> <a name="LOGGER:SEVERE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:SEVERE">SEVERE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a severe message.
-
-See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:TRACE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:TRACE">TRACE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a trace message.
-
-See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:WARN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:WARN">WARN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a warning message.
-
-See LOGGER:LOG</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="DATABASE" href="#DATABASE">DATABASE</a> <span class="nicknames">(MODULARIZE.INT.DATABASE MODULARIZE.MOD.DATABASE DB)</span> </h3> <ul><li> <a name="DATABASE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#DATABASE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:COLLECTION-ALREADY-EXISTS"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:COLLECTION-ALREADY-EXISTS">COLLECTION-ALREADY-EXISTS</a></code></h4>  </header> <pre class="docstring">Error signalled when a new collection is attempted to be created where an old one already exists.
+See CACHE:RENEW
+See CACHE:GET</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="DATABASE" href="#DATABASE">DATABASE</a> <span class="nicknames">(MODULARIZE.INT.DATABASE MODULARIZE.MOD.DATABASE DB)</span> </h3> <ul><li> <a name="DATABASE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#DATABASE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="DATABASE:COLLECTION-ALREADY-EXISTS"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:COLLECTION-ALREADY-EXISTS">COLLECTION-ALREADY-EXISTS</a></code></h4>  </header> <pre class="docstring">Error signalled when a new collection is attempted to be created where an old one already exists.
 
 See DATABASE:COLLECTION-CONDITION</pre> </article> </li><li> <a name="DATABASE:COLLECTION-CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#DATABASE:COLLECTION-CONDITION">COLLECTION-CONDITION</a></code></h4>  </header> <pre class="docstring">Base condition type for collection related conditions.
 
@@ -2275,4 +1898,398 @@ to say exited before the last form in the body has
 finished execution and can return its value, all the
 database operations that were performed within the body
 are reverted in such a way that it appears as if they
-had never been performed in the first place.</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
+had never been performed in the first place.</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="LOGGER" href="#LOGGER">LOGGER</a> <span class="nicknames">(MODULARIZE.INT.LOGGER MODULARIZE.MOD.LOGGER L)</span> </h3> <ul><li> <a name="LOGGER:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#LOGGER:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="LOGGER:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="LOGGER:DEBUG"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:DEBUG">DEBUG</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a debug message.
+
+See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:ERROR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:ERROR">ERROR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as an error message.
+
+See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:FATAL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:FATAL">FATAL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a fatal message.
+
+See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:INFO"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:INFO">INFO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as an information message.
+
+See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:LOG"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:LOG">LOG</a></code></h4> <code class="qualifiers"></code> <code class="arguments">LEVEL CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message under the level.
+
+LEVEL has to be one of :TRACE :DEBUG :INFO :WARN :ERROR :SEVERE :FATAL.
+
+Note that the exact means by which the message is presented
+or logged is up to the implementation.
+
+See LOGGER:TRACE
+See LOGGER:DEBUG
+See LOGGER:INFO
+See LOGGER:WARN
+See LOGGER:ERROR
+See LOGGER:SEVERE
+See LOGGER:FATAL</pre> </article> </li><li> <a name="LOGGER:SEVERE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:SEVERE">SEVERE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a severe message.
+
+See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:TRACE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:TRACE">TRACE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a trace message.
+
+See LOGGER:LOG</pre> </article> </li><li> <a name="LOGGER:WARN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#LOGGER:WARN">WARN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CATEGORY LOG-STRING &amp;REST FORMAT-ARGS</code><code>)</code>  </header> <pre class="docstring">Logs the given message in the category as a warning message.
+
+See LOGGER:LOG</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="PROFILE" href="#PROFILE">PROFILE</a> <span class="nicknames">(MODULARIZE.MOD.PROFILE MODULARIZE.INT.PROFILE)</span> </h3> <ul><li> <a name="PROFILE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#PROFILE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="PROFILE:PAGE"> </a> <article> <header class="resource-type"> <span class="type">resource-type</span>  <h4 class="name"><code><a href="#PROFILE:PAGE">PAGE</a></code></h4>  </header> <pre class="docstring">Returns an internal URI that points to the requested page.
+
+The following values are returned:
+1. URI
+2. QUERY-ALIST
+3. FRAGMENT
+
+The QUERY-ALIST and FRAGMENT can be used as arguments to URI-TO-URL.
+
+By default a page with the name corresponding to the symbol
+of the given name in the module's package is used if available.
+
+However, a module or interface may special-case certain page
+names to provide a specified name to point to a page of
+particular interest.</pre> </article> </li><li> <a name="PROFILE:ACCESS"> </a> <article> <header class="option panel"> <span class="type">option panel</span>  <h4 class="name"><code><a href="#PROFILE:ACCESS">:ACCESS</a></code></h4>  </header> <pre class="docstring">Ensures that the page is only accessible if the user requesting it has the appropriate permission branch.</pre> </article> </li><li> <a name="PROFILE:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="PROFILE:ADD-FIELD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:ADD-FIELD">ADD-FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME &amp;KEY (TYPE :TEXT) DEFAULT (EDITABLE T)</code><code>)</code>  </header> <pre class="docstring">Adds a custom profile field that is visible on the user's profile.
+
+These fields can be used to store public information such
+as counters, stats, birthday, bio, etc.
+
+If EDITABLE is non-NIL, the user is allowed to change the
+field themselves.
+
+TYPE can be one of the following:
+  text textarea password email url time date datetime-local
+  month week color number range checkbox radio file tel
+
+The type is mostly useful for the display presentation to
+the user. The actual lisp data type used to store the field
+is a string.
+
+Note that this only stores the intended interpretation of a
+field, not the field itself.
+
+See PROFILE:FIELDS
+See PROFILE:REMOVE-FIELD</pre> </article> </li><li> <a name="PROFILE:AVATAR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:AVATAR">AVATAR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER SIZE</code><code>)</code>  </header> <pre class="docstring">Returns a full URL to an avatar image for the user.
+
+The size of the image should approximate the one passed
+as an argument, in pixels. It must however not be exact.
+You have to take care to scale the image to the appropriate
+size on the client regardless. The size specified here is
+only useful to optimise the image size for transfer speed.</pre> </article> </li><li> <a name="PROFILE:FIELDS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:FIELDS">FIELDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of defined fields.
+
+Each field is an alist with the following keys defined:
+ :NAME :TYPE :DEFAULT :EDITABLE
+
+The actual value of the fields can be accessed through the
+USER:FIELD accessor.
+
+See PROFILE:ADD-FIELD
+See PROFILE:REMOVE-FIELD
+See USER:FIELD</pre> </article> </li><li> <a name="PROFILE:LIST-PANELS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:LIST-PANELS">LIST-PANELS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of profile panel names.
+
+See PROFILE:REMOVE-PANEL
+See PROFILE:DEFINE-PANEL</pre> </article> </li><li> <a name="PROFILE:NAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:NAME">NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Returns the &quot;display name&quot; of the user.
+
+The display name is a name that, unlike the username,
+can be changed and the user deems preferable over the
+username.</pre> </article> </li><li> <a name="PROFILE:REMOVE-FIELD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:REMOVE-FIELD">REMOVE-FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Removes the given field information, if it exists.
+
+See PROFILE:ADD-FIELD
+See PROFILE:FIELDS</pre> </article> </li><li> <a name="PROFILE:REMOVE-PANEL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:REMOVE-PANEL">REMOVE-PANEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring">Removes the panel of the given name.
+
+See PROFILE:LIST-PANELS
+See PROFILE:DEFINE-PANEL</pre> </article> </li><li> <a name="PROFILE:DEFINE-PANEL"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#PROFILE:DEFINE-PANEL">DEFINE-PANEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Defines a new panel to be shown on the user profile.
+
+This is similar to DEFINE-PAGE, except it defines a panel
+within the user profile interface. The body code should
+return HTML data to be emitted into the interface. Do not
+emit root elements such as &lt;HTML&gt; or &lt;BODY&gt;.
+
+The panel definition can be extended through the PROFILE:PANEL
+option. By default, the following options are guaranteed to
+exist:
+
+  :ACCESS   Will restrict access to it to users that pass
+            the permission check. See USER:CHECK.
+
+In order to obtain the internal URI to a profile panel, use
+the PAGE resource with the user and panel name as arguments.
+
+See PROFILE:LIST-PANELS
+See PROFILE:REMOVE-PANEL</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="RATE" href="#RATE">RATE</a> <span class="nicknames">(MODULARIZE.MOD.RATE MODULARIZE.INT.RATE)</span> </h3> <ul><li> <a name="RATE:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#RATE:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="RATE:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#RATE:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="RATE:LEFT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#RATE:LEFT">LEFT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">RATE &amp;KEY (IP (REMOTE *REQUEST*))</code><code>)</code>  </header> <pre class="docstring">Returns two values, the number of attempts left, and the number of seconds left until the timeout is over.
+
+The user is rate limited if the number of attempts left
+is zero.</pre> </article> </li><li> <a name="RATE:DEFINE-LIMIT"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RATE:DEFINE-LIMIT">DEFINE-LIMIT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Define the behaviour for a rate limitation.
+
+TIME-LEFT will be bound to the number of seconds left
+until the timeout is lifted. The body is the code that
+will be evaluated when the rate limit was hit. It
+should probably display an error page and perhaps
+record the infraction.
+
+TIMEOUT should be the interval of rate limiting. LIMIT
+is the number of attempts that can be made within the
+TIMEOUT. More straight-forwardly put: A timeout of 30
+and limit of 3 means a user can make 3 attempts
+within 30 seconds. If he tries to make more, he is
+blocked until the time since the last attempt has
+reached TIMEOUT seconds.
+
+See RATE:LEFT
+See RATE:WITH-LIMITATION</pre> </article> </li><li> <a name="RATE:WITH-LIMITATION"> </a> <article> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#RATE:WITH-LIMITATION">WITH-LIMITATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST ARGS</code><code>)</code>  </header> <pre class="docstring">Evaluates the body within a rate limited environment.
+
+The limit must be defined beforehand.
+
+The rules defined by the named limit are applied. If
+the user exceeds the allowed number of attempts and is
+within rate limitation, the body is not evaluated.
+
+See RATE:LEFT
+See RATE:DEFINE-LIMIT</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="SERVER" href="#SERVER">SERVER</a> <span class="nicknames">(MODULARIZE.MOD.SERVER MODULARIZE.INT.SERVER)</span> </h3> <ul><li> <a name="SERVER:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SERVER:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="SERVER:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#SERVER:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="SERVER:LISTENERS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SERVER:LISTENERS">LISTENERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a list of active listener instances.
+
+See SERVER:START
+See SERVER:STOP</pre> </article> </li><li> <a name="SERVER:START"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SERVER:START">START</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PORT &amp;KEY ADDRESS SSL-CERT SSL-KEY SSL-PASS</code><code>)</code>  </header> <pre class="docstring">Starts a listener server.
+
+The name must be a keyword.
+
+Note that the implementation must include additional
+keyword arguments that specify the actual instance
+behaviour such as the port, address, and so forth. However,
+in order to also allow exotic servers such as pipe-based
+ones, no such arguments are specified.
+
+See the documentation of your implementation of choice.
+
+If a server that is similar to the requested one (by name
+or the provided options), an error is signalled.
+
+On successful start, the SERVER:STARTED hook is triggered.
+On unsuccessful start, an error is signalled.
+
+The server implementation must take care to invoke REQUEST
+with the proper arguments on an incoming request, and to
+send the data contained in the returned response object
+back over the wire.
+
+See SERVER:STOP
+See SERVER:LISTENERS
+See REQUEST
+See RESPONSE</pre> </article> </li><li> <a name="SERVER:STOP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SERVER:STOP">STOP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">PORT &amp;OPTIONAL ADDRESS</code><code>)</code>  </header> <pre class="docstring">Stops the listener server on the given PORT.
+
+The name must be a keyword.
+
+If no listener with the requested name is found, an error
+may be signalled.
+
+On successful stop, the SERVER:STOPPED hook is triggered.
+On unsuccessful stop, an error is signalled.
+
+See SERVER:START
+See SERVER:LISTENERS</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="SESSION" href="#SESSION">SESSION</a> <span class="nicknames">(MODULARIZE.MOD.SESSION MODULARIZE.INT.SESSION)</span> </h3> <ul><li> <a name="SESSION:*DEFAULT-TIMEOUT*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SESSION:*DEFAULT-TIMEOUT*">*DEFAULT-TIMEOUT*</a></code></h4>  </header> <pre class="docstring">The default number of seconds a session can stay live for without being used.
+
+See SESSION:TIMEOUT</pre> </article> </li><li> <a name="SESSION:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SESSION:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="SESSION:SESSION"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#SESSION:SESSION">SESSION</a></code></h4>  </header> <pre class="docstring">The session object that encapsulates the connection a particular client has to the system.
+
+A session uniquely identifies a &quot;client&quot; that connects to the
+server. The means by which clients are distinguished from each-
+other and the means by which associated sessions are tracked are
+implementation-dependant.
+
+A session is &quot;active&quot; for a certain period of time. This timeout
+is reset every time a request is made to the server by the client
+that is tied to the session. Once the timeout is reached, the
+session object is no longer considered active and may be removed
+entirely at any time.
+
+Sessions must be able to store arbitrary fields that can be used
+to store data associated with the session. Each session also has
+a globally unique ID string that can be used to coerce session
+objects to storage.
+
+See SESSION:=
+See SESSION:GET
+See SESSION:LIST
+See SESSION:ID
+See SESSION:FIELD
+See SESSION:TIMEOUT
+See SESSION:END
+See SESSION:ACTIVE-P</pre> </article> </li><li> <a name="SESSION:FIELD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:FIELD">FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SESSION/FIELD &amp;OPTIONAL FIELD</code><code>)</code>  </header> <pre class="docstring">Accessor to an arbitrary data storage field for a session object.
+
+If no SESSION-ID is given, the session associated with the
+current client is used.
+
+The keys must be objects comparable under EQL.
+
+See SESSION:SESSION</pre> </article> </li><li> <a name="SESSION:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="SESSION:TIMEOUT"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:TIMEOUT">TIMEOUT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION</code><code>)</code>  </header> <pre class="docstring">Accessor to the timeout, in seconds, of the session object.
+
+If no SESSION-ID is given, the session associated with the
+current client is used.
+
+See SESSION:SESSION
+See SESSION:ACTIVE-P</pre> </article> </li><li> <a name="SESSION:="> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:=">=</a></code></h4> <code class="qualifiers"></code> <code class="arguments">SESSION-A SESSION-B</code><code>)</code>  </header> <pre class="docstring">Compares the two session objects and returns true if they represent the same session identity.
+
+See SESSION:SESSION</pre> </article> </li><li> <a name="SESSION:ACTIVE-P"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:ACTIVE-P">ACTIVE-P</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION</code><code>)</code>  </header> <pre class="docstring">Returns whether the session is currently active or not.
+
+An inactive session will no longer be tied to any future
+client requests and may be removed at any time.
+
+See SESSION:SESSION</pre> </article> </li><li> <a name="SESSION:END"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:END">END</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION</code><code>)</code>  </header> <pre class="docstring">Ends the session immediately, making it inactive.
+
+See SESSION:SESSION
+See SESSION:START
+See SESSION:ACTIVE-P</pre> </article> </li><li> <a name="SESSION:GET"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:GET">GET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION-ID</code><code>)</code>  </header> <pre class="docstring">Retrieves the current session, or a particular one.
+
+If no SESSION-ID is given, the session associated with the
+current client is returned, if any. The SESSION-ID must be
+a string that is STRING= to one previously obtained by a call
+to SESSION:ID.
+
+See SESSION:SESSION
+See SESSION:ID</pre> </article> </li><li> <a name="SESSION:ID"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:ID">ID</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL SESSION</code><code>)</code>  </header> <pre class="docstring">Returns the globally unique ID of the session as a string.
+
+If no SESSION-ID is given, the session associated with the
+current client is used.
+
+The ID must be unique in such a way that no two sessions that are
+known to the implementation at any time may have the same ID.
+
+See SESSION:SESSION</pre> </article> </li><li> <a name="SESSION:LIST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:LIST">LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a fresh list of all known session objects.
+
+The sessions may not all be active.
+
+Invoking this function may be expensive.
+
+See SESSION:SESSION
+See SESSION:ACTIVE-P</pre> </article> </li><li> <a name="SESSION:START"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#SESSION:START">START</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Starts a new session in the current request context and returns it.
+
+If the request already has a session associated with it, it is
+replaced.
+
+Once a session has been started, the client must receive
+the same session on future requests to the server. How this
+client tracking is achieved is implementation-dependant.
+
+See SESSION:SESSION
+See SESSION:GET
+See SESSION:END</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="USER" href="#USER">USER</a> <span class="nicknames">(MODULARIZE.MOD.USER MODULARIZE.INT.USER)</span> </h3> <ul><li> <a name="USER:*IMPLEMENTATION*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#USER:*IMPLEMENTATION*">*IMPLEMENTATION*</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="USER:USER"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#USER:USER">USER</a></code></h4>  </header> <pre class="docstring">Container for a user.
+
+A user is an object that represents a certain person with
+access to the system. Each user has a uniquely identifying
+username string of 1-32 case-insensitive characters of the
+following range:
+
+  &quot;abcdefghijklmnopqrstuvwxyz0123456789_-.&quot;
+
+Each user object can store arbitrary information in fields.
+
+A user has a set of permissions that describe which
+protected resources the user should be granted access to.
+These permissions are laid out in the form of trees,
+where each permission describes a certain path down a
+tree. For example, the following permission
+
+  foo.bar
+
+would grant access to the permissions foo.bar, foo.bar.baz
+and so forth, but not to foo or foo.bam . Permissions can
+be denoted by either dot-delimited strings, or lists.
+
+Note that the user system may need to be readied up first
+before it can be reliably used. Attempting to perform any
+user operations before the USER:READY hook has been
+triggered or after the USER:UNREADY hook has been triggered
+will result in undefined behaviour.
+
+See PERM
+See USER:=
+See USER:LIST
+See USER:GET
+See USER:USERNAME
+See USER:FIELDS
+See USER:FIELD
+See USER:REMOVE
+See USER:CHECK
+See USER:GRANT
+See USER:REVOKE</pre> </article> </li><li> <a name="USER:CONDITION"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#USER:CONDITION">CONDITION</a></code></h4>  </header> <pre class="docstring">Base condition type for conditions related to the user interface.</pre> </article> </li><li> <a name="USER:NOT-FOUND"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#USER:NOT-FOUND">NOT-FOUND</a></code></h4>  </header> <pre class="docstring">Condition signalled when an unknown user was requested.
+
+See USER:CONDITION
+See USER:GET</pre> </article> </li><li> <a name="USER:FIELD"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#USER:FIELD">FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD USER</code><code>)</code>  </header> <pre class="docstring">Accessor to a field on the user.
+
+Keys must be strings of a maximum length of 64.
+Values must be strings, but can be of arbitrary length.
+
+See USER:USER
+See USER:REMOVE-FIELD
+See USER:FIELDS</pre> </article> </li><li> <a name="USER:IMPLEMENTATION"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#USER:IMPLEMENTATION">IMPLEMENTATION</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="USER:="> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:=">=</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER-A USER-B</code><code>)</code>  </header> <pre class="docstring">Compares two user object to see if they're the same.
+
+See USER:USER</pre> </article> </li><li> <a name="USER:ACTION"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ACTION">ACTION</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER ACTION PUBLIC</code><code>)</code>  </header> <pre class="docstring">Records that the named action has been performed on the user.
+
+This is used to keep a record of user actions. The ACTION
+can be an arbitrary string that should primarily be human-
+readable. PUBLIC denotes whether the action should be
+publicly visible-- in other words, it does not contain
+potentially sensitive information.
+
+See USER:ACTIONS</pre> </article> </li><li> <a name="USER:ACTIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ACTIONS">ACTIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER N &amp;KEY (PUBLIC T) OLDEST-FIRST</code><code>)</code>  </header> <pre class="docstring">Returns a truncated list of actions that the user performed.
+
+If PUBLIC is non-NIL, only actions that can be publicly
+shown are returned. If OLDEST-FIRST is non-NIL, actions
+are returned sorted from oldest to newest; otherwise they
+are sorted newest to oldest.
+
+See USER:ACTION</pre> </article> </li><li> <a name="USER:ADD-DEFAULT-PERMISSIONS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:ADD-DEFAULT-PERMISSIONS">ADD-DEFAULT-PERMISSIONS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;REST BRANCH</code><code>)</code>  </header> <pre class="docstring">Adds the given branches as default permissions to be granted to newly created users.
+
+Note that this will not retroactively grant permissions and
+only comes into effect for users created after a call to
+this has been run.
+
+See USER:USER
+See USER:GRANT</pre> </article> </li><li> <a name="USER:CHECK"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:CHECK">CHECK</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER BRANCH</code><code>)</code>  </header> <pre class="docstring">Checks whether the user is permitted access to the given permission branch.
+
+See USER:USER for a description of permission branches.
+
+Note that a permission is granted as long as there is
+a granted permission on the user that is /higher/ than
+that which is checked against. Eg, if the user has the
+permission of foo granted, then checking whether any of
+foo.bar, foo.bar.baz, etc. are granted will yield true.
+
+See USER:USER
+See USER:GRANT
+See USER:REVOKE</pre> </article> </li><li> <a name="USER:FIELDS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:FIELDS">FIELDS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Returns an alist of field names to values of the user.
+
+See USER:USER
+See USER:FIELD
+See USER:REMOVE-FIELD</pre> </article> </li><li> <a name="USER:GET"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:GET">GET</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USERNAME &amp;KEY (IF-DOES-NOT-EXIST NIL)</code><code>)</code>  </header> <pre class="docstring">Returns the requested user object.
+
+IF-DOES-NOT-EXIST may be one of the following values,
+which decides on the behaviour in the case where the
+requested user is not known.
+
+  :CREATE     The user is created.
+  :ERROR      An error of type USER:NOT-FOUND is signalled.
+  :ANONYMOUS  The anonymous standard user is returned.
+  NIL         NIL is returned.
+
+When a new user is created, the USER:CREATE hook is
+triggered.
+
+Note that fetching users while the user system is not
+yet ready will result in undefined behaviour.
+
+See USER:READY
+See USER:UNREADY
+See USER:USER</pre> </article> </li><li> <a name="USER:GRANT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:GRANT">GRANT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER &amp;REST BRANCHES</code><code>)</code>  </header> <pre class="docstring">Grants the user access to the given permission branches.
+
+See USER:USER
+See USER:CHECK
+See USER:REVOKE</pre> </article> </li><li> <a name="USER:LIST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:LIST">LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring">Returns a fresh list of all known user objects.
+
+This may be a very costly operation.
+
+See USER:USER</pre> </article> </li><li> <a name="USER:REMOVE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REMOVE">REMOVE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Removes the given user.
+
+This deletes all associated data of the user.
+
+On successful deletion, the USER:REMOVE hook is triggered.
+
+See USER:USER</pre> </article> </li><li> <a name="USER:REMOVE-FIELD"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REMOVE-FIELD">REMOVE-FIELD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">FIELD USER</code><code>)</code>  </header> <pre class="docstring">Removes the requested field from the user.
+
+See USER:USER
+See USER:FIELD
+See USER:FIELDS</pre> </article> </li><li> <a name="USER:REVOKE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:REVOKE">REVOKE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER &amp;REST BRANCHES</code><code>)</code>  </header> <pre class="docstring">Revokes access from the given permission branches.
+
+See USER:USER
+See USER:CHECK
+See USER:GRANT</pre> </article> </li><li> <a name="USER:USERNAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#USER:USERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <pre class="docstring">Returns the username of the requested user.
+
+See USER:USER</pre> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 

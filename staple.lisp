@@ -89,17 +89,17 @@
   (staple:generate :radiance-core
                    :name "Radiance"
                    :packages '(:radiance-core
-                               :ban
-                               :rate
                                :admin
-                               :cache
                                :auth
-                               :session
-                               :user
-                               :profile
-                               :server
+                               :ban
+                               :cache
+                               :database
                                :logger
-                               :database)
+                               :profile
+                               :rate
+                               :server
+                               :session
+                               :user)
                    :if-exists :supersede
                    :logo "static/radiance.png"))
 
