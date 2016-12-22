@@ -73,7 +73,8 @@
   (defun add-default-permissions (&rest branch))
   (defun action (user action public))
   (defun actions (user n &key (public T) oldest-first))
-  (define-hook remove (username))
+  (define-hook create (user))
+  (define-hook remove (user))
   (define-hook action (user action public))
   (define-hook-switch ready unready ()))
 
