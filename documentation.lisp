@@ -2815,6 +2815,9 @@ See SERVER:STOP"))
 
 LEVEL has to be one of :TRACE :DEBUG :INFO :WARN :ERROR :SEVERE :FATAL.
 
+Note that the exact means by which the message is presented
+or logged is up to the implementation.
+
 See LOGGER:TRACE
 See LOGGER:DEBUG
 See LOGGER:INFO
@@ -2861,73 +2864,492 @@ See LOGGER:LOG"))
 ;; Database
 (docs:define-docs
   (type database:condition
-    "")
+    "Base condition type for all database related conditions.
+
+See DATABASE:CONNECTION-FAILED
+See DATABASE:CONNECTION-ALREADY-OPEN
+See DATABASE:COLLECTION-CONDITION
+See DATABASE:INVALID-COLLECTION
+See DATABASE:COLLECTION-ALREADY-EXISTS
+See DATABASE:INVALID-FIELD")
   
   (type database:connection-failed
-    "")
+    "Error signalled upon a failed connection attempt.
+
+See DATABASE:CONDITION")
   
   (type database:connection-already-open
-    "")
+    "Warning signalled when a new connection is established while an old one was already open.
+
+See DATABASE:CONDITION")
   
   (type database:collection-condition
-    "")
+    "Base condition type for collection related conditions.
+
+See DATABASE:CONDITION
+See DATABASE:INVALID-COLLECTION
+See DATABASE:COLLECTION-ALREADY-EXISTS
+See DATABASE:INVALID-FIELD")
   
   (type database:invalid-collection
-    "")
+    "Error signalled when an invalidly named, or inexistent collection is accessed.
+
+See DATABASE:COLLECTION-CONDITION")
   
   (type database:collection-already-exists
-    "")
+    "Error signalled when a new collection is attempted to be created where an old one already exists.
+
+See DATABASE:COLLECTION-CONDITION")
   
   (type database:invalid-field
-    "")
+    "Error signalled when an invalid field name or type is used.
 
+See DATABASE:COLLECTION-CONDITION")
+
+  (type database:id
+    "Effective type of values for ID-type fields in a collection.
+
+See DATABASE:ENSURE-ID")
+
+  (function database:ensure-id
+    "Coerces the given string into an ID, if possible.
+
+May signal an error on invalidly structured or invalid ID.
+
+The return value is of type DATABASE:ID
+
+See DATABASE:ID")
+  
   (function database:connect
-    "")
+    "Establishes a connection to the database of the given name.
+
+The database connection must be configured by some 
+implementation-defined manner beforehand. If the
+implementation cannot automatically configure itself,
+or cannot find a database of the requested name, an
+error of type DATABASE:CONNECTION-FAILED is signalled.
+
+If a previous connection is already open and a new one is
+attempted, a warning of type DATABASE:CONNECTION-ALREADY-OPEN
+is signalled, the previous connection is closed, and the
+new one is opened.
+
+If the connection fails for some other reason, an error
+of type DATABASE:CONNECTION-FAILED is signalled.
+
+Upon successful connection, the DATABASE:CONNECTED hook
+is triggered.
+
+Attempting to perform any database operations aside from
+connecting or disconnecting before a connection has been
+established results in undefined behaviour.
+
+See DATABASE:CONNECTED
+See DATABASE:DISCONNECT
+See DATABASE:CONNECTION-FAILED
+See DATABASE:CONNECTION-ALREADY-OPEN")
 
   (function database:disconnect
-    "")
+    "Closes the current database connection, if any.
+
+Upon successful disconnect, the DATABASE:DISCONNECTED
+hook is triggered.
+
+See DATABASE:CONNECT
+See DATABASE:DISCONNECTED")
 
   (function database:connected-p
-    "")
+    "Returns true if the database is currently connected.
+
+See DATABASE:CONNECT
+See DATABASE:DISCONNECT")
 
   (function database:collections
-    "")
+    "Returns a list of names for all known collections.
+
+The names may be either symbols or strings.
+
+See DATABASE:CREATE")
 
   (function database:collection-exists-p
-    "")
+    "Returns true if a collection of the given name already exists.
+
+Signals an error of type INVALID-COLLECTION if the name
+is not of the proper collection name format.
+
+See DATABASE:CREATE")
 
   (function database:create
-    "")
+    "Creates a new collection on the database.
+
+COLLECTION must be a valid collection name. Namely, it
+must be either a symbol or a string, limited to the
+following set of characters:
+
+  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  abcdefghijklmnopqrstuvwxyz
+  0123456789-_/
+
+Symbol names are coerced to string names in the following
+manner: A slash and the name of the symbol's package are
+prepended to the symbol's name. Thus, a symbol's name and
+package must be limited to the above set of characters in
+order to be usable as a collection name.
+
+The structure denotes the schema of the collection and
+must be of the following structure:
+
+  STRUCTURE ::= (FIELD*)
+  FIELD     ::= (NAME TYPE)
+  TYPE      ::= :id | :text | :float
+                | VARCHAR | INTEGER
+  INTEGER   ::= :integer | (:integer BYTES)
+  VARCHAR   ::= (:varchar LENGTH)
+
+A valid name can be either a symbol or a string, where
+the symbol's name/string must underlie the same character
+restrictions as a collection name.
+
+The types of a field are specified as follows:
+
+   :ID       An implementation-defined type that is used
+             to uniquely identify a record within a
+             collection.
+   :TEXT     A string of arbitrary length.
+   :FLOAT    A double-float.
+   :INTEGER  A signed integer within the range denoted by
+             the number of bytes of its size in one's
+             complement. Attempting to store a value
+             outside of this range leads to undefined
+             behaviour. The default number of bytes is 4.
+             The maximum number of bytes that can be
+             requested is 8.
+   :VARCHAR  A string of variable size but with a maximum
+             length. Attempting to store a string beyond
+             that length leads to undefined behaviour.
+
+If an invalid field name or field type is specified, an
+error of type DATABASE:INVALID-FIELD is signalled.
+
+The implementation is allowed to upgrade any field type
+to a type that can encompass the specified range and more.
+For example, an implementation is permitted to upgrade an
+\(:integer 4) to an (:integer 8) or a (:varchar 5) to :text.
+
+The implementation may or may not permit you to store data
+in fields outside of the ones specified in the structure
+of the collection.
+
+Each collection will always include a field called \"_id\"
+of type :ID that is filled by the implementation on record
+creation. IT stores the unique ID of the record within the
+collection. The concrete type of the ID is implementation-
+dependant.
+
+INDICES is a list of field names that should be indexed
+for fast access. The implementation is urged to optimise
+access to the fields, but is not required to.
+
+IF-EXISTS denotes the behaviour in case a collection of
+the same name already exists. The behaviour is as follows:
+
+  :IGNORE     Return NIL. This is the default.
+  :ERROR      Signal an error of type DATABASE:COLLECTION-ALREADY-EXISTS.
+  :SUPERSEDE  Drop the old collection and create a new one.
+
+If a new collection is created successfully, a non-NIL
+value is returned.
+
+See DATABASE:ID
+See DATABASE:STRUCTURE
+See DATABASE:COLLECTIONS
+See DATABASE:COLLECTION-EXISTS-P
+See DATABASE:DROP
+See DATABASE:INVALID-COLLECTION
+See DATABASE:COLLECTION-ALREADY-EXISTS
+See DATABASE:INVALID-FIELD")
 
   (function database:structure
-    "")
+    "Returns the structure of the collection.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+Note that the value returned by this does not have to be
+identical to the structure used to create the collection.
+The types in the returned structure may be upgraded
+variants of the defined types. The types returned do not
+have to correspond to the concrete types used to actually
+store the data.
+
+See DATABASE:CREATE")
 
   (function database:empty
-    "")
+    "Clears all records from the collection, making it empty.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+Note that this may also clear the ID sequence, meaning
+that IDs produced for records after the emptying of the
+collection may be equal to IDs produced before the
+emptying.
+
+See DATABASE:CREATE")
 
   (function database:drop
-    "")
+    "Deletes the collection entirely, including all of its data.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE")
 
   (function database:iterate
-    "")
+    "Iterates over the records in the collection that match the clauses.
+
+Effectively, FUNCTION is called with a single argument--
+a hash-table filled with the requested field values-- for
+each record in the collection that satisfies the QUERY.
+The fields in the table are keyed by their name as a
+string with the case converted downwards.
+
+The QUERY must be a value returned by the DATABASE:QUERY
+macro.
+
+If FIELDS is NIL, all fields are included. Otherwise it
+can be a list of field names to include in each record.
+The database may store more fields than were requested,
+but never less.
+
+If SORT is NIL, the order in which the records are passed
+is unpredictable and may be random with every call.
+Otherwise, SORT should be a list of lists, where each
+inner list should contain the name of a field, and either
+:ASC or :DSC for ascending or descending order.
+
+SKIP specifies the number of records to skip.
+
+If AMOUNT is NIL, all matching records are passed.
+Otherwise it poses an upper bound on the number of records
+that the function is called with.
+
+If ACCUMULATE is non-NIL, then the values returned by the
+function call are accumulated into a list and returned
+by the DATABASE:ITERATE call.
+
+If an invalid or inexistent field name is specified, an
+error of type DATABASE:INVALID-FIELD is signalled.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:SELECT
+See DATABASE:QUERY
+See DATABASE:INVALID-COLLECTION
+See DATABASE:INVALID-FIELD")
 
   (function database:select
-    "")
+    "Returns a list of hash-tables for the records that match the clauses.
+
+See DATABASE:ITERATE for an explanation of the options.
+
+The QUERY must be a value returned by the DATABASE:QUERY
+macro.
+
+If an invalid or inexistent field name is requested, an
+error of type DATABASE:INVALID-FIELD is signalled.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:ITERATE
+See DATABASE:QUERY
+See DATABASE:INVALID-COLLECTION
+See DATABASE:INVALID-FIELD")
 
   (function database:count
-    "")
+    "Returns the number of records in the collection that match the query.
+
+The QUERY must be a value returned by the DATABASE:QUERY
+macro.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:QUERY
+See DATABASE:INVALID-COLLECTION")
 
   (function database:insert
-    "")
+    "Inserts a new record into the collection.
+
+The DATA can be formatted as either an alist or a hash-
+table. If the data includes fields that are not defined
+in the structure of the collection, the implementation
+may signal an error of type DATABASE:INVALID-FIELD. If
+the data does not include a field that is defined in the
+structure of the collection, the field's value is set to
+NIL.
+
+If a data value is specified that does not match the
+field's type, an error of type DATABASE:INVALID-FIELD
+may be signalled.
+
+If the insertion of the record fails for whatever reason,
+an error of type DATABASE:CONDITION is signalled.
+
+On successful insert, the value of the \"_id\" field for
+the newly created record is returned.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:CONDITION
+See DATABASE:INVALID-COLLECTION")
 
   (function database:remove
-    "")
+    "Removes the records in the collection that match the clauses.
+
+See DATABASE:ITERATE for an explanation of the options.
+
+If the removal of the records fails for whatever reason,
+an error of type DATABASE:CONDITION is signalled.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:ITERATE
+See DATABASE:INVALID-COLLECTION")
 
   (function database:update
-    "")
+    "Updates the records in the collection that match the clauses with the new data.
+
+See DATABASE:ITERATE for an explanation of the options.
+
+The DATA can be formatted as either an alist or a hash-
+table. If the data includes fields that are not defined
+in the structure of the collection, the implementation
+may signal an error of type DATABASE:INVALID-FIELD. If
+the data does not include a field that is defined in the
+structure of the collection, the field's value is not
+changed.
+
+If a data value is specified that does not match the
+field's type, an error of type DATABASE:INVALID-FIELD
+may be signalled.
+
+If the updating of the records fails for whatever
+reason, an error of type DATABASE:CONDITION is signalled.
+
+If an invalid or inexistent collection name is passed, an
+error of type DATABASE:INVALID-COLLECTION is signalled.
+
+See DATABASE:CREATE
+See DATABASE:ITERATE
+See DATABASE:INVALID-COLLECTION")
 
   (function database:with-transaction
-    "")
+    "Performs the database operations in its body within a transaction that ensures coherence.
+
+If two transactions occur in parallel that would each
+modify the same set of data and conflict in some manner,
+one of the two transactions must be aborted by way of
+an error being signalled.
+
+If the transaction body is exited abnormally, which is
+to say exited before the last form in the body has
+finished execution and can return its value, all the
+database operations that were performed within the body
+are reverted in such a way that it appears as if they
+had never been performed in the first place.")
 
   (function database:query
-    ""))
+    "Constructs a value to be used for the QUERY argument in database operations.
+
+The query form must be of the following structure:
+
+FORM     ::= COMBINE | CLAUSE
+COMBINE  ::= (:and FORM*) | (:or FORM*) | (:not FORM)
+CLAUSE   ::= (OPERATOR VALUE VALUE) | (:in VALUE VALUE*)
+OPERATOR ::= := | :!= | :> | :< | :<= | :>= | :MATCHES
+VALUE    ::= (:field NAME) | 'NAME | LFORM
+NAME     --- A field name.
+LFORM    --- A lisp form that evaluates to a lisp value.
+
+Where the combinators have the following effect:
+
+  :AND  The form is true if all of the subforms are true.
+  :OR   The form is true if one of the subforms is true.
+  :NOT  The form is true if the subform is not true.
+
+And the clauses have the following comparison behaviour:
+
+  :=        True if the two values are EQUAL.
+  :!=       True if the two values are not EQUAL.
+  :>        True if the two values are > if they are both
+            of type :integer or :float, or STRING> if they
+            are both of type :varchar or :text.
+  :<        True if the two values are < if they are both
+            of type :integer or :float, or STRING< if they
+            are both of type :varchar or :text
+  :<=       True if the two values are <= if they are both
+            of type :integer or :float, or STRING<= if they
+            are both of type :varchar or :text
+  :>=       True if the two values are > if they are both
+            of type :integer or :float, or STRING>= if they
+            are both of type :varchar or :text
+  :MATCHES  True if the first value matches the regular
+            expression of the second value. The extend of
+            regular-expression syntax support are up to the
+            implementation, but the following basic operators
+            must be understood:
+              . [] [^] * + ? () {} \\
+            The following character classes must be understood
+            as well:
+              \\d \\w \\s \\D \\W \\S
+  :IN       True if the first value is EQUAL to one of the
+            remaining values.
+
+If the form does not correspond to the above description,
+an error is signalled at macro expansion time.
+
+Note that a special exception is made in the case of fields
+of type ID, where the equality comparison (:=, :!=, :IN) is
+performed in an implementation-dependant manner. The other
+comparison operators cannot be used with ID type fields.
+
+Examples for queries:
+
+   (db:query (:= 'name \"Hans\"))
+
+Matches all records with a name field of \"Hans\".
+
+   (db:query (:= '_id id))
+
+Matches the record with the ID equivalent to the one stored
+in the ID variable.
+
+   (db:query (:and (:= 'health 0) (:= 'lives 0)))
+
+Matches all records where the health and lives fields are 0.
+
+   (db:query (:IN 'name \"Guybrush\" \"Elaine\" \"LeChuck\"))
+
+Matches all records where the name is one of \"Guybrush\",
+\"Elaine\", or \"LeChuck\".
+
+   (db:query (:MATCHES 'tags \",?foo,?\"))
+
+Matches all records whose tags includes the \"foo\" tag.
+
+See DATABASE:CREATE
+See DATABASE:ITERATE
+See DATABASE:SELECT
+See DATABASE:COUNT
+See DATABASE:REMOVE
+See DATABASE:UPDATE"))
