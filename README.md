@@ -127,7 +127,7 @@ PATH    ::= .*
 
 You can use `uri-to-url` to turn a URI into a concrete URL. Reversal, encoding, and proper formatting of all the parts is handled for you automatically there.
 
-See `uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`.
+See `uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `make-url`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`.
 
 ### Request and Response
 In order to encapsulate the data that is sent to  and from, we have the idea of a Request (`request`) and Response (`response`) object. The Request object holds the URI that represents to which location the request goes, and all the data contained in the HTTP payload like post, get, header, and cookie variables. The Response object holds the return-code, headers, cookies, and the actual body data.
@@ -266,6 +266,8 @@ Radiance provides a bunch of standard interfaces. Each of those interfaces has a
   A simple logging interface to allow printing debug and information messages.
 * `database`  
   A flexible database interface that allows both object-stores and relational databases as backends.
+  
+The interfaces are described in-depth below.
 
 See `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`
 
@@ -286,6 +288,51 @@ Finally, Radiance provides a standard startup and shutdown sequence that should 
 While you can start a server manually by using the appropriate interface function, you should not expect applications to run properly if you do it that way. Many of them will expect certain hooks to be called in order to work properly. This is why you should always, unless you exactly know what you're doing, use `startup` and `shutdown` to manage a Radiance instance. The documentation of the two functions should explain exactly which hooks are triggered and in which order.
 
 See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`
+
+## Standard Interfaces
+### ban
+
+See `ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`
+
+### rate
+
+See `rate:define-limit`, `rate:left`, `rate:with-limitation`
+
+### admin
+
+See `admin:list-panels`, `admin:remove-panel`, `admin:define-panel`, `admin:panel`
+
+### cache
+
+See `cache:get`, `cache:renew`, `cache:with-cache`
+
+### auth
+
+See `auth:*login-timeout*`, `auth:page`, `auth:current`, `auth:associate`
+
+### session
+
+See `session:*default-timeout*`, `session:session`, `session:=`, `session:start`, `session:get`, `session:list`, `session:id`, `session:field`, `session:timeout`, `session:end`, `session:active-p`, `session:create`
+
+### user
+
+See `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:action`, `user:actions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`
+
+### profile
+
+See `profile:page`, `profile:avatar`, `profile:name`, `profile:fields`, `profile:add-field`, `profile:remove-field`, `profile:list-panels`, `profile:remove-panel`, `profile:define-panel`, `profile:panel`
+
+### server
+
+See `server:start`, `server:stop`, `server:listeners`, `server:started`, `server:stopped`
+
+### logger
+
+See `logger:log`, `logger:trace`, `logger:debug`, `logger:info`, `logger:warn`, `logger:error`, `logger:severe`, `logger:fatal`
+
+### database
+
+See `database:condition`, `database:connection-failed`, `database:connection-already-open`, `database:collection-condition`, `database:invalid-collection`, `database:collection-already-exists`, `database:invalid-field`, `database:id`, `database:ensure-id`, `database:connect`, `database:disconnect`, `database:connected-p`, `database:collections`, `database:collection-exists-p`, `database:create`, `database:structure`, `database:empty`, `database:drop`, `database:iterate`, `database:select`, `database:count`, `database:insert`, `database:remove`, `database:update`, `database:with-transaction`, `database:query`, `database:connected`, `database:disconnected`
 
 ## Also See
 
