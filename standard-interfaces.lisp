@@ -18,7 +18,7 @@
   (defmacro with-limitation ((limit) &body body)))
 
 (define-interface admin
-  (define-resource-locator page (category panel &rest args))
+  (define-resource-locator page (&optional category panel &rest args))
   (defun list-panels ())
   (defun remove-panel (category name))
   (defmacro define-panel (category name options &body body))
