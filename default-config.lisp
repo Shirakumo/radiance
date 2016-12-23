@@ -11,8 +11,7 @@
   (:session . "r-simple-sessions")
   (:server . "i-hunchentoot")
   (:rate . "r-simple-rate"))
- (:server
-  (:domains . ("radiance" "localhost" "127.0.0.1" "::1"))
-  (:instances . (((:port . 8080)))))
+ (:domains . ("radiance" "localhost" "127.0.0.1" "::1"))
  (:startup :r-welcome :r-simple-errors)
- (:routes))
+ (:routes)
+ (:debugger . T))

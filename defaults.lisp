@@ -143,16 +143,16 @@
 (defvar *domain-internalizers* ())
 
 (defun add-domain (domain)
-  (pushnew domain (config :server :domains) :test #'string-equal)
+  (pushnew domain (config :domains) :test #'string-equal)
   (compile-domain-internalizers)
-  (config :server :domains))
+  (config :domains))
 
 (defun remove-domain (domain)
-  (setf (config :server :domains) (remove domain (config :server :domains) :test #'string-equal))
+  (setf (config :domains) (remove domain (config :domains) :test #'string-equal))
   (compile-domain-internalizers)
-  (config :server :domains))
+  (config :domains))
 
-(defun compile-domain-internalizers (&optional (domains (config :server :domains)))
+(defun compile-domain-internalizers (&optional (domains (config :domains)))
   (loop for domain in domains
         collect (let ((parts (nreverse (cl-ppcre:split "\\." domain)))
                       (domain domain))
@@ -184,7 +184,7 @@
        (setf (port uri) (port (uri *request*)))))
     ;; KLUDGE! Find a better way to do this...
     (T
-     (push (first (config :server :domains)) (domains uri))
+     (push (first (config :domains)) (domains uri))
      (unless (port uri)
        (setf (port uri) (config :server :instances 0 :port))))))
 
