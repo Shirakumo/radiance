@@ -73,9 +73,9 @@
 
 (define-compiler-macro resource (&whole whole &environment env module type &rest args)
   (if (and (constantp module env) (constantp type env))
-      `(apply (load-time-value (resource-locator ,type ,module))
-              (load-time-value (module ,module))
-              ,@args)
+      `(funcall (load-time-value (resource-locator ,type ,module))
+                (load-time-value (module ,module))
+                ,@args)
       whole))
 
 (define-resource-type domain (module)
