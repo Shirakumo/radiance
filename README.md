@@ -285,7 +285,7 @@ See `environment-change`, `environment`, `check-environment`, `mconfig-pathname`
 ### Instance Management
 Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.
 
-While you can start a server manually by using the appropriate interface function, you should not expect applications to run properly if you do it that way. Many of them will expect certain hooks to be called in order to work properly. This is why you should always, unless you exactly know what you're doing, use `startup` and `shutdown` to manage a Radiance instance. The documentation of the two functions should explain exactly which hooks are triggered and in which order.
+While you can start a server manually by using the appropriate interface function, you should not expect applications to run properly if you do it that way. Many of them will expect certain hooks to be called in order to work properly. This is why you should always, unless you exactly know what you're doing, use `startup` and `shutdown` to manage a Radiance instance. The documentation of the two functions should explain exactly which hooks are triggered and in which order. An implementation may provide additional, unspecified definitions on symbols in the interface package, as long as said symbols are not exported.
 
 See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`
 
