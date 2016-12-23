@@ -149,3 +149,9 @@
               :schema schema
               :query query
               :fragment fragment))
+
+(defun format-uri (uri-string &rest format-args)
+  (parse-uri (apply #'format NIL uri-string format-args)))
+
+(define-compiler-macro format-uri (uri-string &rest args)
+  `(parse-uri (format NIL ,uri-string ,@args)))

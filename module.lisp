@@ -316,7 +316,8 @@
    #:merge-uris
    #:represent-uri
    #:uri-to-url
-   #:make-url))
+   #:make-url
+   #:format-uri))
 
 (define-module #:radiance-user
   (:nicknames #:rad-user)

@@ -2188,7 +2188,15 @@ set to :EXTERNAL for convenience as that is usually the
 preferred option for use-cases of this function.
 
 See MAKE-URI
-See URI-TO-URL"))
+See URI-TO-URL")
+
+  (function format-uri
+    "A shorthand function to construct a URI with a format string.
+
+This is basically just the following:
+  (parse-uri (format NIL ..))
+
+See PARSE-URI"))
 
 ;;; Interfaces
 ;; Ban
