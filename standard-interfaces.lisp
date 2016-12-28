@@ -32,7 +32,7 @@
 (define-interface auth
   (defvar *login-timeout* (* 60 60 24 365))
   (define-resource-locator page (name &rest args))
-  (defun current (&optional session))
+  (defun current (&optional default session))
   (defun associate (user &optional session))
   (define-hook associate (session)))
 

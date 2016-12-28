@@ -2355,8 +2355,9 @@ See CACHE:GET"))
 If no session is passed, the one of the current request is
 retrieved by SESSION:GET.
 
-If the session is not authenticated, NIL is returned instead.
-NIL should correspond to the \"anonymous\" standard user.
+If the session is not authenticated, the user designated
+by DEFAULT is returned instead, if given. If DEFAULT is
+NIL, then NIL is returned.
 
 See SESSION:GET
 See AUTH:ASSOCIATE")
