@@ -23,6 +23,8 @@
 
   (setf *startup-time* (get-universal-time))
   (setf (environment) environment)
+  (unless (boundp '*debugger*)
+    (setf *debugger* (config :debugger)))
 
   (trigger 'startup)
   
