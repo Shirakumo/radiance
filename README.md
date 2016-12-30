@@ -163,7 +163,7 @@ See `uri-dispatcher`, `name`, `dispatch-function`, `priority`, `uri-dispatcher`,
 ### Page
 Pages are what you will likely use to define your actual content serving functions. However, a page is just a uri-dispatcher with some extra functionality in the definition macro that makes things easier on you. Most notably are the extensible options, for which you can find an explanation below.
 
-There are a couple of default pages set up by Radiance itself. First there's the `favicon` and `robots` page, which simply serve the respective files from the `data/` directory. You'll probably want to either provide your own pages for that or update the files on your production server.
+There are a couple of default pages set up by Radiance itself. First there's the `favicon` and `robots` pages, which simply serve the respective files from Radiance's `static/` directory. You'll probably want to either provide your own pages for that or update the files on your production server.
 
 Then there's the `static` page, which is responsible for serving static contents for all web applications and modules. It should be active on any domain and always on the path `/static/...` where `...` must have a form where the first directory is the name of a module, and the rest is a path within that module's `static/` directory. This allows you to always be able to refer to static files like CSS, JS, and images through a common path.
 
