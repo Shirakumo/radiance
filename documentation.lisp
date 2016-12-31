@@ -1791,15 +1791,47 @@ by the test parts.
 
 See DEFINE-MATCHING-ROUTE")
 
-  (function escape-regex-dots-not-in-group
-    "Escapes a dot in the string if it is not within a regex capture group.")
-
   (function define-string-route
     "Defines a route where the URI is analysed by the given regex and translated into the interpolated string representation.
 
 The target string can reference regex capture groups.
 
-See CL-PPCRE:REGEX-REPLACE")
+Note that the regexes are transformed in order to make the
+definition appear more \"natural\". Specifically, if no port
+is present in the source, it is prefixed with
+
+  (?:[^/]*)?
+
+if no domain is present in source, it is prefixed with
+
+  [^:/]*
+
+if the target does not contain a port, the port is not changed.
+The source is then surrounded by ^ and $. What this all does in
+effect is that it prevents regexes from matching too liberally
+for common URI changes. It allows something like this:
+
+  /foo/bar => foo/bar
+
+to actually match and exchange an uri like this
+
+  localhost:8080/foo/bar
+
+properly into the expected URI
+
+  foo:8080/bar
+
+without changing a URI like this
+
+  localhost:8080/bla/foo/bar
+
+as that would indeed not be what we expected to have specified.
+If you do not like these automatic changes to the regexes, you
+can easily enough define your own route that allows you full
+control.
+
+See CL-PPCRE:REGEX-REPLACE
+See DEFINE-ROUTE")
 
   (function internal-uri
     "Modifies the URI by pushing it through all mapping routes so that it becomes an internal URI.

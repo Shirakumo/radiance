@@ -188,14 +188,18 @@
              (write-char char s))))
 
 (defmacro define-string-route (name type source target)
-  (let ((source (escape-regex-dots-not-in-group source)))
-    `(define-route ,name ,type (uri)
-       (let ((uristring (uri-string uri)))
-         (when (cl-ppcre:scan ,source uristring)
-           (let ((newuri (parse-uri (cl-ppcre:regex-replace ,source uri ,target))))
-             (setf (domains uri) (domains newuri)
-                   (port uri) (port newuri)
-                   (path uri) (path newuri))))))))
+  ;; Special semantics to make it intuitive.
+  (cl-ppcre:register-groups-bind (domains port path) ("([^:/]+)?(?:([^/]+))?/(.*)" source)
+    (let ((source (format NIL "^~a~a/~a$"
+                          (or domains "[^:/]*") (or port "(?:[^/]*)?") path)))
+      (cl-ppcre:register-groups-bind (NIL port NIL) ("([^:/]+)?(?:([^/]+))?/(.*)" target)
+        `(define-route ,name ,type (uri)
+           (let ((uristring (uri-string uri)))
+             (when (cl-ppcre:scan ,source uristring)
+               (let ((newuri (parse-uri (cl-ppcre:regex-replace ,source uristring ,target))))
+                 (setf (domains uri) (domains newuri))
+                 ,(when port `(setf (port uri) (port newuri)))
+                 (setf (path uri) (path newuri))))))))))
 
 (defun internal-uri (uri)
   (declare (optimize speed))
