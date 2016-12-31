@@ -322,4 +322,5 @@
 
 (define-module #:radiance-user
   (:nicknames #:rad-user)
-  (:use #:cl #:radiance))
+  (:use #:cl #:radiance)
+  (:import-from #:uiop #:quit))
