@@ -186,7 +186,7 @@
     (T
      (push (first (config :domains)) (domains uri))
      (unless (port uri)
-       (setf (port uri) (config :server :instances 0 :port))))))
+       (setf (port uri) (config :port))))))
 
 (define-route virtual-module (:mapping 100000) (uri)
   (when (and (< 1 (length (path uri)))
