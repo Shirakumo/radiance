@@ -162,7 +162,12 @@
  (in-package #:~:*~a)~%~%" name))
     ;; Load system into quicklisp
     (when (find-package :ql)
-      (funcall (symbol-function (find-symbol "REGISTER-LOCAL-PROJECTS" :ql)))
-      (funcall (symbol-function (find-symbol "QUICKLOAD" :ql))
-               (string-upcase name)))
+      (call ql register-local-projects)
+      (call ql quickload (string-upcase name)))
     root))
+
+(defun find-all-modules (directory)
+  (loop for asd in (directory (merge-pathnames "**/*.asd" directory))
+        for sys = (asdf:find-system (pathname-name asd) NIL)
+        when (typep sys 'radiance:virtual-module)
+        collect (asdf:component-name sys)))

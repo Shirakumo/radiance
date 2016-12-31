@@ -1053,7 +1053,18 @@ Creates the following files and directories:
 If Quicklisp is present, the local-projects are registered
 and the project is loaded after the files have been created.
 
-See *MODULES-DIRECTORY*"))
+See *MODULES-DIRECTORY*")
+
+  (function find-all-modules
+    "Attempts to find all module systems in a directory.
+
+This works as follows: it scans the directory tree for all
+files with the type ASD. For each attempts of these, it
+attempts to find an ASDF system with the file's name, and if
+the system can be found and is of type VIRTUAL-MODULE, it is
+returned.
+
+See VIRTUAL-MODULE"))
 
 ;; options.lisp
 (docs:define-docs

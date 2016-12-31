@@ -175,7 +175,8 @@
    #:describe-module
    #:find-modules-directory
    #:*modules-directory*
-   #:create-module)
+   #:create-module
+   #:find-all-modules)
   ;; options.lisp
   (:export
    #:option
