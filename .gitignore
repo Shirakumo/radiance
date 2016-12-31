@@ -1,7 +1,7 @@
 .directory
-/data/
-/contribs/
-/modules/
-/spec/
 /bootstrap/
+/contribs/
+/homepage/
+/modules/
 /tutorial/
+
