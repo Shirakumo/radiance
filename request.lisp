@@ -146,6 +146,8 @@
           (uri (uri-to-url new-address :representation representation)))))
 
 (defun serve-file (pathname &optional content-type (response *response*))
+  (unless (probe-file pathname)
+    (error 'file-to-serve-does-not-exist :file pathname))
   (setf (content-type response) (or content-type (mimes:mime-lookup pathname) "application/octet-stream"))
   (setf (data response) pathname))
 

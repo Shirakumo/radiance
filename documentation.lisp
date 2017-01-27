@@ -374,8 +374,16 @@ See REQUEST-ERROR")
   (type post-parameter-not-a-file
     "Error signalled when a post parameter was attempted to be interpreted as a file, while it is not actually one.
 
-Contains a PARAMETER slots that holds the name of the requested
+Contains a PARAMETER slot that holds the name of the requested
 slot.
+
+See REQUEST-ERROR")
+
+  (type file-to-serve-does-not-exist
+    "Error signalled when a file is attempted to be served that does not exist on the filesystem.
+
+Contains a FILE slot that holds the pathname of the requested
+file.
 
 See REQUEST-ERROR"))
 
@@ -1464,10 +1472,14 @@ See *RESPONSE*")
   (function serve-file
     "Sets the response up to serve the given file.
 
+If the file does not exist, an error of type
+FILE-TO-SERVE-DOES-NOT-EXIST is signalled.
+
 The content-type, if not explicitly given, is attempted
 to be automatically discovered by MIMES:MIME-LOOKUP
 and falls back to application/octet-stream.
 
+See FILE-TO-SERVE-DOES-NOT-EXIST
 See MIMES:MIME-LOOKUP
 See CONTENT-TYPE
 See DATA

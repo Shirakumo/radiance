@@ -87,7 +87,8 @@
    #:interface-implementation-not-set
    #:unparsable-uri-string
    #:no-such-post-parameter
-   #:post-parameter-not-a-file)
+   #:post-parameter-not-a-file
+   #:file-to-serve-does-not-exist)
   ;; defaults.lisp
   (:export
    #:||

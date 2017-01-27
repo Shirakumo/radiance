@@ -105,3 +105,8 @@ configuration and use the SETF ENVIRONMENT restart to set an explicit environmen
   ((parameter :initarg :parameter :initform (error "PARAMETER required.")))
   (:report (lambda (c s) (format s "The post parameter ~s is not a posted file."
                                  (slot-value c 'parameter)))))
+
+(define-condition file-to-serve-does-not-exist (request-error)
+  ((file :initarg :file :initform (error "FILE required.")))
+  (:report (lambda (c s) (format s "The file ~s was attempted to be served, but it does not exist."
+                                 (slot-value c 'file)))))
