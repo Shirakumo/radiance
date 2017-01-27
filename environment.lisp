@@ -38,7 +38,7 @@
       (setf (environment) "default"))
     (set-environment (environment)
       :report "Set and load a specific environment."
-      :interactive (lambda () (read *query-io*))
+      :interactive (lambda () (list (read *query-io*)))
       (setf (environment) environment))))
 
 (defun reload-environment ()
