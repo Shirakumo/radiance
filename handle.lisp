@@ -9,6 +9,7 @@
 (defvar *debugger*)
 
 (defun handle-condition (condition)
+  (l:debug :radiance condition)
   (l:warn :radiance "Handling stray condition: ~a" condition)
   (restart-case
       (if *debugger*
