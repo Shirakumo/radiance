@@ -61,12 +61,15 @@
        (equalp thing)
        (T (copy-hash-table thing :test 'equalp))))
     (list
-     (let ((table (make-hash-table :test 'equalp)))
+     (let ((table (make-hash-table :test 'equalp))
+           (to-reverse ()))
        (flet ((push-to-table (k v)
                 (let ((k (string k)))
-                  (if (and (< 2 (length k)) (string= "[]" k :start2 (- (length k) 2)))
-                      (push v (gethash k table))
-                      (setf (gethash k table) v)))))
+                  (cond ((ends-with "[]" k)
+                         (push v (gethash k table))
+                         (pushnew k to-reverse :test #'equalp))
+                        (T
+                         (setf (gethash k table) v))))))
          (etypecase (first thing)
            ((or string keyword)
             (loop for (k v) on thing by #'cddr
@@ -74,6 +77,8 @@
            (cons
             (loop for (k . v) in thing
                   do (push-to-table k v)))))
+       (dolist (k to-reverse)
+         (setf (gethash k table) (nreverse (gethash k table))))
        table))))
 
 (defun request (to-uri &key (representation :internal) (http-method :GET) headers post get cookies (remote "unknown") (response (make-instance 'response)))

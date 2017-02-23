@@ -19,6 +19,10 @@
   (and (<= (length start) (length string))
        (string= start string :end2 (length start))))
 
+(defun ends-with (end string)
+  (and (<= (length end) (length string))
+       (string= end string :start2 (- (length string) (length end)))))
+
 (declaim (inline universal-to-unix-time))
 (defun universal-to-unix-time (universal-time)
   (- universal-time +unix-epoch-difference+))
