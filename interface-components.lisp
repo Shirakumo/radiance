@@ -15,7 +15,7 @@
   (let ((on (intern (string on) interface))
         (off (intern (string off) interface)))
     `(progn ;; modularize-interfaces only exports the first symbol.
-       (export ',off ,interface)
+       (export ',off ,(package-name interface))
        (define-hook-switch ,on ,off ,args))))
 
 (define-component-expander define-resource-locator (interface type args)
