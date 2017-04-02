@@ -44,6 +44,7 @@
     (:reversal (cdr (gethash name *route-registry*)))))
 
 (defun (setf route) (route name direction)
+  (check-type name symbol)
   (let ((cons (gethash name *route-registry* (cons NIL NIL))))
     (ecase direction
       (:mapping (setf (car cons) route))
