@@ -136,7 +136,7 @@
   (setf *config-routes* NIL)
   (loop for (name direction from to priority) in (config :routes)
         do (with-simple-restart (continue "Ignore the route definition.")
-             (funcall (ecompile NIL `(lambda () (define-string-route (,name ,(or priority 0)) ,direction ,from ,to))))
+             (funcall (ecompile NIL `(lambda () (define-string-route ,name (,direction ,(or priority 0)) ,from ,to))))
              (push (list name direction) *config-routes*))))
 
 ;; Default routing to cut domains.
