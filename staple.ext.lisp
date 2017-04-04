@@ -85,22 +85,15 @@
                                                        :direction :reversal
                                                        :package package))))))
 
-(defun generate ()
-  (staple:generate :radiance-core
-                   :name "Radiance"
-                   :packages '(:radiance-core
-                               :admin
-                               :auth
-                               :ban
-                               :cache
-                               :database
-                               :logger
-                               :profile
-                               :rate
-                               :server
-                               :session
-                               :user)
-                   :if-exists :supersede
-                   :logo "static/radiance.png"))
-
-(generate)
+(setf (staple:system-packages :radiance) '(:radiance-core
+                                           :admin
+                                           :auth
+                                           :ban
+                                           :cache
+                                           :database
+                                           :logger
+                                           :profile
+                                           :rate
+                                           :server
+                                           :session
+                                           :user))
