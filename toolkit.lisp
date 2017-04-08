@@ -151,6 +151,7 @@
       `(load-time-value (template-file ,namestring ,*package*))
       `(template-file ,namestring ,*package*)))
 
+;; FIXME: Move to USER?
 (defmacro perm (&rest tree)
   (let ((perm (format NIL "~{~(~a~)~^.~}" tree)))
     ;; Execute during compile
@@ -169,6 +170,8 @@
     (maphash (lambda (k v) (setf (gethash k new) v)) table)
     new))
 
+;; FIXME: don't emit things like [], * into pathnames
+;;        that the implementation might interpret badly
 (defun parse-path-safely (namestring)
   (let ((name NIL)
         (type NIL)
