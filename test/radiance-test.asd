@@ -16,7 +16,8 @@
   :serial T
   :components ((:file "package")
                (:file "radiance")
-               (:file "database"))
+               (:file "database")
+               (:file "ban"))
   :depends-on ((:interface :ban)
                (:interface :rate)
                (:interface :admin)
