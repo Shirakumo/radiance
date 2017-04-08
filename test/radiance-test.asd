@@ -28,7 +28,6 @@
                (:interface :server)
                (:interface :logger)
                (:interface :database)
-               (:interface :data-model)
                :parachute
                :alexandria
                :verbose)
