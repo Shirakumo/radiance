@@ -158,7 +158,7 @@
     ;; And ensure during load as well.
     `(load-time-value
       (progn
-        (pushnew ,perm (module-permissions ,(module)) :test #'string=)
+        (pushnew ,perm (module-permissions ,(package-name (module))) :test #'string=)
         ',tree))))
 
 (defun copy-hash-table (table &key (test (hash-table-test table))
