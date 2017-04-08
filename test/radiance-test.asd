@@ -16,7 +16,9 @@
   :serial T
   :components ((:file "package")
                (:file "radiance")
-               (:file "database"))
+               (:file "database")
+               (:file "ban")
+               (:file "cache"))
   :depends-on ((:interface :ban)
                (:interface :rate)
                (:interface :admin)
@@ -28,7 +30,6 @@
                (:interface :server)
                (:interface :logger)
                (:interface :database)
-               (:interface :data-model)
                :parachute
                :alexandria
                :verbose)
