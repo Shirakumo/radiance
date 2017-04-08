@@ -23,13 +23,14 @@
 
   (setf *startup-time* (get-universal-time))
   (setf (environment) environment)
+
   (unless (boundp '*debugger*)
     (setf *debugger* (config :debugger)))
 
-  (trigger 'startup)
-  
   (unless (implementation 'logger)
     (load-implementation 'logger))
+
+  (trigger 'startup)
 
   (l:info :radiance "Starting up.")
   (l:info :radiance "Ensuring prerequisites.")
