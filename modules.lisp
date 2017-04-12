@@ -162,8 +162,8 @@
  (in-package #:~:*~a)~%~%" name))
     ;; Load system into quicklisp
     (when (find-package :ql)
-      (call 'ql 'register-local-projects)
-      (call 'ql 'quickload (string-upcase name)))
+      (call ql register-local-projects)
+      (call ql quickload (string-upcase name)))
     root))
 
 (defun find-all-modules (directory)

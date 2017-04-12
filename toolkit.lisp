@@ -246,4 +246,4 @@
 (indent:define-indentation with-actions (6 (&whole 4 &rest) &body))
 
 (defmacro call (pkg sym &rest args)
-  `(funcall (find-symbol (string ,sym) (string ,pkg)) ,@args))
+  `(funcall (find-symbol ,(string sym) ,(string pkg)) ,@args))
