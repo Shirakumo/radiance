@@ -150,7 +150,7 @@
       (format s "(in-package #:cl-user)~%~
  (asdf:defsystem #:~a
   :defsystem-depends-on (:radiance)
-  :class \"radiance:module\"
+  :class \"radiance:virtual-module\"
   :components ((:file \"~a\"))
   :depends-on ~s)"
               name base-file dependencies))
