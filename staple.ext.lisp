@@ -97,3 +97,7 @@
                                            :server
                                            :session
                                            :user))
+
+(defmethod staple:system-options append ((system (eql (asdf:find-system 'radiance))))
+  (list :if-exists :supersede
+        :logo "static/radiance.png"))
