@@ -4,7 +4,6 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:cl-user)
 (asdf:defsystem radiance-test
   :class "radiance:virtual-module"
   :defsystem-depends-on (:radiance)

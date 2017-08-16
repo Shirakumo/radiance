@@ -4,7 +4,6 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(in-package #:cl-user)
 (asdf:defsystem radiance
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
