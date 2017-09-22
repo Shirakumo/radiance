@@ -6,6 +6,10 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
+(define-interface mail
+  (defun send (to subject message))
+  (define-hook send (to subject message)))
+
 (define-interface ban
   (defun jail (ip &key duration))
   (defun list ())
