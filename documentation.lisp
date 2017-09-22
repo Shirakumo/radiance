@@ -2749,6 +2749,19 @@ are sorted newest to oldest.
 
 See USER:ACTION"))
 
+;; Mail
+(docs:define-docs
+  (function mail:send
+    "Sends an email to the specified address.
+
+If the sending of the email should fail, an error must
+be signalled.
+
+This function may be extended with additional keyword
+arguments if the implementation supports extraneous
+information, such as additional headers, attachments, and
+so forth."))
+
 ;; Profile
 (docs:define-docs
   (function profile:avatar

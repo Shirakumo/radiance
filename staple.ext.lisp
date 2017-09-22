@@ -92,6 +92,7 @@
                                            :cache
                                            :database
                                            :logger
+                                           :mail
                                            :profile
                                            :rate
                                            :server
