@@ -244,28 +244,30 @@ In order to actually load a module that makes use of an interface, an implementa
 
 Radiance provides a bunch of standard interfaces. Each of those interfaces has at least one standard implementation provided by [radiance-contribs](https://shirakumo.org/projects/radiance-contribs). The interfaces are:
 
-* `ban`  
-  Allows banning users from the site by their IP address.
-* `rate`  
-  Allows rate limitation for access to certain resources.
 * `admin`  
   Provides an extensible administration site.
-* `cache`  
-  Provides a very simple caching interface.
 * `auth`  
   Handles everything about authentication and login.
+* `ban`  
+  Allows banning users from the site by their IP address.
+* `cache`  
+  Provides a very simple caching interface.
+* `database`  
+  A flexible database interface that allows both object-stores and relational databases as backends.
+* `logger`  
+  A simple logging interface to allow printing debug and information messages.
+* `mail`  
+  Minimal interface to send emails with.
+* `profile`  
+  Provides an extensible user profile site and user fields.
+* `rate`  
+  Allows rate limitation for access to certain resources.
+* `server`  
+  The interface that bridges to a server to connect Radiance with an external universe.
 * `session`  
   Ensures persistent sessions for users to allow tracking them.
 * `user`  
   Provides user accounts and permissions.
-* `profile`  
-  Provides an extensible user profile site and user fields.
-* `server`  
-  The interface that bridges to a server to connect Radiance with an external universe.
-* `logger`  
-  A simple logging interface to allow printing debug and information messages.
-* `database`  
-  A flexible database interface that allows both object-stores and relational databases as backends.
   
 The interfaces are described in-depth below.
 
@@ -340,7 +342,14 @@ This interface provides primitive logging functions so that you can log messages
 
 See `logger:log`, `logger:trace`, `logger:debug`, `logger:info`, `logger:warn`, `logger:error`, `logger:severe`, `logger:fatal`
 
-### 2.7 profile
+### 2.7 Mail
+With the mail interface you get a very minimal facility to send emails. A variety of components might need email access, in order to reach users outside of the website itself. The configuration of the way the emails are sent --remote server, local sendmail, etc.-- is implementation dependant.
+
+The `mail:send` hook provided by the interface allows you to react to outgoing emails before they are sent.
+
+See `mail:send`
+
+### 2.8 profile
 The profile interface provides extensions to the user interface that are commonly used in applications that want users to have some kind of presence. As part of this, the interface must provide for a page on which a user's "profile" can be displayed. The profile must show panels of some kind. The panels are provided by other modules and can be added by `profile:define-panel`.
 
 You can get a URI pointing to the profile page of a user through the `page` resource type.
@@ -349,28 +358,28 @@ The interface also provides access to an "avatar image" to visually identify the
 
 See `profile:page`, `profile:avatar`, `profile:name`, `profile:fields`, `profile:add-field`, `profile:remove-field`, `profile:list-panels`, `profile:remove-panel`, `profile:define-panel`, `profile:panel`
 
-### 2.8 rate
+### 2.9 rate
 This interface provides for a rate limitation mechanism to prevent spamming or overly eager access to potentially sensitive or costly resources. This happens in two steps. First, the behaviour of the rate limitation is defined for a particular resource by `rate:define-limit`. Then the resource is protected through the `rate:with-limitation` macro. If the access to the block by a certain user is too frequent, the block is not called, and the code in the limit definition is evaluated instead.
 
 Note that rate limitation is per-client, -user, or -session depending on the implementation, but certainly not global.
 
 See `rate:define-limit`, `rate:left`, `rate:with-limitation`
 
-### 2.9 server
+### 2.10 server
 This and the logger interface are the only interfaces Radiance requires an implementation for in order to start. It is responsible for accepting and replying to requests in some manner. The implementation must accept requests and relay them to the Radiance `request` function, and then relay the returned `response` back to the requester.
 
 Note that the actual arguments that specify the listener behaviour are implementation-dependant, as is configuration thereof. However, if applicable, the implementation must provide for a standard listener that is accessible on `localhost` on the port configured in `(mconfig :radiance :port)` and is started when `radiance:startup` is called.
 
 See `server:start`, `server:stop`, `server:listeners`, `server:started`, `server:stopped`
 
-### 2.10 session
+### 2.11 session
 The session interface provides for tracking a client over the course of multiple requests. It however cannot guarantee to track clients perfectly, as they may do several things in order to cloak or mask themselves or falsify information. Still, for most users, the session tracking should work fine enough.
 
 The session interface is usually used by other interfaces or lower-lying libraries in order to provide persistence of information such as user authentication.
 
 See `session:*default-timeout*`, `session:session`, `session:=`, `session:start`, `session:get`, `session:list`, `session:id`, `session:field`, `session:timeout`, `session:end`, `session:active-p`, `session:create`
 
-### 2.11 user
+### 2.12 user
 This interface provides for persistent user objects and a permissions system. It does not take care of authentication, identification, tracking, or anything of the sort. It merely provides a user object upon which to build and with which permissions can be managed.
 
 See `user:user` for a description of permissions and their behaviour.
