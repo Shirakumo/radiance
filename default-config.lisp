@@ -6,6 +6,7 @@
   (:data-model . "r-simple-model")
   (:database . "i-lambdalite")
   (:logger . "i-verbose")
+  (:mail . "i-sendmail")
   (:profile . "r-simple-profile")
   (:rate . "r-simple-rate")
   (:server . "i-hunchentoot")
