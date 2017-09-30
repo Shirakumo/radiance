@@ -121,7 +121,10 @@
                      (list (module-api-endpoints module)))
              (format stream "~@:_Configuration: ~<~;~:[None~;~:*~{~s~^, ~:_~}~]~;~:>"
                      (list (let ((table (mconfig-storage module)))
-                             (when table (loop for name being the hash-keys of table collect name)))))
+                             (typecase table
+                               (hash-table (loop for name being the hash-keys of table collect name))
+                               (list table)
+                               (T (list table))))))
              (format stream "~@:_Permissions: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
                      (list (module-permissions module)))
              (format stream "~@:_Hooks: ~<~;~:[None~;~:*~{~a~^, ~:_~}~]~;~:>"
