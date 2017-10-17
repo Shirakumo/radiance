@@ -27,6 +27,7 @@
    #:list-modules)
   ;; re-export from hooks
   (:export
+   #:hook
    #:list-hooks
    #:define-hook
    #:remove-hook

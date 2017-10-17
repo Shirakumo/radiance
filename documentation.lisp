@@ -6,8 +6,6 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-;; FIXME: Documentation for hooks
-
 ;; api.lisp
 (docs:define-docs
   (variable *api-formats*
@@ -655,18 +653,24 @@ See DOCUMENTABLE"))
 
 ;; environment.lisp
 (docs:define-docs
-    (variable *environment-root*
-              "Holds a pathname to the root of the environment configuration files.
+  (variable *environment-root*
+    "Holds a pathname to the root of the environment configuration files.
 
 The default is decided by UBIQUITOUS:CONFIG-PATHNAME
 
 See UBIQUITOUS:CONFIG-PATHNAME
 See ENVIRONMENT")
     
-    (variable *environment*
-              "Holds the currently configured environment name, if any.
+  (variable *environment*
+    "Holds the currently configured environment name, if any.
 
 See ENVIRONMENT")
+
+  (hook environment-change
+    "This hook is triggered after the environment has been changed.
+
+At this point the environment is already set up and the
+configuration has been reloaded or purged as necessary.")
 
   (function environment
             "Accessor to the current environment.
@@ -788,6 +792,15 @@ it sees fit.
 
 See HANDLE-CONDITION")
 
+  (hook request
+    "This hook is triggered whenever a request is executed.
+
+It has two arguments: the request and the response object.
+
+Note that at this point dispatch has not yet happened, but
+the routing is already complete and the request's URI should
+be in the internal representation.")
+
   (function execute-request
     "Directly executes the given request and response instances.
 
@@ -832,6 +845,75 @@ See UPTIME")
 See STARTUP
 See SHUTDOWN
 See STARTED-P")
+
+  (hook server-start
+    "This hook is triggered right after the server interface has been loaded.
+
+At this point the server should be loaded to go, but not
+necessarily yet running. This hook in itself causes the
+server to start itself up.
+
+Note that this is a sticky hook and will remain active
+until SERVER-SHUTDOWN is triggered.
+
+See SERVER-READY
+See SERVER-SHUTDOWN")
+
+  (hook server-shutdown
+    "This hook is triggered after the server has been stopped and is shut down.
+
+Note that this causes the SERVER-START hook to become
+unstickied.
+
+See SERVER-START")
+
+  (hook server-ready
+    "This hook is triggered after the server has been started up and is ready to receive requests.
+
+Note that this is a sticky hook and will remain active
+until SERVER-STOP is triggered.")
+
+  (hook server-stop
+    "This hook causes the server to stop and shut down.
+
+Note that this causes the SERVER-READY hook to become
+unstickied.
+
+See SERVER-READY")
+
+  (hook startup
+    "This hook is triggered early in the startup sequence.
+
+At this point the environment has been set and the logger
+interface has been loaded, but nothing else has been
+started yet.
+
+Note that this is a sticky hook and will remain active
+until SHUTDOWN is triggered.
+
+See SHUTDOWN")
+
+  (hook shutdown
+    "This hook is triggered at the beginning of the shutdown sequence.
+
+At this point nothing has been shut down yet.
+
+Note that this causes the STARTUP hook to become
+unstickied.
+
+See STARTUP")
+
+  (hook startup-done
+    "This hook is triggered at the end of the startup sequence.
+
+At this point the sequence is complete and the system
+should be readily running.")
+
+  (hook shutdown-done
+    "This hook is triggered at the end of the shutdown sequence.
+
+At this point the sequence is complete and the system
+should be completely shut down.")
 
   (function startup
     "Starts up Radiance and prepares it for use.
@@ -2404,6 +2486,14 @@ See CACHE:GET"))
   (variable auth:*login-timeout*
     "The time, in seconds, for which an authenticated user should remain authenticated.")
 
+  (hook auth:associate
+    "This hook is called when a session is associated with a user.
+
+The hook has an argument, the session object. You can retrieve
+the associated user through AUTH:CURRENT.
+
+See AUTH:CURRENT")
+
   (function auth:current
     "Returns the user object that is authenticated with the given session.
 
@@ -2446,6 +2536,11 @@ See AUTH:CURRENT"))
     "The default number of seconds a session can stay live for without being used.
 
 See SESSION:TIMEOUT")
+
+  (hook session:create
+    "This hook is triggered when a new session object is started.
+
+The session object is passed as an argument.")
 
   (type session:session
     "The session object that encapsulates the connection a particular client has to the system.
@@ -2570,6 +2665,38 @@ See SESSION:SESSION"))
 
 See USER:CONDITION
 See USER:GET")
+
+  (hook user:create
+    "This hook is triggered when a new user is created.
+
+The user object is passed as an argument.")
+
+  (hook user:remove
+    "This hook is triggered when an existing user is removed.
+
+The user object is passed as an argument.")
+
+  (hook user:Action
+    "This hook is triggered when a user performs an action that is logged.
+
+The user, action, and its visibility are passed as arguments.
+
+See USER:ACTION")
+
+  (hook user:ready
+    "This hook is called when the user system has become ready and users can be accessed.
+
+You should refrain from performing user operations while
+this hook is untriggered.
+
+Note that this is a sticky hook and will remain active
+until USER:UNREADY is triggered.")
+
+  (hook user:unready
+    "This hook is called when the user system is no longer ready and users can no longer be accessed.
+
+Note that this causes the USER:READY hook to become
+unstickied.")
 
   (type user:user
     "Container for a user.
@@ -2751,6 +2878,13 @@ See USER:ACTION"))
 
 ;; Mail
 (docs:define-docs
+  (hook mail:send
+    "This hook is triggered right before a mail is sent out.
+
+The recipient, subject, and body text are passed as arguments.
+
+See MAIL:SEND")
+  
   (function mail:send
     "Sends an email to the specified address.
 
@@ -2857,6 +2991,18 @@ See PROFILE:REMOVE-PANEL"))
 
 ;; Server
 (docs:define-docs
+  (hook server:started
+    "This hook is triggered right after the server has been started.
+
+Note that this is a sticky hook and will remain active
+until SERVER:STOPPED is triggered.")
+
+  (hook server:stopped
+    "This hook is triggered right after the server has been stopped.
+
+Note that this causes the SERVER:STARTED hook to become
+unstickied.")
+  
   (function server:start
     "Starts a listener server.
 
@@ -3017,6 +3163,22 @@ May signal an error on invalidly structured or invalid ID.
 The return value is of type DATABASE:ID
 
 See DATABASE:ID")
+
+  (hook database:connected
+    "This hook is triggered after the database has been connected.
+
+The name of the connection is passed as an argument.
+
+Note that this is a sticky hook and will remain active
+until DATABASE:DISCONNECTED is triggered.")
+
+  (hook database:disconnected
+    "This hook is triggered after the database has been disconnected.
+
+The name of the connection is passed as an argument.
+
+Note that this causes the DATABASE:CONNECTED hook to become
+unstickied.")
   
   (function database:connect
     "Establishes a connection to the database of the given name.

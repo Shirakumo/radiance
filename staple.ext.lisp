@@ -33,6 +33,23 @@
 
 (staple:define-simple-converter symb-uri-dispatcher radiance:uri-dispatcher)
 
+(defclass symb-hook (staple:symb-function)
+  ())
+
+(defmethod staple:symb-documentation ((symb symb-hook))
+  (documentation (radiance:hook (staple:symb-symbol symb) (staple:symb-package symb)) T))
+
+(defmethod staple:symb-arguments ((symb symb-hook))
+  (modularize-hooks:arglist (radiance:hook (staple:symb-symbol symb) (staple:symb-package symb))))
+
+(defmethod staple:symb-type-order ((symb (eql 'symb-hook)))
+  (- (staple:symb-type-order 'staple:symb-accessor) 1))
+
+(staple:define-converter symb-hook (symbol package)
+  (when (and (radiance:module-p package)
+             (radiance:hook symbol package))
+    (list (make-instance 'symb-hook :symbol symbol :package package))))
+
 (defclass symb-resource-type (staple:symb-class)
   ())
 
