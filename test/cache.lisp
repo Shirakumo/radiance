@@ -14,9 +14,9 @@ Author: Joram Schrijver <i@joram.io>
                                       :initial-contents '(43))))
     (cache:renew 'cache-name-1)
     (is eq nil (cache:get 'cache-name-1))
-    (cache:with-cache 'cache-name-1 nil
+    (cache:with-cache (cache-name-1) nil
       cached-value)
-    (cache:with-cache 'cache-name-1 nil
+    (cache:with-cache (cache-name-1) nil
       uncached-value)
     (is equalp cached-value (cache:get 'cache-name-1))
     (cache:renew 'cache-name-1)
