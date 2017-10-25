@@ -320,7 +320,9 @@ See `ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`
 ### 2.4 cache
 The cache interface provides for a generic caching mechanism with a customisable invalidation test. You can explicitly renew the cache by `cache:renew`. To define a cached block, simply use `cache:with-cache`, which will cause the cached value of the body to be returned if the test form evaluates to true.
 
-The exact manner by which the cached value is stored is up to the implementation.
+The exact manner by which the cached value is stored is up to the implementation and `cache:get` or `cache:with-cache` may coerce the cached value to a string or byte array. The implementation may support any number of types of values to cache, but must in the very least support strings and byte arrays.
+
+The name for a cached value must be a symbol whose name and package name do not contain any of the following characters: `<>:"/\|?*.` The variant for a cached value must be an object that can be discriminated by its printed (as by `princ`) representation. The same character constraints as for the name apply.
 
 See `cache:get`, `cache:renew`, `cache:with-cache`
 

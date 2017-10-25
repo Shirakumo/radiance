@@ -27,9 +27,9 @@
   (defun release (ip)))
 
 (define-interface cache
-  (defun get (name))
-  (defun renew (name))
-  (defmacro with-cache (name-form test-form &body request-generator)))
+  (defun get (name &optional variant))
+  (defun renew (name &optional variant))
+  (defmacro with-cache ((name &optional variant) test-form &body request-generator)))
 
 (define-interface (database db)
   (define-condition condition (radiance-condition)

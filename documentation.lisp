@@ -2455,12 +2455,12 @@ See ADMIN:REMOVE-PANEL"))
 ;; Cache
 (docs:define-docs
   (function cache:get
-    "Returns the contents cached under the given name, if any.
+    "Returns the contents cached under the given name and variant, if any.
 
 See CACHE:WITH-CACHE")
 
   (function cache:renew
-    "Clears out the cache under the given name and potentially refreshes it.
+    "Clears out the cache under the given name and variant and potentially refreshes it.
 
 The refresh may be deferred until the next time the associated
 WITH-CACHE form is evaluated.
@@ -2470,6 +2470,9 @@ See CACHE:WITH-CACHE")
 
   (function cache:with-cache
     "Caches the return value produced by the body under the name.
+
+The name is not evaluated and must be a direct symbol, but the
+variant is evaluated.
 
 Every time this form is evaluated, the TEST-FORM is evaluated.
 If it returns non-NIL, the body is evaluated and its return
