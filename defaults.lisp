@@ -86,10 +86,15 @@
                     (write object :stream stream))
                    (list
                     (w "("
-                       (when object
-                         (output (first object))
-                         (loop for o in (rest object)
-                               do (w " " (output o))))
+                       (loop (typecase (cdr object)
+                               (cons
+                                (w (output (car object)) " ")
+                                (setf object (cdr object)))
+                               (null
+                                (w (output (car object)))
+                                (return))
+                               (T (w (output (car object)) " . " (output (cdr object)))
+                                (return))))
                        ")"))
                    (vector
                     (w "#("
