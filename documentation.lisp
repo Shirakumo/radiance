@@ -3589,11 +3589,11 @@ And the clauses have the following comparison behaviour:
             of type :integer or :float, or STRING>= if they
             are both of type :varchar or :text
   :MATCHES  True if the first value matches the regular
-            expression of the second value. The extend of
-            regular-expression syntax support are up to the
+            expression of the second value. The extent of
+            regular-expression syntax support is up to the
             implementation, but the following basic operators
             must be understood:
-              . [] [^] * + ? () {} \\
+              . [] [^] * + ? () {} \\ ^ $ |
             The following character classes must be understood
             as well:
               \\d \\w \\s \\D \\W \\S
@@ -3628,7 +3628,7 @@ Matches all records where the health and lives fields are 0.
 Matches all records where the name is one of \"Guybrush\",
 \"Elaine\", or \"LeChuck\".
 
-   (db:query (:MATCHES 'tags \",?foo,?\"))
+   (db:query (:MATCHES 'tags \"^foo$|^foo,|,foo$|,foo,\"))
 
 Matches all records whose tags includes the \"foo\" tag.
 
