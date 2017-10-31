@@ -3041,15 +3041,16 @@ ones, no such arguments are specified.
 See the documentation of your implementation of choice.
 
 If a server that is similar to the requested one (by name
-or the provided options), an error is signalled.
+or the provided options), is already started, an error is
+signalled.
 
 On successful start, the SERVER:STARTED hook is triggered.
 On unsuccessful start, an error is signalled.
 
 The server implementation must take care to invoke REQUEST
-with the proper arguments on an incoming request, and to
-send the data contained in the returned response object
-back over the wire.
+with the proper arguments on an incoming HTTP request, and
+to send the data contained in the returned response object
+back.
 
 See SERVER:STOP
 See SERVER:LISTENERS

@@ -368,7 +368,7 @@ Note that rate limitation is per-client, -user, or -session depending on the imp
 See `rate:define-limit`, `rate:left`, `rate:with-limitation`
 
 ### 2.10 server
-This and the logger interface are the only interfaces Radiance requires an implementation for in order to start. It is responsible for accepting and replying to requests in some manner. The implementation must accept requests and relay them to the Radiance `request` function, and then relay the returned `response` back to the requester.
+This and the logger interface are the only interfaces Radiance requires an implementation for in order to start. It is responsible for accepting and replying to HTTP requests in some manner. The implementation must accept requests and relay them to the Radiance `request` function, and then relay the returned `response` back to the requester.
 
 Note that the actual arguments that specify the listener behaviour are implementation-dependant, as is configuration thereof. However, if applicable, the implementation must provide for a standard listener that is accessible on `localhost` on the port configured in `(mconfig :radiance :port)` and is started when `radiance:startup` is called.
 
