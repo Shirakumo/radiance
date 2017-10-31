@@ -54,22 +54,24 @@
   (check-environment)
   (let* ((interface (interface interface))
          (configured-implementation (config :interfaces (intern (string (module-name interface)) :KEYWORD))))
-    (unless configured-implementation
-      (error 'interface-implementation-not-set :interface interface))
-    ;; If quicklisp is available, the system might be loadable, but
-    ;; may not have been installed yet. Check for this and install if
-    ;; necessary.
-    #+quicklisp
-    (when (and system
-               (not (asdf:find-system configured-implementation NIL)))
-      (let ((ql-system (ql-dist:find-system configured-implementation)))
-        (when (and ql-system (not (ql-dist:installedp ql-system)))
-          (format T "~&Chaining Quicklisp to install interface ~a implementation ~a.~%"
-                  (module-name interface) configured-implementation)
-          (ql-dist:install ql-system))))
-    (if system
-        (asdf:find-system configured-implementation T)
-        configured-implementation)))
+    (cond ((implementation interface)
+           (or (virtual-module interface)
+               (asdf:find-system "radiance-core")))
+          ((not configured-implementation)
+           (error 'interface-implementation-not-set :interface interface))
+          (system
+           ;; If quicklisp is available, the system might be loadable, but
+           ;; may not have been installed yet. Check for this and install if
+           ;; necessary.
+           (unless (asdf:find-system configured-implementation NIL)
+             (let ((ql-system (ql-dist:find-system configured-implementation)))
+               (when (and ql-system (not (ql-dist:installedp ql-system)))
+                 (format T "~&Chaining Quicklisp to install interface ~a implementation ~a.~%"
+                         (module-name interface) configured-implementation)
+                 (ql-dist:install ql-system))))
+           (asdf:find-system configured-implementation T))
+          (T
+           configured-implementation))))
 
 (indent:define-indentation define-interface (4 &rest (&whole 2 0 4 &body)))
 
