@@ -48,7 +48,12 @@ See API-FORMAT")
 You should configure the *RESPONSE* to output the properly
 serialised content of the argument you receive.
 
-See API-FORMAT")
+Note that the structures must be recursively serialised and
+you may not error when encountering any of the types listed
+as permitted in API-OUTPUT.
+
+See API-FORMAT
+See API-OUTPUT")
 
   (function api-output
     "Emits the given data as a response.
@@ -57,6 +62,22 @@ This function should be called for any and all return data
 from an api endpoint. It ensures the data proper structure,
 failure handling, and data translation to the desired output
 format.
+
+The types of objects that can be serialised via this function
+are restricted to the following set:
+
+- REAL
+- NIL
+- T
+- STRING
+- LIST (proper ones)
+- VECTOR
+- HASH-TABLE
+
+An api format may support additional types, but is not
+required to. Thus, in order to be conforming, the data you
+pass to this function must not reference any values that
+have a type outside of this set.
 
 See API-FORMAT")
   
