@@ -47,7 +47,6 @@
                               (integer7 (:integer 7))
                               (integer8 (:integer 8))
                               (float :float)
-                              (character :character)
                               (varchar (:varchar 32))
                               (text :text))))
     (false (db:create "test" '()))
