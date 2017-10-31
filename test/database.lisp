@@ -34,7 +34,7 @@
     (is equal () (db:collections))
     (false (db:collection-exists-p "test"))
     (fail (db:create ":" ()) 'db:invalid-collection)
-    (fail (db:create "test" '((|:| :int)) 'db:invalid-field))
+    (fail (db:create "test" '((|:| :int))) 'db:invalid-field)
     (fail (db:create "test" '((foo :foo))) 'db:invalid-field)
     (true (db:create "test" '((id :id)
                               (integer :integer)
