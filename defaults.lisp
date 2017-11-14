@@ -149,12 +149,12 @@
 
 (defun add-domain (domain)
   (pushnew domain (config :domains) :test #'string-equal)
-  (compile-domain-internalizers)
+  (setf *domain-internalizers* (compile-domain-internalizers))
   (config :domains))
 
 (defun remove-domain (domain)
   (setf (config :domains) (remove domain (config :domains) :test #'string-equal))
-  (compile-domain-internalizers)
+  (setf *domain-internalizers* (compile-domain-internalizers))
   (config :domains))
 
 (defun compile-domain-internalizers (&optional (domains (config :domains)))
