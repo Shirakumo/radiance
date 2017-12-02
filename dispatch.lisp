@@ -67,6 +67,7 @@
 
 (defmacro define-uri-dispatcher (name (uri &optional priority) &body body)
   (let ((dispatcher (gensym "DISPATCHER")))
+    (check-for-shared-symbol name)
     `(eval-when (:compile-toplevel :load-toplevel :execute)
        (flet ((,dispatcher ()
                 ,@body))

@@ -71,6 +71,7 @@
    #:*debugger*
    #:radiance-condition
    #:message
+   #:definition-for-shared-package
    #:environment-not-set
    #:internal-error
    #:request-error

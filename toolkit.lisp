@@ -247,3 +247,7 @@
 
 (defmacro call (pkg sym &rest args)
   `(funcall (find-symbol ,(string sym) ,(string pkg)) ,@args))
+
+(defun check-for-shared-symbol (symbol)
+  (when (not (eql *package* (symbol-package symbol)))
+    (warn 'definition-for-shared-package :symbol symbol)))

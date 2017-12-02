@@ -17,6 +17,12 @@
 (define-condition radiance-warning (warning radiance-condition)
   ())
 
+(define-condition definition-for-shared-package (style-warning radiance-warning)
+  ((symbol :initarg :symbol :initform (error "SYMBOL required.")))
+  (:report (lambda (c s) (format s "Definition on a symbol that is likely shared with other systems.~%~
+                                    This definition may lead to unintended overrides.~@[~%~a~]"
+                                 (message c)))))
+
 (define-condition environment-not-set (radiance-error) ()
   (:report "The application environment was not yet set but is required.
 This means you are either using Radiance for the first time or forgot to set it up properly.

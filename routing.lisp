@@ -82,6 +82,7 @@
 (defmacro define-route (name direction (urivar) &body body)
   (destructuring-bind (direction &optional (priority 0)) (enlist direction)
     (let ((translator (gensym "TRANSLATOR")))
+      (check-for-shared-symbol name)
       `(flet ((,translator (,urivar)
                 ,@body))
          (setf (route ',name ,direction)

@@ -266,6 +266,15 @@ See RADIANCE-CONDITION")
 
 See RADIANCE-CONDITION")
 
+  (type definition-for-shared-package
+    "Warning signalled when a definition is made on a symbol that may lead to unintentional clashes.
+
+This warning gives you an indication for when you might be
+accidentally exposing your definition to overrides by other
+systems.
+
+See RADIANCE-WARNING")
+
   (type environment-not-set
     "Error signalled when an action was performed that requires an initialised environment, but no environment has been configured yet.
 
@@ -2138,7 +2147,7 @@ This means that characters that are not one of a-Z 0-9 - . _ ~
 are written down in percent-encoded schema.")
 
   (function with-actions
-            "A macro to help handle different actions in a submission context.
+    "A macro to help handle different actions in a submission context.
 
 ERROR and INFO are variables that hold objects that
 describe error and information messages that occurred
@@ -2152,7 +2161,15 @@ variable. After the action clause processing has
 finished, the body forms are evaluated.
 
 ACTION-CLAUSES ::= (clause body-form*)
-CLAUSE         --- A string designator that names the action"))
+CLAUSE         --- A string designator that names the action")
+
+  (function check-for-shared-symbol
+    "Attempts to detect whether the symbol is likely to be shared with other packages.
+
+This signals a warning of type DEFINITION-FOR-SHARED-PACKAGE
+if the symbol's package is not equal to the current *PACKAGE*.
+
+See DEFINITION-FOR-SHARED-PACKAGE"))
 
 ;; uri.lisp
 (docs:define-docs
