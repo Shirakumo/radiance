@@ -1962,7 +1962,17 @@ error of type DATABASE:INVALID-COLLECTION is signalled.
 
 See <a href="#DATABASE:CREATE">DATABASE:CREATE</a>
 See <a href="#DATABASE:ITERATE">DATABASE:ITERATE</a>
-See <a href="#DATABASE:INVALID-COLLECTION">DATABASE:INVALID-COLLECTION</a></pre></div> </article> </li><li> <a name="DATABASE:QUERY"> </a> <article id="MACRO DATABASE:QUERY"> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MACRO%20DATABASE%3AQUERY">QUERY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">QUERY-FORM</code><code>)</code>  </header> <div class="docstring"><pre>Constructs a value to be used for the QUERY argument in database operations.
+See <a href="#DATABASE:INVALID-COLLECTION">DATABASE:INVALID-COLLECTION</a></pre></div> </article> </li><li> <a name="DATABASE:COUNT"> </a> <article id="BINDING DATABASE:COUNT"> <header class="binding"> <span class="type">binding</span>  <code>(</code><h4 class="name"><code><a href="#BINDING%20DATABASE%3ACOUNT">COUNT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">VAR FORM</code><code>)</code>  </header> <div class="docstring"><pre>Increases the var by one if the FORM returns non-NIL.
+
+This returns the var on END-FOR.</pre></div> </article> </li><li> <a name="DATABASE:UPDATE"> </a> <article id="BINDING DATABASE:UPDATE"> <header class="binding"> <span class="type">binding</span>  <code>(</code><h4 class="name"><code><a href="#BINDING%20DATABASE%3AUPDATE">UPDATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">VAR ITERABLE &amp;REST ITERATOR-ARGS</code><code>)</code>  </header> <div class="docstring"><pre>Iterates over a generic sequence using an ITERATOR, with var being symbol macro to the current item.
+
+You may SETF the var to update the item in the sequence, if the underlying iterator
+supports doing so.
+
+Potentially accepts arbitrary arguments, depending on which iterator is selected
+for the respective object.
+
+See <a href="NIL">FOR-ITERATOR:MAKE-ITERATOR</a></pre></div> </article> </li><li> <a name="DATABASE:QUERY"> </a> <article id="MACRO DATABASE:QUERY"> <header class="macro"> <span class="type">macro</span>  <code>(</code><h4 class="name"><code><a href="#MACRO%20DATABASE%3AQUERY">QUERY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">QUERY-FORM</code><code>)</code>  </header> <div class="docstring"><pre>Constructs a value to be used for the QUERY argument in database operations.
 
 The query form must be of the following structure:
 
@@ -2340,7 +2350,9 @@ client tracking is achieved is implementation-dependant.
 
 See <a href="#SESSION:SESSION">SESSION:SESSION</a>
 See <a href="#SESSION:GET">SESSION:GET</a>
-See <a href="#SESSION:END">SESSION:END</a></pre></div> </article> </li></ul> </li><li class="package"> <h3> <a name="USER" href="#USER">USER</a> <span class="nicknames">(MODULARIZE.MOD.USER MODULARIZE.INT.USER)</span> </h3> <ul><li> <a name="USER:*IMPLEMENTATION*"> </a> <article id="SPECIAL USER:*IMPLEMENTATION*"> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SPECIAL%20USER%3A%2AIMPLEMENTATION%2A">*IMPLEMENTATION*</a></code></h4>  </header> <div class="docstring"><i>No docstring provided.</i></div> </article> </li><li> <a name="USER:USER"> </a> <article id="CLASS USER:USER"> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#CLASS%20USER%3AUSER">USER</a></code></h4>  </header> <div class="docstring"><pre>Container for a user.
+See <a href="#SESSION:END">SESSION:END</a></pre></div> </article> </li><li> <a name="SESSION:="> </a> <article id="BINDING SESSION:="> <header class="binding"> <span class="type">binding</span>  <code>(</code><h4 class="name"><code><a href="#BINDING%20SESSION%3A%3D">=</a></code></h4> <code class="qualifiers"></code> <code class="arguments">VAR FORM</code><code>)</code>  </header> <div class="docstring"><pre>Updates the var by the value of the given form every time.
+
+Supports UPDATE.</pre></div> </article> </li></ul> </li><li class="package"> <h3> <a name="USER" href="#USER">USER</a> <span class="nicknames">(MODULARIZE.MOD.USER MODULARIZE.INT.USER)</span> </h3> <ul><li> <a name="USER:*IMPLEMENTATION*"> </a> <article id="SPECIAL USER:*IMPLEMENTATION*"> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#SPECIAL%20USER%3A%2AIMPLEMENTATION%2A">*IMPLEMENTATION*</a></code></h4>  </header> <div class="docstring"><i>No docstring provided.</i></div> </article> </li><li> <a name="USER:USER"> </a> <article id="CLASS USER:USER"> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#CLASS%20USER%3AUSER">USER</a></code></h4>  </header> <div class="docstring"><pre>Container for a user.
 
 A user is an object that represents a certain person with
 access to the system. Each user has a uniquely identifying
@@ -2493,4 +2505,6 @@ See <a href="#USER:USER">USER:USER</a>
 See <a href="#USER:CHECK">USER:CHECK</a>
 See <a href="#USER:GRANT">USER:GRANT</a></pre></div> </article> </li><li> <a name="USER:USERNAME"> </a> <article id="FUNCTION USER:USERNAME"> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#FUNCTION%20USER%3AUSERNAME">USERNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">USER</code><code>)</code>  </header> <div class="docstring"><pre>Returns the username of the requested user.
 
-See <a href="#USER:USER">USER:USER</a></pre></div> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
+See <a href="#USER:USER">USER:USER</a></pre></div> </article> </li><li> <a name="USER:="> </a> <article id="BINDING USER:="> <header class="binding"> <span class="type">binding</span>  <code>(</code><h4 class="name"><code><a href="#BINDING%20USER%3A%3D">=</a></code></h4> <code class="qualifiers"></code> <code class="arguments">VAR FORM</code><code>)</code>  </header> <div class="docstring"><pre>Updates the var by the value of the given form every time.
+
+Supports UPDATE.</pre></div> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
