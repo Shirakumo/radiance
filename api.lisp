@@ -154,7 +154,7 @@
         (handler-bind ((api-error (lambda (err)
                                     (when *debugger* (invoke-debugger err)))))
           (call-api-request api-endpoint *request*))
-      (api-error (err)
+      ((or api-error request-denied) (err)
         (let ((message (or (message err)
                            (princ-to-string err))))
           (if (string= (post/get "browser") "true")
