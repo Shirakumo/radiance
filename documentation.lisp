@@ -1336,7 +1336,7 @@ See *RESPONSE*")
     "Container class to represent a request that was made against radiance.
 
 See URI
-See HTP-METHOD
+See HTTP-METHOD
 See HEADERS
 See POST-DATA
 See GET-DATA
