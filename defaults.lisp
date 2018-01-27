@@ -26,29 +26,29 @@
       body))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defun transform-access-body (body branch)
+  (defun transform-access-body (body branch type)
     (if (not (eql branch T))
         `((unless (and (auth:current) (user:check (auth:current) ,branch))
-            (error 'request-denied :message (format NIL "~a does not have access to ~s"
-                                                    (user:username (or (auth:current) (user:get "anonymous"))) ,branch)))
+            (error ,type :message (format NIL "~a does not have access to ~s"
+                                          (user:username (or (auth:current) (user:get "anonymous"))) ,branch)))
           ,@body)
         body)))
 
 (define-option page :access (name body uri &optional (branch T))
   (declare (ignore name uri))
-  (transform-access-body body branch))
+  (transform-access-body body branch 'request-denied))
 
 (define-option api :access (name body args &optional (branch T))
   (declare (ignore name args))
-  (transform-access-body body branch))
+  (transform-access-body body branch 'api-auth-error))
 
 (define-option admin:panel :access (name body category &optional (branch T))
   (declare (ignore name category))
-  (transform-access-body body branch))
+  (transform-access-body body branch 'request-denied))
 
 (define-option profile:panel :access (name body &optional (branch T))
   (declare (ignore name))
-  (transform-access-body body branch))
+  (transform-access-body body branch 'request-denied))
 
 ;; Standard serialisations
 (defmethod api-serialize ((error radiance-condition))
