@@ -152,7 +152,8 @@
          (api-endpoint (or (api-endpoint subpath) (api-endpoint ""))))
     (handler-case
         (handler-bind ((api-error (lambda (err)
-                                    (when *debugger* (invoke-debugger err)))))
+                                    (with-simple-restart (continue "Don't handle the error.")
+                                      (when *debugger* (invoke-debugger err))))))
           (call-api-request api-endpoint *request*))
       ((or api-error request-denied) (err)
         (let ((message (or (message err)
