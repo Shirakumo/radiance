@@ -29,8 +29,8 @@
   (defun transform-access-body (body branch type)
     (if (not (eql branch T))
         `((unless (and (auth:current) (user:check (auth:current) ,branch))
-            (error ,type :message (format NIL "~a does not have access to ~s"
-                                          (user:username (or (auth:current) (user:get "anonymous"))) ,branch)))
+            (error ',type :message (format NIL "~a does not have access to ~s"
+                                           (user:username (or (auth:current) (user:get "anonymous"))) ,branch)))
           ,@body)
         body)))
 
