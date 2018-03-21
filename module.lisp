@@ -124,6 +124,7 @@
    #:environment-change
    #:environment
    #:check-environment
+   #:set-environment
    #:reload-environment
    #:mconfig-pathname
    #:mconfig-storage
