@@ -137,6 +137,7 @@
   ;; handle.lisp
   (:export
    #:*debugger*
+   #:maybe-invoke-debugger
    #:handle-condition
    #:render-error-page
    #:execute-request

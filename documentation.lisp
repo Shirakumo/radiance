@@ -800,17 +800,38 @@ See DEFAULTED-MCONFIG"))
   (variable *debugger*
     "Whether the debugger should be invoked when an error occurs during a request execution.
 
+Can be one of the following values:
+  :IF-SWANK-CONNECTED  -- Only invoke the debugger if there is an active swank connection.
+  T                    -- Always invoke the debugger.
+  NIL                  -- Never invoke the debugger.
+
+See MAYBE-INVOKE-DEBUGGER
 See HANDLE-CONDITION
 See EXECUTE-REQUEST")
+
+  (function maybe-invoke-debugger
+    "Might call INVOKE-DEBUGGER depending on the value of *DEBUGGER*.
+
+If the debugger is invoked, it is always invoked with a
+CONTINUE restart surrounding it to avoid handling the
+condition.
+
+If the debugger is not invoked, or declines to handle the
+condition via the CONTINUE restart, and the RESTART argument
+is given, then the given restart is automatically invoked
+with the remaining values.
+
+See *DEBUGGER*")
 
   (function handle-condition
     "Responsible for handling a condition during a request execution.
 
-Invokes the debugger if *DEBUGGER* is non-NIL.
+Might invoke the debugger depending on *DEBUGGER*.
 Otherwise invokes the SET-DATA restart with the
 return-value of calling RENDER-ERROR-PAGE.
 
 See *DEBUGGER*
+See MAYBE-INVOKE-DEBUGGER
 See EXECUTE-REQUEST
 See RENDER-ERROR-PAGE")
 

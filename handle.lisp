@@ -8,13 +8,27 @@
 
 (defvar *debugger*)
 
+(defun swank-connected-p ()
+  (let ((threads (bt:all-threads)))
+    (and (find-package :swank)
+         (find "repl-thread" threads :key #'bt:thread-name :test #'equal)
+         (find "reader-thread" threads :key #'bt:thread-name :test #'equal)
+         (find "control-thread" threads :key #'bt:thread-name :test #'equal))))
+
+(defun maybe-invoke-debugger (condition &optional restart &rest values)
+  (when (case *debugger*
+          (:if-swank-connected (swank-connected-p))
+          ((T) T))
+    (with-simple-restart (continue "Don't handle ~a." condition)
+      (invoke-debugger condition)))
+  (when restart
+    (apply #'invoke-restart restart values)))
+
 (defun handle-condition (condition)
   (l:debug :radiance condition)
   (l:warn :radiance "Handling stray condition: ~a" condition)
   (restart-case
-      (if *debugger*
-          (invoke-debugger condition)
-          (abort))
+      (maybe-invoke-debugger condition 'abort)
     (abort ()
       :report "Render error page."
       (invoke-restart 'set-data (render-error-page condition)))))

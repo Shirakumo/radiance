@@ -15,4 +15,4 @@
  (:domains . ("radiance" "localhost" "127.0.0.1" "::1"))
  (:startup :r-welcome :r-simple-errors)
  (:routes)
- (:debugger . T))
+ (:debugger . :if-swank-connected))

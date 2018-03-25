@@ -151,9 +151,7 @@
          (subpath (subseq path (1+ slashpos)))
          (api-endpoint (or (api-endpoint subpath) (api-endpoint ""))))
     (handler-case
-        (handler-bind ((api-error (lambda (err)
-                                    (with-simple-restart (continue "Don't handle the error.")
-                                      (when *debugger* (invoke-debugger err))))))
+        (handler-bind ((api-error #'maybe-invoke-debugger))
           (call-api-request api-endpoint *request*))
       ((or api-error request-denied) (err)
         (let ((message (or (message err)
