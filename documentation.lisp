@@ -2738,13 +2738,6 @@ The user object is passed as an argument.")
 
 The user object is passed as an argument.")
 
-  (hook user:Action
-    "This hook is triggered when a user performs an action that is logged.
-
-The user, action, and its visibility are passed as arguments.
-
-See USER:ACTION")
-
   (hook user:ready
     "This hook is called when the user system has become ready and users can be accessed.
 
@@ -2915,28 +2908,7 @@ only comes into effect for users created after a call to
 this has been run.
 
 See USER:USER
-See USER:GRANT")
-
-  (function user:action
-    "Records that the named action has been performed on the user.
-
-This is used to keep a record of user actions. The ACTION
-can be an arbitrary string that should primarily be human-
-readable. PUBLIC denotes whether the action should be
-publicly visible-- in other words, it does not contain
-potentially sensitive information.
-
-See USER:ACTIONS")
-
-  (function user:actions
-    "Returns a truncated list of actions that the user performed.
-
-If PUBLIC is non-NIL, only actions that can be publicly
-shown are returned. If OLDEST-FIRST is non-NIL, actions
-are returned sorted from oldest to newest; otherwise they
-are sorted newest to oldest.
-
-See USER:ACTION"))
+See USER:GRANT"))
 
 ;; Mail
 (docs:define-docs
