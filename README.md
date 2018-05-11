@@ -4,7 +4,7 @@ Radianceは、Webアプリケーションの開発環境です。
 
 Webフレームワークのようなものですが、より汎用的で、変更も容易です。 
 
-Radianceは、かわった変更を加える必要もなく、個人的なWebサイトやWebアプリを、簡単に書くことができます。
+特別な変更を加える必要なく、個人的なWebサイトやWebアプリを、簡単に書くことができます。
 
 ## Getting It
 Radiance and associated modules and applications are distributed via Quicklisp in a separate dist. To install Radiance, do:
