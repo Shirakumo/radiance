@@ -2,17 +2,22 @@
 
 Radianceは、Webアプリケーションの開発環境です。
 
-Webフレームワークのようなものですが、より汎用的で、変更も容易です。 
+Webフレームワークのようなものですが、より汎用的で、変更も簡単です。 
 
 特別な変更を加える必要なく、個人的なWebサイトやWebアプリを、簡単に書くことができます。
 
-## Getting It
-Radiance and associated modules and applications are distributed via Quicklisp in a separate dist. To install Radiance, do:
+## 入手するには
 
-    (ql-dist:install-dist "http://dist.tymoon.eu/shirakumo.txt")
-    (ql:quickload :radiance)
+Radianceと関連するモジュールやアプリケーションは、Quicklispを通して配布されています。
 
-From there on out you should be able to load and use any kind of Radiance module like [Purplish](https://github.com/Shirakumo/purplish) directly via Quicklisp's `quickload`.
+Radianceをインストールするには次のようにしてください:
+
+```lisp
+(ql-dist:install-dist "http://dist.tymoon.eu/shirakumo.txt")
+(ql:quickload :radiance)
+```
+
+上記のようにすることで、Quicklispの`quickload`　コマンドで、[Purplish](https://github.com/Shirakumo/purplish)等のRadianceモジュールを読み込んで利用できるようになります。
 
 ## A Lengthy and In-Depth Example
 You can find a tutorial that introduces Radiance and most of the important concepts, and explores how to write a web application in general, [here](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md). It should give you a good feeling for how to go about things, and give you pointers about where to look if you need a particular feature. In the last part it'll also go into the actual setup and deployment of a Radiance installation on a production server.
