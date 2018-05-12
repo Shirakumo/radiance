@@ -2783,6 +2783,13 @@ user operations before the USER:READY hook has been
 triggered or after the USER:UNREADY hook has been triggered
 will result in undefined behaviour.
 
+A user object is not required to sync with the backend, and
+in fact does not need to be identical according to EQ to
+another user object for the same user. It is thus not a
+good idea to retain and cache user objects, as the user's
+attributes might change asynchronously, causing a previous
+instance to become outdated.
+
 See PERM
 See USER:=
 See USER:LIST
@@ -2796,7 +2803,7 @@ See USER:GRANT
 See USER:REVOKE")
 
   (function user:=
-    "Compares two user object to see if they're the same.
+    "Compares two user object to see if they denote the same user.
 
 See USER:USER")
 
