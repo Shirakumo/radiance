@@ -17,12 +17,13 @@ Radianceをインストールするには次のようにしてください:
 (ql:quickload :radiance)
 ```
 
-上記のようにすることで、Quicklispの`quickload`　コマンドで、[Purplish](https://github.com/Shirakumo/purplish)等のRadianceモジュールを読み込んで利用できるようになります。
+この後では、Quicklispの`quickload`　コマンドで、[Purplish](https://github.com/Shirakumo/purplish)等のRadianceモジュールを読み込んで利用できるようになります。
 
-## A Lengthy and In-Depth Example
-You can find a tutorial that introduces Radiance and most of the important concepts, and explores how to write a web application in general, [here](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md). It should give you a good feeling for how to go about things, and give you pointers about where to look if you need a particular feature. In the last part it'll also go into the actual setup and deployment of a Radiance installation on a production server.
+## 利用法
 
-## A Simple Example
+Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。Radianceの重要なコンセプトや、Webアプリを書く方法を紹介しています。このチュートリアルでは、Radianceの大まかな使い方に親しみ、ある特定の機能が必要なとき、どこを調べるべきかの道しるべになるでしょう。チュートリアルの最後では、本番環境での、Radianceのインストールとデプロイ方法について説明します。
+
+## 簡単な例
 The most basic thing you most likely want to do is serve some kind of HTML. So let's work towards that and gradually extend it. Before we can begin, we need to start up Radiance.
 
 ```common-lisp
