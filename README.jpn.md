@@ -294,26 +294,66 @@ This allows Radiance to identify and associate ASDF system information to your m
 See `virtual-module`, `virtual-module-name`, `define-module`, `define-module-extension`, `delete-module`, `module`, `module-p`, `module-storage`, `module-storage-remove`, `module-identifier`, `module-name`, `current-module`, `module-domain`, `module-permissions`, `module-dependencies`, `module-required-interfaces`, `module-required-systems`, `module-pages`, `module-api-endpoints`, `describe-module`, `find-modules-directory`, `*modules-directory*`, `create-module`
 
 ### 1.9 Hooks
-One of the mechanisms that Radiance provides to allow integrating modules into each other is hooks. Hooks allow you to run an arbitrary function in response to some kind of event. For example, a forum software might set up a hook that is triggered whenever a new post is created. An extension could then define a trigger on that hook that performs additional tasks.
+One of the mechanisms that Radiance provides to allow integrating modules into each other is hooks. 
+Hooks allow you to run an arbitrary function in response to some kind of event. 
+For example, a forum software might set up a hook that is triggered whenever a new post is created. 
+An extension could then define a trigger on that hook that performs additional tasks.
 
-A hook can have an arbitrary number of triggers defined on it, but you should ensure that a trigger does not take too long, as triggering a hook is a blocking operation that won't finish until all of the triggers have completed. As such, a long-running trigger operation might delay a request response for too long.
+A hook can have an arbitrary number of triggers defined on it, 
+but you should ensure that a trigger does not take too long, 
+as triggering a hook is a blocking operation that won't finish until all of the triggers have completed. 
+As such, a long-running trigger operation might delay a request response for too long.
 
-Sometimes hooks should function more like switches, where they can be "on" for a long time, until they're turned "off" again later. If new triggers are defined during that time, they should be called automatically. This is what the `define-hook-switch` facilitates. It produces two hooks. Once the first one has been triggered, any trigger that is defined on it later is called automatically until the second hook is triggered. This allows triggers on hooks like `server-start` to function properly even if the trigger is only defined after the server has already been started.
+Sometimes hooks should function more like switches, where they can be "on" for a long time, 
+until they're turned "off" again later. 
+If new triggers are defined during that time, they should be called automatically. 
+This is what the `define-hook-switch` facilitates. 
+It produces two hooks. Once the first one has been triggered, 
+any trigger that is defined on it later is called automatically until the second hook is triggered. 
+This allows triggers on hooks like `server-start` to function properly 
+even if the trigger is only defined after the server has already been started.
 
 See `list-hooks`, `define-hook`, `remove-hook`, `define-trigger`, `remove-trigger`, `trigger`, `define-hook-switch`
 
 ### 1.10 Interface
-In order to avoid becoming monolithic, and in order to allow extensible backends, Radiance includes an interface system. In the most general sense, an interface provides a promise as to how some functions, macros, variables, etc. should work, but does not actually implement them. The actual functionality that makes everything that the interface outlines work is pushed off to an implementation. This allows users to code against an interface and make use of its provided functionality, without tying themselves to any particular backend.
+In order to avoid becoming monolithic, and in order to allow extensible backends, 
+Radiance includes an interface system. 
+In the most general sense, an interface provides a promise as to how some functions, macros, variables, etc. should work, 
+but does not actually implement them. 
+The actual functionality that makes everything that the interface outlines work is pushed off to an implementation. 
+This allows users to code against an interface and make use of its provided functionality, 
+without tying themselves to any particular backend.
 
-For a concrete example, let's say there's an interface for a database. This is sensible, since there are many different kinds of databases, that all offer many differing ways of interaction, but still all also offer some very common operations: storing data, retrieving data, and modifying the data. Thus we create an interface that offers these common operations. It is then up to an implementation for a specific kind of database to make the actual operations work. As an application writer, you can then make use of the database interface, and with it, make your application automatically work with lots of different databases.
+For a concrete example, let's say there's an interface for a database. 
+This is sensible, since there are many different kinds of databases, 
+that all offer many differing ways of interaction, 
+but still all also offer some very common operations: storing data, retrieving data, and modifying the data. 
+Thus we create an interface that offers these common operations. 
+It is then up to an implementation for a specific kind of database to make the actual operations work. 
+As an application writer, you can then make use of the database interface, 
+and with it, make your application automatically work with lots of different databases.
 
-Aside from giving application writers an advantage, the decoupling that the interfaces provide also mean that a system administrator can write their own implementation with relative ease, should their particular requirements not be met by existing implementations. Thanks to the opaqueness of the interfaces, an implementation can both provide a bridge to something that runs in the lisp process, and something that is completely external. This leaves a lot of choice open for the administrator of a production system to allow them to pick exactly what they need.
+Aside from giving application writers an advantage, 
+the decoupling that the interfaces provide also mean that a system administrator can write their own implementation with relative ease, should their particular requirements not be met by existing implementations. 
+Thanks to the opaqueness of the interfaces, an implementation can both provide a bridge to something that runs in the lisp process, and something that is completely external. 
+This leaves a lot of choice open for the administrator of a production system to allow them to pick exactly what they need.
 
-In practise, interfaces are special kinds of modules, and thus special kinds of packages. As part of their definition, they include a series of definitions for other bindings like functions, variables, etc. Since it is a package, as a user you can use the interface's components just like you would use anything else in any other package. There is no difference. As an implementation writer, you then simply redefine all the definitions that the interface outlines.
+In practise, interfaces are special kinds of modules, 
+and thus special kinds of packages. 
+As part of their definition, they include a series of definitions for other bindings like functions, variables, etc. 
+Since it is a package, as a user you can use the interface's components just like you would use anything else in any other package. 
+There is no difference. 
+As an implementation writer, you then simply redefine all the definitions that the interface outlines.
 
-In order to actually load a module that makes use of an interface, an implementation for the interface has to be loaded beforehand. Otherwise, macros could not work properly. Thus, in order to allow depending on interfaces in your ASDF system definition without having to refer to a specific implementation, Radiance provides an ASDF extension. This extension makes it possible to add a list like `(:interface :foo)` to your `:depends-on` list. Radiance will then resolve the interface to a concrete implementation thereof when the module is loaded.
+In order to actually load a module that makes use of an interface, an implementation for the interface has to be loaded beforehand. 
+Otherwise, macros could not work properly. 
+Thus, in order to allow depending on interfaces in your ASDF system definition without having to refer to a specific implementation, Radiance provides an ASDF extension. 
+This extension makes it possible to add a list like `(:interface :foo)` to your `:depends-on` list. 
+Radiance will then resolve the interface to a concrete implementation thereof when the module is loaded.
 
-Radiance provides a bunch of standard interfaces. Each of those interfaces has at least one standard implementation provided by [radiance-contribs](https://shirakumo.org/projects/radiance-contribs). The interfaces are:
+Radiance provides a bunch of standard interfaces. 
+Each of those interfaces has at least one standard implementation provided by [radiance-contribs](https://shirakumo.org/projects/radiance-contribs). 
+The interfaces are:
 
 * `admin`  
   Provides an extensible administration site.
@@ -345,64 +385,119 @@ The interfaces are described in-depth below.
 See `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`
 
 ### 1.11 Environment
-In order to permit running multiple instances of Radiance with different setups on the same machine, Radiance provides what it calls an Environment system. The Environment is basically the set of configuration files for Radiance itself and all of the loaded modules. The Radiance configuration also includes the mapping of interface to chosen implementation and thus decides what should be picked if an interface is requested.
+In order to permit running multiple instances of Radiance with different setups on the same machine, 
+Radiance provides what it calls an Environment system. 
+The Environment is basically the set of configuration files for Radiance itself and all of the loaded modules. 
+The Radiance configuration also includes the mapping of interface to chosen implementation 
+and thus decides what should be picked if an interface is requested.
 
-The particular environment that is used is chosen at the latest when `startup` is called, and the earliest when a module is loaded. In the latter case, interactive restarts are provided to allow you to pick an environment. This is necessary, as otherwise Radiance won't be able to resolve the interface mapping.
+The particular environment that is used is chosen at the latest when `startup` is called, and the earliest when a module is loaded. 
+In the latter case, interactive restarts are provided to allow you to pick an environment. 
+This is necessary, as otherwise Radiance won't be able to resolve the interface mapping.
 
-As part of the environment system, Radiance provides you with a configuration system that you can --and probably should-- use for your application. It ensures that the settings are properly multiplexed for each environment, and that the settings are always persistent. It also uses a human-readable storage format, such that the files can be read and modified without requiring any special tools.
+As part of the environment system, Radiance provides you with a configuration system that you can 
+--and probably should-- use for your application. 
+It ensures that the settings are properly multiplexed for each environment, 
+and that the settings are always persistent. 
+It also uses a human-readable storage format, 
+such that the files can be read and modified without requiring any special tools.
 
-See [ubiquitous](https://shinmera.github.io/ubiquitous) for the actual handling and use-instructions of the configuration storage. Just note that instead of the `value` functions, Radiance provides `config` functions.
+See [ubiquitous](https://shinmera.github.io/ubiquitous) for the actual handling and use-instructions of the configuration storage. 
+Just note that instead of the `value` functions, Radiance provides `config` functions.
 
 See `environment-change`, `environment`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`
 
 ### 1.12 Instance Management
-Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.
+Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. 
+A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.
 
-While you can start a server manually by using the appropriate interface function, you should not expect applications to run properly if you do it that way. Many of them will expect certain hooks to be called in order to work properly. This is why you should always, unless you exactly know what you're doing, use `startup` and `shutdown` to manage a Radiance instance. The documentation of the two functions should explain exactly which hooks are triggered and in which order. An implementation may provide additional, unspecified definitions on symbols in the interface package, as long as said symbols are not exported.
+While you can start a server manually by using the appropriate interface function, 
+you should not expect applications to run properly if you do it that way. 
+Many of them will expect certain hooks to be called in order to work properly. 
+This is why you should always, 
+unless you exactly know what you're doing, use `startup` and `shutdown` to manage a Radiance instance. 
+The documentation of the two functions should explain exactly which hooks are triggered and in which order. 
+An implementation may provide additional, unspecified definitions on symbols in the interface package, as long as said symbols are not exported.
 
 See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`
 
 ## 2. Standard Interfaces
-These interfaces are distributed with Radiance and are part of the core package. Libraries may provide for additional interfaces, however. For implementations of standard interfaces, the following relaxations of interface definition constraints are allowed:
+These interfaces are distributed with Radiance and are part of the core package. 
+Libraries may provide for additional interfaces, however. 
+For implementations of standard interfaces, the following relaxations of interface definition constraints are allowed:
 
-The lambda-lists that contain `&key` arguments can be extended by further, implementation-dependant keyword arguments. Lambda-lists that contain `&optional` but no `&key` or `&rest` may be extended by further optional arguments. Lambda-lists that contain only required arguments may be extended by further optional or keyword arguments.
+The lambda-lists that contain `&key` arguments can be extended by further, implementation-dependant keyword arguments. 
+Lambda-lists that contain `&optional` but no `&key` or `&rest` may be extended by further optional arguments. 
+Lambda-lists that contain only required arguments may be extended by further optional or keyword arguments.
 
 ### 2.1 admin
-This interface provides for an administration page. It should be used for any kind of user-configurable settings, or system information display. Note that despite being called "administration", this is not intended solely for administrators of the system. The page should be usable for any user.
+This interface provides for an administration page. 
+It should be used for any kind of user-configurable settings, or system information display.
+Note that despite being called "administration", this is not intended solely for administrators of the system. 
+The page should be usable for any user.
 
-The administration page is required to be able to display a categorised menu, and a panel. The panels are provided by other modules and can be added through `admin:define-panel`. Panels that give access to sensitive operations should be appropriately restricted through the `:access` option and a non-default permission. See the user interface for an explanation on the permissions.
+The administration page is required to be able to display a categorised menu, and a panel. 
+The panels are provided by other modules and can be added through `admin:define-panel`. 
+Panels that give access to sensitive operations should be appropriately restricted through the `:access` option and a non-default permission. 
+See the user interface for an explanation on the permissions.
 
 In order to link to the administration page, or a specific panel on it, use the `page` resource type.
 
 See `admin:list-panels`, `admin:remove-panel`, `admin:define-panel`, `admin:panel`
 
 ### 2.2 auth
-The authentication interface is responsible for tying a user to a request. For this reason it must provide some manner by which a user can authenticate themselves against the system. How this is done exactly is up to the implementation. The implementation must however provide a page on which the authentication process is initiated. You can get a URI to it through the `page` resource and passing `"login"` as argument.
+The authentication interface is responsible for tying a user to a request. 
+For this reason it must provide some manner by which a user can authenticate themselves against the system. 
+How this is done exactly is up to the implementation. 
+The implementation must however provide a page on which the authentication process is initiated. 
+You can get a URI to it through the `page` resource and passing `"login"` as argument.
 
-You can test for the user currently tied to the request by `auth:current`. This may also return `NIL`, in which case the user should be interpreted as being `"anonymous"`. See the user interface for more information.
+You can test for the user currently tied to the request by `auth:current`. 
+This may also return `NIL`, in which case the user should be interpreted as being `"anonymous"`. 
+See the user interface for more information.
 
 See `auth:*login-timeout*`, `auth:page`, `auth:current`, `auth:associate`
 
 ### 2.3 ban
-This interface provides for IP-banning. It must prevent any client connecting through a banned IP from seeing the content of the actual page they're requesting. Bans can be lifted manually or automatically after a timeout. The implementation may or may not exert additional effort to track users across IPs.
+This interface provides for IP-banning. 
+It must prevent any client connecting through a banned IP from seeing the content of the actual page they're requesting. 
+Bans can be lifted manually or automatically after a timeout. 
+The implementation may or may not exert additional effort to track users across IPs.
 
 See `ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`
 
 ### 2.4 cache
-The cache interface provides for a generic caching mechanism with a customisable invalidation test. You can explicitly renew the cache by `cache:renew`. To define a cached block, simply use `cache:with-cache`, which will cause the cached value of the body to be returned if the test form evaluates to true.
+The cache interface provides for a generic caching mechanism with a customisable invalidation test. 
+You can explicitly renew the cache by `cache:renew`. 
+To define a cached block, simply use `cache:with-cache`, 
+which will cause the cached value of the body to be returned if the test form evaluates to true.
 
-The exact manner by which the cached value is stored is up to the implementation and `cache:get` or `cache:with-cache` may coerce the cached value to a string or byte array. The implementation may support any number of types of values to cache, but must in the very least support strings and byte arrays.
+The exact manner by which the cached value is stored is up to the implementation and `cache:get` or `cache:with-cache` may coerce the cached value to a string or byte array. 
+The implementation may support any number of types of values to cache, 
+but must in the very least support strings and byte arrays.
 
-The name for a cached value must be a symbol whose name and package name do not contain any of the following characters: `<>:"/\|?*.` The variant for a cached value must be an object that can be discriminated by its printed (as by `princ`) representation. The same character constraints as for the name apply.
+The name for a cached value must be a symbol whose name and package name do not contain any of the following characters: `<>:"/\|?*.` 
+The variant for a cached value must be an object that can be discriminated by its printed (as by `princ`) representation. 
+The same character constraints as for the name apply.
 
 See `cache:get`, `cache:renew`, `cache:with-cache`
 
 ### 2.5 database
-This interface provides you with a data persistence layer, usually called a database. This does not have to be a relational database, but may be one. In order to preserve implementation variance, only basic database operations are supported (no joins, triggers, etc). Data types are also restricted to integers, floats, and strings. Despite these constraints, the database interface is sufficiently useful for most applications.
+This interface provides you with a data persistence layer, usually called a database. 
+This does not have to be a relational database, 
+but may be one. 
+In order to preserve implementation variance, only basic database operations are supported (no joins, triggers, etc). 
+Data types are also restricted to integers, floats, and strings. 
+Despite these constraints, the database interface is sufficiently useful for most applications.
 
-Note that particular terminology is used to distance from traditional RDBMS terms: a schema is called a "structure". A table is called a "collection". A row is called a "record".
+Note that particular terminology is used to distance from traditional RDBMS terms: 
+a schema is called a "structure". 
+A table is called a "collection". 
+A row is called a "record".
 
-Performing database operations before the database is connected results in undefined behaviour. Thus, you should put your collection creation forms (`db:create`) within a trigger on `db:connected`. Radiance ensures that the database is connected while Radiance is running, so using the database interface in any page, api, or uri dispatcher definitions is completely fine.
+Performing database operations before the database is connected results in undefined behaviour. 
+Thus, you should put your collection creation forms (`db:create`) within a trigger on `db:connected`. 
+Radiance ensures that the database is connected while Radiance is running, so using the database interface in any page, api, or uri dispatcher definitions is completely fine.
 
 The functions for actually performing data storage are, intuitively enough, called `db:insert`, `db:remove`, `db:update`, `db:select`, and `db:iterate`. The behaviour thereof should be pretty much what you'd expect. See the respective docstrings for a close inspection. Also see the docstring of `db:create` for a lengthy explanation on how to create a collection and what kind of restrictions are imposed.
 
