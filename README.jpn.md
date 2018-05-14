@@ -24,14 +24,19 @@ Radianceをインストールするには次のようにしてください:
 Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。Radianceの重要なコンセプトや、Webアプリを書く方法を紹介しています。このチュートリアルでは、Radianceの大まかな使い方に親しみ、ある特定の機能が必要なとき、どこを調べるべきかの道しるべになるでしょう。チュートリアルの最後では、本番環境での、Radianceのインストールとデプロイ方法について説明します。
 
 ## 簡単な例
-The most basic thing you most likely want to do is serve some kind of HTML. So let's work towards that and gradually extend it. Before we can begin, we need to start up Radiance.
+
+The most basic thing you most likely want to do is serve some kind of HTML. 
+So let's work towards that and gradually extend it. 
+Before we can begin, we need to start up Radiance.
 
 ```common-lisp
 (ql:quickload :radiance)
 (radiance:startup)
 ```
 
-If this is your first time setting up Radiance, you'll get a note about it using the `r-welcome` module. It should also give you a link that you can open in your browser to see a little greeting page. For now we'll just want to put up our own little page alongside it.
+If this is your first time setting up Radiance, you'll get a note about it using the `r-welcome` module. 
+It should also give you a link that you can open in your browser to see a little greeting page. 
+For now we'll just want to put up our own little page alongside it.
 
 ```common-lisp
 (in-package :rad-user)
@@ -41,7 +46,10 @@ If this is your first time setting up Radiance, you'll get a note about it using
   "Hi!")
 ```
 
-Visiting [localhost:8080/example](http://localhost:8080/example) should now just show "Hi". Rather boring indeed. So let's spit out some HTML instead. For now, we'll use [cl-who](http://weitz.de/cl-who/) since it is very simple.
+Visiting [localhost:8080/example](http://localhost:8080/example) should now just show "Hi". 
+Rather boring indeed. 
+So let's spit out some HTML instead. 
+For now, we'll use [cl-who](http://weitz.de/cl-who/) since it is very simple.
 
 ```common-lisp
 (define-page example "/example" ()
@@ -53,15 +61,23 @@ Visiting [localhost:8080/example](http://localhost:8080/example) should now just
              (:main (:p "Trust me on this one.")))))))
 ```
 
-A recompile and refresh later and we have some font styling going on. Next we'll probably want to add a CSS file to it to style it properly. We could serve the CSS using another page as well, but that isn't the best way to go about things in the long term.
+A recompile and refresh later and we have some font styling going on. 
+Next we'll probably want to add a CSS file to it to style it properly. 
+We could serve the CSS using another page as well, 
+but that isn't the best way to go about things in the long term.
 
-Let's instead look at how to create a module, which will allow us to organise things in a more orderly fashion. You can create the files for a module manually, but for now we'll settle with an automatically generated skeleton that Radiance can provide you with.
+Let's instead look at how to create a module, which will allow us to organise things in a more orderly fashion. 
+You can create the files for a module manually, 
+but for now we'll settle with an automatically generated skeleton that Radiance can provide you with.
 
 ```common-lisp
 (create-module "example")
 ```
 
-It should return you a path on which the module resides. It should contain an ASDF system, a main lisp file, and two folders, `static` and `template`. Surprisingly enough, the `static` folder is where statically served files go, and `template` is for template documents, if you happen to use a template system.
+It should return you a path on which the module resides. 
+It should contain an ASDF system, a main lisp file, and two folders, `static` and `template`. 
+Surprisingly enough, the `static` folder is where statically served files go, 
+and `template` is for template documents, if you happen to use a template system.
 
 Let's open up the `example.lisp` and carry over our example page from it.
 
@@ -75,13 +91,17 @@ Let's open up the `example.lisp` and carry over our example page from it.
              (:main (:p "Trust me on this one.")))))))
 ```
 
-Pages are identified by a name symbol. Since we now have our own module, and thus our own package, the example symbol above won't be the same as the one we've used before. We'll just have to remove the page in the `rad-user` package to avoid the clash.
+Pages are identified by a name symbol. Since we now have our own module, and thus our own package, 
+the example symbol above won't be the same as the one we've used before. 
+We'll just have to remove the page in the `rad-user` package to avoid the clash.
 
 ```common-lisp
 (remove-page 'rad-user::example)
 ```
 
-Next let's create a simple CSS file to spruce things up a little. The file will be `example.css` placed in the `static` folder. Here's a sample CSS if you don't want to write your own.
+Next let's create a simple CSS file to spruce things up a little. 
+The file will be `example.css` placed in the `static` folder. 
+Here's a sample CSS if you don't want to write your own.
 
 ```CSS
 body{
@@ -104,7 +124,9 @@ main{
 }
 ```
 
-Next we need to modify our HTML to actually link to the style sheet. In order to get the address to the stylesheet we'll have to make use of Radiance's routing system. Don't worry though, it's not much of a hassle.
+Next we need to modify our HTML to actually link to the style sheet. 
+In order to get the address to the stylesheet we'll have to make use of Radiance's routing system. 
+Don't worry though, it's not much of a hassle.
 
 ```common-lisp
 (define-page example "/example" ()
@@ -118,15 +140,26 @@ Next we need to modify our HTML to actually link to the style sheet. In order to
              (:main (:p "Trust me on this one.")))))))
 ```
 
-Refresh the page, and voilà, now it's got some pizzazz to it too. You'll probably want an explanation for the whole `uri-to-url` business. Explaining it in full is handled by the sections following this one, but the gist of it is that it ensures that the link to the static file is properly resolved under any setup.
+Refresh the page, and voilà, now it's got some pizzazz to it too. 
+You'll probably want an explanation for the whole `uri-to-url` business. 
+Explaining it in full is handled by the sections following this one, 
+but the gist of it is that it ensures that the link to the static file is properly resolved under any setup.
 
 ## 1. Radiance Concepts & Parts
 ### 1.1 URI
-One of the most central concepts in Radiance is that of a URI. A URI is an object that consists of a list of domains, an optional port number, and a path (see `uri`). It is essentially a stripped down version of a general URI, and as such doesn't include a schema, query, or fragment part. Another important difference is that the `domains`  URIs are used at several points throughout the framework, both to capture locations and to handle dispatch matching.
+One of the most central concepts in Radiance is that of a URI. 
+A URI is an object that consists of a list of domains, an optional port number, and a path (see `uri`). 
+It is essentially a stripped down version of a general URI, 
+and as such doesn't include a schema, query, or fragment part. Another important difference is that the `domains`  URIs are used at several points throughout the framework, 
+both to capture locations and to handle dispatch matching.
 
-Note that URIs are mutable. This is important for performance, as URI modifications have to happen in several parts that lie on the critical path. However, in the usual case it is not expected that URIs are modified outside of a few select functions. Modifying a URI's parts in unexpected ways may lead to strange behaviour.
+Note that URIs are mutable. 
+This is important for performance, as URI modifications have to happen in several parts that lie on the critical path. However, in the usual case it is not expected that URIs are modified outside of a few select functions. 
+Modifying a URI's parts in unexpected ways may lead to strange behaviour.
 
-URIs have a unique string representation and can be serialised to string and parsed back into a full URI object again. URIs can also be dumped to FASL files as literals, so emitting them from macros is fine. The syntax for a URI is as follows:
+URIs have a unique string representation and can be serialised to string and parsed back into a full URI object again. 
+URIs can also be dumped to FASL files as literals, so emitting them from macros is fine. 
+The syntax for a URI is as follows:
 
 ```BNF
 URI     ::= DOMAINS? (':' PORT)? '/' PATH?
@@ -136,27 +169,54 @@ PORT    ::= ('0'..'9'){1, 5}
 PATH    ::= .*
 ```
 
-You can use `uri-to-url` to turn a URI into a concrete URL. Reversal, encoding, and proper formatting of all the parts is handled for you automatically there.
+You can use `uri-to-url` to turn a URI into a concrete URL. 
+Reversal, encoding, and proper formatting of all the parts is handled for you automatically there.
 
 See `uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `make-url`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`.
 
 ### 1.2 Request and Response
-In order to encapsulate the data that is sent to  and from, we have the idea of a Request (`request`) and Response (`response`) object. The Request object holds the URI that represents to which location the request goes, and all the data contained in the HTTP payload like post, get, header, and cookie variables. The Response object holds the return-code, headers, cookies, and the actual body data.
+In order to encapsulate the data that is sent to  and from, 
+we have the idea of a Request (`request`) and Response (`response`) object. 
+The Request object holds the URI that represents to which location the request goes, 
+and all the data contained in the HTTP payload like post, get, header, and cookie variables. 
+The Response object holds the return-code, headers, cookies, and the actual body data.
 
-During the processing of a request, these two objects must always be present and bound to the `*request*` and `*response*` variables. They encapsulate a lot of very vital information that is necessary to generate dynamic pages. Additionally, the Request contains an opaque `data` table in which you can store arbitrary data. This is useful when you need to exchange pieces of information between individual parts of the system that may be reached during the request execution.
+During the processing of a request, these two objects must always be present and bound to the `*request*` and `*response*` variables. 
+They encapsulate a lot of very vital information that is necessary to generate dynamic pages. 
+Additionally, the Request contains an opaque `data` table in which you can store arbitrary data. 
+This is useful when you need to exchange pieces of information between individual parts of the system that may be reached during the request execution.
 
-Requests don't necessarily have to come from the HTTP server. In order to test things you can also construct a request yourself and send it out programmatically. Whatever the case, the primary interface to dispatch a request is called `request`. This will construct a Request and Response object for you and appropriately handle the URI. If you want to do that yourself and *really* just send out a complete Request object, you can use `execute-request`.
+Requests don't necessarily have to come from the HTTP server. 
+In order to test things you can also construct a request yourself and send it out programmatically. 
+Whatever the case, the primary interface to dispatch a request is called `request`. 
+This will construct a Request and Response object for you and appropriately handle the URI. 
+If you want to do that yourself and *really* just send out a complete Request object, 
+you can use `execute-request`.
 
 For the actual handling of a request, see dispatchers, pages, and API endpoints.
 
 See `*request*`, `*response*`, `*default-external-format*`, `*default-content-type*  `, `request`, `uri`, `http-method`, `headers`, `post-data`, `get-data`, `cookies`, `user-agent`, `referer`, `domain`, `remote`, `data`, `issue-time`, `response`, `data`, `return-code`, `content-type`, `external-format`, `headers`, `cookies`, `cookie`, `name`, `value`, `domain`, `path`, `expires`, `http-only`, `secure`, `cookie-header`, `cookie`, `get-var`, `post-var`, `post/get`, `header`, `file`, `redirect`, `serve-file`, `request-run-time`, `*debugger*`, `handle-condition`, `render-error-page`, `execute-request`, `set-data`, `request`
 
 ### 1.3 Route
-Before a Request can be dispatched on, it goes through something called the routing system. Unlike in other frameworks, where 'routes' designate what handles a request, in Radiance a Route (`route`) is a form of URI translator. This part of the system is what's responsible for creating and upholding two "universes", an internal and an external one.
+Before a Request can be dispatched on, it goes through something called the routing system. 
+Unlike in other frameworks, where 'routes' designate what handles a request, 
+in Radiance a Route (`route`) is a form of URI translator. 
+This part of the system is what's responsible for creating and upholding two "universes", an internal and an external one.
 
-The internal universe is the one actual web applications live in. The external universe is the one the HTTP server and a user of the website lives in. This distinction is necessary in order to allow you to, one one hand, write web applications without having to worry about what a potential setup on a server might look like at some point. You don't have to worry about what kind of domain, port, path setup may be necessary to run your application. On the other hand, it allows you, as a webadmin, to customise and run the system to your exact desires without fear of breaking things.
+The internal universe is the one actual web applications live in. 
+The external universe is the one the HTTP server and a user of the website lives in. 
+This distinction is necessary in order to allow you to, 
+one one hand, write web applications without having to worry about what a potential setup on a server might look like at some point. 
+You don't have to worry about what kind of domain, port, path setup may be necessary to run your application. 
+On the other hand, it allows you, as a webadmin, 
+to customise and run the system to your exact desires without fear of breaking things.
 
-This all is facilitated by routes, of which there are two kinds: mapping, and reversal routes. Mapping routes are responsible for turning a URI from the external universe into one of the internal universe. Usually this involves cutting away the top-level domain and perhaps doing a mapping of subdomains. Reversal routes do the opposite-- they go from the internal universe to the external. This is necessary in order to make links in your served pages refer to resources that are actually accessible from the outside. Usually this involves reversing the subdomain mapping and adding the top-level domain again.
+This all is facilitated by routes, of which there are two kinds: 
+mapping, and reversal routes. Mapping routes are responsible for turning a URI from the external universe into one of the internal universe. 
+Usually this involves cutting away the top-level domain and perhaps doing a mapping of subdomains. 
+Reversal routes do the opposite-- they go from the internal universe to the external. 
+This is necessary in order to make links in your served pages refer to resources that are actually accessible from the outside. 
+Usually this involves reversing the subdomain mapping and adding the top-level domain again.
 
 Routes can perform arbitrary work. At the most basic level, they are merely functions that modify a URI in some fashion. This allows you to create a very flexible system that should be powerful enough to accommodate to all of your needs as an administrator. As an application writer, you just need to make sure to use `external-uri` or `uri-to-url` on all of the links that you put into your pages.
 
