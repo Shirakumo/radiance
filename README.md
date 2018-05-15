@@ -25,18 +25,14 @@ Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radi
 
 ## 簡単な例
 
-おそらく、あなたが一番したいことは、HTMLをサーブすることでしょう。では、その方向に進めながら、少しずつ拡張していきましょう。
-
-はじめる前に、Radianceの準備をしましょう。
+おそらく、あなたが一番したいことは、HTMLをサーブすることでしょう。では、その方向に進めながら、少しずつ拡張していきましょう。はじめる前に、Radianceの準備をしましょう。
 
 ```common-lisp
 (ql:quickload :radiance)
 (radiance:startup)
 ```
 
-If this is your first time setting up Radiance, you'll get a note about it using the `r-welcome` module. 
-It should also give you a link that you can open in your browser to see a little greeting page. 
-For now we'll just want to put up our own little page alongside it.
+Radianceを使うのが初めての場合は、`r-welcome`モジュールを使いながら進めましょう。`r-welcome`モジュールを使うと、ブラウザーで開くことができる最初のページへのリンクをつけることができます。まずは、小さなページをリンクに紐付けましょう。
 
 ```common-lisp
 (in-package :rad-user)
