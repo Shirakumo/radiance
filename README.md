@@ -25,9 +25,9 @@ Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radi
 
 ## 簡単な例
 
-The most basic thing you most likely want to do is serve some kind of HTML. 
-So let's work towards that and gradually extend it. 
-Before we can begin, we need to start up Radiance.
+おそらく、あなたが一番したいことは、HTMLをサーブすることでしょう。では、その方向に進めながら、少しずつ拡張していきましょう。
+
+はじめる前に、Radianceの準備をしましょう。
 
 ```common-lisp
 (ql:quickload :radiance)
