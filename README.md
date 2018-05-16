@@ -128,15 +128,10 @@ main{
 ```
 
 ページを再読み込みすると、スタイルが適用されているはずです。
-`uri-to-url`
-の
-You'll probably want an explanation for the whole `uri-to-url` business. 
-Refresh the page, and voilà, now it's got some pizzazz to it too. 
-Refresh the page, and voilà, now it's got some pizzazz to it too. 
-Explaining it in full is handled by the sections following this one, 
-but the gist of it is that it ensures that the link to the static file is properly resolved under any setup.
+`uri-to-url`が動作する原理について詳しく知りたくなると思いますが、それは後ほど説明します。
+要は、どのようにセットアップしても、静的なファイルへのリンクは、適切に解決されるということです。
 
-## 1. Radiance Concepts & Parts
+## 1. Radianceのコンセプトと部品
 ### 1.1 URI
 One of the most central concepts in Radiance is that of a URI. 
 A URI is an object that consists of a list of domains, an optional port number, and a path (see `uri`). 
@@ -165,7 +160,7 @@ Reversal, encoding, and proper formatting of all the parts is handled for you au
 
 See `uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `make-url`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`.
 
-### 1.2 Request and Response
+### 1.2 リクエストとレスポンス
 In order to encapsulate the data that is sent to  and from, 
 we have the idea of a Request (`request`) and Response (`response`) object. 
 The Request object holds the URI that represents to which location the request goes, 
@@ -188,7 +183,7 @@ For the actual handling of a request, see dispatchers, pages, and API endpoints.
 
 See `*request*`, `*response*`, `*default-external-format*`, `*default-content-type*  `, `request`, `uri`, `http-method`, `headers`, `post-data`, `get-data`, `cookies`, `user-agent`, `referer`, `domain`, `remote`, `data`, `issue-time`, `response`, `data`, `return-code`, `content-type`, `external-format`, `headers`, `cookies`, `cookie`, `name`, `value`, `domain`, `path`, `expires`, `http-only`, `secure`, `cookie-header`, `cookie`, `get-var`, `post-var`, `post/get`, `header`, `file`, `redirect`, `serve-file`, `request-run-time`, `*debugger*`, `handle-condition`, `render-error-page`, `execute-request`, `set-data`, `request`
 
-### 1.3 Route
+### 1.3 ルーティング
 Before a Request can be dispatched on, it goes through something called the routing system. 
 Unlike in other frameworks, where 'routes' designate what handles a request, 
 in Radiance a Route (`route`) is a form of URI translator. 
@@ -216,7 +211,7 @@ As an application writer, you just need to make sure to use `external-uri` or `u
 
 See `route`, `name`, `direction`, `priority`, `translator`, `route`, `remove-route`, `list-routes`, `define-route`, `define-matching-route`, `define-target-route`, `define-string-route`, `internal-uri`, `external-uri`
 
-### 1.4 URI Dispatcher
+### 1.4 URIディスパッチャー
 Finally we come to the part that actually generates content for a request. 
 URI dispatchers are a subclass of URI that also carry a name, a function, and a priority. 
 The live in a priority-sorted list, 
@@ -251,7 +246,7 @@ The page acts similarly to the static one by capturing the `/api/...` path on al
 
 See `page`, `remove-page`, `define-page`
 
-### 1.6 API Endpoint
+### 1.6 APIエンドポイント
 Radiance provides integrated support for REST API definition. 
 This is not just a tacked-on feature, but rather because most modern applications want to provide an API of some kind, 
 and because Radiance advises a certain way of writing your applications that necessarily involves API endpoints.
@@ -304,7 +299,7 @@ Similarly to pages, API endpoint definitions also accept extensible options that
 
 See `api`, `*default-api-format*`, `*serialize-fallback*`, `api-format`, `remove-api-format`, `list-api-formats`, `define-api-format`, `api-output`, `api-serialize`, `api-endpoint`, `remove-api-endpoint`, `list-api-endpoints`, `api-endpoint`, `name`, `handler`, `argslist`, `request-handler`, `call-api-request`, `call-api`, `define-api`
 
-### 1.7 Options
+### 1.7 オプション
 Options are a way of providing an extensible definition macro. 
 This is useful when a framework provides a common way of defining something, 
 but other parts may want to provide extensions to that in order to make common operations shorter. 
@@ -324,7 +319,7 @@ in order to allow setting up the environment in some manner.
 
 See `option`, `option-type`, `name`, `expander`, `option`, `remove-option`, `list-options`, `define-option`, `expand-options`
 
-### 1.8 Module
+### 1.8 モジュール
 The concept of a module is essential to Radiance. It serves as the representation of a "part" of the whole. On a technical level, a module is a package that has special metadata attached to it. 
 It is provided by the `modularize` system and is used to facilitate hooks and triggers, interfaces, and the tracking of a few other pieces of information.
 
@@ -347,7 +342,7 @@ For automated creation of the necessary system and module definitions for a new 
 
 See `virtual-module`, `virtual-module-name`, `define-module`, `define-module-extension`, `delete-module`, `module`, `module-p`, `module-storage`, `module-storage-remove`, `module-identifier`, `module-name`, `current-module`, `module-domain`, `module-permissions`, `module-dependencies`, `module-required-interfaces`, `module-required-systems`, `module-pages`, `module-api-endpoints`, `describe-module`, `find-modules-directory`, `*modules-directory*`, `create-module`
 
-### 1.9 Hooks
+### 1.9 フック
 One of the mechanisms that Radiance provides to allow integrating modules into each other is hooks. 
 Hooks allow you to run an arbitrary function in response to some kind of event. 
 For example, a forum software might set up a hook that is triggered whenever a new post is created. 
@@ -369,7 +364,7 @@ even if the trigger is only defined after the server has already been started.
 
 See `list-hooks`, `define-hook`, `remove-hook`, `define-trigger`, `remove-trigger`, `trigger`, `define-hook-switch`
 
-### 1.10 Interface
+### 1.10 インターフェイス
 In order to avoid becoming monolithic, and in order to allow extensible backends, 
 Radiance includes an interface system. 
 In the most general sense, an interface provides a promise as to how some functions, macros, variables, etc. should work, 
@@ -438,7 +433,7 @@ The interfaces are described in-depth below.
 
 See `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`
 
-### 1.11 Environment
+### 1.11 環境
 In order to permit running multiple instances of Radiance with different setups on the same machine, 
 Radiance provides what it calls an Environment system. 
 The Environment is basically the set of configuration files for Radiance itself and all of the loaded modules. 
@@ -461,7 +456,7 @@ Just note that instead of the `value` functions, Radiance provides `config` func
 
 See `environment-change`, `environment`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`
 
-### 1.12 Instance Management
+### 1.12 インスタンスの管理
 Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. 
 A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.
 
@@ -475,7 +470,7 @@ An implementation may provide additional, unspecified definitions on symbols in 
 
 See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`
 
-## 2. Standard Interfaces
+## 2. 標準のインターフェイス
 These interfaces are distributed with Radiance and are part of the core package. 
 Libraries may provide for additional interfaces, however. 
 For implementations of standard interfaces, the following relaxations of interface definition constraints are allowed:
@@ -484,7 +479,7 @@ The lambda-lists that contain `&key` arguments can be extended by further, imple
 Lambda-lists that contain `&optional` but no `&key` or `&rest` may be extended by further optional arguments. 
 Lambda-lists that contain only required arguments may be extended by further optional or keyword arguments.
 
-### 2.1 admin
+### 2.1 管理者権限(admin)
 This interface provides for an administration page. 
 It should be used for any kind of user-configurable settings, or system information display.
 Note that despite being called "administration", this is not intended solely for administrators of the system. 
@@ -512,7 +507,7 @@ See the user interface for more information.
 
 See `auth:*login-timeout*`, `auth:page`, `auth:current`, `auth:associate`
 
-### 2.3 ban
+### 2.3 禁止(ban)
 This interface provides for IP-banning. 
 It must prevent any client connecting through a banned IP from seeing the content of the actual page they're requesting. 
 Bans can be lifted manually or automatically after a timeout. 
@@ -520,7 +515,7 @@ The implementation may or may not exert additional effort to track users across 
 
 See `ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`
 
-### 2.4 cache
+### 2.4 キャッシュ
 The cache interface provides for a generic caching mechanism with a customisable invalidation test. 
 You can explicitly renew the cache by `cache:renew`. 
 To define a cached block, simply use `cache:with-cache`, 
@@ -536,7 +531,7 @@ The same character constraints as for the name apply.
 
 See `cache:get`, `cache:renew`, `cache:with-cache`
 
-### 2.5 database
+### 2.5 データベース
 This interface provides you with a data persistence layer, usually called a database. 
 This does not have to be a relational database, 
 but may be one. 
@@ -564,14 +559,14 @@ This interface provides primitive logging functions so that you can log messages
 
 See `logger:log`, `logger:trace`, `logger:debug`, `logger:info`, `logger:warn`, `logger:error`, `logger:severe`, `logger:fatal`
 
-### 2.7 Mail
+### 2.7 メール
 With the mail interface you get a very minimal facility to send emails. A variety of components might need email access, in order to reach users outside of the website itself. The configuration of the way the emails are sent --remote server, local sendmail, etc.-- is implementation dependant.
 
 The `mail:send` hook provided by the interface allows you to react to outgoing emails before they are sent.
 
 See `mail:send`
 
-### 2.8 profile
+### 2.8 プロファイル
 The profile interface provides extensions to the user interface that are commonly used in applications that want users to have some kind of presence. As part of this, the interface must provide for a page on which a user's "profile" can be displayed. The profile must show panels of some kind. The panels are provided by other modules and can be added by `profile:define-panel`.
 
 You can get a URI pointing to the profile page of a user through the `page` resource type.
@@ -587,28 +582,28 @@ Note that rate limitation is per-client, -user, or -session depending on the imp
 
 See `rate:define-limit`, `rate:left`, `rate:with-limitation`
 
-### 2.10 server
+### 2.10 サーバ
 This and the logger interface are the only interfaces Radiance requires an implementation for in order to start. It is responsible for accepting and replying to HTTP requests in some manner. The implementation must accept requests and relay them to the Radiance `request` function, and then relay the returned `response` back to the requester.
 
 Note that the actual arguments that specify the listener behaviour are implementation-dependant, as is configuration thereof. However, if applicable, the implementation must provide for a standard listener that is accessible on `localhost` on the port configured in `(mconfig :radiance :port)` and is started when `radiance:startup` is called.
 
 See `server:start`, `server:stop`, `server:listeners`, `server:started`, `server:stopped`
 
-### 2.11 session
+### 2.11 セッション
 The session interface provides for tracking a client over the course of multiple requests. It however cannot guarantee to track clients perfectly, as they may do several things in order to cloak or mask themselves or falsify information. Still, for most users, the session tracking should work fine enough.
 
 The session interface is usually used by other interfaces or lower-lying libraries in order to provide persistence of information such as user authentication.
 
 See `session:*default-timeout*`, `session:session`, `session:=`, `session:start`, `session:get`, `session:list`, `session:id`, `session:field`, `session:timeout`, `session:end`, `session:active-p`, `session:create`
 
-### 2.12 user
+### 2.12 ユーザ
 This interface provides for persistent user objects and a permissions system. It does not take care of authentication, identification, tracking, or anything of the sort. It merely provides a user object upon which to build and with which permissions can be managed.
 
 See `user:user` for a description of permissions and their behaviour.
 
 See `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`
 
-## Also See
+## 参考文献
 
 * [modularize](https://shinmera.github.io/modularize) For the primary package metadata system
 * [modularize-interfaces](https://shinmera.github.io/modularize-interfaces) For the interface and implementations extensions
