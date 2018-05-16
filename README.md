@@ -63,13 +63,11 @@ Radianceを使うのが初めての場合は、`r-welcome`モジュールを使�
 ```
 
 モジュールを自動生成すると、モジュールがあるパスを返します
-生成
-It should return you a path on which the module resides. 
-It should contain an ASDF system, a main lisp file, and two folders, `static` and `template`. 
-Surprisingly enough, the `static` folder is where statically served files go, 
-and `template` is for template documents, if you happen to use a template system.
+生成されるものは、ASDFのシステムファイル、mainのlispファイル、`static`と`template`という名前のフォルダ２つです。
 
-Let's open up the `example.lisp` and carry over our example page from it.
+`static`フォルダには静的にサーブされるファイルが入り、`template`にはテンプレートエンジン関連のファイルが入ります。
+
+`example.lisp`を開いて、先ほどの例で使ったコードを引き継いでページを定義しましょう。
 
 ```common-lisp
 (define-page example "/example" ()
@@ -81,7 +79,8 @@ Let's open up the `example.lisp` and carry over our example page from it.
              (:main (:p "Trust me on this one.")))))))
 ```
 
-Pages are identified by a name symbol. Since we now have our own module, and thus our own package, 
+Pages are identified by a name symbol. 
+Since we now have our own module, and thus our own package, 
 the example symbol above won't be the same as the one we've used before. 
 We'll just have to remove the page in the `rad-user` package to avoid the clash.
 
