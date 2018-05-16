@@ -127,9 +127,12 @@ main{
              (:main (:p "Trust me on this one.")))))))
 ```
 
-ページを再読み込みすると、適用されているはずで
-Refresh the page, and voilà, now it's got some pizzazz to it too. 
+ページを再読み込みすると、スタイルが適用されているはずです。
+`uri-to-url`
+の
 You'll probably want an explanation for the whole `uri-to-url` business. 
+Refresh the page, and voilà, now it's got some pizzazz to it too. 
+Refresh the page, and voilà, now it's got some pizzazz to it too. 
 Explaining it in full is handled by the sections following this one, 
 but the gist of it is that it ensures that the link to the static file is properly resolved under any setup.
 
