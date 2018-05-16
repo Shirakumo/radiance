@@ -78,19 +78,18 @@ Radianceを使うのが初めての場合は、`r-welcome`モジュールを使�
       (:body (:header (:h1 "Couldn't Be Simpler."))
              (:main (:p "Trust me on this one.")))))))
 ```
-
-Pages are identified by a name symbol. 
-Since we now have our own module, and thus our own package, 
-the example symbol above won't be the same as the one we've used before. 
-We'll just have to remove the page in the `rad-user` package to avoid the clash.
+ページは、シンボル名で特定されます。
+自分のモジュールを作ることでパッケージを持つことになります。
+先ほどの例のシンボルは、以前に一度も使われていないものです。
+名前の衝突を避けるために、`rad-user`パッケージでページを消す必要があるかもしれません。
 
 ```common-lisp
 (remove-page 'rad-user::example)
 ```
 
-Next let's create a simple CSS file to spruce things up a little. 
-The file will be `example.css` placed in the `static` folder. 
-Here's a sample CSS if you don't want to write your own.
+次に、簡単なCSSファイルを作りましょう。
+`static`フォルダに、`example.css`という名前で配置しましょう。
+自分で書くのが面倒であれば、次のCSSコードを使ってください。
 
 ```CSS
 body{
