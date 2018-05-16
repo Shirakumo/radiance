@@ -62,6 +62,8 @@ Radianceを使うのが初めての場合は、`r-welcome`モジュールを使�
 (create-module "example")
 ```
 
+モジュールを自動生成すると、モジュールがあるパスを返します
+生成
 It should return you a path on which the module resides. 
 It should contain an ASDF system, a main lisp file, and two folders, `static` and `template`. 
 Surprisingly enough, the `static` folder is where statically served files go, 
