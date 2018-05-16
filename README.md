@@ -32,7 +32,7 @@ Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radi
 (radiance:startup)
 ```
 
-Radianceを使うのが初めての場合は、`r-welcome`モジュールを使いながら進めましょう。`r-welcome`モジュールを使うと、ブラウザーで開くことができる最初のページへのリンクをつけることができます。まずは、小さなページをリンクに紐付けましょう。
+Radianceを使うのが初めての場合は、`r-welcome`モジュールを使いながら進めましょう。`r-welcome`モジュールを使うと、ブラウザーで開くことができる最初のページへのリンクをつけることができます。まずは、小さなページをリンクづけましょう。
 
 ```common-lisp
 (in-package :rad-user)
@@ -42,10 +42,10 @@ Radianceを使うのが初めての場合は、`r-welcome`モジュールを使�
   "Hi!")
 ```
 
-Visiting [localhost:8080/example](http://localhost:8080/example) should now just show "Hi". 
-Rather boring indeed. 
-So let's spit out some HTML instead. 
-For now, we'll use [cl-who](http://weitz.de/cl-who/) since it is very simple.
+[localhost:8080/example](http://localhost:8080/example)にアクセスすると、"Hi"と表示されるはずです。
+これでは、かなり退屈ですね。
+では、代わりにHTMLを出してみましょう。
+まずは、 [cl-who](http://weitz.de/cl-who/)を使ってみましょう。
 
 ```common-lisp
 (define-page example "/example" ()
@@ -56,15 +56,13 @@ For now, we'll use [cl-who](http://weitz.de/cl-who/) since it is very simple.
       (:body (:header (:h1 "Couldn't Be Simpler."))
              (:main (:p "Trust me on this one.")))))))
 ```
+後に、何度か書き直しながら、フォントの書式を変えたりしていきます。
+次に、CSSファイルを追加して、スタイルを正しく適用させたいですね。
+他のWebページと同じように、CSSをサーブする(serve)ことは可能ですが、長い目でみれば、それは最適の方法とはいえません。
 
-A recompile and refresh later and we have some font styling going on. 
-Next we'll probably want to add a CSS file to it to style it properly. 
-We could serve the CSS using another page as well, 
-but that isn't the best way to go about things in the long term.
-
-Let's instead look at how to create a module, which will allow us to organise things in a more orderly fashion. 
-You can create the files for a module manually, 
-but for now we'll settle with an automatically generated skeleton that Radiance can provide you with.
+そうする代わりに、モジュール(module)を作る方法を紹介します。
+そうすることで、より正しい方法でWebページを整理することができます。
+モジュール(module)のためのファイルは、手動で作ることができますが、ここではRadianceが提供するスケルトンを用いて、自動で生成することにしましょう。
 
 ```common-lisp
 (create-module "example")
