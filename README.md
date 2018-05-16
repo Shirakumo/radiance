@@ -111,8 +111,7 @@ main{
     border-radius: 5px;
 }
 ```
-
-Next we need to modify our HTML to actually link to the style sheet. 
+では、CSSファイルにリンクするように、HTMLを修正しましょう。
 In order to get the address to the stylesheet we'll have to make use of Radiance's routing system. 
 Don't worry though, it's not much of a hassle.
 
