@@ -112,8 +112,8 @@ main{
 }
 ```
 では、CSSファイルにリンクするように、HTMLを修正しましょう。
-In order to get the address to the stylesheet we'll have to make use of Radiance's routing system. 
-Don't worry though, it's not much of a hassle.
+アドレスがスタイルシートにたどり着くために、後に、Radianceのルーティングシステムを使う必要が出てきます。
+今はその必要はないので、あせらないでください。
 
 ```common-lisp
 (define-page example "/example" ()
@@ -127,6 +127,7 @@ Don't worry though, it's not much of a hassle.
              (:main (:p "Trust me on this one.")))))))
 ```
 
+ページを再読み込みすると、適用されているはずで
 Refresh the page, and voilà, now it's got some pizzazz to it too. 
 You'll probably want an explanation for the whole `uri-to-url` business. 
 Explaining it in full is handled by the sections following this one, 
