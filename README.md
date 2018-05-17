@@ -40,7 +40,7 @@
 
    ~~2.1 管理者権限(admin) 8~~
 
-   2.2 auth 6
+   ~~2.2 auth 6~~
 
    ~~2.3 禁止(ban) 3~~
 
@@ -76,7 +76,7 @@ Radianceと関連するモジュールやアプリケーションは、Quicklisp
 (ql:quickload :radiance)
 ```
 
-この後では、Quicklispの`quickload`　コマンドで、[Purplish](https://github.com/Shirakumo/purplish)等のRadianceモジュールを読み込んで利用できるようになります。
+この後では、Quicklispの`quickload`コマンドで、[Purplish](https://github.com/Shirakumo/purplish)等のRadianceモジュールを読み込んで利用できるようになります。
 
 ## 利用法
 
@@ -562,17 +562,18 @@ See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `
 `admin:list-panels`, `admin:remove-panel`, `admin:define-panel`, `admin:panel`をご覧ください。
 
 ### 2.2 auth
-The authentication interface is responsible for tying a user to a request. 
-For this reason it must provide some manner by which a user can authenticate themselves against the system. 
-How this is done exactly is up to the implementation. 
-The implementation must however provide a page on which the authentication process is initiated. 
-You can get a URI to it through the `page` resource and passing `"login"` as argument.
 
-You can test for the user currently tied to the request by `auth:current`. 
-This may also return `NIL`, in which case the user should be interpreted as being `"anonymous"`. 
-See the user interface for more information.
+`認証インターフェイス`は、ユーザをリクエストと結びつけます。
+そのために、ユーザがシステムに対して自分自身を認証させる方法を提供しなければいけません。
+どのように実現するかは、実装次第です。
+実装は、認証のプロセスが初期化するためのページを提供しなければいけません。
+`page`のソースを通してURIを認証プロセスに渡して、`"login"`を引数として渡します。
 
-See `auth:*login-timeout*`, `auth:page`, `auth:current`, `auth:associate`
+現在リクエストに結び付けられているユーザを`auth:current`コマンドで調べることができます。
+ユーザが`"anonymous"`と解釈される場合は、`NIL`を返します。
+詳しくはuserインターフェイスを参照ください。
+
+`auth:*login-timeout*`, `auth:page`, `auth:current`, `auth:associate`もご覧ください。
 
 ### 2.3 ban
 `banインターフェイス`を使うと、IP BANができます。
