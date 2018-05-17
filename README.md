@@ -246,21 +246,20 @@ URIをURLに変換するには、`uri-to-url`が使えます。`uri-to-url`を�
 `*request*`, `*response*`, `*default-external-format*`, `*default-content-type*  `, `request`, `uri`, `http-method`, `headers`, `post-data`, `get-data`, `cookies`, `user-agent`, `referer`, `domain`, `remote`, `data`, `issue-time`, `response`, `data`, `return-code`, `content-type`, `external-format`, `headers`, `cookies`, `cookie`, `name`, `value`, `domain`, `path`, `expires`, `http-only`, `secure`, `cookie-header`, `cookie`, `get-var`, `post-var`, `post/get`, `header`, `file`, `redirect`, `serve-file`, `request-run-time`, `*debugger*`, `handle-condition`, `render-error-page`, `execute-request`, `set-data`, `request`も参考にしてしてください。
 
 ### 1.3 ルーティング
-Before a Request can be dispatched on, it goes through something called the routing system. 
-Unlike in other frameworks, where 'routes' designate what handles a request, 
-in Radiance a Route (`route`) is a form of URI translator. 
-This part of the system is what's responsible for creating and upholding two "universes", an internal and an external one.
+リクエストがディスパッチされる前には、ルーティングシステムを通過します。
+他のフレームワークでは'routes'はどのハンドラがリクエストを処理するかを指定しますが、Radianceではその方式とは違います。
+Radianceにおいてルート(`route`)とは、URI変換の様態です。
+システムのこの部分は、２つの**世界**を作成して保持します。**内部の世界**と**外部の世界**です。
 
-The internal universe is the one actual web applications live in. 
-The external universe is the one the HTTP server and a user of the website lives in. 
-This distinction is necessary in order to allow you to, 
-one one hand, write web applications without having to worry about what a potential setup on a server might look like at some point. 
-You don't have to worry about what kind of domain, port, path setup may be necessary to run your application. 
-On the other hand, it allows you, as a webadmin, 
-to customise and run the system to your exact desires without fear of breaking things.
+**内部の世界**は、実際にWebアプリケーションが住む世界です。
+**外部の世界**は、HTTPサーバとWebサイトを利用するユーザが住む世界です。
+この区別は、あるサーバにおける潜在的な罠を避けてWebアプロケーションを書くために、必要不可欠です。
+あなたのアプリケーションを動作させるために、どのようなドメインやポート、パスが必要になるか、心配する必要がありません。
+一方で、Webの管理者として、アプリが壊れないように、システムをあなたの望み通りにカスタマイズして動作させる必要があります。
 
-This all is facilitated by routes, of which there are two kinds: 
-mapping, and reversal routes. Mapping routes are responsible for turning a URI from the external universe into one of the internal universe. 
+そのために、ルーティングが役に立ちます。ルーティングには、`Mapping`と`Reversal`の2種類があります:
+Mappingは、
+routes are responsible for turning a URI from the external universe into one of the internal universe. 
 Usually this involves cutting away the top-level domain and perhaps doing a mapping of subdomains. 
 Reversal routes do the opposite-- they go from the internal universe to the external. 
 This is necessary in order to make links in your served pages refer to resources that are actually accessible from the outside. 
