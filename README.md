@@ -579,20 +579,18 @@ BANは、タイムアウトの後、手動・自動いずれでも、離す(lift
 `ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`をご参照ください。
 
 ### 2.4 キャッシュ
-The cache interface provides for a generic caching mechanism with a customisable invalidation test. 
-You can explicitly renew the cache by `cache:renew`. 
-To define a cached block, simply use `cache:with-cache`, 
-which will cause the cached value of the body to be returned if the test form evaluates to true.
+キャッシュインターフェイスは、一般的なキャッシュの仕組みを提供します。カスタマイズ可能で無効化のテストをもっています。
+キャッシュを明示的に新しくするには、`cache:renew`をつかいます。
+`cache:with-cache`を使うと、キャッシュの部品を構築することができ、テストのformがtrueと評価されたときに、BODYのキャッシュ値が返されるようにできます。
 
-The exact manner by which the cached value is stored is up to the implementation and `cache:get` or `cache:with-cache` may coerce the cached value to a string or byte array. 
-The implementation may support any number of types of values to cache, 
-but must in the very least support strings and byte arrays.
+キャッシュ値が保存される方法は実装によります。 `cache:get`か`cache:with-cache`を使うと、キャッシュ値は文字列かバイト列に強制変換されます。
+実装では、キャッシュに格納できる　typeには制限がありませんが、少なくとも、文字列とバイト列はサポートします。
 
-The name for a cached value must be a symbol whose name and package name do not contain any of the following characters: `<>:"/\|?*.` 
-The variant for a cached value must be an object that can be discriminated by its printed (as by `princ`) representation. 
-The same character constraints as for the name apply.
+キャッシュ値の名前は、名前とパッケージ名が、次の文字を含まないシンボルでなければいけません:`<>:"/\|?*.` 
+キャッシュ値の変形は、`princ`によって表示される表現とは区別されるオブジェクトである必要があります。
+その際には、先ほどと同じ文字の制限が適用されます。
 
-See `cache:get`, `cache:renew`, `cache:with-cache`
+`cache:get`, `cache:renew`, `cache:with-cache`をご参照ください。
 
 ### 2.5 データベース
 This interface provides you with a data persistence layer, usually called a database. 
