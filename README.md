@@ -34,7 +34,7 @@
 
    1.12 インスタンスの管理 10
 
-2. 標準のインターフェイス 6
+2. ~~標準のインターフェイス 6~~
 
    2.1 管理者権限(admin) 8
 
@@ -533,13 +533,14 @@ An implementation may provide additional, unspecified definitions on symbols in 
 See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`
 
 ## 2. 標準のインターフェイス
-These interfaces are distributed with Radiance and are part of the core package. 
-Libraries may provide for additional interfaces, however. 
-For implementations of standard interfaces, the following relaxations of interface definition constraints are allowed:
 
-The lambda-lists that contain `&key` arguments can be extended by further, implementation-dependant keyword arguments. 
-Lambda-lists that contain `&optional` but no `&key` or `&rest` may be extended by further optional arguments. 
-Lambda-lists that contain only required arguments may be extended by further optional or keyword arguments.
+インターフェイスは、Radianceとcore packageと一緒に配布されています。
+ライブラリは、追加のインターフェイスを提供することも可能です。
+インターフェイスの実装ですが、インターフェイス定義では、次の制限の緩和が許可されています:
+
+`&key`引数を含むラムダリストは、実装依存のキーワード引数を使って拡張できます。
+`&optional`引数を含み、`&key`か`&rest`を含まないラムダリストは、オプショナル引数で拡張できます。
+必須の引数しか含まないラムダリストは、オプショナル引数かキーワード引数で拡張できます。
 
 ### 2.1 管理者権限(admin)
 This interface provides for an administration page. 
