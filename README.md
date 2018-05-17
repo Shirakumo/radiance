@@ -1,3 +1,5 @@
+![image](https://github.com/Shirakumo/radiance/blob/master/static/radiance.png?raw=true)
+
 ## Translation Progress
 
 * ~~Radianceについて 2~~ 
