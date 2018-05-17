@@ -36,7 +36,7 @@
 
 2. ~~標準のインターフェイス 6~~
 
-   2.1 管理者権限(admin) 8
+   ~~2.1 管理者権限(admin) 8~~
 
    2.2 auth 6
 
@@ -542,20 +542,22 @@ See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `
 `&optional`引数を含み、`&key`か`&rest`を含まないラムダリストは、オプショナル引数で拡張できます。
 必須の引数しか含まないラムダリストは、オプショナル引数かキーワード引数で拡張できます。
 
-### 2.1 管理者権限(admin)
-This interface provides for an administration page. 
-It should be used for any kind of user-configurable settings, or system information display.
-Note that despite being called "administration", this is not intended solely for administrators of the system. 
-The page should be usable for any user.
+### 2.1 管理(admin)
 
-The administration page is required to be able to display a categorised menu, and a panel. 
-The panels are provided by other modules and can be added through `admin:define-panel`. 
-Panels that give access to sensitive operations should be appropriately restricted through the `:access` option and a non-default permission. 
-See the user interface for an explanation on the permissions.
+このインターフェイスを使うと、管理者ページを作成できます。
+ユーザ構成の設定やシステム情報の表示のために使えます。
+"管理(administration)"という名前ですが、システムの管理者だけに限ったものではありません。
+どのユーザにも利用できることができます。
 
-In order to link to the administration page, or a specific panel on it, use the `page` resource type.
+管理者ページは、カテゴリー分けされたメニュやパネルを表示できなければいけません。
+パネル群は、他のモジュールによって提供されており、`admin:define-panel`で追加できます。
+秘密情報を含むようなパネルにアクセスするパネルは、`:access`オプションでアクセスを禁止させるようにしてください。
 
-See `admin:list-panels`, `admin:remove-panel`, `admin:define-panel`, `admin:panel`
+パーミッションについては、 userインターフェイスを参照してください。
+
+管理者ページや特定のパネルにリンクをはるには、`page`リソースを使ってください。
+
+`admin:list-panels`, `admin:remove-panel`, `admin:define-panel`, `admin:panel`をご覧ください。
 
 ### 2.2 auth
 The authentication interface is responsible for tying a user to a request. 
