@@ -16,7 +16,7 @@
 
    ~~1.2 リクエストとレスポンス 15~~
    
-   1.3 ルーティング 20
+   ~~1.3 ルーティング 20~~
    
    1.4 URIディスパッチャー 8
 
@@ -258,19 +258,17 @@ Radianceにおいてルート(`route`)とは、URI変換の様態です。
 一方で、Webの管理者として、アプリが壊れないように、システムをあなたの望み通りにカスタマイズして動作させる必要があります。
 
 そのために、ルーティングが役に立ちます。ルーティングには、`Mapping`と`Reversal`の2種類があります:
-Mappingは、
-routes are responsible for turning a URI from the external universe into one of the internal universe. 
-Usually this involves cutting away the top-level domain and perhaps doing a mapping of subdomains. 
-Reversal routes do the opposite-- they go from the internal universe to the external. 
-This is necessary in order to make links in your served pages refer to resources that are actually accessible from the outside. 
-Usually this involves reversing the subdomain mapping and adding the top-level domain again.
+Mappingは、外部の世界からくるURIを内部の世界のURIに変換します。
+普通は、トップレベルのドメインを切り取り、サブドメインにマッピングします。
+Reversalは逆のことをします。内部の世界から外部の世界へといきます。
+このことは、あなたが提供するWebページが、実際に外部からアクセス可能なリソースを参照できるようにするために、欠かせません。
 
-Routes can perform arbitrary work. 
-At the most basic level, they are merely functions that modify a URI in some fashion. 
-This allows you to create a very flexible system that should be powerful enough to accommodate to all of your needs as an administrator. 
-As an application writer, you just need to make sure to use `external-uri` or `uri-to-url` on all of the links that you put into your pages.
+ルーティングは、任意の処理を行うことができます。
+基本的なレベルでは、何らかの方法でURIを修正する関数です。
+この利用法では、管理者として、あなたの期待に十分応える強力で柔軟なシステムを構築することができます。
+アプリケーションの開発者として、`external-uri`か`uri-to-url`を、ページ内に置く全てのリンクに使うようにしてください。
 
-See `route`, `name`, `direction`, `priority`, `translator`, `route`, `remove-route`, `list-routes`, `define-route`, `define-matching-route`, `define-target-route`, `define-string-route`, `internal-uri`, `external-uri`
+`route`, `name`, `direction`, `priority`, `translator`, `route`, `remove-route`, `list-routes`, `define-route`, `define-matching-route`, `define-target-route`, `define-string-route`, `internal-uri`, `external-uri`も参考にしてください。
 
 ### 1.4 URIディスパッチャー
 Finally we come to the part that actually generates content for a request. 
