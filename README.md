@@ -46,7 +46,7 @@
 
    2.5 データベース 15
 
-   2.6 logger 3
+   ~~2.6 logger 3~~
 
    ~~2.7 メール 4~~
 
@@ -617,9 +617,11 @@ The database must ensure that once a data manipulation operation has completed, 
 See `database:condition`, `database:connection-failed`, `database:connection-already-open`, `database:collection-condition`, `database:invalid-collection`, `database:collection-already-exists`, `database:invalid-field`, `database:id`, `database:ensure-id`, `database:connect`, `database:disconnect`, `database:connected-p`, `database:collections`, `database:collection-exists-p`, `database:create`, `database:structure`, `database:empty`, `database:drop`, `database:iterate`, `database:select`, `database:count`, `database:insert`, `database:remove`, `database:update`, `database:with-transaction`, `database:query`, `database:connected`, `database:disconnected`
 
 ### 2.6 logger
-This interface provides primitive logging functions so that you can log messages about relevant happenings in the system. The actual configuration of what gets logged where and how is up to the implementation and the administrator of the system.
 
-See `logger:log`, `logger:trace`, `logger:debug`, `logger:info`, `logger:warn`, `logger:error`, `logger:severe`, `logger:fatal`
+ログの関数を提供します。システムの中で関連して起きていることについて、ログのメッセージを出すことができます。
+ログの出力内容と出力方法に関しては、実装とシステムの管理者次第です。
+
+`logger:log`, `logger:trace`, `logger:debug`, `logger:info`, `logger:warn`, `logger:error`, `logger:severe`, `logger:fatal`をご覧ください。
 
 ### 2.7 メール
 メールを送る仕組みを組み込むことができます。
