@@ -622,7 +622,7 @@ This interface provides primitive logging functions so that you can log messages
 See `logger:log`, `logger:trace`, `logger:debug`, `logger:info`, `logger:warn`, `logger:error`, `logger:severe`, `logger:fatal`
 
 ### 2.7 メール
-`mailインターフェイス`を使うと、メールを送る仕組みを組み込むことができます。
+メールを送る仕組みを組み込むことができます。
 様々なコンポーネントが、Webサイトの外からユーザとつながるために、メールのアクセスが必要になるかもしれません。
 リモートサーバ、ローカル環境でのメール送信等、メールの送信方法の設定は、処理系依存です。
 `mail:send`のフックを使うと、メールが送られる前に、メールに反応することができます。
@@ -665,13 +665,13 @@ The session interface is usually used by other interfaces or lower-lying librari
 See `session:*default-timeout*`, `session:session`, `session:=`, `session:start`, `session:get`, `session:list`, `session:id`, `session:field`, `session:timeout`, `session:end`, `session:active-p`, `session:create`
 
 ### 2.12 ユーザ
-This interface provides for persistent user objects and a permissions system. 
-It does not take care of authentication, identification, tracking, or anything of the sort. 
-It merely provides a user object upon which to build and with which permissions can be managed.
+ユーザオブジェクトを永続させ、パーミションの仕組みを組み込めます。
+ユーザ認証、ユーザの特定、トラッキング等は扱いません。
+このインターフェイスでは、ユーザオブジェクトを提供するのみであり、パーミション情報が管理されます。
 
-See `user:user` for a description of permissions and their behaviour.
+パーミションに関する詳細は、`user:user`を参照してください。
 
-See `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`
+`user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`もご覧ください。
 
 ## 参考文献
 
