@@ -196,19 +196,19 @@ main{
 
 ## 1. Radianceのコンセプトと部品
 ### 1.1 URI
-One of the most central concepts in Radiance is that of a URI. 
-A URI is an object that consists of a list of domains, an optional port number, and a path (see `uri`). 
-It is essentially a stripped down version of a general URI, 
-and as such doesn't include a schema, query, or fragment part. Another important difference is that the `domains`  URIs are used at several points throughout the framework, 
-both to capture locations and to handle dispatch matching.
 
-Note that URIs are mutable. 
-This is important for performance, as URI modifications have to happen in several parts that lie on the critical path. However, in the usual case it is not expected that URIs are modified outside of a few select functions. 
-Modifying a URI's parts in unexpected ways may lead to strange behaviour.
+Radianceの中心的な概念は`URI`です。
+URIはオブジェクトであり、ドメイン、ポート番号(オプション)、パスを含むリストで構成されます。
 
-URIs have a unique string representation and can be serialised to string and parsed back into a full URI object again. 
-URIs can also be dumped to FASL files as literals, so emitting them from macros is fine. 
-The syntax for a URI is as follows:
+RadianceのURIは、一般的なURIから要素を抽出したものなので、スキーマやクエリ、フラグメント等は含みません。
+また、重要な違いとしては、`domains`のURIは、フレームワーク全体の複数のポイントで使われることであり、
+`location`を捕捉するときや、`dispatch matching`を処理するためにも使われます。
+
+URIは、変更可能であり。URIの修正は、[クリティカルパス](https://www.weblio.jp/content/critical+path)がある場所で行われるはずなので、パフォーマンス上重要です。予想されない方法でURIを修正した場合、予期しない動作につながる可能性があります。
+
+URIは、単一の文字列で表現されて、文字列にシリアライズされて、完全なURIのオブジェクトにパースして戻すことも可能です。
+URIは、FASLファイルにリテラルとして書き出されるので、マクロから吐き出しても大丈夫です。
+URIのシンタックスは、次の通りです。
 
 ```BNF
 URI     ::= DOMAINS? (':' PORT)? '/' PATH?
@@ -218,10 +218,9 @@ PORT    ::= ('0'..'9'){1, 5}
 PATH    ::= .*
 ```
 
-You can use `uri-to-url` to turn a URI into a concrete URL. 
-Reversal, encoding, and proper formatting of all the parts is handled for you automatically there.
+URIをURLに変換するには、`uri-to-url`が使えます。`uri-to-url`を使うと、反転(reversal)、エンコーディング(encoding)、体裁直しは自動で行われます。
 
-See `uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `make-url`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`.
+`uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `make-url`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`を参考にしてください。
 
 ### 1.2 リクエストとレスポンス
 In order to encapsulate the data that is sent to  and from, 
