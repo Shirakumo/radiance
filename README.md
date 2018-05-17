@@ -40,7 +40,7 @@
 
    2.2 auth 6
 
-   2.3 禁止(ban) 3
+   ~~2.3 禁止(ban) 3~~
 
    2.4 キャッシュ 8
 
@@ -569,13 +569,13 @@ See the user interface for more information.
 
 See `auth:*login-timeout*`, `auth:page`, `auth:current`, `auth:associate`
 
-### 2.3 禁止(ban)
-This interface provides for IP-banning. 
-It must prevent any client connecting through a banned IP from seeing the content of the actual page they're requesting. 
-Bans can be lifted manually or automatically after a timeout. 
-The implementation may or may not exert additional effort to track users across IPs.
+### 2.3 ban
+`banインターフェイス`を使うと、IP BANができます。
+IP BANされたクライアントのIPアドレスからは、リクエストするページに対してアクセス出来なくなります。
+BANは、タイムアウトの後、手動・自動いずれでも、離す(lift)することができます。
+実装としては、ユーザのIPを監視するために追加で労力を割くするようなことは想定していません。
 
-See `ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`
+`ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`をご参照ください。
 
 ### 2.4 キャッシュ
 The cache interface provides for a generic caching mechanism with a customisable invalidation test. 
