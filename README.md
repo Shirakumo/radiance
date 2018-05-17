@@ -52,7 +52,7 @@
 
    2.8 プロファイル 7
 
-   2.9 rate 5
+   ~~2.9 rate 5~~
 
    2.10 サーバ 7
 
@@ -642,14 +642,15 @@ The interface also provides access to an "avatar image" to visually identify the
 See `profile:page`, `profile:avatar`, `profile:name`, `profile:fields`, `profile:add-field`, `profile:remove-field`, `profile:list-panels`, `profile:remove-panel`, `profile:define-panel`, `profile:panel`
 
 ### 2.9 rate
-This interface provides for a rate limitation mechanism to prevent spamming or overly eager access to potentially sensitive or costly resources. 
-This happens in two steps. First, the behaviour of the rate limitation is defined for a particular resource by `rate:define-limit`. 
-Then the resource is protected through the `rate:with-limitation` macro. 
-If the access to the block by a certain user is too frequent, the block is not called, and the code in the limit definition is evaluated instead.
 
-Note that rate limitation is per-client, -user, or -session depending on the implementation, but certainly not global.
+[Rate limitation](https://en.wikipedia.org/wiki/Rate_limiting)の仕組みを提供します。秘密情報やコストが高いリソースへの負荷の高いアクセスを防ぐことができます。
+２つの段階があります。第1段階は、`rate:define-limit`により、特定のリソースに対して、Rate limitationの動作を定義します。第1段階は、リソースが`rate:with-limitation`により保護されます。
 
-See `rate:define-limit`, `rate:left`, `rate:with-limitation`
+もし、特定のユーザからのblockへのアクセスが頻繁すぎる場合は、blockは呼び出されません。制限の定義があるコードが、代わりに実行されます。
+
+`Rate limitation`は、クライアント、ユーザ、セッションごとですが、グローバルではないことに注意してください。
+
+`rate:define-limit`, `rate:left`, `rate:with-limitation`をご参照ください。
 
 ### 2.10 サーバ
 This and the logger interface are the only interfaces Radiance requires an implementation for in order to start. It is responsible for accepting and replying to HTTP requests in some manner. The implementation must accept requests and relay them to the Radiance `request` function, and then relay the returned `response` back to the requester.
