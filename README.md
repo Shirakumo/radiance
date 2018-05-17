@@ -56,9 +56,9 @@
 
    2.10 サーバ 7
 
-   2.11 セッション 5
+   ~~2.11 セッション 5~~
 
-   2.12 ユーザ 4
+   ~~2.12 ユーザ 4~~
   
 
 ## Radianceについて
@@ -657,12 +657,12 @@ Note that the actual arguments that specify the listener behaviour are implement
 See `server:start`, `server:stop`, `server:listeners`, `server:started`, `server:stopped`
 
 ### 2.11 セッション
-The session interface provides for tracking a client over the course of multiple requests. 
-It however cannot guarantee to track clients perfectly, as they may do several things in order to cloak or mask themselves or falsify information. Still, for most users, the session tracking should work fine enough.
+あるクライアントが行う複数のリクエストを追跡します。
+クライアントによっては情報を隠蔽したり偽装している場合があるので、完全にはクライアントを追跡できるとはいえません。
+しかし、多くのユーザに対しては、うまく動作するはずです。
+セッションインターフェイスは、他のインターフェイスや低レイヤーのライブラリの中で使われます。ユーザ認証にような一貫性を保つために使われます。
 
-The session interface is usually used by other interfaces or lower-lying libraries in order to provide persistence of information such as user authentication.
-
-See `session:*default-timeout*`, `session:session`, `session:=`, `session:start`, `session:get`, `session:list`, `session:id`, `session:field`, `session:timeout`, `session:end`, `session:active-p`, `session:create`
+`session:*default-timeout*`, `session:session`, `session:=`, `session:start`, `session:get`, `session:list`, `session:id`, `session:field`, `session:timeout`, `session:end`, `session:active-p`, `session:create`をご参照ください。
 
 ### 2.12 ユーザ
 ユーザオブジェクトを永続させ、パーミションの仕組みを組み込めます。
