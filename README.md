@@ -14,7 +14,7 @@
 
    ~~1.1 URI 10~~
 
-   1.2 リクエストとレスポンス 15
+   ~~1.2 リクエストとレスポンス 15~~
    
    1.3 ルーティング 20
    
@@ -225,27 +225,25 @@ URIをURLに変換するには、`uri-to-url`が使えます。`uri-to-url`を�
 `uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `make-url`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`を参考にしてください。
 
 ### 1.2 リクエストとレスポンス
-In order to encapsulate the data that is sent to  and from, 
-we have the idea of a Request (`request`) and Response (`response`) object. 
-The Request object holds the URI that represents to which location the request goes, 
-and all the data contained in the HTTP payload like post, get, header, and cookie variables. 
-The Response object holds the return-code, headers, cookies, and the actual body data.
 
-During the processing of a request, these two objects must always be present and bound to the `*request*` and `*response*` variables. 
-They encapsulate a lot of very vital information that is necessary to generate dynamic pages. 
-Additionally, the Request contains an opaque `data` table in which you can store arbitrary data. 
-This is useful when you need to exchange pieces of information between individual parts of the system that may be reached during the request execution.
+行き来するデータを格納しておくために、`request`オブジェクトと`response`オブジェクトを作ることにしました。
+`request`オブジェクトは、リクエストがどこに向かうのかを合わすURI、また、POST、GET、ヘッダ、クッキーなどのHTTP通信のペイロードデータを全て保持します。
+`response`オブジェクトは、リターンコード、ヘッダー、クッキー、実際のBODYデータを含みます。
 
-Requests don't necessarily have to come from the HTTP server. 
-In order to test things you can also construct a request yourself and send it out programmatically. 
-Whatever the case, the primary interface to dispatch a request is called `request`. 
-This will construct a Request and Response object for you and appropriately handle the URI. 
-If you want to do that yourself and *really* just send out a complete Request object, 
-you can use `execute-request`.
+リクエストが行われている間、これらの2つのオブジェクトが必ず存在し、`*request*`と`*response*`に束縛されなければいけません。
+それらは、動的なページを生成するために必要な重要情報を多く格納しています。
+さらに、リクエストは`data`テーブルを含んでおり、任意のデータを保持することができます。
+これは、システム内の各々の部品の間で、リクエストの実行中に取得されるような情報をやりとりをするときに役立ちます。
 
-For the actual handling of a request, see dispatchers, pages, and API endpoints.
+リクエストは、必ずしもHTTPサーバからくる必要はありません。
+動作をテストするためには、プログラムからリクエストを送ることも可能です。
+どのような場合であっても、リクエストをディスパッチするインターフェイスは、`request`と呼ばれます。
+この仕組みは、リクエストとレスポンスを構築して、URIを適切に処理します。
+もし自分自身でリクエストオブジェクトを送りたいのであれば、`execute-request`を使うこともできます。
 
-See `*request*`, `*response*`, `*default-external-format*`, `*default-content-type*  `, `request`, `uri`, `http-method`, `headers`, `post-data`, `get-data`, `cookies`, `user-agent`, `referer`, `domain`, `remote`, `data`, `issue-time`, `response`, `data`, `return-code`, `content-type`, `external-format`, `headers`, `cookies`, `cookie`, `name`, `value`, `domain`, `path`, `expires`, `http-only`, `secure`, `cookie-header`, `cookie`, `get-var`, `post-var`, `post/get`, `header`, `file`, `redirect`, `serve-file`, `request-run-time`, `*debugger*`, `handle-condition`, `render-error-page`, `execute-request`, `set-data`, `request`
+実際にリクエストを処理する方法に関する詳しい情報は、dispatcher、pages、API endpointをご参照ください。
+
+`*request*`, `*response*`, `*default-external-format*`, `*default-content-type*  `, `request`, `uri`, `http-method`, `headers`, `post-data`, `get-data`, `cookies`, `user-agent`, `referer`, `domain`, `remote`, `data`, `issue-time`, `response`, `data`, `return-code`, `content-type`, `external-format`, `headers`, `cookies`, `cookie`, `name`, `value`, `domain`, `path`, `expires`, `http-only`, `secure`, `cookie-header`, `cookie`, `get-var`, `post-var`, `post/get`, `header`, `file`, `redirect`, `serve-file`, `request-run-time`, `*debugger*`, `handle-condition`, `render-error-page`, `execute-request`, `set-data`, `request`も参考にしてしてください。
 
 ### 1.3 ルーティング
 Before a Request can be dispatched on, it goes through something called the routing system. 
