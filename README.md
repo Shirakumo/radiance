@@ -291,7 +291,8 @@ APIエンドポイントは、`/api/`パスに存在し、エンドポイント�
 `call-api`を用いると、プログラムからAPIエンドポイントを呼び出すこともできます。`call-api-request`を使うと、Requestをシュミレーションすることができます。
 どちらもURIディスパッチの仕組みを通る必要はありません。
 
-Similarly to pages, API endpoint definitions also accept extensible options that make definition simpler. See the following section for an explanation of options.
+ページと似ていますが、APIエンドポイントの定義は、定義を簡単にするために、拡張オプションも受け付けます。
+オプションについては、次で説明します。
 
 `api`, `*default-api-format*`, `*serialize-fallback*`, `api-format`, `remove-api-format`, `list-api-formats`, `define-api-format`, `api-output`, `api-serialize`, `api-endpoint`, `remove-api-endpoint`, `list-api-endpoints`, `api-endpoint`, `name`, `handler`, `argslist`, `request-handler`, `call-api-request`, `call-api`, `define-api`をご参照ください。
 
