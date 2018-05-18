@@ -24,11 +24,11 @@
 
    1.6 APIエンドポイント 35
 
-   1.7 オプション 12
+   ~~1.7 オプション 12~~
 
-   1.8 モジュール 10
+   ~~1.8 モジュール 10~~
 
-   1.9 フック 10
+   ~~1.9 フック 10~~
 
    1.10 インターフェイス 30
 
@@ -363,67 +363,63 @@ Similarly to pages, API endpoint definitions also accept extensible options that
 `api`, `*default-api-format*`, `*serialize-fallback*`, `api-format`, `remove-api-format`, `list-api-formats`, `define-api-format`, `api-output`, `api-serialize`, `api-endpoint`, `remove-api-endpoint`, `list-api-endpoints`, `api-endpoint`, `name`, `handler`, `argslist`, `request-handler`, `call-api-request`, `call-api`, `define-api`をご参照ください。
 
 ### 1.7 オプション
-Options are a way of providing an extensible definition macro. 
-This is useful when a framework provides a common way of defining something, 
-but other parts may want to provide extensions to that in order to make common operations shorter. 
-For example, a common task is to restrict a page or API endpoint to people who have the required access credentials.
 
-In order to facilitate this, Radiance provides a rather generic options mechanism. 
-Options are divided up by an option type that designates to which definition macro the option belongs. 
-Radiance provides the `api` and `page` option types out of the box.
+オプションは、拡張可能な定義のマクロを提供します。
+これは、フレームワークが何か定義する際に、共通のオペレーションをより短しようと拡張しようとするときに役に立ちます。
+例えば、アクセス権があるユーザに対して、ページかAPIエンドポイントを制限するような共通するタスクがあるとします。
 
-Each option has a keyword for a name and an expander function that must accept a number of arguments, 
-depending on the option type. 
-Always provided as arguments are the name of the thing being defined, 
-the list of body forms of the definition, and a final, optional, value that was provided to the option in the options list, if it was mentioned at all. 
-This expansion function is then responsible for transforming the body forms of the definition macro in some way. 
-It can also emit a second form that is placed outside of the definition itself, 
-in order to allow setting up the environment in some manner.
+このような実装を簡単にするために、Radianceは一般的なオプションに仕組みを提供します。
+オプションは、定義のマクロが属するオプションの型によって分けられます。
+Radianceは、`api`と`page`のオプションを提供します。
+
+それぞれのオプションは、オプションの型に応じて、名前と多くの引数を受け入れる関数のために、キーワードをもっています。
+定義名、ボディー部、最終にオプションに渡される値を含んだリストが、いつも引数として与えられます。
+
+この拡張用(expansion)の関数は、定義マクロのボディーの式を変換します。
+環境を設定を許可するために、定義自体では含まれない式を吐き出すこともできます。
 
 `option`, `option-type`, `name`, `expander`, `option`, `remove-option`, `list-options`, `define-option`, `expand-options`をご参照ください。
 
 ### 1.8 モジュール
-The concept of a module is essential to Radiance. It serves as the representation of a "part" of the whole. On a technical level, a module is a package that has special metadata attached to it. 
-It is provided by the `modularize` system and is used to facilitate hooks and triggers, interfaces, and the tracking of a few other pieces of information.
+モジュールの概念は、Radianceにおいて必要不可欠です。
+全体をこうせいする**部品**として働きます。
+技術レベルでいうと、モジュールは、特別なメタデータが与えられたパッケージです。
+モジュールは、`modularize`しステmyによって提供され、フック、トリガー、インターフェイス等を使いやすくして、他の情報をトラッキングするために使われます。
 
-What this means for you is that instead of a standard `defpackage` you should use a `define-module` form to define your primary package. 
-The syntax is the same as `defpackage`, but includes some extra options like `:domain`, 
-which allows you to specify the primary domain on which this module should operate (if any).
+`defpackage`を使う代わりに、`define-module`を使うようにしてください。
+シンタックスは`defpackage`ですが、`:domain`のような特別なオプションを含んでいるので、
+モジュールが機能するプライマリ・ドメインを特定することができます。
 
-The module system also allows the tying of an ASDF system to a module. 
-If that is done, then the ASDF system becomes a "virtual module". 
-In order to do this, you must add three options to your system definition:
+モジュールのシステムでは、ASDFのシステムをモジュールに記すこともできます。
+もし記せば、そのASDFシステムは**仮想のモジュール**になります。
+このようにするためには、システムの定義に3つのオプションを追加する必要があります:
 
 ```commonlisp
 :defsystem-depends-on (:radiance)
 :class "radiance:virtual-module"
 :module-name "MY-MODULE"
 ```
-
-This allows Radiance to identify and associate ASDF system information to your module. 
-For automated creation of the necessary system and module definitions for a new module, see `create-module`.
+こうすることで、Radianceは、ASDFのシステム情報を特定して、あなたのモジュールに関連づけることができます。
+新しいモジュールのために、必須のシステムとモジュールの定義を自動で行うには、`create-module`をみてください。
 
 `virtual-module`, `virtual-module-name`, `define-module`, `define-module-extension`, `delete-module`, `module`, `module-p`, `module-storage`, `module-storage-remove`, `module-identifier`, `module-name`, `current-module`, `module-domain`, `module-permissions`, `module-dependencies`, `module-required-interfaces`, `module-required-systems`, `module-pages`, `module-api-endpoints`, `describe-module`, `find-modules-directory`, `*modules-directory*`, `create-module`をご参照ください。
 
 ### 1.9 フック
-One of the mechanisms that Radiance provides to allow integrating modules into each other is hooks. 
-Hooks allow you to run an arbitrary function in response to some kind of event. 
-For example, a forum software might set up a hook that is triggered whenever a new post is created. 
-An extension could then define a trigger on that hook that performs additional tasks.
 
-A hook can have an arbitrary number of triggers defined on it, 
-but you should ensure that a trigger does not take too long, 
-as triggering a hook is a blocking operation that won't finish until all of the triggers have completed. 
-As such, a long-running trigger operation might delay a request response for too long.
+Radianceには、互いのモジュールを互いに連携させるために、フック(hook)の仕組みがあります。
+フックを使うと、ある種のイベントに反応して、任意の関数を実行することができます。
+例えば、意見交換をするようなソフトウェアでは、新しい投稿が作成されるごとにトリガーされるフックを設定することがでいます。
+拡張では、追加のタスクを実行するためにトリガーをフックに対して定義できます。
 
-Sometimes hooks should function more like switches, where they can be "on" for a long time, 
-until they're turned "off" again later. 
-If new triggers are defined during that time, they should be called automatically. 
-This is what the `define-hook-switch` facilitates. 
-It produces two hooks. Once the first one has been triggered, 
-any trigger that is defined on it later is called automatically until the second hook is triggered. 
-This allows triggers on hooks like `server-start` to function properly 
-even if the trigger is only defined after the server has already been started.
+フックは、任意の数のトリガーをもつことができますが、トリガーは長すぎないようにしてください。
+フックをトリガーすることは、全てのトリガーが終了するまでブロックされる動作だからです。
+そのようなわけで、長い間続くようなトリガーの実行は、リクエストへのレスポンスを遅らせてしまう可能性があります。 long.
+
+フックは、長い間は**on**であり、後に**off**になるスイッチにような関数であるべきです。
+もし新しいトリガーが実行中に定義された場合は、自動で呼び出されるべきです。
+これは、`define-hook-switch`が容易にすることです。
+`define-hook-switch`は2つのフックを作ります。1つ目がトリガーされると、それに定義されているトリガーは、後に2つ目のフックがトリガーされたときに、自動で呼び出されます。
+このおかげで、仮にトリガーがサーバの起動後に定義されたとしても、`server-start`が適切に動作します。
 
 `list-hooks`, `define-hook`, `remove-hook`, `define-trigger`, `remove-trigger`, `trigger`, `define-hook-switch`をご参照ください。
 
