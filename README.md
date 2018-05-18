@@ -290,6 +290,8 @@ Radianceは、4つの型のデータ（`stream`、`pathname`、`string`、`(arra
 
 ### 1.5 Page
 
+Pageとは、実際にコンテンツを提供する関数を定義するために用いるものです。
+
 Pages are what you will likely use to define your actual content serving functions. 
 However, a page is just a uri-dispatcher with some extra functionality in the definition macro that makes things easier on you. Most notably are the extensible options, for which you can find an explanation below.
 
