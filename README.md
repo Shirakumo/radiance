@@ -44,7 +44,7 @@
 
    ~~2.3 禁止(ban) 3~~
 
-   2.4 キャッシュ 8
+   ~~2.4 キャッシュ 8~~
 
    2.5 データベース 15
 
@@ -593,27 +593,27 @@ BANは、タイムアウトの後、手動・自動いずれでも、離す(lift
 `cache:get`, `cache:renew`, `cache:with-cache`をご参照ください。
 
 ### 2.5 データベース
-This interface provides you with a data persistence layer, usually called a database. 
-This does not have to be a relational database, 
-but may be one. 
-In order to preserve implementation variance, only basic database operations are supported (no joins, triggers, etc). 
-Data types are also restricted to integers, floats, and strings. 
-Despite these constraints, the database interface is sufficiently useful for most applications.
+このインターフェイスは、データを持続させるためのレイヤーを提供します。通常は、データベースと呼ばれるレイヤーです。
+リレーショナル型のデータベースである必要はありませんが、そうであってもいいです。
+実装の変数を保持するために、基本的なデータベースの機能しかサポートされません。(joinsやtriggers等はありません)
+データ型も、整数、float、文字列に限定されます。
+これらの制限にも関わらず、多くのアプリケーションにおいて、データベースインターフェイスはとても役に立ちます。
 
-Note that particular terminology is used to distance from traditional RDBMS terms: 
-a schema is called a "structure". 
-A table is called a "collection". 
-A row is called a "record".
+伝統的なRDMBの用語と区別するために、特別な用語が使われます:
+`schema`は"structure"、`table`は"collection"、`row`は"record"とします。
 
-Performing database operations before the database is connected results in undefined behaviour. 
-Thus, you should put your collection creation forms (`db:create`) within a trigger on `db:connected`. 
-Radiance ensures that the database is connected while Radiance is running, so using the database interface in any page, api, or uri dispatcher definitions is completely fine.
+データベースに接続する前に、データベース関連の命令を実行すると、未定義の動作を招きます。
+Radianceでは、Radianceが動作している間はデータベースが接続されることを保障しているので、どのページ、どのAPI、どのURIディスパッチャーの定義において、データベースインターフェイスを問題なく使えます。
 
-The functions for actually performing data storage are, intuitively enough, called `db:insert`, `db:remove`, `db:update`, `db:select`, and `db:iterate`. The behaviour thereof should be pretty much what you'd expect. See the respective docstrings for a close inspection. Also see the docstring of `db:create` for a lengthy explanation on how to create a collection and what kind of restrictions are imposed.
+実際にデータ保存を行うための関数は、`db:insert`、`db:remove`、`db:update`、`db:select`、`db:iterate`です。
+それらは、あなたが期待するように動作するはずです。
 
-The database must ensure that once a data manipulation operation has completed, the changes caused by it will be persisted across a restart of Radiance, the lisp image, or the machine, even in the case of an unforeseen crash.
+詳しくは、それぞれの関数に書かれているコメントを読んでください。
+コレクションの作り方、どのような制限があるかを知りたい方は、`db:create`のコメントも参考にしてください。
 
-See `database:condition`, `database:connection-failed`, `database:connection-already-open`, `database:collection-condition`, `database:invalid-collection`, `database:collection-already-exists`, `database:invalid-field`, `database:id`, `database:ensure-id`, `database:connect`, `database:disconnect`, `database:connected-p`, `database:collections`, `database:collection-exists-p`, `database:create`, `database:structure`, `database:empty`, `database:drop`, `database:iterate`, `database:select`, `database:count`, `database:insert`, `database:remove`, `database:update`, `database:with-transaction`, `database:query`, `database:connected`, `database:disconnected`
+データベースは、データ操作が完了すれば、Radianceを再起動したり、Lispイメージ、マシンがクラッシュしたとしても、、データの変更は存続されなければいけません。
+
+`database:condition`, `database:connection-failed`, `database:connection-already-open`, `database:collection-condition`, `database:invalid-collection`, `database:collection-already-exists`, `database:invalid-field`, `database:id`, `database:ensure-id`, `database:connect`, `database:disconnect`, `database:connected-p`, `database:collections`, `database:collection-exists-p`, `database:create`, `database:structure`, `database:empty`, `database:drop`, `database:iterate`, `database:select`, `database:count`, `database:insert`, `database:remove`, `database:update`, `database:with-transaction`, `database:query`, `database:connected`, `database:disconnected`を参照してください。
 
 ### 2.6 logger
 
