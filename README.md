@@ -372,27 +372,26 @@ Radianceはインターフェイスの仕組みを含んでいます。
 アプリケーションの作者として、データベースインターフェイスを活用することができます。
 このインターフェイスを使えば、様々なデータベースに対して自動的にうまく動作するようにできます。
 
-Aside from giving application writers an advantage, 
-the decoupling that the interfaces provide also mean that a system administrator can write their own implementation with relative ease, should their particular requirements not be met by existing implementations. 
-Thanks to the opaqueness of the interfaces, an implementation can both provide a bridge to something that runs in the lisp process, and something that is completely external. 
-This leaves a lot of choice open for the administrator of a production system to allow them to pick exactly what they need.
 
-In practise, interfaces are special kinds of modules, 
-and thus special kinds of packages. 
-As part of their definition, they include a series of definitions for other bindings like functions, variables, etc. 
-Since it is a package, as a user you can use the interface's components just like you would use anything else in any other package. 
-There is no difference. 
-As an implementation writer, you then simply redefine all the definitions that the interface outlines.
+これは、アプリケーション作者に有利なだけでなく、インターフェイスで分離することにより、システム管理者は、比較的容易に、実装に存在しない特殊な機能を自分で実装することができることです。
+インターフェイスが不透明であるおかげで、実装はLispのプロセスで動くものと、外部で動くプロセスとの橋渡しをすることができます。
+これは、Productionシステムの管理者が必要な情報を選び出すために、開かれた選択肢を多く与えます。
 
-In order to actually load a module that makes use of an interface, an implementation for the interface has to be loaded beforehand. 
-Otherwise, macros could not work properly. 
-Thus, in order to allow depending on interfaces in your ASDF system definition without having to refer to a specific implementation, Radiance provides an ASDF extension. 
-This extension makes it possible to add a list like `(:interface :foo)` to your `:depends-on` list. 
-Radiance will then resolve the interface to a concrete implementation thereof when the module is loaded.
+実際、インターフェイスは特別な種類のモジュールであり、特別な種類のパッケージです。
+定義の一部として、関数や変数などの束縛のために、一連の定義を含みます。
+インターフェイスはパッケージなので、あなたがコンポーテントで使えるユーザは、他のパケージにあるものも何でも使えます。
+違いはありません。実装の作者として、あなたはインターフェイスが示す定義を再定義することができます。
 
-Radiance provides a bunch of standard interfaces. 
+実際にインターフェイスを利用するモジュールを読み込むためには、インターフェイスの実装は、事前に読み込まれる必要があります。
+そうでなければ、マクロは適切に動作しません。
+あなたのASDFシステムの定義において、特定の実装を参照する必要なく、インターフェイスに依存することを許可するためには、Radianceは拡張されたASDFを提供します。
+この拡張を使うと、`(:interface :foo)`のようなリストを`:depends-on`に追加することができます。
+モジュールがロードされたときに、Radianceはインターフェイスを具体的な処理に分解します。
+
+Radianceは、標準のインターフェイスを提供します。それぞれのインターフェイスは、[radiance-contribs](https://shirakumo.org/projects/radiance-contribs)によって提供される標準実装を1つ以上もちます。
 Each of those interfaces has at least one standard implementation provided by [radiance-contribs](https://shirakumo.org/projects/radiance-contribs). 
-The interfaces are:
+
+インターフェイスは次の通りです:
 
 * `admin`  
   拡張可能な管理者ページを提供します。
