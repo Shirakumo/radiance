@@ -32,9 +32,9 @@
 
    1.10 インターフェイス 30
 
-   1.11 環境 13
+   ~~1.11 環境 13~~
 
-   1.12 インスタンスの管理 10
+   ~~1.12 インスタンスの管理 10~~
 
 2. ~~標準のインターフェイス 6~~
 
@@ -493,39 +493,34 @@ The interfaces are described in-depth below.
 `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`をご参照ください。
 
 ### 1.11 環境
-In order to permit running multiple instances of Radiance with different setups on the same machine, 
-Radiance provides what it calls an Environment system. 
-The Environment is basically the set of configuration files for Radiance itself and all of the loaded modules. 
-The Radiance configuration also includes the mapping of interface to chosen implementation 
-and thus decides what should be picked if an interface is requested.
 
-The particular environment that is used is chosen at the latest when `startup` is called, and the earliest when a module is loaded. 
-In the latter case, interactive restarts are provided to allow you to pick an environment. 
-This is necessary, as otherwise Radiance won't be able to resolve the interface mapping.
+動作中の複数のRadianceインスタンスが同じマシンんで異なる設定できるように、Radianceでは環境(Environment)という仕組みを用意しています。
+環境とは、基本的には、Radianceとロードされるモジュールのための設定ファイルの一式です。
+Radianceの設定は、インターフェイスを選択される実装にマッピングすることで、もしインターフェイスが求められたときに選択されるように決定します。
 
-As part of the environment system, Radiance provides you with a configuration system that you can 
---and probably should-- use for your application. 
-It ensures that the settings are properly multiplexed for each environment, 
-and that the settings are always persistent. 
-It also uses a human-readable storage format, 
-such that the files can be read and modified without requiring any special tools.
+`startup`が呼び出された時、どれだけ遅くとも、特定の環境が選択されます。早ければ、モジュールがロードされたときに選択されます。
+後者の場合は、環境を選ぶために、インタラクティブな再起動が可能です。
+これは必須の機能ですが、理由は、そうでなければ、Radianceがインターフェイスのマッピングを解決できないからです。
 
-See [ubiquitous](https://shinmera.github.io/ubiquitous) for the actual handling and use-instructions of the configuration storage. 
-Just note that instead of the `value` functions, Radiance provides `config` functions.
+環境のシステムの一部として、Radianceは、あなたのアプリケーションで使える(おそらく、使うべき)設定システムを提供します。
+設定システムを使うと、それぞれの環境ごとに、適切に設定することができます。
+その設定は、いつでも持続性があるうえ、可読性にも優れたフォーマットで保存されるので、特別なツールで読み込んだり、修正したりする必要はありません。
+
+実際に設定手順でどのように保存処理がされているかを知りたい方は、[ubiquitous](https://shinmera.github.io/ubiquitous)を参考にしてください。 
+`value`関数の代わりに、Radianceでは`config`関数を使えます。
 
 `environment-change`, `environment`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`をご参照ください。
 
 ### 1.12 インスタンスの管理
-Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. 
-A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.
+最後に、Radianceは、起動からシャットダウンまでのシーケンスを提供しています。このおかげで、ソフトは適切に起動して利用可能になり、その後、綺麗に片付けて終了することを確かにします。
 
-While you can start a server manually by using the appropriate interface function, 
-you should not expect applications to run properly if you do it that way. 
-Many of them will expect certain hooks to be called in order to work properly. 
-This is why you should always, 
-unless you exactly know what you're doing, use `startup` and `shutdown` to manage a Radiance instance. 
-The documentation of the two functions should explain exactly which hooks are triggered and in which order. 
-An implementation may provide additional, unspecified definitions on symbols in the interface package, as long as said symbols are not exported.
+そのシーケンスの大部分は、正しい順番で、適切な回数、特定のフックが呼び出されることによって実現されいます。
+
+インターフェイスの関数を適切に使うことで、サーバを手動で起動することは可能ですが、その方法で、アプリケーションが正しく動作すると想定するのはやめてください。
+多くは、特定のフックが適切な順番で呼び出されることを要求しています。
+このような理由で、`startup`と`shutdown`でRadianceインスタンスを管理する必要があります。
+`startup`と`shutdown`のドキュメントには、どのフックが、どの順番で呼び出されているかが説明されています。
+実装では、シンボルがexportされていない限り、追加で特定されない定義をインターフェオスのパッケージのシンボルに加えることができます。
 
 `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`をご参照ください。
 
