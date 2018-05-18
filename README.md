@@ -52,11 +52,11 @@
 
    ~~2.7 メール 4~~
 
-   2.8 プロファイル 7
+   ~~2.8 プロファイル 7~~
 
    ~~2.9 rate 5~~
 
-   2.10 サーバ 7
+   ~~2.10 サーバ 7~~
 
    ~~2.11 セッション 5~~
 
@@ -630,15 +630,19 @@ Radianceでは、Radianceが動作している間はデータベースが接続�
 
 `mail:send`をご覧ください。
 
-### 2.8 プロファイル
-The profile interface provides extensions to the user interface that are commonly used in applications that want users to have some kind of presence. 
-As part of this, the interface must provide for a page on which a user's "profile" can be displayed. The profile must show panels of some kind. The panels are provided by other modules and can be added by `profile:define-panel`.
+### 2.8 プロフィール
+プロフィールインターフェイスは、userにある種のpresenceをもたせたいアプリケーションにおいて、共通で使用されるuserインターフェイスを拡張できるようにします。
+そのインターフェイスは、機能の一部として、ユーザの**プロフィール**が表示されるページを提供する必要があります。
+その**プロフィール**は、数種類のパネルを表示しなければいけません。
+パネルは、他のモジュールによって提供されており、`profile:define-panel`で追加できます。
 
-You can get a URI pointing to the profile page of a user through the `page` resource type.
+`page`のリソースの型を通して、URIをプロファイルのページに移動することができます。
 
-The interface also provides access to an "avatar image" to visually identify the user (`profile:avatar`), a customisable name that the user can change (`profile:name`), and field types to what kind of data is contained in a user's field and whether it should be public information or not (`profile:fields` `profile:add-field` `profile:remove-field`).
+そのインターフェイスは、視覚的にユーザを特定させるために`profile:avatar`で**アバター画像**にアクセスさせることもできます。
+また、`profile:name`を使うと、ユーザがユーザ名をカスタマイズできます。
+さらに、`profile:fields`、`profile:add-field`、`profile:remove-field`を使うと、どのようなデータをユーザの属性に含むか、それを公(public)に表示させるかどうかを指定できます。
 
-See `profile:page`, `profile:avatar`, `profile:name`, `profile:fields`, `profile:add-field`, `profile:remove-field`, `profile:list-panels`, `profile:remove-panel`, `profile:define-panel`, `profile:panel`
+`profile:page`, `profile:avatar`, `profile:name`, `profile:fields`, `profile:add-field`, `profile:remove-field`, `profile:list-panels`, `profile:remove-panel`, `profile:define-panel`, `profile:panel`をご参照ください。
 
 ### 2.9 rate
 
@@ -652,11 +656,16 @@ See `profile:page`, `profile:avatar`, `profile:name`, `profile:fields`, `profile
 `rate:define-limit`, `rate:left`, `rate:with-limitation`をご参照ください。
 
 ### 2.10 サーバ
-This and the logger interface are the only interfaces Radiance requires an implementation for in order to start. It is responsible for accepting and replying to HTTP requests in some manner. The implementation must accept requests and relay them to the Radiance `request` function, and then relay the returned `response` back to the requester.
 
-Note that the actual arguments that specify the listener behaviour are implementation-dependant, as is configuration thereof. However, if applicable, the implementation must provide for a standard listener that is accessible on `localhost` on the port configured in `(mconfig :radiance :port)` and is started when `radiance:startup` is called.
+serverインターフェイスとloggerインターフェイスは、唯一、Radianceが起動時に順番通りに読み込まれるものです。
+HTTPリクエストを受け入れて、応答する責任があります。
+実装では、リクエストを受け入れて、Radianceの`request`関数に渡す必要があります。
+その後、`response`はリクエスト主に戻されます。
 
-See `server:start`, `server:stop`, `server:listeners`, `server:started`, `server:stopped`
+リスナーの動作を特定する引数は実装によることに注意してください。
+しかし、実装は、`(mconfig :radiance :port)`で設定された`localhost`とポートからでアクセスできる標準のリスナーを提供して、`radiance:startup`で起動できるようにする必要があります。
+
+`server:start`, `server:stop`, `server:listeners`, `server:started`, `server:stopped`をご参照ください。
 
 ### 2.11 セッション
 あるクライアントが行う複数のリクエストを追跡します。
