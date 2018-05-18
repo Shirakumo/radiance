@@ -18,9 +18,9 @@
    
    ~~1.3 ルーティング 20~~
    
-   1.4 URIディスパッチャー 8
+   ~~1.4 URIディスパッチャー 8~~
 
-   1.5 Page 12
+   ~~1.5 Page 12~~
 
    1.6 APIエンドポイント 35
 
@@ -289,6 +289,7 @@ Radianceは、4つの型のデータ（`stream`、`pathname`、`string`、`(arra
 `uri-dispatcher`, `name`, `dispatch-function`, `priority`, `uri-dispatcher`, `remove-uri-dispatcher`, `list-uri-dispatchers`, `uri-dispatcher>`, `define-uri-dispatcher`, `dispatch`もご参照ください。
 
 ### 1.5 Page
+
 Pages are what you will likely use to define your actual content serving functions. 
 However, a page is just a uri-dispatcher with some extra functionality in the definition macro that makes things easier on you. Most notably are the extensible options, for which you can find an explanation below.
 
