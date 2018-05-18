@@ -364,14 +364,13 @@ Radianceはインターフェイスの仕組みを含んでいます。
 インターフェイスが動作する全てを作っている実際の機能性は、実装の外側にあります。
 このことにより、ユーザはインターフェイスに対してコードを書くことができ、特定のバックエンドに結びつけることなく、与えられた機能を利用することができます。
 
-For a concrete example, let's say there's an interface for a database. 
-This is sensible, since there are many different kinds of databases, 
-that all offer many differing ways of interaction, 
-but still all also offer some very common operations: storing data, retrieving data, and modifying the data. 
-Thus we create an interface that offers these common operations. 
-It is then up to an implementation for a specific kind of database to make the actual operations work. 
-As an application writer, you can then make use of the database interface, 
-and with it, make your application automatically work with lots of different databases.
+具体例として、データベースのためのインターフェイスをみていきましょう。
+データベースには多くの種類があり、全ては違う方法でやりとりをしますが、データの保存、検索、修正等、どれにも共通する操作があるので、このインターフェイスは実用的です。
+
+では、共通する操作を提供するインターフェイスを作ります。
+これは、特定の種類のデータベースが実際に動かすためにすることは、実装次第です。
+アプリケーションの作者として、データベースインターフェイスを活用することができます。
+このインターフェイスを使えば、様々なデータベースに対して自動的にうまく動作するようにできます。
 
 Aside from giving application writers an advantage, 
 the decoupling that the interfaces provide also mean that a system administrator can write their own implementation with relative ease, should their particular requirements not be met by existing implementations. 
