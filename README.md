@@ -247,17 +247,16 @@ Production段階のサーバでも、自分のサイトにもファイルを提�
 `page`, `remove-page`, `define-page`をご参照ください。
 
 ### 1.6 APIエンドポイント
-Radiance provides integrated support for REST API definition. 
-This is not just a tacked-on feature, but rather because most modern applications want to provide an API of some kind, 
-and because Radiance advises a certain way of writing your applications that necessarily involves API endpoints.
 
-Conceptually, API endpoints are functions that are callable through a browser request. 
-Their response is then serialised to a format that is readable by the requester, 
-whatever that may be. 
-Important to remember however is that API endpoints should be usable by both users and programs. 
-Radiance encourages this because usually any kind of action that can be performed programmatically 
-through an API will also have to be performed by the user in some way. 
-In order to avoid duplication, the two can be conflated.
+Radianceは、REST APIとの連携もサポートしています。
+これは取ってつけたような機能ではありません。
+多くの現代のアプリケーションは、そのようなAPIを提供することが多く、Radianceは、APIエンドポイントを含むアプリケーションを書く方法を提案します。
+
+コンセプトとしては、APIエンドポイントとは、ブラウザーのリクエストに応じて呼び出される関数です。
+そのレスポンスは、リクエスト主が読める形式にシリアライズされます。
+重要な点は、APIエンドポイントは、ユーザからも、プログラムからも利用可能であるべきということです。
+APIを通してプログラムから実行されるアクションは全て、ユーザによって実行されるものであるので、Radianceでは、両方から利用可能にするよう推奨しています。
+重複を避けるために、これら2つは、1つとして扱われます。
 
 As such, usually any kind of data modification action should be provided through an API endpoint that reacts slightly differently depending on whether a user or an application requests it. 
 In the case of a user, it should usually redirect back to an appropriate page, 
