@@ -262,37 +262,34 @@ APIを通してプログラムから実行されるアクションは全て、�
 ユーザがリクエストを行う場合gは、適切なページにリダイレクトを行います。
 プログラムからリクエストが行われた場合は、読み込めるフォーマットで、データのペイロードが提供されます。
 
-The first part of all of this is the API format system, 
-which is responsible for serialising data to some specified format. 
-By default only an S-expression based format is supplied, 
-but a contrib to get JSON output can easily be loaded.
+全てのパートのうち、APIフォーマットのシステムですが、データを特別なフォーマットにシリアライズすることを担当します。
+デフォルトでは、S式を基本とするフォーマットが提供されていますが、JSON形式の出力も簡単にロードできます。
 
-The second part is the specification of the `browser` POST/GET parameter. 
-If that parameter contains the exact string `"true"`, 
-then the API request is treated as coming from a user, 
-and thus a redirect rather than a data payload should be outputted.
+次に、`browser`のPOST/GETパラメータの仕様をみましょう。
+そのパラメータが`"true"`という文字列を含む場合、APIリクエストはユーザからであると扱われて、データのペイロードはされずにリダイレクトされます。
 
-Your application should make use of those things in order to provide a properly integrated api. 
-Now, an actual endpoint definition is composed of a name, a raw function, a lambda-list describing the arguments of the function, and a request parsing function. 
-Typically for your arguments, only required and optional arguments make sense. 
-After all, an HTTP request only has "keyword arguments" that it can provide, and those can either be present or missing.
+あなたのアプロケーションは、統一されたAPIを提供するために、これらをうまく使う必要があります。
+今、実際のエンドポイントの定義は、名前、関数、引数を記述するラムダリスト、リクエストのパーズ関数で構成されます。
+引数の典型としては、必須の引数かオプショナル引数が理にかなっています。
+結局、HTTPリクエストは、**キーワード引数**しかもつことができません。**キーワード引数**は、あってもなくてもいいです。
 
-The name of an API endpoint also serves as the identifier that tells you where you can reach it. 
-API endpoints live on the `/api/` path, followed by the name of the endpoint. 
-As such, you are responsible for prefixing your endpoints with the name of your module or application in order to avoid accidentally tripping over other endpoints. 
-This is unlike in uri dispatchers, because API endpoints have to match exactly and don't allow any ambiguity or processing of the path. 
-Thus every endpoint must have a unique path, which can also immediately serve as the name.
+APIエンドポイントの名前は、どこにリーチできるかを示す識別名として機能します。
+APIエンドポイントは、`/api/`パスに存在し、エンドポイントの名前もそれに従います。
+エンドポイントを修正する際には、あなたのモジュールやアプリケーションが、他のエンドポイントをうっかり踏み外さないように気をつけなければいけません。
+これはURIディスパッチのときとは違いますが、理由は、APIエンドポイントは、曖昧さやパスのプロセスを許可しないからです。
+なので、全てのエンドポイントは、唯一のパスをもなければいけません。唯一のパスは、直接、名前としてサーブします。
 
-The raw function is the function that the API provides an interface for. 
-It is responsible for performing the requested action and returning the appropriate data as described above. 
-For returning formatted API data, see `api-output`. 
-For redirecting in the case of a browser request, see `redirect`.
+生の(raw)関数は、APIがインターフェイスを提供する関数です。
+生の関数は、リクエストされたアクションを行い、適切なデータを上で述べた通りに返す役割を果たします。
+フォーマットされたAPIのデータを返すためには、`api-output`を使います。
+ブラウザリクエストからリクエストを受けてリダイレクトをするには、`redirect`を使います。
 
-Finally, the request parsing function is responsible for taking a Request object, extracting the arguments the function needs from it, and finally calling that function with the appropriate arguments-- if possible. 
-The parsing function may signal an `api-argument-missing` error if a required argument is missing. 
-Superfluous arguments should be ignored.
+最後に、リクエストのパーズ関数は、リクエストオブジェクトを受け取り、関数が必要な実引数を抽出して、最終的に、可能であれば、適切な引数を適用させて関数を呼び出します。
+パーズ関数は、もし必要な引数が見当たらない場合、`api-argument-missing`エラーの信号を送ります。
+無駄な実引数は無視されます。
 
-You can also programmatically call an API endpoint using `call-api`, or simulate a Request call with `call-api-request`, without having to go through the whole URI dispatch mechanism.
+`call-api`を用いると、プログラムからAPIエンドポイントを呼び出すこともできます。`call-api-request`を使うと、Requestをシュミレーションすることができます。
+どちらもURIディスパッチの仕組みを通る必要はありません。
 
 Similarly to pages, API endpoint definitions also accept extensible options that make definition simpler. See the following section for an explanation of options.
 
