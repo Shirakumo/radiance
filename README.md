@@ -258,9 +258,9 @@ Radianceは、REST APIとの連携もサポートしています。
 APIを通してプログラムから実行されるアクションは全て、ユーザによって実行されるものであるので、Radianceでは、両方から利用可能にするよう推奨しています。
 重複を避けるために、これら2つは、1つとして扱われます。
 
-As such, usually any kind of data modification action should be provided through an API endpoint that reacts slightly differently depending on whether a user or an application requests it. 
-In the case of a user, it should usually redirect back to an appropriate page, 
-and in the case of an application it should provide a data payload in a readable format.
+どのようなデータ修正にアクションも、APIエンドポイントを通して提供されます。ユーザかプログラムのどちらがリクエストをしたのかはあまり違いなく扱われます。
+ユーザがリクエストを行う場合gは、適切なページにリダイレクトを行います。
+プログラムからリクエストが行われた場合は、読み込めるフォーマットで、データのペイロードが提供されます。
 
 The first part of all of this is the API format system, 
 which is responsible for serialising data to some specified format. 
