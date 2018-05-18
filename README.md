@@ -1,5 +1,3 @@
-![image](https://github.com/Shirakumo/radiance/blob/master/static/radiance.png?raw=true)
-
 ## Radianceについて
 
 Radianceは、Webアプリケーションの開発環境です。Webフレームワークのようなものですが、より汎用的で、変更も簡単です。 特別な変更を加える必要なく、個人的なWebサイトやWebアプリを、簡単に書くことができます。
