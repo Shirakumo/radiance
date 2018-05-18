@@ -290,23 +290,22 @@ Radianceは、4つの型のデータ（`stream`、`pathname`、`string`、`(arra
 
 ### 1.5 Page
 
-Pageとは、実際にコンテンツを提供する関数を定義するために用いるものです。
+ページは、実際にコンテンツを提供する関数を定義するために用いるものです。
+しかし、ページは単なるuriディスパッチャーであり、物事を簡単にするためのマクロをいくつか含んでいるものです。
+注目してもらいたいのは、拡張できるオプションです。詳しくみていきましょう。
 
-Pages are what you will likely use to define your actual content serving functions. 
-However, a page is just a uri-dispatcher with some extra functionality in the definition macro that makes things easier on you. Most notably are the extensible options, for which you can find an explanation below.
+Radianceによってデフォルトでセットアップされるページはいくつかあります。
+`favicon`と`robots`のページは、Radianceの`static/`ディレクトリでサーブされます。
+Production段階のサーバでも、自分のサイトにもファイルを提供したり更新したりしたいはずです。
 
-There are a couple of default pages set up by Radiance itself. 
-First there's the `favicon` and `robots` pages, which simply serve the respective files from Radiance's `static/` directory. 
-You'll probably want to either provide your own pages for that or update the files on your production server.
+そのような目的を満たすために、`static`ページの仕組みがあります。`static`ページは、静的なコンテンツをWebアプリケーションとモジュールにサーブします。
+`static`ページは、そのドメインでも`/static/...`のパスで有効であり、最初のディレクトリがモジュールの名前である形式である必要があります。
+残りは、モジュールの`static/`ディレクトリの範囲にあるパスです。
+この仕組みにより、CSS、JavaScript、画像などの静的なファイルを参照することができます。
 
-Then there's the `static` page, which is responsible for serving static contents for all web applications and modules. 
-It should be active on any domain and always on the path `/static/...` where `...` must have a form where the first directory is the name of a module, 
-and the rest is a path within that module's `static/` directory. 
-This allows you to always be able to refer to static files like CSS, JS, and images through a common path.
-
-Finally there's the `api` page, which is responsible for handling the dispatch of API endpoints, 
-which are explained in the following section. 
-The page acts similarly to the static one by capturing the `/api/...` path on all domains.
+最後に、`api`ページですが、APIエンドポイントのディスパッチを処理する役割があります。
+これについては次の章で説明します。
+ページは、静的ファイルの場合と同様に、どのドメインにおいても`/api/...`のパスで捕捉することで、同じように動作します。
 
 `page`, `remove-page`, `define-page`をご参照ください。
 
