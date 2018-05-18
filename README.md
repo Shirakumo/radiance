@@ -358,13 +358,11 @@ Radianceには、互いのモジュールを互いに連携させるために、
 `list-hooks`, `define-hook`, `remove-hook`, `define-trigger`, `remove-trigger`, `trigger`, `define-hook-switch`をご参照ください。
 
 ### 1.10 インターフェイス
-In order to avoid becoming monolithic, and in order to allow extensible backends, 
-Radiance includes an interface system. 
-In the most general sense, an interface provides a promise as to how some functions, macros, variables, etc. should work, 
-but does not actually implement them. 
-The actual functionality that makes everything that the interface outlines work is pushed off to an implementation. 
-This allows users to code against an interface and make use of its provided functionality, 
-without tying themselves to any particular backend.
+システムが一枚岩になることを避けるために、バックエンドは拡張できるようにするために、
+Radianceはインターフェイスの仕組みを含んでいます。
+一般的な意味では、インターフェイスとは、関数やマクロ、変数がどのように動作するかについて、約束事を決めますが、実際に実装するのはインターフェイスではありません。
+インターフェイスが動作する全てを作っている実際の機能性は、実装の外側にあります。
+このことにより、ユーザはインターフェイスに対してコードを書くことができ、特定のバックエンドに結びつけることなく、与えられた機能を利用することができます。
 
 For a concrete example, let's say there's an interface for a database. 
 This is sensible, since there are many different kinds of databases, 
@@ -398,31 +396,36 @@ Each of those interfaces has at least one standard implementation provided by [r
 The interfaces are:
 
 * `admin`  
-  Provides an extensible administration site.
-* `auth`  
-  Handles everything about authentication and login.
-* `ban`  
-  Allows banning users from the site by their IP address.
-* `cache`  
-  Provides a very simple caching interface.
+  拡張可能な管理者ページを提供します。
+* `auth`  
+  認証とログインに関する全てを扱います。
+* `ban`  
+  IPアドレスによってユーザがサイトにアクセスすることを禁止します。
+* `cache`  
+  キャッシュのための仕組みを提供します。
 * `database`  
-  A flexible database interface that allows both object-stores and relational databases as backends.
-* `logger`  
-  A simple logging interface to allow printing debug and information messages.
+  柔軟なデータベースのインターフェイスです。オブジェクト保存、リレーショナルデータベースをバックエンドとして利用できます。
+* `logger`
+  ログ出力のためのインターフェイスです。デバッグやメッセージを出力できます。
 * `mail`  
-  Minimal interface to send emails with.
+  メールを送るための最小限のインターフェイスです。
+
 * `profile`  
-  Provides an extensible user profile site and user fields.
+  ユーザのプロフィールや属性を拡張するために使います。
+
 * `rate`  
-  Allows rate limitation for access to certain resources.
+  特定のリソースにrate limitationを許可します。
+
 * `server`  
-  The interface that bridges to a server to connect Radiance with an external universe.
+  Rdianceを外部の世界と結びつける架け橋の役割を果たすインターフェイスです。
+
 * `session`  
-  Ensures persistent sessions for users to allow tracking them.
+  トラッキングするために、持続するセッションを保証します。
+
 * `user`  
-  Provides user accounts and permissions.
-  
-The interfaces are described in-depth below.
+  ユーザアカウントとパーミションの機能を提供します。
+
+それぞれのインターフェイスについては、次の章で説明します。
 
 `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`をご参照ください。
 
