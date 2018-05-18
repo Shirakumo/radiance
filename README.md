@@ -679,10 +679,10 @@ HTTPリクエストを受け入れて、応答する責任があります。
 
 `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`もご覧ください。
 
-## 参考文献
+## 参考
 
-* [modularize](https://shinmera.github.io/modularize) For the primary package metadata system
-* [modularize-interfaces](https://shinmera.github.io/modularize-interfaces) For the interface and implementations extensions
-* [modularize-hooks](https://shinmera.github.io/modularize-hooks) For the hooks and triggers mechanisms
-* [ubiquitous](https://shinmera.github.io/ubiquitous) For configuration management
-* [radiance-contribs](https://shirakumo.org/projects/radiance-contribs) Default interface implementations and other convenience modules for Radiance
+* [modularize](https://shinmera.github.io/modularize) パッケージのメタシステム
+* [modularize-interfaces](https://shinmera.github.io/modularize-interfaces) インターフェイスと実装の拡張
+* [modularize-hooks](https://shinmera.github.io/modularize-hooks) フックとトリガーの仕組み
+* [ubiquitous](https://shinmera.github.io/ubiquitous) 環境設定
+* [radiance-contribs](https://shirakumo.org/projects/radiance-contribs) インターフェイスの実装、他便利な機能
