@@ -1,32 +1,32 @@
 ## Radianceについて
 
-Radianceは、Webアプリケーションの開発環境です。Webフレームワークのようなものですが、より汎用的で、変更も簡単です。 特別な変更を加える必要なく、個人的なWebサイトやWebアプリを、簡単に書くことができます。
+Radianceは、Webアプリケーションの開発環境です。Webフレームワークですが、汎用的で、変更も簡単です。 特別な変更を加える必要なく、WebサイトやWebアプリを簡単に書くことができます。
 
 ## 入手するには
 
-Radianceと関連するモジュールやアプリケーションは、Quicklispを通して配布されています。Radianceをインストールするには次のようにしてください:
+Radiance、また、関連するモジュールやアプリケーションは、Quicklispを通して配布されています。Radianceをインストールするには次のようにしてください。
 
 ```lisp
 (ql-dist:install-dist "http://dist.tymoon.eu/shirakumo.txt")
 (ql:quickload :radiance)
 ```
 
-この後では、Quicklispの`quickload`コマンドで、[Purplish](https://github.com/Shirakumo/purplish)等のRadianceモジュールを読み込んで利用できるようになります。
+この後、Quicklispの`quickload`コマンドで、[Purplish](https://github.com/Shirakumo/purplish)等のRadianceモジュールを利用できるようになります。
 
-## 利用法
+## チュートリアル
 
-Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。Radianceの重要なコンセプトや、Webアプリを書く方法を紹介しています。このチュートリアルでは、Radianceの大まかな使い方に親しみ、ある特定の機能が必要なとき、どこを調べるべきかの道しるべになるでしょう。チュートリアルの最後では、本番環境での、Radianceのインストールとデプロイ方法について説明します。
+Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。Radianceの重要なコンセプトや、Webアプリを書く方法を紹介しています。チュートリアルでは、Radianceの主な使い方に慣れて、特定の機能が必要なときに、どこを調べるべきかの道しるべになるでしょう。最後では、本番環境でのRadianceのインストールとデプロイ方法について説明しています。
 
 ## 簡単な例
 
-おそらく、あなたが一番したいことは、HTMLをサーブすることでしょう。では、その方向に進めながら、少しずつ拡張していきましょう。はじめる前に、Radianceの準備をしましょう。
+おそらく、あなたが一番したいことは、ユーザにHTMLを送ることでしょう。その方向に進めながら、少しずつ拡張していきましょう。まずは、Radianceの準備をしましょう。
 
 ```common-lisp
 (ql:quickload :radiance)
 (radiance:startup)
 ```
 
-Radianceを使うのが初めての場合は、`r-welcome`モジュールを使いながら進めましょう。`r-welcome`モジュールを使うと、ブラウザーで開くことができる最初のページへのリンクをつけることができます。まずは、小さなページをリンクづけましょう。
+Radianceを使うのが初めての場合は、`r-welcome`モジュールを使いながら進めましょう。`r-welcome`モジュールを使うと、ブラウザーで開くことができる最初のページへのリンクをつけることができます。まずは、小さなページにリンクをはりましょう。
 
 ```common-lisp
 (in-package :rad-user)
@@ -39,7 +39,7 @@ Radianceを使うのが初めての場合は、`r-welcome`モジュールを使�
 [localhost:8080/example](http://localhost:8080/example)にアクセスすると、"Hi"と表示されるはずです。
 これでは、かなり退屈ですね。
 代わりにHTMLを出してみましょう。
-まずは、[cl-who](http://weitz.de/cl-who/)を使います。
+ここでは、[cl-who](http://weitz.de/cl-who/)を使います。
 
 ```common-lisp
 (define-page example "/example" ()
