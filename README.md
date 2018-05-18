@@ -10,7 +10,7 @@
 
 * ~~簡単な例 20~~
 
-1. Radianceのコンセプトと部品
+~~1. Radianceのコンセプトと部品~~
 
    ~~1.1 URI 10~~
 
@@ -271,20 +271,22 @@ Reversalは逆のことをします。内部の世界から外部の世界へと
 `route`, `name`, `direction`, `priority`, `translator`, `route`, `remove-route`, `list-routes`, `define-route`, `define-matching-route`, `define-target-route`, `define-string-route`, `internal-uri`, `external-uri`も参考にしてください。
 
 ### 1.4 URIディスパッチャー
-Finally we come to the part that actually generates content for a request. 
-URI dispatchers are a subclass of URI that also carry a name, a function, and a priority. 
-The live in a priority-sorted list, 
-which is processed whenever a request arrives. 
-The Request's URI is matched against each dispatcher. 
-The function of the first dispatcher that matches is then executed.
+ついに、リクエストに対して、実際にコンテンツを生成する段階まできました。
+URIディスパッチャーはURIのサブクラスであり、名前、関数、優先順位も運びます。
 
-And that's it. The dispatcher's function is responsible for setting the necessary values in the Response object to deliver the page content. In order to do this it can either directly set the `data` field of the Response object, or you can return an appropriate value from the function. Radiance only accepts four types of values: `stream`, `pathname`, `string`, and `(array (unsigned-byte 8))`.
+優先順位に基づいたリストは、いつリクエストがきても実行されます。
+リクエストのURIは、それぞれのディスパッチャーに対応して、最初に対応する１番目のディスパッチャーの関数が実行されます。
+たったこれだけです。
 
-If a URI dispatcher does not have an explicit priority number, 
-its priority over others is determined by the specificity of the URI. 
-See the URI sorting function `uri>` for an explanation on how exactly this is calculated.
+ディスパッチャーの関数は、ページの内容を提供するために、必要な値をレスポンスのオブジェクトに設定する責任があります。
+そのためには、レスポンスのオブジェクトの`data`のフィールドに直接設定するか、関数から適切な値を返します。
+Radianceは、4つの型のデータ（`stream`、`pathname`、`string`、`(array (unsigned-byte 8))`）を受け取ります。
 
-See `uri-dispatcher`, `name`, `dispatch-function`, `priority`, `uri-dispatcher`, `remove-uri-dispatcher`, `list-uri-dispatchers`, `uri-dispatcher>`, `define-uri-dispatcher`, `dispatch`
+もしURIディスパッチャーが明示的な優先順位の番号を持っていない場合は、
+優先順位はURIの特異性によって決まります。
+どのように計算がされるかについて詳しく知りたい場合は、URIソーティング関数である`uri>`をみてください。
+
+`uri-dispatcher`, `name`, `dispatch-function`, `priority`, `uri-dispatcher`, `remove-uri-dispatcher`, `list-uri-dispatchers`, `uri-dispatcher>`, `define-uri-dispatcher`, `dispatch`もご参照ください。
 
 ### 1.5 Page
 Pages are what you will likely use to define your actual content serving functions. 
@@ -303,7 +305,7 @@ Finally there's the `api` page, which is responsible for handling the dispatch o
 which are explained in the following section. 
 The page acts similarly to the static one by capturing the `/api/...` path on all domains.
 
-See `page`, `remove-page`, `define-page`
+`page`, `remove-page`, `define-page`をご参照ください。
 
 ### 1.6 APIエンドポイント
 Radiance provides integrated support for REST API definition. 
@@ -356,7 +358,7 @@ You can also programmatically call an API endpoint using `call-api`, or simulate
 
 Similarly to pages, API endpoint definitions also accept extensible options that make definition simpler. See the following section for an explanation of options.
 
-See `api`, `*default-api-format*`, `*serialize-fallback*`, `api-format`, `remove-api-format`, `list-api-formats`, `define-api-format`, `api-output`, `api-serialize`, `api-endpoint`, `remove-api-endpoint`, `list-api-endpoints`, `api-endpoint`, `name`, `handler`, `argslist`, `request-handler`, `call-api-request`, `call-api`, `define-api`
+`api`, `*default-api-format*`, `*serialize-fallback*`, `api-format`, `remove-api-format`, `list-api-formats`, `define-api-format`, `api-output`, `api-serialize`, `api-endpoint`, `remove-api-endpoint`, `list-api-endpoints`, `api-endpoint`, `name`, `handler`, `argslist`, `request-handler`, `call-api-request`, `call-api`, `define-api`をご参照ください。
 
 ### 1.7 オプション
 Options are a way of providing an extensible definition macro. 
@@ -376,7 +378,7 @@ This expansion function is then responsible for transforming the body forms of t
 It can also emit a second form that is placed outside of the definition itself, 
 in order to allow setting up the environment in some manner.
 
-See `option`, `option-type`, `name`, `expander`, `option`, `remove-option`, `list-options`, `define-option`, `expand-options`
+`option`, `option-type`, `name`, `expander`, `option`, `remove-option`, `list-options`, `define-option`, `expand-options`をご参照ください。
 
 ### 1.8 モジュール
 The concept of a module is essential to Radiance. It serves as the representation of a "part" of the whole. On a technical level, a module is a package that has special metadata attached to it. 
@@ -399,7 +401,7 @@ In order to do this, you must add three options to your system definition:
 This allows Radiance to identify and associate ASDF system information to your module. 
 For automated creation of the necessary system and module definitions for a new module, see `create-module`.
 
-See `virtual-module`, `virtual-module-name`, `define-module`, `define-module-extension`, `delete-module`, `module`, `module-p`, `module-storage`, `module-storage-remove`, `module-identifier`, `module-name`, `current-module`, `module-domain`, `module-permissions`, `module-dependencies`, `module-required-interfaces`, `module-required-systems`, `module-pages`, `module-api-endpoints`, `describe-module`, `find-modules-directory`, `*modules-directory*`, `create-module`
+`virtual-module`, `virtual-module-name`, `define-module`, `define-module-extension`, `delete-module`, `module`, `module-p`, `module-storage`, `module-storage-remove`, `module-identifier`, `module-name`, `current-module`, `module-domain`, `module-permissions`, `module-dependencies`, `module-required-interfaces`, `module-required-systems`, `module-pages`, `module-api-endpoints`, `describe-module`, `find-modules-directory`, `*modules-directory*`, `create-module`をご参照ください。
 
 ### 1.9 フック
 One of the mechanisms that Radiance provides to allow integrating modules into each other is hooks. 
@@ -421,7 +423,7 @@ any trigger that is defined on it later is called automatically until the second
 This allows triggers on hooks like `server-start` to function properly 
 even if the trigger is only defined after the server has already been started.
 
-See `list-hooks`, `define-hook`, `remove-hook`, `define-trigger`, `remove-trigger`, `trigger`, `define-hook-switch`
+`list-hooks`, `define-hook`, `remove-hook`, `define-trigger`, `remove-trigger`, `trigger`, `define-hook-switch`をご参照ください。
 
 ### 1.10 インターフェイス
 In order to avoid becoming monolithic, and in order to allow extensible backends, 
@@ -490,7 +492,7 @@ The interfaces are:
   
 The interfaces are described in-depth below.
 
-See `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`
+`interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`をご参照ください。
 
 ### 1.11 環境
 In order to permit running multiple instances of Radiance with different setups on the same machine, 
@@ -513,7 +515,7 @@ such that the files can be read and modified without requiring any special tools
 See [ubiquitous](https://shinmera.github.io/ubiquitous) for the actual handling and use-instructions of the configuration storage. 
 Just note that instead of the `value` functions, Radiance provides `config` functions.
 
-See `environment-change`, `environment`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`
+`environment-change`, `environment`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`をご参照ください。
 
 ### 1.12 インスタンスの管理
 Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. 
@@ -527,7 +529,7 @@ unless you exactly know what you're doing, use `startup` and `shutdown` to manag
 The documentation of the two functions should explain exactly which hooks are triggered and in which order. 
 An implementation may provide additional, unspecified definitions on symbols in the interface package, as long as said symbols are not exported.
 
-See `*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`
+`*startup-time*`, `uptime`, `server-start`, `server-ready`, `server-stop`, `server-shutdown`, `startup`, `startup-done`, `shutdown`, `shutdown-done`, `started-p`をご参照ください。
 
 ## 2. 標準のインターフェイス
 
