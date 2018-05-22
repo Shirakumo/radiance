@@ -131,6 +131,8 @@
                             fragment)
   (let* ((uri (represent-uri uri representation))
          (schema (or schema
+                     (when (boundp '*request*)
+                       (header "X-Forwarded-Proto"))
                      (case (port uri)
                        ((443) "https")
                        ((80 NIL) "http")

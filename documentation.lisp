@@ -2365,8 +2365,10 @@ See INTERNAL-URI")
 The QUERY argument takes an alist of keys and variables
 to be used in the query part of the resulting URL. The
 fragment is the optional fragment part. The schema is,
-unless explicitly given, automatically chosen as HTTPS
-if the port is 443, and HTTP if the port is anything else.
+unless explicitly given, automatically set to the value
+of the X-Forwarded-Proto header value if present, or
+chosen as HTTPS if the port is 443, and HTTP if the port
+is anything else.
 
 The path, query, and fragment are url-encoded as
 necessary.
