@@ -3577,7 +3577,7 @@ had never been performed in the first place.")
 
 The query form must be of the following structure:
 
-FORM     ::= COMBINE | CLAUSE
+FORM     ::= COMBINE | CLAUSE | :all
 COMBINE  ::= (:and FORM*) | (:or FORM*) | (:not FORM)
 CLAUSE   ::= (OPERATOR VALUE VALUE) | (:in VALUE VALUE*)
 OPERATOR ::= := | :!= | :> | :< | :<= | :>= | :MATCHES
@@ -3626,6 +3626,9 @@ Note that a special exception is made in the case of fields
 of type ID, where the equality comparison (:=, :!=, :IN) is
 performed in an implementation-dependant manner. The other
 comparison operators cannot be used with ID type fields.
+
+If the form is simply :all, all records in the collection
+are returned.
 
 Examples for queries:
 
