@@ -385,7 +385,7 @@ ban・インターフェイスは、IPによるアクセス制限を提供しま
 
 詳しくは、それぞれの関数に書かれているコメントを読んでください。コレクションの作り方、どのような制限があるかを知りたい方は、`db:create`のコメントも参考にしてください。
 
-データベースは、データ操作が完了すれば、Radianceを再起動したり、Lispイメージ、マシンがクラッシュしたとしても、、データの変更は存続されなければいけません。
+データベースは、データ操作が完了すれば、Radianceを再起動したり、Lispイメージ、マシンがクラッシュしたとしても、データの変更は存続されなければいけません。
 
 `database:condition`, `database:connection-failed`, `database:connection-already-open`, `database:collection-condition`, `database:invalid-collection`, `database:collection-already-exists`, `database:invalid-field`, `database:id`, `database:ensure-id`, `database:connect`, `database:disconnect`, `database:connected-p`, `database:collections`, `database:collection-exists-p`, `database:create`, `database:structure`, `database:empty`, `database:drop`, `database:iterate`, `database:select`, `database:count`, `database:insert`, `database:remove`, `database:update`, `database:with-transaction`, `database:query`, `database:connected`, `database:disconnected`を参照してください。
 
