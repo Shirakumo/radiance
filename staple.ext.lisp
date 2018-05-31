@@ -5,117 +5,101 @@
   (:export #:generate))
 (in-package #:org.shirakumo.radiance.staple)
 
-(defclass symb-api-endpoint (staple:symb-function)
-  ())
+(defclass api-endpoint (definitions:global-definition definitions:callable) ())
 
-(defmethod staple:symb-function ((symb symb-api-endpoint))
-  (radiance::handler (radiance:api-endpoint (staple:symb-symbol symb))))
+(definitions:define-simple-type-map api-endpoint radiance:api-endpoint)
+(definitions:define-simple-object-lookup api-endpoint radiance:api-endpoint)
+(definitions:define-simple-documentation-lookup api-endpoint radiance:api-endpoint)
+(definitions:define-simple-definition-resolver api-endpoint radiance:api-endpoint)
 
-(defmethod staple:symb-documentation ((symb symb-api-endpoint))
-  (documentation (staple:symb-symbol symb) 'radiance:api-endpoint))
+(defmethod staple:definition-order ((_ api-endpoint))
+  91)
 
-(defmethod staple:symb-type-order ((symb (eql 'symb-api-endpoint)))
-  (+ 1 (staple:symb-type-order 'staple:symb-function)))
+(defmethod definitions:arguments ((api-endpoint api-endpoint))
+  (radiance:argslist (definitions:object api-endpoint)))
 
-(staple:define-simple-converter symb-api-endpoint radiance:api-endpoint)
+(defclass uri-dispatcher (definitions:global-definition) ())
 
-(defclass symb-uri-dispatcher (staple:symb-function)
-  ())
+(definitions:define-simple-type-map uri-dispatcher radiance:uri-dispatcher)
+(definitions:define-simple-object-lookup uri-dispatcher radiance:uri-dispatcher)
+(definitions:define-simple-documentation-lookup uri-dispatcher radiance:uri-dispatcher)
+(definitions:define-simple-definition-resolver uri-dispatcher radiance:uri-dispatcher)
 
-(defmethod staple:symb-function ((symb symb-uri-dispatcher))
-  (radiance::dispatch-function (radiance:uri-dispatcher (staple:symb-symbol symb))))
+(defmethod staple:definition-order ((_ uri-dispatcher))
+  92)
 
-(defmethod staple:symb-documentation ((symb symb-uri-dispatcher))
-  (documentation (staple:symb-symbol symb) 'radiance:uri-dispatcher))
+(defclass hook (definitions:global-definition definitions:callable) ())
 
-(defmethod staple:symb-type-order ((symb (eql 'symb-uri-dispatcher)))
-  (+ 2 (staple:symb-type-order 'staple:symb-function)))
+(definitions:define-simple-type-map hook radiance:hook)
+(definitions:define-simple-object-lookup hook (def)
+  (radiance:hook (definitions:designator def) (definitions:package def)))
+(definitions:define-definition-resolver hook (designator package)
+  (when (ignore-errors (radiance:hook designator package))
+    (list (make-instance 'hook :designator designator :package package))))
 
-(staple:define-simple-converter symb-uri-dispatcher radiance:uri-dispatcher)
+(defmethod staple:definition-order ((_ hook))
+  99)
 
-(defclass symb-hook (staple:symb-function)
-  ())
+(defmethod definitions:arguments ((hook hook))
+  (modularize-hooks:arglist (definitions:object hook)))
 
-(defmethod staple:symb-documentation ((symb symb-hook))
-  (documentation (radiance:hook (staple:symb-symbol symb) (staple:symb-package symb)) T))
+(defclass resource-type (definitions:global-definition) ())
 
-(defmethod staple:symb-arguments ((symb symb-hook))
-  (modularize-hooks:arglist (radiance:hook (staple:symb-symbol symb) (staple:symb-package symb))))
+(definitions:define-simple-type-map resource-type radiance:resource-type)
+(definitions:define-simple-object-lookup resource-type radiance:resource-type)
+(definitions:define-simple-documentation-lookup resource-type radiance:resource-type)
+(definitions:define-simple-definition-resolver resource-type radiance:resource-type)
 
-(defmethod staple:symb-type-order ((symb (eql 'symb-hook)))
-  (- (staple:symb-type-order 'staple:symb-accessor) 1))
+(defmethod staple:definition-order ((_ resource-type))
+  151)
 
-(staple:define-converter symb-hook (symbol package)
-  (when (and (radiance:module-p package)
-             (radiance:hook symbol package))
-    (list (make-instance 'symb-hook :symbol symbol :package package))))
-
-(defclass symb-resource-type (staple:symb-class)
-  ())
-
-(defmethod staple:symb-documentation ((symb symb-resource-type))
-  (documentation (staple:symb-symbol symb) 'radiance:resource-type))
-
-(defmethod staple:symb-type-order ((symb (eql 'symb-resource-type)))
-  (+ 1 (staple:symb-type-order 'staple:symb-class)))
-
-(staple:define-converter symb-resource-type (symbol package)
-  (let ((type (ignore-errors (radiance:resource-type symbol))))
-    (when type (list (make-instance 'symb-resource-type :symbol symbol
-                                                        :package package)))))
-
-(defclass symb-option (staple:symb-class)
+(defclass option (definitions:global-definition)
   ((type :initarg :type :accessor option-type)))
 
-(defmethod staple:symb-documentation ((symb symb-option))
-  (documentation (radiance:option (option-type symb) (staple:symb-symbol symb)) T))
+(definitions:define-simple-type-map option radiance:option)
+(definitions:define-simple-object-lookup option (def)
+  (radiance:option (option-type def) (definitions:designator def)))
+(definitions:define-definition-resolver option (designator package)
+  (loop for option in (radiance:list-options designator)
+        collect (make-instance 'option :package package
+                                       :type designator
+                                       :designator (radiance:name option))))
 
-(defmethod staple:symb-type-order ((symb (eql 'symb-option)))
-  (+ 2 (staple:symb-type-order 'staple:symb-class)))
+(defmethod staple:definition-order ((_ option))
+  152)
 
-(defmethod staple:symb-type ((symb symb-option))
-  (format NIL "option ~a" (option-type symb)))
-
-(staple:define-converter symb-option (type package)
-  (loop for option in (radiance:list-options type)
-        collect (make-instance 'symb-option
-                               :package package
-                               :symbol (radiance:name option)
-                               :type type)))
-
-(defclass symb-route (staple:symb-class)
+(defclass route (definitions:global-definition)
   ((direction :initarg :direction :accessor route-direction)))
 
-(defmethod staple:symb-documentation ((symb symb-route))
-  (documentation (radiance:route (staple:symb-symbol symb) (route-direction symb)) T))
+(definitions:define-simple-type-map route radiance:route)
+(definitions:define-simple-object-lookup route (def)
+  (radiance:route (definitions:designator def) (route-direction def)))
+(definitions:define-definition-resolver route (designator package)
+  (let ((map (radiance:route designator :mapping))
+        (rev (radiance:route designator :reversal)))
+    (append (when map (list (make-instance 'route :designator designator
+                                                  :direction :mapping
+                                                  :package package)))
+            (when rev (list (make-instance 'route :designator designator
+                                                  :direction :reversal
+                                                  :package package))))))
 
-(defmethod staple:symb-type-order ((symb (eql 'symb-route)))
-  (+ 3 (staple:symb-type-order 'staple:symb-class)))
+(defmethod staple:definition-order ((_ route))
+  153)
 
-(staple:define-converter symb-route (name package)
-  (let ((map (radiance:route name :mapping))
-        (rev (radiance:route name :reversal)))
-    (append (when map (list (make-instance 'symb-route :symbol name
-                                                       :direction :mapping
-                                                       :package package)))
-            (when rev (list (make-instance 'symb-route :symbol name
-                                                       :direction :reversal
-                                                       :package package))))))
+(defmethod staple:images ((system (eql (asdf:find-system :radiance))))
+  (list (asdf:system-relative-pathname :radiance "static/radiance.png")))
 
-(setf (staple:system-packages :radiance) '(:radiance-core
-                                           :admin
-                                           :auth
-                                           :ban
-                                           :cache
-                                           :database
-                                           :logger
-                                           :mail
-                                           :profile
-                                           :rate
-                                           :server
-                                           :session
-                                           :user))
-
-(defmethod staple:system-options append ((system (eql (asdf:find-system 'radiance))))
-  (list :if-exists :supersede
-        :logo "static/radiance.png"))
+(setf (staple:packages :radiance) '(:radiance-core
+                                    :admin
+                                    :auth
+                                    :ban
+                                    :cache
+                                    :database
+                                    :logger
+                                    :mail
+                                    :profile
+                                    :rate
+                                    :server
+                                    :session
+                                    :user))
