@@ -2796,6 +2796,7 @@ See PERM
 See USER:=
 See USER:LIST
 See USER:GET
+See USER:ID
 See USER:USERNAME
 See USER:FIELDS
 See USER:FIELD
@@ -2819,6 +2820,9 @@ See USER:USER")
   (function user:get
     "Returns the requested user object.
 
+The user can be referenced by either a username as a
+string, or a user ID as an integer.
+
 IF-DOES-NOT-EXIST may be one of the following values,
 which decides on the behaviour in the case where the
 requested user is not known.
@@ -2840,6 +2844,15 @@ yet ready will result in undefined behaviour.
 
 See USER:READY
 See USER:UNREADY
+See USER:USER")
+
+  (function user:id
+    "Returns the integer ID of the user object.
+
+This is useful for references to user accounts from
+database records, as storing the full username is both
+wasteful and inefficient for searching.
+
 See USER:USER")
 
   (function user:username

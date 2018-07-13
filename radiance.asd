@@ -5,7 +5,7 @@
 |#
 
 (asdf:defsystem radiance
-  :version "1.2.0"
+  :version "1.3.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
