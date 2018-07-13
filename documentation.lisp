@@ -2832,6 +2832,10 @@ requested user is not known.
   :ANONYMOUS  The anonymous standard user is returned.
   NIL         NIL is returned.
 
+The :CREATE option is only valid if the given identifier
+is a string denoting a username. If :CREATE is used with
+a user ID, an error is signalled.
+
 When a new user is created, the USER:CREATE hook is
 triggered.
 
