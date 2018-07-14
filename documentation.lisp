@@ -3449,11 +3449,15 @@ Otherwise, SORT should be a list of lists, where each
 inner list should contain the name of a field, and either
 :ASC or :DSC for ascending or descending order.
 
-SKIP specifies the number of records to skip.
+SKIP specifies the number of matching records to skip.
 
 If AMOUNT is NIL, all matching records are passed.
 Otherwise it poses an upper bound on the number of records
 that the function is called with.
+
+If UNIQUE is non-NIL and FIELDS is a list of at least one
+field, the function is only called once for each distinct
+record.
 
 If ACCUMULATE is non-NIL, then the values returned by the
 function call are accumulated into a list and returned
