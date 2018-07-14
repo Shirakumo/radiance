@@ -3443,6 +3443,11 @@ can be a list of field names to include in each record.
 The database may store more fields than were requested,
 but never less.
 
+If UNIQUE is non-NIL and FIELDS is a list of at least one
+field, records are only considered to match if the same
+record (each field compared under EQUAL) has not appeared
+previously.
+
 If SORT is NIL, the order in which the records are passed
 is unpredictable and may be random with every call.
 Otherwise, SORT should be a list of lists, where each
@@ -3454,10 +3459,6 @@ SKIP specifies the number of matching records to skip.
 If AMOUNT is NIL, all matching records are passed.
 Otherwise it poses an upper bound on the number of records
 that the function is called with.
-
-If UNIQUE is non-NIL and FIELDS is a list of at least one
-field, the function is only called once for each distinct
-record.
 
 If ACCUMULATE is non-NIL, then the values returned by the
 function call are accumulated into a list and returned
