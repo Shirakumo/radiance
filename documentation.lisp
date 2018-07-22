@@ -3602,7 +3602,7 @@ The query form must be of the following structure:
 FORM     ::= COMBINE | CLAUSE | :all
 COMBINE  ::= (:and FORM*) | (:or FORM*) | (:not FORM)
 CLAUSE   ::= (OPERATOR VALUE VALUE) | (:in VALUE VALUE*)
-OPERATOR ::= := | :!= | :> | :< | :<= | :>= | :MATCHES
+OPERATOR ::= := | :/= | :> | :< | :<= | :>= | :MATCHES
 VALUE    ::= (:field NAME) | 'NAME | LFORM
 NAME     --- A field name.
 LFORM    --- A lisp form that evaluates to a lisp value.
@@ -3616,7 +3616,7 @@ Where the combinators have the following effect:
 And the clauses have the following comparison behaviour:
 
   :=        True if the two values are EQUAL.
-  :!=       True if the two values are not EQUAL.
+  :/=       True if the two values are not EQUAL.
   :>        True if the two values are > if they are both
             of type :integer or :float, or STRING> if they
             are both of type :varchar or :text.

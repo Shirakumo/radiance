@@ -8,7 +8,7 @@
   :class "modularize:virtual-module"
   :defsystem-depends-on (:modularize)
   :module-name "RADIANCE-CORE"
-  :version "1.3.0"
+  :version "1.4.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
