@@ -119,9 +119,11 @@
    #:define-documentable)
   ;; environment.lisp
   (:export
-   #:*environment-root*
    #:environment-change
    #:environment
+   #:environment-directory
+   #:environment-module-directory
+   #:environment-module-pathname
    #:check-environment
    #:set-environment
    #:reload-environment
