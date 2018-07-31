@@ -12,7 +12,6 @@
 
 (defgeneric environment-directory (environment type))
 (defgeneric environment-module-directory (module type))
-(defun environment-module-pathname (module type pathname))
 
 (defmethod environment-directory (environment kind)
   (ecase kind
