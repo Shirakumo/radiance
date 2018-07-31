@@ -683,14 +683,6 @@ See DOCUMENTABLE"))
 
 ;; environment.lisp
 (docs:define-docs
-  (variable *environment-root*
-    "Holds a pathname to the root of the environment configuration files.
-
-The default is decided by UBIQUITOUS:CONFIG-PATHNAME
-
-See UBIQUITOUS:CONFIG-PATHNAME
-See ENVIRONMENT")
-    
   (variable *environment*
     "Holds the currently configured environment name, if any.
 
@@ -702,24 +694,109 @@ See ENVIRONMENT")
 At this point the environment is already set up and the
 configuration has been reloaded or purged as necessary.")
 
+  (function environment-directory
+    "Returns the base directory for the given environment and file kind.
+
+If the ENVIRONMENT parameter is T, it is treated as if it were
+the value of (ENVIRONMENT).
+
+The administrator is encouraged to provide specialised methods
+on this generic function in order to redefine the base directories
+used for the environment's files.
+
+The following KINDs are currently recognised internally, though
+the user may supply further kinds.
+
+  :CONFIGURATION  --- The base for configuration files. The
+                      MCONFIG/CONFIG functions access files in
+                      this base directory.
+  :DATA           --- The base for data files. Modules may use
+                      this directory to store data files for
+                      runtime caches, user data, etc.
+  :TEMPLATE       --- The base for template files. Administrators
+                      may use this directory to provide overrides
+                      for a module's template files.
+
+By default the base paths are determined as follows:
+
+  :CONFIGURATION
+1. A root is discovered as one of the following alternatives:
+1.1. The XDG_CONFIG_HOME environment variable is consulted.
+1.2. On Windows the AppData environment variable is consulted.
+1.3. On Windows the directory ~/Application Data/ is used.
+1.4. The directory ~/.config/ is used.
+2. A subdirectory called \"radiance\" is added to the root.
+3. A subdirectory with the environment name is added to the root.
+
+  :DATA/:TEMPLATE
+1. A root is discovered as one of the following alternatives:
+1.1 The XDG_DATA_HOME environment variable is consulted.
+1.2 On Windows the LocalAppData environment variable is consulted.
+1.3 On Windows the directory ~/Local Settings/ is used.
+1.4 The directory ~/.local/share/ is used.
+2. A subdirectory called \"radiance\" is added to the root.
+3. A subdirectory with the environment name is added to the root.
+
+For instance, the environment directory on a clean Linux system
+for the \"default\" environment and :configuration kind would be:
+
+  ~/.config/radiance/default/
+
+The same on a recent (Vista+) Windows system would be:
+
+  ~/AppData/Roaming/radiance/default/
+
+And on an older (XP-) Windows system it would be:
+
+  ~/Application Data/radiance/default/")
+
+  (function environment-module-directory
+    "Returns the base directory for the given module and file kind.
+
+The administrator is allowed to supply custom methods to this
+function that specialise on specific modules to tightly control
+the behaviour.
+
+If the environment is unset, this function will signal an error.
+
+By default this simply retrieves the environment root directory
+for the requested file kind and adds a subdirectory named after
+the downcased module name.
+
+For instance, the module directory for the radiance-core
+module in the default environment for the :configuration kind
+on Linux would be:
+
+  ~/.config/radiance/default/radiance-core/
+
+See ENVIRONMENT-DIRECTORY
+See ENVIRONMENT
+See CHECK-ENVIRONMENT")
+
+  (function environment-module-pathname
+    "Returns a path within the module's file directory for the given kind.
+
+This simply performs a merge-pathnames call on the given pathname
+and the corresponding ENVIRONMENT-MODULE-DIRECTORY.
+
+See ENVIRONMENT-MODULE-DIRECTORY")
+
   (function environment
-            "Accessor to the current environment.
+    "Accessor to the current environment.
 
 The environment decides the namespace for the configuration
-files of Radiance and all modules that use its configuration
-system.
+and data files of Radiance and all modules that use its system.
 
 Note that changing the environment after one has already
 been loaded and modules have been loaded with it, is currently
 not supported and will lead to strange behaviour.
 
-See *ENVIRONMENT-ROOT*
 See *ENVIRONMENT*
 See CHECK-ENVIRONMENT
 See MCONFIG-PATHNAME")
 
   (function check-environment
-            "Checks whether the environment is properly configured.
+    "Checks whether the environment is properly configured.
 
 If no environment is present, an error of type
 ENVIRONMENT-NOT-SET is signalled. Two restarts will
@@ -731,7 +808,7 @@ be present at the time:
 See ENVIRONMENT")
 
   (function reload-environment
-            "Reloads the current environment from disk.
+    "Reloads the current environment from disk.
 
 Note that configuration files are reloaded lazily, with the
 exception of the radiance-core configuration.
@@ -740,19 +817,22 @@ See CHECK-ENVIRONMENT
 See ENVIRONMENT")
 
   (function mconfig-pathname
-            "Returns the proper pathname to the module according to the current environment.
+    "Returns the proper pathname to the module according to the current environment.
 
-The path's base will come from *ENVIRONMENT-ROOT*, the rest
-is decided according to the environment and the module.
+The path is constructed according to:
+  :NAME     Set to the downcased module-name.
+  :TYPE     Set to conf.TYPE with type downcased.
+  :DEFAULTS ENVIRONMENT-MODULE-DIRECTORY for the
+            given module and the :CONFIGURATION kind.
 
 An environment must have been configured prior to calling
 this function.
 
-See *ENVIRONMENT-ROOT*
+See ENVIRONMENT-MODULE-DIRECTORY
 See ENVIRONMENT")
 
   (function mconfig-storage
-            "Returns the storage object for the given module.
+    "Returns the storage object for the given module.
 
 The storage object is cached and will only be loaded
 if it has not previously been loaded. This means that
@@ -768,19 +848,25 @@ See UBIQUITOUS:RESTORE
 See UBIQUITOUS:OFFLOAD")
 
   (function mconfig
-            "Accesses a configuration variable for the given module's storage.
+    "Accesses a configuration variable for the given module's storage.
 
 See UBIQUITOUS:VALUE
 See MCONFIG-STORAGE")
 
   (function defaulted-mconfig
-            "Sets the configuration variable to the given default if it has not been set previously and returns the value.
+    "Sets the configuration variable to the given default if it has not been set previously and returns the value.
 
 See UBIQUITOUS:DEFAULTED-VALUE
 See MCONFIG-STORAGE")
 
+  (function remmconfig
+    "Removes the configuration place from the given module's configuration.
+
+See UBIQUITOUS:REMVALUE
+See MCONFIG-STORAGE")
+
   (function config
-            "Shorthand to access the current module's configuration.
+    "Shorthand to access the current module's configuration.
 
 This has to be a macro so that the current package can be
 captured.
@@ -788,12 +874,20 @@ captured.
 See MCONFIG")
 
   (function defaulted-config
-            "Shorthand to set/retrieve a defaulted value from the module's configuration.
+    "Shorthand to set/retrieve a defaulted value from the module's configuration.
 
 This has to be a macro so that the current package can be
 captured.
 
-See DEFAULTED-MCONFIG"))
+See DEFAULTED-MCONFIG")
+
+  (function remconfig
+    "Shorthand to remove a place from the module's configuration
+
+This has to be a macro so that the current package can be
+captured.
+
+See REMMCONFIG"))
 
 ;; handle.lisp
 (docs:define-docs

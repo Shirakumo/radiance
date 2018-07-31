@@ -6,15 +6,55 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(defvar *environment-root* (merge-pathnames "radiance/" (ubiquitous:config-pathname :lisp)))
 (defvar *environment* NIL)
 
 (define-hook environment-change ())
+
+(defgeneric environment-directory (environment type))
+(defgeneric environment-module-directory (module type))
+(defun environment-module-pathname (module type pathname))
+
+(defmethod environment-directory (environment kind)
+  (ecase kind
+    (:configuration
+     (let ((base (or* (uiop:getenv "XDG_CONFIG_HOME")
+                      #+windows (uiop:getenv "AppData")
+                      #+windows (make-pathname :directory '(:absolute :home "Application Data"))
+                      (make-pathname :directory '(:absolute :home ".config")))))
+       (merge-pathnames (make-pathname :directory `(:relative "radiance" ,environment))
+                        (etypecase base
+                          (pathname base)
+                          (string (uiop:parse-native-namestring base))))))
+    ((:data :template)
+     (let ((base (or* (uiop:getenv "XDG_DATA_HOME")
+                      #+windows (uiop:getenv "LocalAppData")
+                      #+windows (make-pathname :directory '(:absolute :home "Local Settings"))
+                      (make-pathname :directory '(:absolute :home ".local" "share")))))
+       (merge-pathnames (make-pathname :directory `(:relative "radiance" ,environment ,(string-downcase kind)))
+                        (etypecase base
+                          (pathname base)
+                          (string (uiop:parse-native-namestring base))))))))
+
+(defmethod environment-directory ((environment (eql T)) kind)
+  (environment-directory *environment* kind))
+
+(defmethod environment-module-directory (module kind)
+  (check-environment)
+  (let ((name (module-name module)))
+    (merge-pathnames
+     (make-pathname :directory `(:relative ,(string-downcase name)))
+     (environment-directory T kind))))
+
+(defun environment-module-pathname (module kind pathname)
+  (merge-pathnames
+   pathname
+   (environment-module-directory module kind)))
 
 (defun environment ()
   *environment*)
 
 (defun (setf environment) (environment)
+  (check-type environment string)
   ;; Clear config
   (dolist (module (list-modules))
     (setf (module-storage module :config) NIL))
@@ -46,17 +86,9 @@
   (setf (environment) (environment)))
 
 (defun mconfig-pathname (module &optional (type :lisp))
-  (check-environment)
-  (merge-pathnames
-   (if (and (module-p module) (module-storage module :config-pathname))
-       (module-storage module :config-pathname)
-       (let ((name (string-downcase
-                    (if (module-p module)
-                        (module-name module)
-                        (package-name module)))))
-         (make-pathname :name name
-                        :directory `(:relative ,*environment* ,name))))
-   (make-pathname :type (format NIL "conf.~(~a~)" type) :defaults *environment-root*)))
+  (make-pathname :name (string-downcase (module-name module))
+                 :type (format NIL "conf.~(~a~)" type)
+                 :defaults (environment-module-directory module :configuration)))
 
 (defmethod ubiquitous:designator-pathname ((designator package) type)
   (mconfig-pathname designator type))
@@ -71,7 +103,7 @@
                                    (declare (ignore err))
                                    (invoke-restart 'ubiquitous:use-new-storage
                                                    (make-hash-table :test 'equal)))))
-                    (ubiquitous:restore))
+                  (ubiquitous:restore))
                 (ubiquitous:offload))))))
 
 (defun mconfig (module &rest path)

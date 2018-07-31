@@ -274,7 +274,7 @@ The interfaces are described in-depth below.
 See `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`
 
 ### 1.11 Environment
-In order to permit running multiple instances of Radiance with different setups on the same machine, Radiance provides what it calls an Environment system. The Environment is basically the set of configuration files for Radiance itself and all of the loaded modules. The Radiance configuration also includes the mapping of interface to chosen implementation and thus decides what should be picked if an interface is requested.
+In order to permit running multiple instances of Radiance with different setups on the same machine, Radiance provides what it calls an Environment system. The Environment is basically the set of configuration and runtime files for Radiance itself and all of the loaded modules. The Radiance configuration also includes the mapping of interface to chosen implementation and thus decides what should be picked if an interface is requested.
 
 The particular environment that is used is chosen at the latest when `startup` is called, and the earliest when a module is loaded. In the latter case, interactive restarts are provided to allow you to pick an environment. This is necessary, as otherwise Radiance won't be able to resolve the interface mapping.
 
@@ -282,7 +282,11 @@ As part of the environment system, Radiance provides you with a configuration sy
 
 See [ubiquitous](https://shinmera.github.io/ubiquitous) for the actual handling and use-instructions of the configuration storage. Just note that instead of the `value` functions, Radiance provides `config` functions.
 
-See `environment-change`, `environment`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`
+Aside from configuration files, the environment also provides consistent storage locations for runtime data files, such as user uploads, cache files, and so forth. You can retrieve this location by using `environment-module-directory` and `environment-module-pathname`.
+
+On a deployed system it might be desired to change the location of the environment storage paths, in which case the administrator is encouraged to supply new methods on `environment-directory` and `environment-module-directory` to customise the behaviour as desired. See also the associated documentation strings for further details and default actions.
+
+See `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`
 
 ### 1.12 Instance Management
 Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.
