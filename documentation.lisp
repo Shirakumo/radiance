@@ -2561,6 +2561,20 @@ the associated user through AUTH:CURRENT.
 
 See AUTH:CURRENT")
 
+  (hook auth:no-associated-user
+    "This hook is called when AUTH:CURRENT is called but no user is found in the session.
+
+The hook has an argument, the session object.
+
+Triggers on this hook may associate new users at this time by
+using AUTH:ASSOCIATE. If a new user is associated by this hook,
+this user is returned by the original AUTH:CURRENT call.
+
+This allows third-party libraries to implement additional
+authentication mechanisms.
+
+See AUTH:CURRENT")
+
   (function auth:current
     "Returns the user object that is authenticated with the given session.
 
