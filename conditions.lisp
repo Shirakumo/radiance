@@ -71,9 +71,6 @@ configuration and use the SETF ENVIRONMENT restart to set an explicit environmen
 (define-condition api-call-not-found (api-error) ()
   (:report (lambda (c s) (format s "The requested api call address could not be found.~@[ ~a~]" (message c)))))
 
-(define-condition api-response-empty (api-error) ()
-  (:report (lambda (c s) (format s "The API response was empty.~@[ ~a~]" (message c)))))
-
 (define-condition api-unknown-format (api-error)
   ((format :initarg :format :initform (error "FORMAT required.")))
   (:report (lambda (c s) (format s "The requested format ~s is not known.~@[ ~a~]"

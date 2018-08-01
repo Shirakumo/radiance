@@ -348,11 +348,6 @@ See API-ERROR")
 
 See API-ERROR")
 
-  (type api-response-empty
-    "Error signalled when an api endpoint didn't return any data.
-
-See API-ERROR")
-
   (type api-unknown-format
     "Error signalled when an api format was required that is unknown.
 

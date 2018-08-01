@@ -84,7 +84,6 @@
    #:api-argument-missing
    #:api-argument-invalid
    #:api-call-not-found
-   #:api-response-empty
    #:api-unknown-format
    #:interface-implementation-not-set
    #:unparsable-uri-string
