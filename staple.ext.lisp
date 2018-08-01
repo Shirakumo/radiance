@@ -90,16 +90,20 @@
 (defmethod staple:images ((system (eql (asdf:find-system :radiance))))
   (list (asdf:system-relative-pathname :radiance "static/radiance.png")))
 
-(setf (staple:packages :radiance) '(:radiance-core
-                                    :admin
-                                    :auth
-                                    :ban
-                                    :cache
-                                    :database
-                                    :logger
-                                    :mail
-                                    :profile
-                                    :rate
-                                    :server
-                                    :session
-                                    :user))
+(defmethod staple:subsystems ((system (eql (asdf:find-system :radiance))))
+  ())
+
+(defmethod staple:packages ((system (eql (asdf:find-system :radiance))))
+  (mapcar #'find-package '(:radiance-core
+                           :admin
+                           :auth
+                           :ban
+                           :cache
+                           :database
+                           :logger
+                           :mail
+                           :profile
+                           :rate
+                           :server
+                           :session
+                           :user)))
