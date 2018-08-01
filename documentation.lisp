@@ -63,6 +63,14 @@ from an api endpoint. It ensures the data proper structure,
 failure handling, and data translation to the desired output
 format.
 
+The proper structure for an API response from an endpoint
+should be an object/table/map with the following fields:
+
+  status   --- The HTTP status code.
+  message  --- A supplied human-readable message that describes
+               the success or failure.
+  data     --- The data payload of the api output.
+
 The types of objects that can be serialised via this function
 are restricted to the following set:
 
