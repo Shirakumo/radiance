@@ -134,7 +134,11 @@
    #:remmconfig
    #:config
    #:defaulted-config
-   #:remconfig)
+   #:remconfig
+   #:static-file
+   #:@static
+   #:template-file
+   #:@template)
   ;; handle.lisp
   (:export
    #:*debugger*
@@ -295,10 +299,6 @@
    #:make-random-string
    #:file-size
    #:resolve-base
-   #:static-file
-   #:@static
-   #:template-file
-   #:@template
    #:or*
    #:perm
    #:parse-path-safely

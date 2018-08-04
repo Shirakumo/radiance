@@ -135,22 +135,6 @@
 (defun cut-get-part (url)
   (subseq url 0 (position #\? url)))
 
-(defun static-file (namestring &optional base)
-  (merge-pathnames namestring (merge-pathnames "static/" (merge-pathnames (resolve-base base)))))
-
-(defmacro @static (&environment env namestring)
-  (if (constantp namestring env)
-      `(load-time-value (static-file ,namestring ,*package*))
-      `(static-file ,namestring ,*package*)))
-
-(defun template-file (namestring &optional base)
-  (merge-pathnames namestring (merge-pathnames "template/" (merge-pathnames (resolve-base base)))))
-
-(defmacro @template (&environment env namestring)
-  (if (constantp namestring env)
-      `(load-time-value (template-file ,namestring ,*package*))
-      `(template-file ,namestring ,*package*)))
-
 ;; FIXME: Move to USER?
 (defmacro perm (&rest tree)
   (let ((perm (format NIL "~{~(~a~)~^.~}" tree)))

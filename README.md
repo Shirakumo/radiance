@@ -282,11 +282,13 @@ As part of the environment system, Radiance provides you with a configuration sy
 
 See [ubiquitous](https://shinmera.github.io/ubiquitous) for the actual handling and use-instructions of the configuration storage. Just note that instead of the `value` functions, Radiance provides `config` functions.
 
-Aside from configuration files, the environment also provides consistent storage locations for runtime data files, such as user uploads, cache files, and so forth. You can retrieve this location by using `environment-module-directory` and `environment-module-pathname`.
+Aside from configuration files, the environment also provides consistent storage locations for runtime data files, such as user uploads, cache files, and so forth. You can retrieve this location by using `environment-module-directory` and `environment-module-pathname`. When storing uploads and caches, a module should make use of these paths to present a consistent interface to the administrator.
 
 On a deployed system it might be desired to change the location of the environment storage paths, in which case the administrator is encouraged to supply new methods on `environment-directory` and `environment-module-directory` to customise the behaviour as desired. See also the associated documentation strings for further details and default actions.
 
-See `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`
+The environment also allows administrator overrides. Using the `:static` and `:template` types for `environment-module-directory` gives you the path to store files that should override a module's standard template and static files. The paths within the respective directories have to match with those of the module's own source files. Note that the static and template files a module actually makes use of are cached at module load-time, and thus will not change unless the Lisp image is restarted, or the module's source files are reloaded.
+
+See `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`, `template-file`, `@template`, `static-file`, `@static`
 
 ### 1.12 Instance Management
 Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.

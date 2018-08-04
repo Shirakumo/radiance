@@ -24,7 +24,7 @@
                         (etypecase base
                           (pathname base)
                           (string (uiop:parse-native-namestring base))))))
-    ((:data :template)
+    ((:data :template :static)
      (let ((base (or* (uiop:getenv "XDG_DATA_HOME")
                       #+windows (uiop:getenv "LocalAppData")
                       #+windows (make-pathname :directory '(:absolute :home "Local Settings"))
@@ -133,3 +133,23 @@
 
 (defmacro remconfig (&rest path)
   `(remmconfig ,*package* ,@path))
+
+(defun static-file (namestring &optional base)
+  (let ((base (or base *package*)))
+    (or (probe-file (environment-module-pathname base :static namestring))
+        (merge-pathnames namestring (merge-pathnames "static/" (merge-pathnames (resolve-base base)))))))
+
+(defmacro @static (&environment env namestring)
+  (if (constantp namestring env)
+      `(load-time-value (static-file ,namestring ,*package*))
+      `(static-file ,namestring ,*package*)))
+
+(defun template-file (namestring &optional base)
+  (let ((base (or base *package*)))
+    (or (probe-file (environment-module-pathname base :template namestring))
+        (merge-pathnames namestring (merge-pathnames "template/" (merge-pathnames (resolve-base base)))))))
+
+(defmacro @template (&environment env namestring)
+  (if (constantp namestring env)
+      `(load-time-value (template-file ,namestring ,*package*))
+      `(template-file ,namestring ,*package*)))

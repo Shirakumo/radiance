@@ -719,6 +719,9 @@ the user may supply further kinds.
   :TEMPLATE       --- The base for template files. Administrators
                       may use this directory to provide overrides
                       for a module's template files.
+  :STATIC         --- The base for static files. Administrators
+                      may use this directory to provide overrides
+                      for a module's static files.
 
 By default the base paths are determined as follows:
 
@@ -731,7 +734,7 @@ By default the base paths are determined as follows:
 2. A subdirectory called \"radiance\" is added to the root.
 3. A subdirectory with the environment name is added to the root.
 
-  :DATA/:TEMPLATE
+  :DATA/:TEMPLATE/:STATIC
 1. A root is discovered as one of the following alternatives:
 1.1 The XDG_DATA_HOME environment variable is consulted.
 1.2 On Windows the LocalAppData environment variable is consulted.
@@ -890,7 +893,67 @@ See DEFAULTED-MCONFIG")
 This has to be a macro so that the current package can be
 captured.
 
-See REMMCONFIG"))
+See REMMCONFIG")
+
+  (function static-file
+    "Returns the static file for the given base.
+
+The base will usually be your local module. This function will return
+the path returned by ENVIRONMENT-MODULE-PATHNAME for the given base,
+:STATIC type, and namestring if the file exists, or otherwise merge
+the namestring with the static/ subdirectory within your module's
+source directory.
+
+For instance, a module named FOO asking for the BAR static file while
+the file is overridden would return a path like the following under
+default setups:
+
+  ~/.local/share/radiance/default/static/foo/bar
+
+If this override file did not exist, the following path would be
+returned instead assuming FOO's project root is at ~/Projects/:
+
+  ~/Projects/foo/static/bar
+
+See @STATIC")
+
+  (function @static
+    "Expands to a pathname to the static file in the current module.
+
+This expands to a load-time-value form if the namestring is constant,
+ensuring that no expensive lookups are done at runtime.
+
+See STATIC-FILE")
+
+  (function template-file
+    "Returns the template file for the given base.
+
+The base will usually be your local module. This function will return
+the path returned by ENVIRONMENT-MODULE-PATHNAME for the given base,
+:TEMPLATE type, and namestring if the file exists, or otherwise merge
+the namestring with the template/ subdirectory within your module's
+source directory.
+
+For instance, a module named FOO asking for the BAR template file while
+the file is overridden would return a path like the following under
+default setups:
+
+  ~/.local/share/radiance/default/template/foo/bar
+
+If this override file did not exist, the following path would be
+returned instead assuming FOO's project root is at ~/Projects/:
+
+  ~/Projects/foo/template/bar
+
+See @TEMPLATE")
+
+  (function @template
+    "Expands to a pathname to the template file in the current module.
+
+This expands to a load-time-value form if the namestring is constant,
+ensuring that no expensive lookups are done at runtime.
+
+See TEMPLATE-FILE"))
 
 ;; handle.lisp
 (docs:define-docs
@@ -2211,34 +2274,6 @@ empty string represents no value.")
 
   (function cut-get-part
     "Returns the url string without the get part.")
-
-  (function static-file
-    "Returns the static file for the given base.
-
-The base will usually be your local module and thus
-this will use the static folder within its source
-directory.
-
-See @STATIC")
-
-  (function @static
-    "Expands to a pathname to the static file in the current module.
-
-See STATIC-FILE")
-
-  (function template-file
-    "Returns the template file for the given base.
-
-The base will usually be your local module and thus
-this will use the template folder within its source
-directory.
-
-See @TEMPLATE")
-
-  (function @template
-    "Expands to a pathname to the template file in the current module.
-
-See TEMPLATE-FILE")
 
   (function perm
     "Macro to encompass a permission.
