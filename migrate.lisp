@@ -97,37 +97,6 @@
 (defmethod (setf last-known-system-version) (version system)
   (config :versions (system-name system) (encode-version version)))
 
-(defgeneric migrate-versions (system from to))
-
-(defmethod migrate-versions (system from to)
-  :ignored)
-
-(defmacro define-version-migration ((system from to) &body body)
-  (check-type system keyword)
-  (check-type from (or keyword null))
-  (check-type to keyword)
-  `(defmethod migrate-versions ((,(gensym "SYSTEM") (eql ,system))
-                                (,(gensym "FROM") (eql ,from))
-                                (,(gensym "TO") (eql ,to)))
-     ,@body))
-
-(defmethod migrate-versions :after (system from to)
-  (setf (last-known-system-version system) to))
-
-(defun versions (system)
-  (sort (remove-duplicates
-         (loop for method in (c2mop:generic-function-methods #'migrate-versions)
-               for (sys from to) = (c2mop:method-specializers method)
-               for matching = (and (null (method-qualifiers method))
-                                   (typep sys 'c2mop:eql-specializer)
-                                   (eql system (c2mop:eql-specializer-object sys)))
-               when (and matching (typep from 'c2mop:eql-specializer))
-               collect (c2mop:eql-specializer-object from)
-               when (and matching (typep to 'c2mop:eql-specializer))
-               collect (c2mop:eql-specializer-object to))
-         :test #'version=)
-        #'version<))
-
 (defun ensure-system (system-ish &optional parent)
   (typecase system-ish
     (asdf:system
@@ -149,13 +118,56 @@
                  (funcall function system))))
       (traverse system))))
 
+(defgeneric version-dependencies (system version))
+
+(defmethod version-dependencies (system version)
+  ())
+
+(defgeneric migrate-versions (system from to))
+
+(defmethod migrate-versions (system from to))
+
+(defmacro define-version-migration ((system from to) &body body)
+  (check-type system keyword)
+  (check-type from (or keyword null))
+  (check-type to keyword)
+  `(defmethod migrate-versions ((,(gensym "SYSTEM") (eql ,system))
+                                (,(gensym "FROM") (eql ,from))
+                                (,(gensym "TO") (eql ,to)))
+     ,@body))
+
+(defmethod migrate-versions :before (system from to)
+  (let ((deps (version-dependencies system from)))
+    (flet ((migrate-dependency (dependency)
+             (loop for (dep version) in deps
+                   do (when (eql (ensure-system dependency)
+                                 (ensure-system dep))
+                        (migrate dependency T version))
+                   finally (migrate dependency T T))))
+      (traverse-system-dependencies system #'migrate-dependency))))
+
+(defmethod migrate-versions :after (system from to)
+  (setf (last-known-system-version system) to))
+
+(defun versions (system)
+  (sort (remove-duplicates
+         (loop for method in (c2mop:generic-function-methods #'migrate-versions)
+               for (sys from to) = (c2mop:method-specializers method)
+               for matching = (and (null (method-qualifiers method))
+                                   (typep sys 'c2mop:eql-specializer)
+                                   (eql system (c2mop:eql-specializer-object sys)))
+               when (and matching (typep from 'c2mop:eql-specializer))
+               collect (c2mop:eql-specializer-object from)
+               when (and matching (typep to 'c2mop:eql-specializer))
+               collect (c2mop:eql-specializer-object to))
+         :test #'version=)
+        #'version<))
+
 (defmethod migrate (system from to)
   (unless (version= from to)
     (assert (version< from to) (from to)
             "Cannot migrate backwards from ~s to ~s."
             (encode-version from) (encode-version to))
-    (traverse-system-dependencies system (lambda (system) (migrate system T T)))
-    (asdf:traverse)
     (let ((versions (version-bounds (versions system) :start from :end to)))
       (loop for (from to) on versions
             do (migrate-versions system from to)))))
