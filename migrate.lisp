@@ -124,6 +124,7 @@
     (assert (version< from to) (from to)
             "Cannot migrate backwards from ~s to ~s."
             (encode-version from) (encode-version to))
+    ;; FIXME: Ensure upgraded deps
     (let ((versions (version-bounds (versions module) :start from :end to)))
       (loop for (from to) on versions
             do (migrate-versions module from to)))))
@@ -138,3 +139,12 @@
 
 (defmethod migrate (module (from (eql T)) to)
   (migrate module (last-known-module-version module) to))
+
+
+(defmethod migrate-version ((module (eql #.*package*)) (from null) (to (eql :2.0.0)))
+  (let ((previous-config-directory (merge-pathnames "radiance/" (ubiquitous:config-directory))))
+    (when (uiop:directory-exists-p previous-config-directory)
+      (loop for original-path in (uiop:subdirectories previous-config-directory)
+            for environment = (car (last (pathname-directory environment)))
+            for new-path = (environment-directory environment :configuration)
+            do (rename-file original-path new-path)))))
