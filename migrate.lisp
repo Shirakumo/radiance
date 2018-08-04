@@ -91,27 +91,36 @@
       (setf (cdr last) (list end)))
     versions))
 
-(defmethod last-known-module-version (module)
-  (config :versions (module-name module)))
+(defmethod last-known-system-version (system)
+  (config :versions (system-name system)))
 
-(defmethod (setf last-known-module-version) (version module)
-  (config :versions (module-name module) (encode-version version)))
+(defmethod (setf last-known-system-version) (version system)
+  (config :versions (system-name system) (encode-version version)))
 
-(defgeneric migrate-versions (module from to))
+(defgeneric migrate-versions (system from to))
 
-(defmethod migrate-versions (module from to)
+(defmethod migrate-versions (system from to)
   :ignored)
 
-(defmethod migrate-versions :after (module from to)
-  (setf (last-known-module-version module) to))
+(defmacro define-version-migration ((system from to) &body body)
+  (check-type system keyword)
+  (check-type from (or keyword null))
+  (check-type to keyword)
+  `(defmethod migrate-versions ((,(gensym "SYSTEM") (eql ,system))
+                                (,(gensym "FROM") (eql ,from))
+                                (,(gensym "TO") (eql ,to)))
+     ,@body))
 
-(defun versions (module)
+(defmethod migrate-versions :after (system from to)
+  (setf (last-known-system-version system) to))
+
+(defun versions (system)
   (sort (remove-duplicates
          (loop for method in (c2mop:generic-function-methods #'migrate-versions)
-               for (mod from to) = (c2mop:method-specializers method)
+               for (sys from to) = (c2mop:method-specializers method)
                for matching = (and (null (method-qualifiers method))
-                                   (typep mod 'c2mop:eql-specializer)
-                                   (eql module (c2mop:eql-specializer-object mod)))
+                                   (typep sys 'c2mop:eql-specializer)
+                                   (eql system (c2mop:eql-specializer-object sys)))
                when (and matching (typep from 'c2mop:eql-specializer))
                collect (c2mop:eql-specializer-object from)
                when (and matching (typep to 'c2mop:eql-specializer))
@@ -119,29 +128,48 @@
          :test #'version=)
         #'version<))
 
-(defmethod migrate (module from to)
+(defun ensure-system (system-ish &optional parent)
+  (typecase system-ish
+    (asdf:system
+     system-ish)
+    ((or string symbol)
+     (asdf:find-system system-ish T))
+    (cons
+     (asdf/find-component:resolve-dependency-spec
+      parent system-ish))))
+
+(defun traverse-system-dependencies (system function)
+  (let ((cache (make-hash-table :test 'eq)))
+    (labels ((traverse (system)
+               (unless (gethash system cache)
+                 (setf (gethash system cache) T)
+                 (dolist (subsystem (append (asdf:system-defsystem-depends-on system)
+                                            (asdf:system-depends-on system)))
+                   (traverse (ensure-system subsystem system)))
+                 (funcall function system))))
+      (traverse system))))
+
+(defmethod migrate (system from to)
   (unless (version= from to)
     (assert (version< from to) (from to)
             "Cannot migrate backwards from ~s to ~s."
             (encode-version from) (encode-version to))
-    ;; FIXME: Ensure upgraded deps
-    (let ((versions (version-bounds (versions module) :start from :end to)))
+    (traverse-system-dependencies system (lambda (system) (migrate system T T)))
+    (asdf:traverse)
+    (let ((versions (version-bounds (versions system) :start from :end to)))
       (loop for (from to) on versions
-            do (migrate-versions module from to)))))
+            do (migrate-versions system from to)))))
 
-(defmethod migrate (module from (to (eql T)))
-  (let* ((virtual (virtual-module module))
-         (version (or (module-storage module :version)
-                      (when virtual (asdf:component-version version)))))
+(defmethod migrate (system from (to (eql T)))
+  (let ((version (asdf:component-version version)))
     (if version
-        (migrate module from version)
-        (error 'module-has-no-version :module module))))
+        (migrate system from version)
+        (error 'system-has-no-version :system system))))
 
-(defmethod migrate (module (from (eql T)) to)
-  (migrate module (last-known-module-version module) to))
+(defmethod migrate (system (from (eql T)) to)
+  (migrate system (last-known-system-version system) to))
 
-
-(defmethod migrate-version ((module (eql #.*package*)) (from null) (to (eql :2.0.0)))
+(define-version-migration (:radiance-core NIL :2.0.0)
   (let ((previous-config-directory (merge-pathnames "radiance/" (ubiquitous:config-directory))))
     (when (uiop:directory-exists-p previous-config-directory)
       (loop for original-path in (uiop:subdirectories previous-config-directory)
