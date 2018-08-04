@@ -120,9 +120,13 @@
         #'version<))
 
 (defmethod migrate (module from to)
-  (let ((versions (version-bounds (versions module) :start from :end to)))
-    (loop for (from to) on versions
-          do (migrate-versions module from to))))
+  (unless (version= from to)
+    (assert (version< from to) (from to)
+            "Cannot migrate backwards from ~s to ~s."
+            (encode-version from) (encode-version to))
+    (let ((versions (version-bounds (versions module) :start from :end to)))
+      (loop for (from to) on versions
+            do (migrate-versions module from to)))))
 
 (defmethod migrate (module from (to (eql T)))
   (let* ((virtual (virtual-module module))
