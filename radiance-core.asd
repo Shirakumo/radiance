@@ -21,6 +21,7 @@
                (:file "environment")
                (:file "interfaces")
                (:file "modules")
+               (:file "migration")
                (:file "uri")
                (:file "resource")
                (:file "routing")
@@ -46,5 +47,6 @@
                :form-fiddle
                :bordeaux-threads
                :documentation-utils
-               :babel)
+               :babel
+               :closer-mop)
   :in-order-to ((asdf:test-op (asdf:test-op :radiance-test))))
