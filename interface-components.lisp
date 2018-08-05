@@ -19,10 +19,11 @@
        (define-hook-switch ,on ,off ,args))))
 
 (define-component-expander define-resource-locator (interface type args)
-  `(define-resource-locator ,(package-name interface) ,type ,args
-     (declare (ignore ,@(lambda-fiddle:extract-lambda-vars args)))
-     (error "Resource locator ~a not implemented for interface ~a!"
-            ,(string-upcase type) ,(package-name interface))))
+  `(unless (modularize-interfaces:implementation ,interface)
+     (define-resource-locator ,(package-name interface) ,type ,args
+       (declare (ignore ,@(lambda-fiddle:extract-lambda-vars args)))
+       (error "Resource locator ~a not implemented for interface ~a!"
+              ,(string-upcase type) ,(package-name interface)))))
 
 (define-component-expander define-option-type (interface name)
   `',(or (find-symbol (string name) interface)
