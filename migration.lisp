@@ -107,17 +107,6 @@
      (asdf/find-component:resolve-dependency-spec
       parent system-ish))))
 
-(defun traverse-system-dependencies (system function)
-  (let ((cache (make-hash-table :test 'eq)))
-    (labels ((traverse (system)
-               (unless (gethash system cache)
-                 (setf (gethash system cache) T)
-                 (dolist (subsystem (append (asdf:system-defsystem-depends-on system)
-                                            (asdf:system-depends-on system)))
-                   (traverse (ensure-system subsystem system)))
-                 (funcall function system))))
-      (traverse system))))
-
 (defgeneric migrate-versions (system from to))
 
 (defmethod migrate-versions (system from to))
