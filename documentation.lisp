@@ -1257,6 +1257,262 @@ information until later.
 
 See DEFINE-INTERFACE"))
 
+;; migration.lisp
+(docs:define-docs
+  (function encode-version
+    "Encodes the given version into a version name as a keyword.
+
+Each part of the version spec is concatenated as follows:
+  VERSION-NAME    ::= (string|integer) (VERSION-STRING | VERSION-INTEGER)*
+  VERSION-STRING  ::= '-' string
+  VERSION-INTEGER ::= '.' integer
+
+Essentially meaning that integer sub-versions are preceded by a
+dot and string sub-versions by a dash.")
+  
+  (function parse-version
+    "Parses the given string into a version spec.
+
+The string should be of the following format:
+  VERSION-NAME ::= VERSION-PART (('.' | '-') VERSION-PART)+
+  VERSION-PART ::= integer | string
+
+See ENSURE-PARSED-VERSION")
+  
+  (function ensure-parsed-version
+    "Ensures that the given version is in the version spec format.
+
+Returns a version spec:
+  VERSION-SPEC ::= (VERSION-PART+)
+  VERSION-PART ::= integer | string
+
+See PARSE-VERSION")
+
+  (function ensure-versions-comparable
+    "Ensures the two versions are of the same length.
+
+If one of the versions is shorter, it is extended by 0 elements
+in its spec. Both of the versions are returned, with the specs
+having equal length.
+
+See ENSURE-PARSED-VERSION")
+
+  (function version-part=
+    "Returns T if the two version parts are considered equal.
+
+The following table should cover all cases:
+ ↓A B→ INTEGER  STRING
+INTEGER    =      NIL
+STRING    NIL   STRING=")
+
+  (function version-part<
+    "Returns T if the first version part is considered lower.
+
+The following table should cover all the cases:
+ ↓A B→ INTEGER  STRING
+INTEGER    <       T
+STRING    NIL   STRING<")
+
+  (function version=
+    "Returns T if the two version specs are considered equal.
+
+First ensures both versions are of equal length, then calls
+VERSION-PART= on each part of the versions. If they are all
+VERSION-PART=, then T is returned and NIL otherwise.
+
+See ENSURE-VERSIONS-COMPARABLE
+See VERSION-PART=")
+
+  (function version<
+    "Returns T if the first version is considered lower.
+
+First ensures both versions are of equal length, then calls
+VERSION-PART= on each part of the versions. If it returns NIL,
+then VERSION-PART< is called. If this returns T, T is returned,
+otherwise NIL is returned. If all parts are VERSION-PART=, NIL is
+returned.
+
+See ENSURE-VERSIONS-COMPARABLE
+See VERSION-PART=
+See VERSION-PART<")
+
+  (function version<=
+    "Returns T if the first version is considered lower.
+
+First ensures both versions are of equal length, then calls
+VERSION-PART= on each part of the versions. If it returns NIL,
+then VERSION-PART< is called. If this returns T, T is returned,
+otherwise NIL is returned. If all parts are VERSION-PART=, T is
+returned.
+
+See ENSURE-VERSIONS-COMPARABLE
+See VERSION-PART=
+See VERSION-PART<")
+
+  (function version-region
+    "Returns the subsequence of VERSIONS that are denoted by start and end.
+
+For instance, the version list '(1 2 4 5 6) for the bounds 3 and 6
+would return '(4 5 6).
+
+The list of versions is assumed to be sorted by VERSION<.
+
+See VERSION<=")
+
+  (function version-bounds
+    "Returns a subsequence of VERSIONS that is bounded by start and end.
+
+For instance, the version list '(1 2 4 5 6) for the bounds 3 and 6
+would return '(3 4 5 6).
+
+The list of versions is assumed to be sorted by VERSION<.
+
+See VERSION-REGION")
+  
+  (function last-known-system-version
+    "Return the last known version of this system that had been migrated to.
+
+Returns the version as an encoded keyword or NIL if the system
+has not seen a migration previously. This version is automatically
+adapted after MIGRATE-VERSIONS on the system completes
+successfully.
+
+See MIGRATE-VERSIONS")
+  
+  (function migrate-versions
+    "Perform a migration of the system from the given source version to the given target version.
+
+If a system or module requires manual intervention to upgrade
+data or other parts in order to move between versions, the author
+of the system should specialise a method on this function that
+performs the requested upgrade step.
+
+FROM and TO should be encoded versions in keyword form. FROM can
+also be the NIL symbol, which is useful to migrate from previously
+unknown versions to another.
+
+Note that the version steps between migrate-version methods on the
+same system should be contiguous. This means that if a system has
+the concrete versions 1, 2, 3, and 4, then there should be methods
+(if necessary) to upgrade from 1 to 2, from 2 to 3, from 3 to 4.
+Migration steps with gaps, such as from 2 to 4, will not be
+triggered by the system.
+
+Also note that by default the list of concrete versions a system
+offers are inferred from the methods defined on this function.
+There is no need to further inform the system on available
+concrete versions of a system.
+
+A default method that performs no action is provided on this
+function, as in the majority of cases no migration step is
+required. As such, methods need only be added to this function if
+an action is required.
+
+Before the primary method is executed, ENSURE-DEPENDENCIES-READY
+is called on the system and the source version. This should
+ensure that dependant systems are on a required version for this
+system to perform its own actions.
+
+After the primary method has completed, the target version is
+recorded as the last known concrete system version.
+
+The user should NOT call this function. It is called by MIGRATE
+as appropriate.
+
+See DEFINE-VERSION-MIGRATION
+See VERSIONS
+See MIGRATE
+See ENSURE-DEPENDENCIES-READY
+See LAST-KNOWN-SYSTEM-VERSION")
+  
+  (function define-version-migration
+    "A shorthand to define a version migration method for a system.
+
+SYSTEM may be a string or symbol naming the ASDF system to define
+a migration action for. FROM may be NIL, a symbol, or a string
+naming the source version. TO may be a symbol or a string naming
+the target version.
+
+BODY should be a number of forms to be executed when the system
+is moved from the source version to the target version.
+
+See MIGRATE-VERSIONS")
+  
+  (function ready-dependency-for-migration
+    "This function should ensure that the dependency conforms to the system's required state to migrate away from the given version.
+
+By default this will invoke MIGRATE on the dependency with both
+source and from versions being T.
+
+The user should supply methods on this function to customise the
+precise versions or features required to perform the migration of
+the system properly.
+
+See MIGRATE")
+  
+  (function ensure-dependencies-ready
+    "This function should ensure that all dependencies of the given system are ready for the system to perform a migration away from the given version.
+
+By default this will call READY-DEPENDENCY-FOR-MIGRATION on all
+systems that are recorded in the system's defsystem-dependencies
+and regular dependencies.
+
+The user should supply methods on this function in case it is
+necessary to perform actions on other systems for the migration
+to perform smoothly.
+
+See READY-DEPENDENCY-FOR-MIGRATION
+See ASDF:SYSTEM-DEFSYSTEM-DEPENDS-ON
+See ASDF:SYSTEM-DEPENDS-ON")
+  
+  (function versions
+    "Returns a list of concrete version designators that are known for the given system.
+
+This list is deduplicated and sorted in such a way that lower
+versions come earlier in the list.
+
+By default this list is computed by inspecting the list of primary
+methods on MIGRATE-VERSION, extracting the version specifiers, and
+subsequently deduplicating and sorting the resulting list.
+
+The user may supply methods on this function in case the
+automatically computed list of versions is inadequate somehow.
+
+See VERSION<
+See MIGRATE
+See MIGRATE-VERSIONS")
+  
+  (function migrate
+    "Migrates the given system between the given versions.
+
+Sometimes when versions change, a migration of runtime data is
+required to ensure that the system still operates correctly on
+existing data.
+
+This function should ensure that this compatibility is achieved.
+
+The system should be a designator for an ASDF system.
+
+FROM may be one of the following:
+  T       --- The system is migrated from its last known version.
+  NIL     --- The system is migrated from a time before migrations.
+  version --- The system is migrated from this specific version.
+
+TO may be one of the following:
+  T       --- The system is migrated to its current system version.
+  version --- The system is migrated to this specific version.
+
+When this function is called it determines the list of effective
+versions in the range of the specified FROM and TO versions.
+It then calls MIGRATE-VERSION on the system and each pair of
+versions in the computed range. For instance, if the list of
+versions is (1 2 3 4), then MIGRATE-VERSION is called with the
+pairs (1 2) (2 3) (3 4).
+
+See ENSURE-PARSED-VERSION
+See VERSIONS
+See MIGRATE-VERSION"))
+
 ;; modules.lisp
 (docs:define-docs
   (function module-domain
