@@ -118,11 +118,6 @@
                  (funcall function system))))
       (traverse system))))
 
-(defgeneric version-dependencies (system version))
-
-(defmethod version-dependencies (system version)
-  ())
-
 (defgeneric migrate-versions (system from to))
 
 (defmethod migrate-versions (system from to))
@@ -136,15 +131,17 @@
                                 (,(gensym "TO") (eql ,to)))
      ,@body))
 
+(defmethod ready-dependency-for-migration (dependency system from)
+  (migrate dependency T T))
+
+(defmethod ensure-dependencies-ready (system from)
+  (loop for spec = (append (asdf:system-defsystem-depends-on system)
+                           (asdf:system-depends-on system))
+        for dependency = (ensure-system spec system)
+        do (ready-dependency-for-migration dependency system from)))
+
 (defmethod migrate-versions :before (system from to)
-  (let ((deps (version-dependencies system from)))
-    (flet ((migrate-dependency (dependency)
-             (loop for (dep version) in deps
-                   do (when (eql (ensure-system dependency)
-                                 (ensure-system dep))
-                        (migrate dependency T version))
-                   finally (migrate dependency T T))))
-      (traverse-system-dependencies system #'migrate-dependency))))
+  (ensure-dependencies-ready system from))
 
 (defmethod migrate-versions :after (system from to)
   (setf (last-known-system-version system) to))
