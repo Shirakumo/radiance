@@ -122,13 +122,15 @@
 
 (defmethod migrate-versions (system from to))
 
-(defmacro define-version-migration ((system from to) &body body)
-  (check-type system keyword)
-  (check-type from (or keyword null))
-  (check-type to keyword)
-  `(defmethod migrate-versions ((,(gensym "SYSTEM") (eql ,system))
-                                (,(gensym "FROM") (eql ,from))
-                                (,(gensym "TO") (eql ,to)))
+(defmacro define-version-migration (system (from to) &body body)
+  (check-type system (or symbol string))
+  `(defmethod migrate-versions ((,(gensym "SYSTEM") (eql (asdf:find-system ',system)))
+                                (,(gensym "FROM") (eql ,(etypecase from
+                                                          ((or null keyword) from)
+                                                          ((or symbol string) (intern (string-upcase from) :keyword)))))
+                                (,(gensym "TO") (eql ,(etypecase from
+                                                        (keyword from)
+                                                        ((or symbol string) (intern (string-upcase from) :keyword))))))
      ,@body))
 
 (defmethod ready-dependency-for-migration (dependency system from)
@@ -160,7 +162,7 @@
          :test #'version=)
         #'version<))
 
-(defmethod migrate (system from to)
+(defmethod migrate ((system asdf:system) from to)
   (unless (version= from to)
     (assert (version< from to) (from to)
             "Cannot migrate backwards from ~s to ~s."
@@ -169,22 +171,17 @@
       (loop for (from to) on versions
             do (migrate-versions system from to)))))
 
-(defmethod migrate (system from (to (eql T)))
+(defmethod migrate ((system asdf:system) from (to (eql T)))
   (let ((version (asdf:component-version version)))
     (if version
         (migrate system from version)
         (error 'system-has-no-version :system system))))
 
-(defmethod migrate (system (from (eql T)) to)
+(defmethod migrate ((system asdf:system) (from (eql T)) to)
   (migrate system (last-known-system-version system) to))
 
-(define-version-migration (:radiance-core NIL :2.0.0)
-  (let ((previous-config-directory (merge-pathnames "radiance/" (ubiquitous:config-directory))))
-    (when (uiop:directory-exists-p previous-config-directory)
-      (l:info :radiance.migrate "Migrating previous configuration from ~a."
-              previous-config-directory)
-      (loop for original-path in (uiop:subdirectories previous-config-directory)
-            for environment = (car (last (pathname-directory environment)))
-            for new-path = (environment-directory environment :configuration)
-            do (rename-file original-path new-path))
-      (uiop:delete-empty-directory previous-config-directory))))
+(defmethod migrate ((system symbol) from to)
+  (migrate (asdf:find-system system T) from to))
+
+(defmethod migrate ((system string) from to)
+  (migrate (asdf:find-system system T) from to))
