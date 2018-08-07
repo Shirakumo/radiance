@@ -173,6 +173,15 @@
    #:load-implementation
    #:define-interface
    #:define-implement-trigger)
+  ;; migration.lisp
+  (:export
+   #:last-known-system-version
+   #:migrate-versions
+   #:define-version-migration
+   #:ready-dependency-for-migration
+   #:ensure-dependencies-ready
+   #:versions
+   #:migrate)
   ;; modules.lisp
   (:export
    #:module-domain
