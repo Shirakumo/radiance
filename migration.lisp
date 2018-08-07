@@ -91,11 +91,17 @@
       (setf (cdr last) (list end)))
     versions))
 
+(defmethod last-known-system-version ((system asdf:system))
+  (config :versions (asdf:component-name system)))
+
 (defmethod last-known-system-version (system)
-  (config :versions (system-name system)))
+  (last-known-system-version (asdf:find-system system T)))
+
+(defmethod (setf last-known-system-version) (version (system asdf:system))
+  (setf (config :versions (asdf:component-name system)) (encode-version version)))
 
 (defmethod (setf last-known-system-version) (version system)
-  (config :versions (system-name system) (encode-version version)))
+  (setf (last-known-system-version (asdf:find-system system T)) version))
 
 (defun ensure-system (system-ish &optional parent)
   (typecase system-ish
@@ -109,23 +115,11 @@
 
 (defgeneric migrate-versions (system from to))
 
-(defmethod migrate-versions (system from to))
-
-(defmacro define-version-migration (system (from to) &body body)
-  (check-type system (or symbol string))
-  `(defmethod migrate-versions ((,(gensym "SYSTEM") (eql (asdf:find-system ',system)))
-                                (,(gensym "FROM") (eql ,(etypecase from
-                                                          ((or null keyword) from)
-                                                          ((or symbol string) (intern (string-upcase from) :keyword)))))
-                                (,(gensym "TO") (eql ,(etypecase from
-                                                        (keyword from)
-                                                        ((or symbol string) (intern (string-upcase from) :keyword))))))
-     ,@body))
-
 (defmethod ready-dependency-for-migration (dependency system from)
+  (declare (ignore system from))
   (migrate dependency T T))
 
-(defmethod ensure-dependencies-ready (system from)
+(defmethod ensure-dependencies-ready ((system asdf:system) from)
   (loop for spec = (append (asdf:system-defsystem-depends-on system)
                            (asdf:system-depends-on system))
         for dependency = (ensure-system spec system)
@@ -134,10 +128,25 @@
 (defmethod migrate-versions :before (system from to)
   (ensure-dependencies-ready system from))
 
+(defmethod migrate-versions (system from to))
+
 (defmethod migrate-versions :after (system from to)
   (setf (last-known-system-version system) to))
 
-(defun versions (system)
+(defmacro define-version-migration (system (from to) &body body)
+  (check-type system (or symbol string))
+  (let ((from (etypecase from
+                ((or null keyword) from)
+                ((or symbol string) (intern (string-upcase from) :keyword))))
+        (to (etypecase to
+              (keyword to)
+              ((or symbol string) (intern (string-upcase to) :keyword)))))
+    `(defmethod migrate-versions ((,(gensym "SYSTEM") (eql (asdf:find-system ',system)))
+                                  (,(gensym "FROM") (eql ,from))
+                                  (,(gensym "TO") (eql ,to)))
+       ,@body)))
+
+(defmethod versions ((system asdf:system))
   (sort (remove-duplicates
          (loop for method in (c2mop:generic-function-methods #'migrate-versions)
                for (sys from to) = (c2mop:method-specializers method)
