@@ -35,6 +35,7 @@
                (:file "handle")
                (:file "defaults")
                (:file "init")
+               (:file "version-upgrades")
                (:file "documentation"))
   :depends-on (:modularize-hooks
                :modularize-interfaces
