@@ -17,9 +17,11 @@
 
 (defun startup (&optional (environment (or *environment* "default")))
   (check-type environment string)
-  
   (when *running*
     (error "Radiance is already running!"))
+  
+  ;; Migrate Radiance on its own if necessary.
+  (migrate 'radiance-core T T)
 
   (setf *startup-time* (get-universal-time))
   (setf (environment) environment)
@@ -28,17 +30,23 @@
     (setf *debugger* (config :debugger)))
 
   (unless (implementation 'logger)
-    (load-implementation 'logger))
+    (migrate (load-implementation 'logger) T T))
 
   (trigger 'startup)
 
   (l:info :radiance "Starting up.")
   (l:info :radiance "Ensuring prerequisites.")
   (unless (implementation 'server)
-    (load-implementation 'server))
+    (migrate (load-implementation 'server) T T))
 
   (l:info :radiance "Starting server.")
   (trigger 'server-start)
+
+  (l:info :radiance "Migrating already loaded systems.")
+  (dolist (system (asdf:already-loaded-systems))
+    (when (typep system 'virtual-module)
+      (migrate system T T)))
+  
   (setf *running* T)
   (trigger 'server-ready)
 
