@@ -1485,7 +1485,7 @@ See MIGRATE")
 
 By default this will call READY-DEPENDENCY-FOR-MIGRATION on all
 systems that are recorded in the system's defsystem-dependencies
-and regular dependencies.
+and regular dependencies, AND are virtual-module systems.
 
 The user should supply methods on this function in case it is
 necessary to perform actions on other systems for the migration

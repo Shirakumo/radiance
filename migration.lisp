@@ -135,7 +135,8 @@
   (loop for spec in (append (asdf:system-defsystem-depends-on system)
                             (asdf:system-depends-on system))
         for dependency = (ensure-system spec system)
-        do (ready-dependency-for-migration dependency system from)))
+        do (when (typep dependency 'virtual-module)
+             (ready-dependency-for-migration dependency system from))))
 
 (defmethod migrate-versions :before (system from to)
   (l:debug :radiance.migration "Migrating ~a from ~a to ~a."
