@@ -128,16 +128,17 @@
 
 (defmethod ready-dependency-for-migration (dependency system from)
   (declare (ignore system from))
-  (migrate dependency T T))
+  (handler-bind ((system-has-no-version #'continue))
+    (migrate dependency T T)))
 
 (defmethod ensure-dependencies-ready ((system asdf:system) from)
-  (loop for spec = (append (asdf:system-defsystem-depends-on system)
-                           (asdf:system-depends-on system))
+  (loop for spec in (append (asdf:system-defsystem-depends-on system)
+                            (asdf:system-depends-on system))
         for dependency = (ensure-system spec system)
         do (ready-dependency-for-migration dependency system from)))
 
 (defmethod migrate-versions :before (system from to)
-  (l:debug :radiance.migration "Migrating ~s from ~a to ~a."
+  (l:debug :radiance.migration "Migrating ~a from ~a to ~a."
            (asdf:component-name system) (encode-version from) (encode-version to))
   (ensure-dependencies-ready system from))
 
