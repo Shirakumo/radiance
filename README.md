@@ -290,7 +290,16 @@ The environment also allows administrator overrides. Using the `:static` and `:t
 
 See `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`, `template-file`, `@template`, `static-file`, `@static`
 
-### 1.12 Instance Management
+### 1.12 Migration System
+Sometimes systems evolve in backwards incompatible ways. In that case, for existing setups to continue functioning with the new version, runtime data migration is necessary. Radiance offers a system to automate this process and allow a smooth upgrade. 
+
+The migration between versions should occur automatically during Radiance's startup sequence. As an administrator or author you should not need to perform any additional steps for migrations to occur. However, as a module author, you will naturally have to provide the code to perform the necessary data migration steps for your module.
+
+In order for a module to be migratable, it needs to be loaded by an ASDF system that has a version specification. The version should follow the standard dotted number scheme, with an optional version hash that can be added at the end. You may then define migration steps between individual versions by using `define-version-migration`. Once defined, Radiance will automatically pick up on concrete versions and perform the necessary migrations in sequence to reach the current target version. For more information on the precise procedure and what you can do, see `migrate` and `migrate-versions`.
+
+See `last-known-system-version`, `migrate-versions`, `define-version-migration`, `ready-dependency-for-migration`, `ensure-dependencies-ready`, `versions`, `migrate`
+
+### 1.13 Instance Management
 Finally, Radiance provides a standard startup and shutdown sequence that should ensure things are properly setup and readied, and afterwards cleaned up nicely again. A large part of that sequence is just ensuring that certain hooks are called in the proper order and at the appropriate times.
 
 While you can start a server manually by using the appropriate interface function, you should not expect applications to run properly if you do it that way. Many of them will expect certain hooks to be called in order to work properly. This is why you should always, unless you exactly know what you're doing, use `startup` and `shutdown` to manage a Radiance instance. The documentation of the two functions should explain exactly which hooks are triggered and in which order. An implementation may provide additional, unspecified definitions on symbols in the interface package, as long as said symbols are not exported.
