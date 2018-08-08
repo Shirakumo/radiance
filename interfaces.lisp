@@ -40,6 +40,10 @@
          (funcall ,symbol ,@args)))))
 
 (defmethod asdf:perform :after ((op asdf:load-op) (virtual-module virtual-module))
+  ;; Trigger potential migrations if we're already started up.
+  (when *running*
+    (migrate virtual-module T T))
+  ;; Register implementations
   (loop for interface in (module-storage (module (virtual-module-name virtual-module)) :implements)
         do (trigger (find-symbol (string :implemented) (interface interface)))
            (future l debug :interfaces "~a now implemented by ~a" (module-name interface) (module-name (virtual-module-name virtual-module)))))
