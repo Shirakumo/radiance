@@ -1539,9 +1539,24 @@ versions in the computed range. For instance, if the list of
 versions is (1 2 3 4), then MIGRATE-VERSION is called with the
 pairs (1 2) (2 3) (3 4).
 
+If the target version is T and the system has no recorded version,
+an error of type SYSTEM-HAS-NO-VERSION is signalled. If the target
+version is considered less than the source version, an error of
+type BACKWARDS-MIGRATION-NOT-ALLOWED is signalled.
+
+Two restarts are established during migration:
+  ABORT         --- Aborts migration of the current system,
+                    leaving the last known system version the
+                    same.
+  FORCE-VERSION --- Aborts the migration of the current system,
+                    but forces the last known system version to
+                    the requested target version.
+
 See ENSURE-PARSED-VERSION
 See VERSIONS
-See MIGRATE-VERSION"))
+See MIGRATE-VERSION
+See SYSTEM-HAS-NO-VERSION
+See BACKWARDS-MIGRATION-NOT-ALLOWED"))
 
 ;; modules.lisp
 (docs:define-docs

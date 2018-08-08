@@ -177,15 +177,18 @@
 
 (defmethod migrate ((system asdf:system) from to)
   (unless (version= from to)
-    (assert (version< from to) (from to)
-            'backwards-migration-not-allowed
-            :from from :to to)
-    (l:info :radiance.migration "Migrating ~a from ~a to ~a."
-            (asdf:component-name system) (encode-version from) (encode-version to))
-    (let ((versions (version-bounds (versions system) :start from :end to)))
-      (loop for (from to) on versions
-            while to
-            do (migrate-versions system from to)))))
+    (with-simple-restart (abort "Abort the migration.")
+      (with-simple-restart (force-version "Treat the migration as having been successful.")
+        (assert (version< from to) (from to)
+                'backwards-migration-not-allowed
+                :from from :to to)
+        (l:info :radiance.migration "Migrating ~a from ~a to ~a."
+                (asdf:component-name system) (encode-version from) (encode-version to))
+        (let ((versions (version-bounds (versions system) :start from :end to)))
+          (loop for (from to) on versions
+                while to
+                do (migrate-versions system from to))))
+      (setf (last-known-system-version system) to))))
 
 (defmethod migrate ((system asdf:system) from (to (eql T)))
   (let ((version (asdf:component-version system)))
