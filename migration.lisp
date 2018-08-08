@@ -182,7 +182,7 @@
             do (migrate-versions system from to)))))
 
 (defmethod migrate ((system asdf:system) from (to (eql T)))
-  (let ((version (asdf:component-version version)))
+  (let ((version (asdf:component-version system)))
     (if version
         (migrate system from version)
         (error 'system-has-no-version :system system))))
