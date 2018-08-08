@@ -1320,6 +1320,10 @@ First ensures both versions are of equal length, then calls
 VERSION-PART= on each part of the versions. If they are all
 VERSION-PART=, then T is returned and NIL otherwise.
 
+A special exemption is made for NIL version specs. If both
+versions are NIL, T is returned. Otherwise, if only one spec is
+NIL, NIL is returned.
+
 See ENSURE-VERSIONS-COMPARABLE
 See VERSION-PART=")
 
@@ -1331,6 +1335,10 @@ VERSION-PART= on each part of the versions. If it returns NIL,
 then VERSION-PART< is called. If this returns T, T is returned,
 otherwise NIL is returned. If all parts are VERSION-PART=, NIL is
 returned.
+
+A special exemption is made for NIL version specs. If both
+versions are NIL, NIL is returned. Otherwise, if the first spec
+is NIL, T is returned. If the second spec is NIL, NIL is returned.
 
 See ENSURE-VERSIONS-COMPARABLE
 See VERSION-PART=
@@ -1344,6 +1352,10 @@ VERSION-PART= on each part of the versions. If it returns NIL,
 then VERSION-PART< is called. If this returns T, T is returned,
 otherwise NIL is returned. If all parts are VERSION-PART=, T is
 returned.
+
+A special exemption is made for NIL version specs. If both
+versions are NIL, T is returned. Otherwise, if the first spec
+is NIL, T is returned. If the second spec is NIL, NIL is returned.
 
 See ENSURE-VERSIONS-COMPARABLE
 See VERSION-PART=
