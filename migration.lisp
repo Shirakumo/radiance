@@ -53,28 +53,36 @@
 (defmethod version-part< ((a string)  (b string))  (string< a b))
 
 (defun version= (a b)
-  (multiple-value-bind (a-parts b-parts) (ensure-versions-comparable a b)
-    (loop for a in a-parts
-          for b in b-parts
-          always (version-part= a b))))
+  (cond ((eql a b) T)
+        ((or (null a) (null b)) NIL)
+        (T (multiple-value-bind (a-parts b-parts) (ensure-versions-comparable a b)
+             (loop for a in a-parts
+                   for b in b-parts
+                   always (version-part= a b))))))
 
 (defun version< (a b)
-  (multiple-value-bind (a-parts b-parts) (ensure-versions-comparable a b)
-    (loop for a in a-parts
-          for b in b-parts
-          do (cond ((version-part= a b))
-                   ((version-part< a b) (return T))
-                   (T                   (return NIL)))
-          finally (return NIL))))
+  (cond ((eql a b) NIL)
+        ((null a) T)
+        ((null b) NIL)
+        (T (multiple-value-bind (a-parts b-parts) (ensure-versions-comparable a b)
+             (loop for a in a-parts
+                   for b in b-parts
+                   do (cond ((version-part= a b))
+                            ((version-part< a b) (return T))
+                            (T                   (return NIL)))
+                   finally (return NIL))))))
 
 (defun version<= (a b)
-  (multiple-value-bind (a-parts b-parts) (ensure-versions-comparable a b)
-    (loop for a in a-parts
-          for b in b-parts
-          do (cond ((version-part= a b))
-                   ((version-part< a b) (return T))
-                   (T                   (return NIL)))
-          finally (return T))))
+  (cond ((eql a b) T)
+        ((null a) T)
+        ((null b) NIL)
+        (T (multiple-value-bind (a-parts b-parts) (ensure-versions-comparable a b)
+             (loop for a in a-parts
+                   for b in b-parts
+                   do (cond ((version-part= a b))
+                            ((version-part< a b) (return T))
+                            (T                   (return NIL)))
+                   finally (return T))))))
 
 (defun version-region (versions &key start end)
   (loop for version in versions
@@ -82,10 +90,10 @@
                   (or (not end) (version<= version end)))
         collect version))
 
-(defun version-bounds (versions &key start end)
+(defun version-bounds (versions &key (start NIL start-p) end)
   (let* ((versions (version-region versions :start start :end end))
          (last (last versions)))
-    (when (and start (version< start (first versions)))
+    (when (and start-p (version< start (first versions)))
       (push start versions))
     (when (and end (version< (car last) end))
       (setf (cdr last) (list end)))
