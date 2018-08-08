@@ -8,6 +8,7 @@
 
 (defun encode-version (version)
   (etypecase version
+    (null NIL)
     (keyword version)
     (string (intern version :KEYWORD))
     (cons (encode-version
@@ -25,6 +26,7 @@
 
 (defun ensure-parsed-version (version)
   (etypecase version
+    (null NIL)
     (cons version)
     ((or string keyword)
      (parse-version (string version)))))
@@ -173,19 +175,21 @@
 (defmethod migrate ((system asdf:system) from to)
   (unless (version= from to)
     (assert (version< from to) (from to)
-            "Cannot migrate backwards from ~s to ~s."
-            (encode-version from) (encode-version to))
-    (l:info :radiance.migration "Migrating ~s from ~a to ~a."
+            'backwards-migration-not-allowed
+            :from from :to to)
+    (l:info :radiance.migration "Migrating ~a from ~a to ~a."
             (asdf:component-name system) (encode-version from) (encode-version to))
     (let ((versions (version-bounds (versions system) :start from :end to)))
       (loop for (from to) on versions
+            while to
             do (migrate-versions system from to)))))
 
 (defmethod migrate ((system asdf:system) from (to (eql T)))
   (let ((version (asdf:component-version system)))
     (if version
         (migrate system from version)
-        (error 'system-has-no-version :system system))))
+        (cerror "Don't migrate the system and continue."
+                'system-has-no-version :system system))))
 
 (defmethod migrate ((system asdf:system) (from (eql T)) to)
   (migrate system (last-known-system-version system) to))

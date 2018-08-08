@@ -72,6 +72,8 @@
    #:radiance-condition
    #:message
    #:definition-for-shared-package
+   #:system-has-no-version
+   #:backwards-migration-not-allowed
    #:environment-not-set
    #:internal-error
    #:request-error
