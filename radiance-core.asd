@@ -8,7 +8,7 @@
   :class "modularize:virtual-module"
   :defsystem-depends-on (:modularize)
   :module-name "RADIANCE-CORE"
-  :version "1.5.0"
+  :version "2.0.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
@@ -21,7 +21,6 @@
                (:file "environment")
                (:file "interfaces")
                (:file "modules")
-               (:file "migration")
                (:file "uri")
                (:file "resource")
                (:file "routing")
@@ -34,6 +33,7 @@
                (:file "standard-interfaces")
                (:file "handle")
                (:file "defaults")
+               (:file "migration")
                (:file "init")
                (:file "version-upgrades")
                (:file "documentation"))
