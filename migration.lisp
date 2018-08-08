@@ -126,6 +126,8 @@
         do (ready-dependency-for-migration dependency system from)))
 
 (defmethod migrate-versions :before (system from to)
+  (l:debug :radiance.migration "Migrating ~s from ~a to ~a."
+           (asdf:component-name system) (encode-version from) (encode-version to))
   (ensure-dependencies-ready system from))
 
 (defmethod migrate-versions (system from to))
@@ -165,6 +167,8 @@
     (assert (version< from to) (from to)
             "Cannot migrate backwards from ~s to ~s."
             (encode-version from) (encode-version to))
+    (l:info :radiance.migration "Migrating ~s from ~a to ~a."
+            (asdf:component-name system) (encode-version from) (encode-version to))
     (let ((versions (version-bounds (versions system) :start from :end to)))
       (loop for (from to) on versions
             do (migrate-versions system from to)))))
