@@ -1380,7 +1380,7 @@ See VERSION-PART=
 See VERSION-PART<")
 
   (function version-region
-    "Returns the subsequence of VERSIONS that are denoted by start and end.
+    "Returns the versions in VERSIONS that are between START and END, inclusive.
 
 For instance, the version list '(1 2 4 5 6) for the bounds 3 and 6
 would return '(4 5 6).
@@ -1390,7 +1390,7 @@ The list of versions is assumed to be sorted by VERSION<.
 See VERSION<=")
 
   (function version-bounds
-    "Returns a subsequence of VERSIONS that is bounded by start and end.
+    "Returns the versions in VERSIONS that are between START and END, inclusive, ensuring the sequence starts with START and ends with END, if provided.
 
 For instance, the version list '(1 2 4 5 6) for the bounds 3 and 6
 would return '(3 4 5 6).
@@ -1532,7 +1532,7 @@ TO may be one of the following:
   T       --- The system is migrated to its current system version.
   version --- The system is migrated to this specific version.
 
-When this function is called it determines the list of effective
+When this function is called it determines the list of concrete
 versions in the range of the specified FROM and TO versions.
 It then calls MIGRATE-VERSION on the system and each pair of
 versions in the computed range. For instance, if the list of
