@@ -27,7 +27,7 @@
 
 (if (find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf)
     (eval
-     `(defmethod ,(find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf) ((virtual-module virtual-module) (combinator (eql :interface)) args)
+     `(defmethod ,(find-symbol "RESOLVE-DEPENDENCY-COMBINATION" :asdf) (system (combinator (eql :interface)) args)
         (find-implementation (first args))))
     (error "Radiance cannot support this version of ASDF. Sorry!"))
 
