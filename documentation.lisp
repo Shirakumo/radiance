@@ -283,6 +283,24 @@ systems.
 
 See RADIANCE-WARNING")
 
+  (type system-has-no-version
+    "Error signalled when an ASDF system does not store a version string.
+
+Without a version string, Radiance is incapable of tracking what the
+current version of a system is and is thus unable to automatically
+migrate it.
+
+This error should be continuable.
+
+See MIGRATE
+See RADIANCE-ERROR")
+
+  (type backwards-migration-not-allowed
+    "Error signalled when a migration from a later version to an earlier version is attempted.
+
+See MIGRATE
+See RADIANCE-ERROR")
+
   (type environment-not-set
     "Error signalled when an action was performed that requires an initialised environment, but no environment has been configured yet.
 

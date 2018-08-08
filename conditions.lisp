@@ -23,6 +23,17 @@
                                     This definition may lead to unintended overrides.~@[~%~a~]"
                                  (message c)))))
 
+(define-condition system-has-no-version (radiance-error)
+  ((system :initarg :system :initform (error "SYSTEM required.")))
+  (:report (lambda (c s) (format s "The system ~a has no version specified, so Radiance does not know how to migrate it to the latest point."
+                                 (asdf:component-name (slot-value c 'system))))))
+
+(define-condition backwards-migration-not-allowed (radiance-error)
+  ((from :initarg :from :initform (error "FROM required."))
+   (to :initarg :to :initform (error "TO required.")))
+  (:report (lambda (c s) (format s "Cannot migrate a system backwards from ~a to ~a."
+                                 (encode-version (slot-value c 'from)) (encode-version (slot-value c 'to))))))
+
 (define-condition environment-not-set (radiance-error) ()
   (:report "The application environment was not yet set but is required.
 This means you are either using Radiance for the first time or forgot to set it up properly.
