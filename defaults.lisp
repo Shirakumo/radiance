@@ -231,7 +231,7 @@
 
 ;;; Default logger to make sure we can log even before the real impl is laoded.
 (defun l:log (level category log-string &rest format-args)
-  (format *error-output* "~&~a [~a] <~a> ~?"
+  (format *error-output* "~&~a [~a] <~a> ~?~%"
           (format-human-date (get-universal-time)) level category log-string format-args))
 
 (defun l:trace (category log-string &rest format-args)
