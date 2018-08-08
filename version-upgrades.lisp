@@ -6,7 +6,7 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
-(define-version-migration radiance-core (NIL 2.0)
+(define-version-migration radiance-core (NIL 2.0.0)
   (let ((previous-config-directory (merge-pathnames "radiance/" (ubiquitous:config-directory))))
     (when (uiop:directory-exists-p previous-config-directory)
       (l:info :radiance.migrate "Migrating previous configuration from ~a."
