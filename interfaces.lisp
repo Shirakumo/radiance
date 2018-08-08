@@ -89,7 +89,8 @@
             #-quicklisp
             (asdf:load-system implementation)
             #+:quicklisp
-            (ql:quickload implementation)))))))
+            (ql:quickload implementation))
+          implementation)))))
 
 (defmacro define-interface (name &body components)
   `(interfaces:define-interface ,name
