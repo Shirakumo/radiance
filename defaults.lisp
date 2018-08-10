@@ -229,7 +229,7 @@
                ;; Other refer, no change.
                ))))))
 
-;;; Default logger to make sure we can log even before the real impl is laoded.
+;;; Default logger to make sure we can log even before the real impl is loaded.
 (defun l:log (level category log-string &rest format-args)
   (format *error-output* "~&~a [~a] <~a> ~?~%"
           (format-human-date (get-universal-time)) level category log-string format-args))
