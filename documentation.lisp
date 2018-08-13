@@ -731,6 +731,8 @@ the user may supply further kinds.
   :CONFIGURATION  --- The base for configuration files. The
                       MCONFIG/CONFIG functions access files in
                       this base directory.
+  :CACHE          --- The base for temporary cache files that
+                      may be cleared out without consequence.
   :DATA           --- The base for data files. Modules may use
                       this directory to store data files for
                       runtime caches, user data, etc.
@@ -752,6 +754,15 @@ By default the base paths are determined as follows:
 2. A subdirectory called \"radiance\" is added to the root.
 3. A subdirectory with the environment name is added to the root.
 
+  :CACHE
+1. A root is discovered as one of the following alternatives:
+1.1 The XDG_CACHE_HOME environment variable is consulted.
+1.2 On Windows the TEMP environment variable is consulted.
+1.3 On Windows the directory ~/Local Settings/Temp/ is used.
+1.4 The directory ~/.cache/ is used.
+2. A subdirectory called \"radiance\" is added to the root.
+3. A subdirectory with the environment name is added to the root.
+
   :DATA/:TEMPLATE/:STATIC
 1. A root is discovered as one of the following alternatives:
 1.1 The XDG_DATA_HOME environment variable is consulted.
@@ -760,6 +771,8 @@ By default the base paths are determined as follows:
 1.4 The directory ~/.local/share/ is used.
 2. A subdirectory called \"radiance\" is added to the root.
 3. A subdirectory with the environment name is added to the root.
+4. A subdirectory with the name of the type (data/template/static) 
+   is added to the root.
 
 For instance, the environment directory on a clean Linux system
 for the \"default\" environment and :configuration kind would be:

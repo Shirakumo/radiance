@@ -24,6 +24,15 @@
                         (etypecase base
                           (pathname base)
                           (string (uiop:parse-native-namestring base))))))
+    (:cache
+     (let ((base (or* (uiop:getenv "XDG_CACHE_HOME")
+                      #+windows (uiop:getenv "TEMP")
+                      #+windows (make-pathname :directory '(:absolute :home "Local Settings" "Temp"))
+                      (make-pathname :directory '(:absolute :home ".cache")))))
+       (merge-pathnames (make-pathname :directory `(:relative "radiance" ,environment))
+                        (etypecase base
+                          (pathname base)
+                          (string (uiop:parse-native-namestring base))))))
     ((:data :template :static)
      (let ((base (or* (uiop:getenv "XDG_DATA_HOME")
                       #+windows (uiop:getenv "LocalAppData")
