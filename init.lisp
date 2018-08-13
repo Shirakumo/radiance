@@ -44,8 +44,9 @@
 
   (l:info :radiance "Migrating already loaded systems.")
   (dolist (system (asdf:already-loaded-systems))
-    (when (typep system 'virtual-module)
-      (migrate system T T)))
+    (let ((system (ensure-system system)))
+      (when (typep system 'virtual-module)
+        (migrate system T T))))
   
   (setf *running* T)
   (trigger 'server-ready)
