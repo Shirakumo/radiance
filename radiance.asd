@@ -10,6 +10,7 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A web application environment."
+  :homepage "https://github.com/Shirakumo/radiance"
   :serial T
   :depends-on (:modularize
                :radiance-core)
