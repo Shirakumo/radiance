@@ -19,12 +19,12 @@
   (check-type environment string)
   (when *running*
     (error "Radiance is already running!"))
-  
-  ;; Migrate Radiance on its own if necessary.
-  (migrate 'radiance-core T T)
 
   (setf *startup-time* (get-universal-time))
   (setf (environment) environment)
+  
+  ;; Migrate Radiance on its own if necessary.
+  (migrate 'radiance-core T T)
 
   (unless (boundp '*debugger*)
     (setf *debugger* (config :debugger)))
