@@ -403,6 +403,15 @@ See `user:user` for a description of permissions and their behaviour.
 
 See `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:id`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`
 
+## Version Changes
+### 1.0 -> 2.0
+
+* The variable `*environment-root*` has been removed as per issue [#28](https://github.com/Shirakumo/radiance/issues/28) and fix [#29](https://github.com/Shirakumo/radiance/pull/29). It has instead been replaced by a more generic mechanism for environment directories, incorporated by the function `environment-directory`. If you previously customised `*environment-root*`, please now change `environment-directory` instead, as described in §1.11.
+* A new facility to automate migration for changes between module versions has been added as per issue [#30](https://github.com/Shirakumo/radiance/issues/30) and fix [#31](https://github.com/Shirakumo/radiance/issues/31). This facility is already being used in existing modules and Radiance itself to account for the new environment directories and automatically move previously existing data to the correct, new locations. Please see §1.12 for an explanation of the facility.
+* It is now possible for an administrator to override templates and static files of a module without changing the module's source as per issue [#26](https://github.com/Shirakumo/radiance/issues/26). Please see §1.11 for the relevant environment documentation, as well as functions `template-file` and `static-file`.
+* The user interface is now required to support an integer `user:id` identifier for each user object, allowing you to reference users in databases and records more efficiently.
+* The database interface is now required to support the keyword `:unique` on `db:select` and `db:iterate`.
+
 ## Also See
 
 * [modularize](https://shinmera.github.io/modularize) For the primary package metadata system
@@ -410,3 +419,4 @@ See `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `use
 * [modularize-hooks](https://shinmera.github.io/modularize-hooks) For the hooks and triggers mechanisms
 * [ubiquitous](https://shinmera.github.io/ubiquitous) For configuration management
 * [radiance-contribs](https://shirakumo.org/projects/radiance-contribs) Default interface implementations and other convenience modules for Radiance
+* [radiance-bootstrap](https://shirakumo.org/projects/radiance-bootstrap) A script to automate Radiance deployments on production systems
