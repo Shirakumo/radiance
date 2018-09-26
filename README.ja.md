@@ -314,9 +314,7 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 
 ### 1.11 環境
 
-複数のRadianceインスタンスに対して、同じマシン内で異なる設定ができるように、Radianceでは環境(Environment)という仕組みを用意しています。環境とは、基本的には、Radianceとロードされるモジュールのための設定ファイルの一式です。Radianceの設定は、インターフェイスを選択される実装にマッピングすることで、もしインターフェイスが求められたときに選択されるように決定します。
-↑
-In order to permit running multiple instances of Radiance with different setups on the same machine, Radiance provides what it calls an Environment system. The Environment is basically the set of configuration and runtime files for Radiance itself and all of the loaded modules. The Radiance configuration also includes the mapping of interface to chosen implementation and thus decides what should be picked if an interface is requested.
+複数のRadianceインスタンスに対して、同じマシン内で異なる設定ができるように、Radianceでは環境(Environment)という仕組みを用意しています。基本的に環境とは、Radianceの設定、ランタイム・ファイル、読み込まれるモジュール群の一式です。Radianceの設定は、インターフェイスの実装へのマッピングを含み、インターフェイスが求められたときに選ばれるようにします。
 
 `startup`が呼び出された時、どれだけ遅くとも、特定の環境が選択されます。早ければ、モジュールがロードされたときに選択されます。後者の場合は、環境を選ぶために、インタラクティブな再起動が可能です。これは必須の機能ですが、理由は、そうでなければ、Radianceがインターフェイスのマッピングを解決できないからです。
 
