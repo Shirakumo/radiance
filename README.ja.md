@@ -332,7 +332,17 @@ The environment also allows administrator overrides. Using the `:static` and `:t
 
 See `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`, `template-file`, `@template`, `static-file`, `@static`
 
-### 1.12 インスタンスの管理
+### 1.12 Migration System
+
+Sometimes systems evolve in backwards incompatible ways. In that case, for existing setups to continue functioning with the new version, runtime data migration is necessary. Radiance offers a system to automate this process and allow a smooth upgrade. 
+
+ The migration between versions should occur automatically during Radiance's startup sequence. As an administrator or author you should not need to perform any additional steps for migrations to occur. However, as a module author, you will naturally have to provide the code to perform the necessary data migration steps for your module.
+
+ In order for a module to be migratable, it needs to be loaded by an ASDF system that has a version specification. The version should follow the standard dotted number scheme, with an optional version hash that can be added at the end. You may then define migration steps between individual versions by using `define-version-migration`. Once defined, Radiance will automatically pick up on concrete versions and perform the necessary migrations in sequence to reach the current target version. For more information on the precise procedure and what you can do, see `migrate` and `migrate-versions`.
+
+ See `last-known-system-version`, `migrate-versions`, `define-version-migration`, `ready-dependency-for-migration`, `ensure-dependencies-ready`, `versions`, `migrate`
+  
+### 1.13 インスタンスの管理
 最後に、Radianceは、起動からシャットダウンまでのシーケンスを提供しています。このおかげで、ソフトは適切に起動して利用可能になり、その後、綺麗に片付けて終了することを確かにします。
 
 そのシーケンスの大部分は、正しい順番で、適切な回数、特定のフックが呼び出されることによって実現されています。
