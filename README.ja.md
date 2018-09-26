@@ -324,12 +324,13 @@ In order to permit running multiple instances of Radiance with different setups 
 
 実際に設定手順でどのように保存処理がされているかを知りたい方は、[ubiquitous](https://shinmera.github.io/ubiquitous)を参考にしてください。 `value`関数の代わりに、Radianceでは`config`関数を使えます。
 
-Aside from configuration files, the environment also provides consistent storage locations for runtime data files, such as user uploads, cache files, and so forth. You can retrieve this location by using `environment-module-directory` and `environment-module-pathname`.
+Aside from configuration files, the environment also provides consistent storage locations for runtime data files, such as user uploads, cache files, and so forth. You can retrieve this location by using `environment-module-directory` and `environment-module-pathname`. When storing uploads and caches, a module should make use of these paths to present a consistent interface to the administrator.
 
  On a deployed system it might be desired to change the location of the environment storage paths, in which case the administrator is encouraged to supply new methods on `environment-directory` and `environment-module-directory` to customise the behaviour as desired. See also the associated documentation strings for further details and default actions.
 
-  See `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`
+The environment also allows administrator overrides. Using the `:static` and `:template` types for `environment-module-directory` gives you the path to store files that should override a module's standard template and static files. The paths within the respective directories have to match with those of the module's own source files. Note that the static and template files a module actually makes use of are cached at module load-time, and thus will not change unless the Lisp image is restarted, or the module's source files are reloaded.
 
+See `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`, `template-file`, `@template`, `static-file`, `@static`
 
 ### 1.12 インスタンスの管理
 最後に、Radianceは、起動からシャットダウンまでのシーケンスを提供しています。このおかげで、ソフトは適切に起動して利用可能になり、その後、綺麗に片付けて終了することを確かにします。
