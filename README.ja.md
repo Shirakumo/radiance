@@ -434,7 +434,7 @@ serverインターフェイスとloggerインターフェイスは、Radianceが
 
 パーミションに関する詳細は、`user:user`を参照してください。
 
-`user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`もご覧ください。
+`user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:id`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`もご覧ください。
 
 ## 参考
 
