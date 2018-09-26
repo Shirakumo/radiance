@@ -315,6 +315,8 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 ### 1.11 環境
 
 複数のRadianceインスタンスに対して、同じマシン内で異なる設定ができるように、Radianceでは環境(Environment)という仕組みを用意しています。環境とは、基本的には、Radianceとロードされるモジュールのための設定ファイルの一式です。Radianceの設定は、インターフェイスを選択される実装にマッピングすることで、もしインターフェイスが求められたときに選択されるように決定します。
+↑
+In order to permit running multiple instances of Radiance with different setups on the same machine, Radiance provides what it calls an Environment system. The Environment is basically the set of configuration and runtime files for Radiance itself and all of the loaded modules. The Radiance configuration also includes the mapping of interface to chosen implementation and thus decides what should be picked if an interface is requested.
 
 `startup`が呼び出された時、どれだけ遅くとも、特定の環境が選択されます。早ければ、モジュールがロードされたときに選択されます。後者の場合は、環境を選ぶために、インタラクティブな再起動が可能です。これは必須の機能ですが、理由は、そうでなければ、Radianceがインターフェイスのマッピングを解決できないからです。
 
@@ -322,7 +324,12 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 
 実際に設定手順でどのように保存処理がされているかを知りたい方は、[ubiquitous](https://shinmera.github.io/ubiquitous)を参考にしてください。 `value`関数の代わりに、Radianceでは`config`関数を使えます。
 
-`environment-change`, `environment`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`をご参照ください。
+Aside from configuration files, the environment also provides consistent storage locations for runtime data files, such as user uploads, cache files, and so forth. You can retrieve this location by using `environment-module-directory` and `environment-module-pathname`.
+
+ On a deployed system it might be desired to change the location of the environment storage paths, in which case the administrator is encouraged to supply new methods on `environment-directory` and `environment-module-directory` to customise the behaviour as desired. See also the associated documentation strings for further details and default actions.
+
+  See `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`
+
 
 ### 1.12 インスタンスの管理
 最後に、Radianceは、起動からシャットダウンまでのシーケンスを提供しています。このおかげで、ソフトは適切に起動して利用可能になり、その後、綺麗に片付けて終了することを確かにします。
