@@ -332,15 +332,11 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 
 `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`, `template-file`, `@template`, `static-file`, `@static`をご参照ください。
 
-### 1.12 Migration System
+### 1.12 マイグレーション・システム
 
-　Sometimes systems evolve in backwards incompatible ways. 
-
-In that case, for existing setups to continue functioning with the new version, runtime data migration is necessary. 
-
-Radiance offers a system to automate this process and allow a smooth upgrade. 
-
- 　The migration between versions should occur automatically during Radiance's startup sequence. 
+　システムは、互換性のない形で、以前のバージョンに戻ることがあります。そのような場合、現在のセットアップが新しいバージョンと機能的に問題なく動作するように、ランタイム・データのマイグレーションが必要です。Radianceは、このプロセスを自動化して、アップグレードをスムーズに進める仕組みがあります。
+  　
+  The migration between versions should occur automatically during Radiance's startup sequence. 
   
 As an administrator or author you should not need to perform any additional steps for migrations to occur. 
 
