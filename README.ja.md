@@ -322,21 +322,13 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 
 実際に設定手順でどのように保存処理がされているかを知りたい方は、[ubiquitous](https://shinmera.github.io/ubiquitous)を参考にしてください。 `value`関数の代わりに、Radianceでは`config`関数を使えます。
 
-設定ファイルとは別に、環境は、ユーザのアップロードやキャッシュなどのランタイムのデータのために、継続的な記憶場所を提供します。`environment-module-directory`と`environment-module-pathname`を使うことで、この場所から情報を取り出すことができます。
-アップロードやキャッシュを保存するとき、モジュールはこれらのパス(path)を利用して、継続的なインターフェイスを管理者に与えます。
+設定ファイルとは別に、環境は、ユーザのアップロードやキャッシュなどのランタイムのデータのために、継続的な記憶場所を提供します。`environment-module-directory`と`environment-module-pathname`を使うことで、この場所から情報を取り出すことができます。アップロードやキャッシュを保存するとき、モジュールはこれらのパス(path)を利用して、継続的なインターフェイスを管理者に与えます。デプロイされたシステムでは、環境の記憶場所を変更することが望ましいかもしれません。そのような場合、管理者は、想定通りに動作させるために、`environment-directory`と `environment-module-directory`の上で新たなメソッドを与えることをおすすめします。詳しい動作については、関連するドキュメントを参照してください。
 
-On a deployed system it might be desired to change the location of the environment storage paths, 
-in which case the administrator is encouraged to supply new methods on `environment-directory` and `environment-module-directory` to customise the behaviour as desired. 
-See also the associated documentation strings for further details and default actions.
+環境は、管理者の上書きを許可します。
+`environment-module-directory`に`:static`と`:template`を使うことで、モジュールの標準テンプレートや静的なファイルへのパスをえることができます。
+各々のディレクトリ中でのパスは、モジュール自体のソースファイルと対応する必要があります。
 
-The environment also allows administrator overrides. 
-
-Using the `:static` and `:template` types for `environment-module-directory` gives you the path to store files that should override a module's standard template and static files. 
-
-The paths within the respective directories have to match with those of the module's own source files. 
-
-Note that the static and template files a module actually makes use of are cached at module load-time, 
-and thus will not change unless the Lisp image is restarted, or the module's source files are reloaded.
+実際にモジュールが利用する静的ファイルとテンプレートは、ロード時にキャッシュされることに注意してください。したがって、Lispイメージが再起動されるか、モジュールのソースファイルが再読みされない限り、変更は有効になりません。
 
 `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`, `template-file`, `@template`, `static-file`, `@static`をご参照ください。
 
