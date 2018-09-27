@@ -456,28 +456,19 @@ serverインターフェイスとloggerインターフェイスは、Radianceが
 
 `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:id`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`もご覧ください。
 
-## Version Changes
+## バージョンの変更
 
 ### 1.0 -> 2.0
- * The variable `*environment-root*` has been removed as per issue [#28](https://github.com/Shirakumo/radiance/issues/28) and fix [#29](https://github.com/Shirakumo/radiance/pull/29). 
- 
- It has instead been replaced by a more generic mechanism for environment directories, incorporated by the function `environment-directory`. 
- 
- If you previously customised `*environment-root*`, please now change `environment-directory` instead, as described in §1.11.
 
-* A new facility to automate migration for changes between module versions has been added as per issue [#30](https://github.com/Shirakumo/radiance/issues/30) and fix [#31](https://github.com/Shirakumo/radiance/issues/31). 
+* issue [#28](https://github.com/Shirakumo/radiance/issues/28)のなかで、変数の`*environment-root*`は削除されました。[#29](https://github.com/Shirakumo/radiance/pull/29)で問題点が修正されました。`*environment-root*`は、`environment-directory`関数に統合されることにより、より汎用的なメカニズムに置き換えられました。もし`*environment-root*`をカスタマイズして利用していた場合、`§1.11`を参考に`environment-directory`を変更してください。
 
-This facility is already being used in existing modules and Radiance itself to account for the new environment directories and automatically move previously existing data to the correct, new locations. 
+* issue [#30](https://github.com/Shirakumo/radiance/issues/30)で、モジュールのバージョンを変更するために、自動でマイグレーションができる仕組みを入れました。[#31](https://github.com/Shirakumo/radiance/issues/31)で修正を加えました。この機能は、すでにRediance自体とモジュールで、新しい環境ディレクトリ(environment directories)を構成するために使われており、自動で以前のデータを現在の新たな場所に移動してくれます。詳しくは`§1.12`を参考にしてください。
 
-Please see §1.12 for an explanation of the facility.
+* issue [#26](https://github.com/Shirakumo/radiance/issues/26)の後、モジュールのソースを変更することなく、管理者がモジュールのテンプレートや静的ファイルを上書きできるようになりました。関連する環境についてのドキュメントは、`§1.11`を参照してください。
 
-* It is now possible for an administrator to override templates and static files of a module without changing the module's source as per issue [#26](https://github.com/Shirakumo/radiance/issues/26). 
+* ユーザ・インターフェイスは、整数のuser:idを、各々のユーザ・オブジェクトにサポートするように要求されるようになりました。このことにより、データベースでユーザを参照できるようになり、より効率的に記録できるようになりました。
 
-Please see §1.11 for the relevant environment documentation, as well as functions `template-file` and `static-file`.
-
-* The user interface is now required to support an integer `user:id` identifier for each user object, allowing you to reference users in databases and records more efficiently.
-
-* The database interface is now required to support the keyword `:unique` on `db:select` and `db:iterate`.
+* データベース・インターフェイスは、`:unique`、`db:select`、`db:iterate`のサポートを求められるようになりました。
 
 ## 参考
 
