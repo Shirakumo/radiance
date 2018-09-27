@@ -1,10 +1,10 @@
 ## Radianceについて
 
-Radianceは、Webアプリケーションの開発環境です。Webフレームワークの一種ですが、汎用的で、変更も容易です。 特別な変更を加える必要なく、WebサイトやWebアプリを簡単に書くことができます。
+Radianceは、Webアプリケーションの開発環境です。Webフレームワークですが、より汎用的で、変更も容易です。 特別な変更を加える必要なく、WebサイトやWebアプリを簡単に書くことができます。
 
 ## 入手するには
 
-Radiance、また関連するモジュールやアプリケーションは、Quicklispを通して配布されています。Radianceをインストールするには次のようにしてください。
+Radiance、また関連するモジュールやアプリケーションは、Quicklispを通して配布されています。Radianceをインストールするには、次のようにしてください。
 
 ```lisp
 (ql-dist:install-dist "http://dist.tymoon.eu/shirakumo.txt")
@@ -15,7 +15,7 @@ Radiance、また関連するモジュールやアプリケーションは、Qui
 
 ## チュートリアル
 
-Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。Radianceの重要コンセプトや、Webアプリの書き方を紹介しています。チュートリアルを通して、Radianceの使い方に慣れることができます。また、特定の機能が必要なときに、どこを調べるべきかが分かります。チュートリアルの最後では、本番環境でのRadianceのインストールとデプロイ方法について説明しています。
+Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。Radianceの重要な概念や、Webアプリの書き方を紹介しています。チュートリアルを通して、Radianceの使い方に慣れることができます。また、特定の機能が必要なときに、どこを調べるべきかが分かります。チュートリアルの最後では、本番環境でのRadianceのインストールと、デプロイの方法について説明しています。
 
 ## 簡単な例
 
