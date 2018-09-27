@@ -322,21 +322,47 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 
 実際に設定手順でどのように保存処理がされているかを知りたい方は、[ubiquitous](https://shinmera.github.io/ubiquitous)を参考にしてください。 `value`関数の代わりに、Radianceでは`config`関数を使えます。
 
-Aside from configuration files, the environment also provides consistent storage locations for runtime data files, such as user uploads, cache files, and so forth. You can retrieve this location by using `environment-module-directory` and `environment-module-pathname`. When storing uploads and caches, a module should make use of these paths to present a consistent interface to the administrator.
+設定ファイルとは別に、環境は、ユーザのアップロードやキャッシュなどのランタイムのデータのために、継続的な記憶場所を提供します。`environment-module-directory`と`environment-module-pathname`を使うことで、この場所から情報を取り出すことができます。
+アップロードやキャッシュを保存するとき、モジュールはこれらのパス(path)を利用して、継続的なインターフェイスを管理者に与えます。
 
- On a deployed system it might be desired to change the location of the environment storage paths, in which case the administrator is encouraged to supply new methods on `environment-directory` and `environment-module-directory` to customise the behaviour as desired. See also the associated documentation strings for further details and default actions.
+On a deployed system it might be desired to change the location of the environment storage paths, 
+in which case the administrator is encouraged to supply new methods on `environment-directory` and `environment-module-directory` to customise the behaviour as desired. 
+See also the associated documentation strings for further details and default actions.
 
-The environment also allows administrator overrides. Using the `:static` and `:template` types for `environment-module-directory` gives you the path to store files that should override a module's standard template and static files. The paths within the respective directories have to match with those of the module's own source files. Note that the static and template files a module actually makes use of are cached at module load-time, and thus will not change unless the Lisp image is restarted, or the module's source files are reloaded.
+The environment also allows administrator overrides. 
 
-See `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`, `template-file`, `@template`, `static-file`, `@static`
+Using the `:static` and `:template` types for `environment-module-directory` gives you the path to store files that should override a module's standard template and static files. 
+
+The paths within the respective directories have to match with those of the module's own source files. 
+
+Note that the static and template files a module actually makes use of are cached at module load-time, 
+and thus will not change unless the Lisp image is restarted, or the module's source files are reloaded.
+
+`environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`, `template-file`, `@template`, `static-file`, `@static`をご参照ください。
 
 ### 1.12 Migration System
 
-Sometimes systems evolve in backwards incompatible ways. In that case, for existing setups to continue functioning with the new version, runtime data migration is necessary. Radiance offers a system to automate this process and allow a smooth upgrade. 
+　Sometimes systems evolve in backwards incompatible ways. 
 
- The migration between versions should occur automatically during Radiance's startup sequence. As an administrator or author you should not need to perform any additional steps for migrations to occur. However, as a module author, you will naturally have to provide the code to perform the necessary data migration steps for your module.
+In that case, for existing setups to continue functioning with the new version, runtime data migration is necessary. 
 
- In order for a module to be migratable, it needs to be loaded by an ASDF system that has a version specification. The version should follow the standard dotted number scheme, with an optional version hash that can be added at the end. You may then define migration steps between individual versions by using `define-version-migration`. Once defined, Radiance will automatically pick up on concrete versions and perform the necessary migrations in sequence to reach the current target version. For more information on the precise procedure and what you can do, see `migrate` and `migrate-versions`.
+Radiance offers a system to automate this process and allow a smooth upgrade. 
+
+ 　The migration between versions should occur automatically during Radiance's startup sequence. 
+  
+As an administrator or author you should not need to perform any additional steps for migrations to occur. 
+
+However, as a module author, you will naturally have to provide the code to perform the necessary data migration steps for your module.
+
+ 　In order for a module to be migratable, it needs to be loaded by an ASDF system that has a version specification. 
+
+The version should follow the standard dotted number scheme, with an optional version hash that can be added at the end. 
+
+You may then define migration steps between individual versions by using `define-version-migration`. 
+
+Once defined, Radiance will automatically pick up on concrete versions and perform the necessary migrations in sequence to reach the current target version. 
+
+For more information on the precise procedure and what you can do, see `migrate` and `migrate-versions`.
 
  See `last-known-system-version`, `migrate-versions`, `define-version-migration`, `ready-dependency-for-migration`, `ensure-dependencies-ready`, `versions`, `migrate`
   
@@ -455,11 +481,21 @@ serverインターフェイスとloggerインターフェイスは、Radianceが
 ## Version Changes
 
 ### 1.0 -> 2.0
- * The variable `*environment-root*` has been removed as per issue [#28](https://github.com/Shirakumo/radiance/issues/28) and fix [#29](https://github.com/Shirakumo/radiance/pull/29). It has instead been replaced by a more generic mechanism for environment directories, incorporated by the function `environment-directory`. If you previously customised `*environment-root*`, please now change `environment-directory` instead, as described in §1.11.
+ * The variable `*environment-root*` has been removed as per issue [#28](https://github.com/Shirakumo/radiance/issues/28) and fix [#29](https://github.com/Shirakumo/radiance/pull/29). 
+ 
+ It has instead been replaced by a more generic mechanism for environment directories, incorporated by the function `environment-directory`. 
+ 
+ If you previously customised `*environment-root*`, please now change `environment-directory` instead, as described in §1.11.
 
-* A new facility to automate migration for changes between module versions has been added as per issue [#30](https://github.com/Shirakumo/radiance/issues/30) and fix [#31](https://github.com/Shirakumo/radiance/issues/31). This facility is already being used in existing modules and Radiance itself to account for the new environment directories and automatically move previously existing data to the correct, new locations. Please see §1.12 for an explanation of the facility.
+* A new facility to automate migration for changes between module versions has been added as per issue [#30](https://github.com/Shirakumo/radiance/issues/30) and fix [#31](https://github.com/Shirakumo/radiance/issues/31). 
 
-* It is now possible for an administrator to override templates and static files of a module without changing the module's source as per issue [#26](https://github.com/Shirakumo/radiance/issues/26). Please see §1.11 for the relevant environment documentation, as well as functions `template-file` and `static-file`.
+This facility is already being used in existing modules and Radiance itself to account for the new environment directories and automatically move previously existing data to the correct, new locations. 
+
+Please see §1.12 for an explanation of the facility.
+
+* It is now possible for an administrator to override templates and static files of a module without changing the module's source as per issue [#26](https://github.com/Shirakumo/radiance/issues/26). 
+
+Please see §1.11 for the relevant environment documentation, as well as functions `template-file` and `static-file`.
 
 * The user interface is now required to support an integer `user:id` identifier for each user object, allowing you to reference users in databases and records more efficiently.
 
