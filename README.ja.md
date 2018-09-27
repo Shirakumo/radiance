@@ -336,23 +336,13 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 
 　システムは、互換性のない形で、以前のバージョンに戻ることがあります。そのような場合、現在のセットアップが新しいバージョンと機能的に問題なく動作するように、ランタイム・データのマイグレーションが必要です。Radianceは、このプロセスを自動化して、アップグレードをスムーズに進める仕組みがあります。
   　
-  The migration between versions should occur automatically during Radiance's startup sequence. 
-  
-As an administrator or author you should not need to perform any additional steps for migrations to occur. 
+  異なるバージョン間でのマイグレーションは、Radianceが起動する際に自動で行われるべきです。管理者として、マイグレーションが適切にされるために、何か他に行う必要はありません。しかしながら、モジュールの作者として、モジュールに対してデータのマイグレーションがされるために実行されるコードを提供する必要はあります。
 
-However, as a module author, you will naturally have to provide the code to perform the necessary data migration steps for your module.
+　モジュールをマイグレーションできるように、バージョンの仕様をもっているASDFによりモジュールを読み込む必要があります。そのバージョンは、標準的なドットで区切られた数字の形式をとります。オプションとして、ハッシュのバージョンを語尾にたすことができます。
 
- 　In order for a module to be migratable, it needs to be loaded by an ASDF system that has a version specification. 
+その後、`define-version-migration`で、個々のバージョン間でのマイグレーションのステップを定義することができます。一度定義されると、Radianceは、自動的に固定のバージョンを選び、現在のバージョンに合うように、必要なマイグレーションの手順を実行します。マイグレーションの手順に関するより詳しい情報は、`migrate`と`migrate-versions`をご覧ください。
 
-The version should follow the standard dotted number scheme, with an optional version hash that can be added at the end. 
-
-You may then define migration steps between individual versions by using `define-version-migration`. 
-
-Once defined, Radiance will automatically pick up on concrete versions and perform the necessary migrations in sequence to reach the current target version. 
-
-For more information on the precise procedure and what you can do, see `migrate` and `migrate-versions`.
-
- See `last-known-system-version`, `migrate-versions`, `define-version-migration`, `ready-dependency-for-migration`, `ensure-dependencies-ready`, `versions`, `migrate`
+`last-known-system-version`, `migrate-versions`, `define-version-migration`, `ready-dependency-for-migration`, `ensure-dependencies-ready`, `versions`, `migrate`も参照ください。
   
 ### 1.13 インスタンスの管理
 最後に、Radianceは、起動からシャットダウンまでのシーケンスを提供しています。このおかげで、ソフトは適切に起動して利用可能になり、その後、綺麗に片付けて終了することを確かにします。
