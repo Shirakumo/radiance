@@ -15,7 +15,7 @@ Radiance本体、関連するモジュールやアプリケーションは、Qui
 
 ## チュートリアル
 
-Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。Radianceの重要な概念や、Webアプリケーションの書き方を紹介しています。チュートリアルを通して、Radianceの使い方に慣れることができます。また、特定の機能が必要なときに、どこを調べるべきか分かります。チュートリアルの最後では、本番環境でのRadianceのインストールと、デプロイ方法について説明しています。
+Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。Radianceの重要な概念や、Webアプリケーションの書き方を紹介しています。チュートリアルを通して、Radianceの使い方に慣れることができます。また、特定の機能が必要なときに、どこを調べるべきか分かります。チュートリアルの最後では、Radianceの本番環境でのインストールとデプロイ方法について説明しています。
 
 ## 簡単な例
 
