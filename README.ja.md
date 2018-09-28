@@ -1,6 +1,6 @@
 ## Radianceについて
 
-Radianceは、Webアプリケーションの開発環境です。Webフレームワークのようなものですが、より汎用的で、変更も容易です。特別な変更を加える必要なく、WebサイトやWebアプリケーションを簡単に書くことができます。
+Radianceは、Webアプリケーションの開発環境です。Webフレームワークのようなものですが、より汎用的で、自由にカスタマイズできます。特別な変更を加える必要なく、個人的なWebサイトやWebアプリケーションを簡単に書くことができます。
 
 ## 入手方法
 
@@ -11,7 +11,7 @@ Radiance本体、関連するモジュールやアプリケーションは、Qui
 (ql:quickload :radiance)
 ```
 
-以上で、Quicklispの`quickload`コマンドで、[Purplish](https://github.com/Shirakumo/purplish)等のRadianceモジュールを利用できるようになります。
+以上で、Quicklispの`quickload`コマンドで、[Purplish](https://github.com/Shirakumo/purplish)等のRadianceモジュールが利用できるようになります。
 
 ## チュートリアル
 
