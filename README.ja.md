@@ -140,7 +140,7 @@ URIをURLに変換するには`uri-to-url`を使います。`uri-to-url`を使�
 
 `uri`, `domains`, `port`, `path`, `matcher`, `uri-string`, `make-uri`, `make-url`, `ensure-uri`, `copy-uri`, `parse-uri`, `uri<`, `uri>`, `uri=`, `uri-matches`, `merge-uris`, `represent-uri`, `uri-to-url`を参考にしてください。
 
-### 1.2 リクエストとレスポンス
+### 1.2 リクエストとレスポンス(Request and Response)
 
 サーバを行き来するデータを格納するには、`request`オブジェクトと`response`オブジェクトを使います。`request`オブジェクトは、リクエストがどこに向かうのかを表すURI、ヘッダ、POSTやGETでの[ペイロード](http://e-words.jp/w/%E3%83%9A%E3%82%A4%E3%83%AD%E3%83%BC%E3%83%89.html)、クッキーなど全てを保持します。`response`オブジェクトは、リターンコード、ヘッダー、クッキー、BODYデータを保持します。
 
@@ -172,9 +172,9 @@ URIをURLに変換するには`uri-to-url`を使います。`uri-to-url`を使�
 
 `uri-dispatcher`, `name`, `dispatch-function`, `priority`, `uri-dispatcher`, `remove-uri-dispatcher`, `list-uri-dispatchers`, `uri-dispatcher>`, `define-uri-dispatcher`, `dispatch`もご参照ください。
 
-### 1.5 Page
+### 1.5 ページ(Page)
 
-ページ(Page)は、実際にコンテンツを提供する関数を定義するために用いられます。しかし、ページはURIディスパッチャーであり、物事を簡単にするためのマクロをいくつか含んでいます。注目してもらいたいのは、拡張可能なオプションです。では、詳しくみていきましょう。
+ページは、実際にコンテンツを提供する関数を定義するために用いられます。しかし、ページはURIディスパッチャーであり、物事を簡単にするためのマクロをいくつか含んでいます。注目してもらいたいのは、拡張可能なオプションです。では、詳しくみていきましょう。
 
 Radianceには、デフォルトでセットアップされるページがいくつかあります。例えば、`favicon`と`robots`のページは、Radianceの`static/`ディレクトリで配信されます。本番環境でも、自分のページの配信や更新をしたいことがあるかと思います。
 
@@ -184,7 +184,7 @@ Radianceには、デフォルトでセットアップされるページがいく
 
 `page`, `remove-page`, `define-page`をご参照ください。
 
-### 1.6 APIエンドポイント
+### 1.6 APIエンドポイント(API Endpoint)
 
 Radianceは、REST APIとの連携もサポートしています。これは取ってつけられた機能ではありません。多くの現代のアプリケーションは、そのようなAPIを提供することが多いですが、RadianceでもAPIエンドポイントを含むWebアプリケーションを書くことができます。
 
@@ -210,7 +210,7 @@ APIエンドポイントの名前は、どこにリーチできるかを示す�
 
 `api`, `*default-api-format*`, `*serialize-fallback*`, `api-format`, `remove-api-format`, `list-api-formats`, `define-api-format`, `api-output`, `api-serialize`, `api-endpoint`, `remove-api-endpoint`, `list-api-endpoints`, `api-endpoint`, `name`, `handler`, `argslist`, `request-handler`, `call-api-request`, `call-api`, `define-api`をご参照ください。
 
-### 1.7 オプション
+### 1.7 オプション(Options)
 
 オプションは、拡張可能な定義のマクロを提供します。これは、フレームワークが何か定義する際に、共通のオペレーションをより短しようと拡張しようとするときに役に立ちます。例えば、アクセス権があるユーザに対して、ページかAPIエンドポイントを制限するような共通するタスクがあるとします。
 
@@ -222,7 +222,7 @@ APIエンドポイントの名前は、どこにリーチできるかを示す�
 
 `option`, `option-type`, `name`, `expander`, `option`, `remove-option`, `list-options`, `define-option`, `expand-options`をご参照ください。
 
-### 1.8 モジュール
+### 1.8 モジュール(Module)
 モジュールの概念は、Radianceにおいて必要不可欠です。全体を構成する**部品**として働きます。技術レベルでいうと、モジュールは、特別なメタデータが与えられたパッケージです。モジュールは、`modularize`しステmyによって提供され、フック、トリガー、インターフェイス等を使いやすくして、他の情報をトラッキングするために使われます。
 
 `defpackage`を使う代わりに、`define-module`を使うようにしてください。シンタックスは`defpackage`ですが、`:domain`のような特別なオプションを含んでいるので、モジュールが機能するプライマリ・ドメインを特定することができます。
@@ -238,7 +238,7 @@ APIエンドポイントの名前は、どこにリーチできるかを示す�
 
 `virtual-module`, `virtual-module-name`, `define-module`, `define-module-extension`, `delete-module`, `module`, `module-p`, `module-storage`, `module-storage-remove`, `module-identifier`, `module-name`, `current-module`, `module-domain`, `module-permissions`, `module-dependencies`, `module-required-interfaces`, `module-required-systems`, `module-pages`, `module-api-endpoints`, `describe-module`, `find-modules-directory`, `*modules-directory*`, `create-module`をご参照ください。
 
-### 1.9 フック
+### 1.9 フック(Hooks)
 
 Radianceには、互いのモジュールを連携させるために、フック(hook)の仕組みがあります。フックを使うと、ある種のイベントに反応して、任意の関数を実行することができます。例えば、意見交換をするようなソフトウェアでは、新しい投稿が作られる度にトリガーされるフックを設定することができます。拡張では、追加のタスクを実行するためにトリガーをフックに対して定義できます。
 
@@ -248,7 +248,7 @@ Radianceには、互いのモジュールを連携させるために、フック
 
 `list-hooks`, `define-hook`, `remove-hook`, `define-trigger`, `remove-trigger`, `trigger`, `define-hook-switch`をご参照ください。
 
-### 1.10 インターフェイス
+### 1.10 インターフェイス(Interface)
 システムが一枚岩になることを避けるために、また、バックエンドも拡張できるように、Radianceはインターフェイスの仕組みを含んでいます。一般的な意味でインターフェイスとは、関数やマクロ、変数がどのように動作するかについての約束事を決めますが、実際に実装するのはインターフェイスではありません。インターフェイスが動作する全てを作っている実際の機能性は、実装の外側にあります。このことにより、ユーザはインターフェイスに対してコードを書くことができ、特定のバックエンドに結びつけることなく、与えられた機能を利用することができます。
 
 具体例として、データベースのためのインターフェイスをみていきましょう。データベースには多くの種類があり、全ては違う方法でやりとりをしますが、データの保存、検索、修正等、どれにも共通する操作があるので、このインターフェイスは実用的です。では、共通する操作を提供するインターフェイスを作ります。これは、特定の種類のデータベースが実際に動かすためにすることは、実装次第です。アプリケーションの作者として、データベース・インターフェイスを活用することができます。このインターフェイスを使えば、様々なデータベースに対して自動的にうまく動作するようにできます。
@@ -301,7 +301,7 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 
 `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`をご参照ください。
 
-### 1.11 環境
+### 1.11 環境(Environment)
 
 同じマシン内の複数のRadianceインスタンスに対して異なる設定ができるように、Radianceでは環境(Environment)という仕組みを用意しています。基本的に環境とは、Radianceの設定、ランタイム・ファイル、読み込まれるモジュールの一式です。Radianceの設定は、インターフェイスの実装へのマッピングを含み、インターフェイスが求められたときに選ばれるようにします。
 
@@ -321,7 +321,7 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 
 `environment-change`, `environment`, `environment-directory`, `environment-module-directory`, `environment-module-pathname`, `check-environment`, `mconfig-pathname`, `mconfig-storage`, `mconfig`, `defaulted-mconfig`, `config`, `defaulted-config`, `template-file`, `@template`, `static-file`, `@static`をご参照ください。
 
-### 1.12 マイグレーション・システム
+### 1.12 マイグレーション・システム(Migration System)
 
 　システムは、互換性のない形で、以前のバージョンに戻ることがあります。そのような場合、現在のセットアップが新しいバージョンと機能的に問題なく動作するように、ランタイム・データのマイグレーションが必要です。Radianceは、このプロセスを自動化して、アップグレードをスムーズに進める仕組みがあります。
   　
@@ -333,7 +333,7 @@ Radianceを外部の世界と結びつける架け橋の役割を果たすイン
 
 `last-known-system-version`, `migrate-versions`, `define-version-migration`, `ready-dependency-for-migration`, `ensure-dependencies-ready`, `versions`, `migrate`も参照ください。
   
-### 1.13 インスタンスの管理
+### 1.13 インスタンス管理(Instance Management)
 最後に、Radianceは、起動からシャットダウンまでのシーケンスを提供しています。このおかげで、ソフトは適切に起動して利用可能になり、その後、綺麗に片付けて終了することを確かにします。
 
 そのシーケンスの大部分は、正しい順番で、適切な回数、特定のフックが呼び出されることによって実現されています。
