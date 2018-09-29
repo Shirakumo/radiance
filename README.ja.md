@@ -117,7 +117,7 @@ main{
 
 ページを再度読み込むと、スタイルが適用されているはずです。`uri-to-url`が動作する原理については、後で詳しく説明します。大切な点は、どのようにセットアップしても静的ファイルへのリンクが適切に処理されることです。
 
-## 1. Radianceのコンセプトと部品(Radiance Concepts & Parts)
+## 1. Radianceのコンセプトと要素(Radiance Concepts & Parts)
 
 ### 1.1 URI
 
