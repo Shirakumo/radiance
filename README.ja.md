@@ -228,7 +228,7 @@ APIエンドポイントの名前は、どこにリーチできるかを示す�
 
 ### 1.8 モジュール(Module)
 
-モジュールの概念は、Radianceにおいて必要不可欠です。全体を構成する**部品**として働きます。技術レベルでいうと、モジュールは、特別なメタデータが与えられたパッケージです。モジュールは、`modularize`しステmyによって提供され、フック、トリガー、インターフェイス等を使いやすくして、他の情報をトラッキングするために使われます。
+モジュールの概念は、Radianceにおいて必要不可欠です。全体を構成する**要素**として働きます。技術レベルでいうと、モジュールは、特別なメタデータが与えられたパッケージです。モジュールは、`modularize`システムによって提供され、フック、トリガー、インターフェイス等を使いやすくして、他の情報をトラッキングするために使われます。
 
 `defpackage`を使う代わりに、`define-module`を使うようにしてください。シンタックスは`defpackage`ですが、`:domain`のような特別なオプションを含んでいるので、モジュールが機能するプライマリ・ドメインを特定することができます。
 
@@ -239,6 +239,7 @@ APIエンドポイントの名前は、どこにリーチできるかを示す�
 :class "radiance:virtual-module"
 :module-name "MY-MODULE"
 ```
+
 こうすることで、Radianceは、ASDFのシステム情報を特定して、あなたのモジュールに関連づけることができます。新しいモジュールのために、必須のシステムとモジュールの定義を自動で行うには、`create-module`をみてください。
 
 `virtual-module`, `virtual-module-name`, `define-module`, `define-module-extension`, `delete-module`, `module`, `module-p`, `module-storage`, `module-storage-remove`, `module-identifier`, `module-name`, `current-module`, `module-domain`, `module-permissions`, `module-dependencies`, `module-required-interfaces`, `module-required-systems`, `module-pages`, `module-api-endpoints`, `describe-module`, `find-modules-directory`, `*modules-directory*`, `create-module`をご参照ください。
