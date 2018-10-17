@@ -434,7 +434,7 @@ profileインターフェイスを使うと、ユーザが存在するアプリ�
 
 `page`リソースの型情報により、ユーザのプロフィールページへのURIを得ることができます。
 
-そのインターフェイスは、視覚的にユーザを特定させるために`profile:avatar`で**アバター画像**にアクセスさせることもできます。また、`profile:name`を使うと、ユーザがユーザ名をカスタマイズできます。さらに、`profile:fields`、`profile:add-field`、`profile:remove-field`を使うと、どのようなデータをユーザの属性に含むか、それを公(public)に表示させるかどうかを指定できます。
+このインターフェイスを使うと、視覚的にユーザを特定させるために、`profile:avatar`で**アバター画像**にアクセスすることができます。また、`profile:name`を使うとユーザ名をカスタマイズできます。`profile:fields`、`profile:add-field`、`profile:remove-field`を使うと、どのようなデータをユーザの属性に含むか、それを公に(public)表示させるかどうか指定できます。
 
 `profile:page`, `profile:avatar`, `profile:name`, `profile:fields`, `profile:add-field`, `profile:remove-field`, `profile:list-panels`, `profile:remove-panel`, `profile:define-panel`, `profile:panel`をご参照ください。
 
