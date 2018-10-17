@@ -26,7 +26,7 @@ Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radi
 (radiance:startup)
 ```
 
-初めてRadianceを使う場合には、`r-welcome`モジュールを使ってください。`r-welcome`モジュールを使うと、ブラウザで開くことができる挨拶ページへのリンクを得ることができます。まずは、小さなページにリンクをはります。
+初めてRadianceを使う場合には、`r-welcome`モジュールを使ってください。`r-welcome`モジュールを使うと、ブラウザで開くことができるWelcomeページへのリンクを取得できます。まず、小さなページにリンクをはります。
 
 ```common-lisp
 (in-package :rad-user)
