@@ -15,7 +15,7 @@ Radiance本体、関連するモジュールやアプリケーションは、Qui
 
 ## チュートリアル
 
-Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。チュートリアルを通して、Radianceの使い方に慣れることができます。Radianceで重要なコンセプトや、Webアプリケーションの書き方を紹介しています。特定の機能が必要なときに、どこを調べれば良いかが分かるようにしました。チュートリアルの最後では、Radianceの本番環境でのインストールとデプロイ方法について説明しています。
+Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。チュートリアルを通して、Radianceの使い方に慣れることができます。Radianceで重要な概念や、Webアプリケーションの書き方を紹介しています。特定の機能が必要なときに、どこを調べれば良いかが分かるようにしました。チュートリアルの最後では、Radianceの本番環境でのインストールとデプロイ方法について説明しています。
 
 ## 簡単な例
 
@@ -118,11 +118,11 @@ main{
 
 ページを再度読み込むと、スタイルが適用されているはずです。`uri-to-url`が動作する原理については、後で詳しく説明します。大切な点は、どのようにセットアップしても静的ファイルへのリンクが適切に処理されることです。
 
-## 1. Radianceのコンセプトと要素(Radiance Concepts & Parts)
+## 1. Radianceの概念と要素(Radiance Concepts & Parts)
 
 ### 1.1 URI
 
-`URI`はRadianceの中心的なコンセプトです。URIはオブジェクトであり、`ドメイン`、`ポート番号(オプション)`、`パス`を含むリストで構成されます。
+`URI`はRadianceの中心的な概念です。URIはオブジェクトであり、`ドメイン`、`ポート番号(オプション)`、`パス`を含むリストで構成されます。
 
 RadianceのURIは、URIから一般的な要素を抽出したもので、スキーマ、クエリ、フラグメント等は含みません。また、`domains`のURIは、フレームワークにおいて複数の場所で使われる点が普通と違います。URIは、`location`を捕捉したり、`dispatch matching`を処理するために使われます。
 
@@ -274,7 +274,7 @@ Radianceは、標準のインターフェイスを提供します。それぞれ
 
 * `auth`
 
-　　認証とログインに関する全てを扱います。
+　　認証とログインに関することを全て処理します。
 
 * `ban`
 
@@ -282,11 +282,11 @@ Radianceは、標準のインターフェイスを提供します。それぞれ
 
 * `cache`
 
-　　キャッシュのための仕組みを提供します。
+　　キャッシュの仕組みを提供します。
 
 * `database`
 
-　　柔軟なデータベースのインターフェイスです。オブジェクト保存、リレーショナルデータベースをバックエンドとして利用できます。
+　　データベースの柔軟なインターフェイスです。オブジェクトの保存、リレーショナルデータベースをバックエンドとして利用できます。
 
 * `logger`
 
@@ -316,7 +316,6 @@ Radianceは、標準のインターフェイスを提供します。それぞれ
 
 　　ユーザアカウントとパーミションの機能を提供します。
 
-
 それぞれのインターフェイスについては、次の章で説明します。
 
 `interface`, `interface-p`, `implementation`, `implements`, `reset-interface`, `define-interface-extension`, `find-implementation`, `load-implementation`, `define-interface`, `define-implement-trigger`をご参照ください。
@@ -327,11 +326,11 @@ Radianceは、標準のインターフェイスを提供します。それぞれ
 
 `startup`が呼び出された時、どれだけ遅くとも、特定の環境が選択されます。早ければ、モジュールがロードされたときに選択されます。後者の場合は、環境を選ぶために、インタラクティブな再起動が可能です。これは必須の機能ですが、理由は、そうでなければ、Radianceがインターフェイスのマッピングを解決できないからです。
 
-環境のシステムの一部として、Radianceは、あなたのアプリケーションで使える(おそらく、使うべき)設定システムを提供します。設定システムを使うと、それぞれの環境ごとに、適切に設定することができます。その設定は、いつでも持続性があるうえ、可読性にも優れたフォーマットで保存されるので、特別なツールで読み込んだり、修正したりする必要はありません。
+環境のシステムの一部として、Radianceは、あなたのアプリケーションで使える(使うべき)設定システムを提供します。設定システムを使うと、それぞれの環境ごとに、適切に設定することができます。その設定は、いつでも持続性があるうえに可読性にも優れたフォーマットで保存されるので、特別なツールで読み込んだり修正したりする必要はありません。
 
 実際に設定手順でどのように保存処理がされているかを知りたい方は、[ubiquitous](https://shinmera.github.io/ubiquitous)を参考にしてください。 `value`関数の代わりに、Radianceでは`config`関数を使えます。
 
-設定ファイルとは別に、環境は、ユーザのアップロードやキャッシュなどのランタイムのデータのために、継続的な記憶場所を提供します。`environment-module-directory`と`environment-module-pathname`を使うことで、この場所から情報を取り出すことができます。アップロードやキャッシュを保存するとき、モジュールはこれらのパス(path)を利用して、継続的なインターフェイスを管理者に与えます。デプロイされたシステムでは、環境の記憶場所を変更することが望ましいかもしれません。そのような場合、管理者は、想定通りに動作させるために、`environment-directory`と `environment-module-directory`の上で新たなメソッドを与えることをおすすめします。詳しい動作については、関連するドキュメントを参照してください。
+設定ファイルとは別に、環境は、ユーザのアップロードやキャッシュなどのランタイムのデータのために、継続的な記憶場所を提供します。`environment-module-directory`と`environment-module-pathname`を使うことで、この場所から情報を取り出すことができます。アップロードやキャッシュを保存するとき、モジュールはこれらのパス(path)を利用して、継続的なインターフェイスを管理者に与えます。デプロイされたシステムでは、環境の記憶場所を変更することが望ましいかもしれません。そのような場合、管理者は、想定通りに動作させるために`environment-directory`と `environment-module-directory`の上で新たなメソッドを与えることをおすすめします。詳しい動作については、関連するドキュメントを参照してください。
 
 環境は、管理者の上書きを許可します。`environment-module-directory`に`:static`と`:template`を使うことで、モジュールの標準テンプレートや静的なファイルへのパスをえることができます。各々のディレクトリ中でのパスは、モジュール自体のソースファイルと対応する必要があります。
 
@@ -341,7 +340,7 @@ Radianceは、標準のインターフェイスを提供します。それぞれ
 
 ### 1.12 マイグレーション・システム(Migration System)
 
-　システムは、互換性のない形で、以前のバージョンに戻ることがあります。そのような場合、現在のセットアップが新しいバージョンと機能的に問題なく動作するように、ランタイム・データのマイグレーションが必要です。Radianceは、このプロセスを自動化して、アップグレードをスムーズに進める仕組みがあります。
+　システムは、互換性のない形で、以前のバージョンに戻ることがあります。そのような場合、現在のセットアップが新しいバージョンと機能的に問題なく動作するように、ランタイム・データのマイグレーションが必要です。Radianceは、このプロセスを自動化して、アップグレードを円滑に進める仕組みがあります。
   　
   異なるバージョン間でのマイグレーションは、Radianceが起動する際に自動で行われるべきです。管理者として、マイグレーションが適切にされるために、何か他に行う必要はありません。しかしながら、モジュールの作者として、モジュールに対してデータのマイグレーションがされるために実行されるコードを提供する必要はあります。
 
@@ -385,7 +384,7 @@ authインターフェイスは、ユーザをリクエストと結びつけま�
 
 ### 2.3 禁止(ban)
 
-banインターフェイスは、IPによるアクセス制限を提供します。IP BANされたクライアントのIPアドレスからは、リクエストするページに対してアクセス出来なくなります。BANは、タイムアウトの後、手動・自動いずれでも、離す(lift)することができます。実装として、ユーザのIPを監視するために、追加で労力を割くことは想定していません。
+banインターフェイスは、IPによるアクセス制限を提供します。IP BANされたクライアントのIPアドレスからは、リクエストするページに対してアクセス出来なくなります。BANは、タイムアウトの後、手動と自動いずれでも、離す(lift)することができます。実装として、ユーザのIPを監視するために、追加の労力を割くことは想定していません。
 
 `ban:jail`, `ban:list`, `ban:jail-time`, `ban:release`をご参照ください。
 
@@ -404,8 +403,7 @@ cacheインターフェイスは、一般的なキャッシュの仕組みを提
 
 databaseインターフェイスは、データを持続させるためのレイヤーを提供します。通常は、データベースと呼ばれるレイヤーです。リレーショナル型のデータベースである必要はありませんが、そうであってもいいです。実装の変数を保持するために、基本的なデータベースの機能しかサポートされません。(joinsやtriggers等はありません)データ型も、整数、float、文字列に限定されます。これらの制限にも関わらず、多くのアプリケーションにおいて、データベースインターフェイスはとても役に立ちます。
 
-伝統的なRDMBの用語と区別するために、特別な用語が使われます:
-`schema`は"structure"、`table`は"collection"、`row`は"record"とします。
+伝統的なRDMBの用語と区別するために、特別な用語が使われます。`schema`は"structure"、`table`は"collection"、`row`は"record"とします。
 
 データベースに接続する前に、データベース関連の命令を実行すると、未定義の動作を招きます。Radianceでは、Radianceが動作している間はデータベースが接続されることを保障しているので、どのページ、どのAPI、どのURIディスパッチャーの定義において、データベースインターフェイスを問題なく使えます。
 
@@ -414,7 +412,7 @@ databaseインターフェイスは、データを持続させるためのレイ
 
 詳しくは、それぞれの関数に書かれているコメントを読んでください。コレクションの作り方、どのような制限があるかを知りたい方は、`db:create`のコメントも参考にしてください。
 
-データベースは、データ操作が完了すれば、Radianceを再起動したり、Lispイメージ、マシンがクラッシュしたとしても、データの変更は存続されなければいけません。
+データベースは、データ操作が完了すれば、Radianceを再起動したり、Lispのイメージや機械がクラッシュしたとしても、データの変更は存続されなければいけません。
 
 `database:condition`, `database:connection-failed`, `database:connection-already-open`, `database:collection-condition`, `database:invalid-collection`, `database:collection-already-exists`, `database:invalid-field`, `database:id`, `database:ensure-id`, `database:connect`, `database:disconnect`, `database:connected-p`, `database:collections`, `database:collection-exists-p`, `database:create`, `database:structure`, `database:empty`, `database:drop`, `database:iterate`, `database:select`, `database:count`, `database:insert`, `database:remove`, `database:update`, `database:with-transaction`, `database:query`, `database:connected`, `database:disconnected`を参照してください。
 
@@ -432,9 +430,9 @@ mailインターフェースは、メールを送る仕組みを組み込むこ�
 
 ### 2.8 プロフィール(profile)
 
-profileインターフェイスは、ユーザにある種の存在感をもたせるアプリケーションにおいて、共通で使用されるユーザ・インターフェイスを拡張できるようにします。そのインターフェイスは、機能の一部として、ユーザの**プロフィール**が表示されるページを提供する必要があります。その**プロフィール**は、数種類のパネルを表示しなければいけません。パネルは、他のモジュールによって提供されており、`profile:define-panel`で追加できます。
+profileインターフェイスを使うと、ユーザが存在するアプリケーションにおいて、ユーザへのインターフェイスを拡張することができます。このインターフェイスは、機能の一部として、ユーザの**プロフィール**が表示されるページを提供する必要があります。その**プロフィール**は、数種類のパネルを表示しなければいけません。パネルは、他のモジュールによって提供されており、`profile:define-panel`で追加できます。
 
-`page`のリソースの型を通して、URIをプロファイルのページに移動することができます。
+`page`リソースの型情報により、ユーザのプロフィールページへのURIを得ることができます。
 
 そのインターフェイスは、視覚的にユーザを特定させるために`profile:avatar`で**アバター画像**にアクセスさせることもできます。また、`profile:name`を使うと、ユーザがユーザ名をカスタマイズできます。さらに、`profile:fields`、`profile:add-field`、`profile:remove-field`を使うと、どのようなデータをユーザの属性に含むか、それを公(public)に表示させるかどうかを指定できます。
 
@@ -442,11 +440,9 @@ profileインターフェイスは、ユーザにある種の存在感をもた�
 
 ### 2.9 評価(rate)
 
-rateインターフェースは、[Rate limitation](https://en.wikipedia.org/wiki/Rate_limiting)の仕組みを提供します。秘密情報やコストが高いリソースへの負荷の高いアクセスを防ぐことができます。２つの段階があります。第1段階は、`rate:define-limit`により、特定のリソースに対して、Rate limitationの動作を定義します。第1段階は、リソースが`rate:with-limitation`により保護されます。
+rateインターフェースは、[Rate limitation](https://en.wikipedia.org/wiki/Rate_limiting)の仕組みを提供します。秘密情報や負荷が高いリソースへのアクセスを防ぐことができます。２つの段階があります。第1段階は、`rate:define-limit`により特定のリソースに対してRate limitationの動作を定義します。その後、リソースが`rate:with-limitation`マクロにより、リソースが保護されます。もし、特定のユーザからblockへのアクセスがあまりに頻繁にされる場合、ブロック(block)は呼び出されません。制限定義内のコード(the code in the limit definition)が、代わりに実行されます。
 
-もし、特定のユーザからのblockへのアクセスが頻繁すぎる場合は、blockは呼び出されません。制限の定義があるコードが、代わりに実行されます。
-
-`Rate limitation`は、クライアント、ユーザ、セッションごとですが、グローバルではないことに注意してください。
+`Rate limitation`は、各クライアント、各ユーザ、各セッションごとで実装に依存しますが、グローバルではないことに注意してください。
 
 `rate:define-limit`, `rate:left`, `rate:with-limitation`をご参照ください。
 
@@ -476,20 +472,20 @@ userインターフェースは、ユーザオブジェクトを永続させ、�
 
 ### 1.0 -> 2.0
 
-* issue [#28](https://github.com/Shirakumo/radiance/issues/28)のなかで、変数の`*environment-root*`は削除されました。[#29](https://github.com/Shirakumo/radiance/pull/29)で問題点が修正されました。`*environment-root*`は、`environment-directory`関数に統合されることにより、より汎用的なメカニズムに置き換えられました。もし`*environment-root*`をカスタマイズして利用していた場合、`§1.11`を参考に`environment-directory`を変更してください。
+* issue [#28](https://github.com/Shirakumo/radiance/issues/28)のなかで、`*environment-root*`は削除されました。[#29](https://github.com/Shirakumo/radiance/pull/29)で問題点が修正されました。`*environment-root*`は、`environment-directory`関数に統合されることにより、より汎用的なメカニズムに置き換えられました。もし`*environment-root*`をカスタマイズして利用していた場合、`§1.11`を参考に`environment-directory`を変更してください。
 
 * issue [#30](https://github.com/Shirakumo/radiance/issues/30)で、モジュールのバージョンを変更するために、自動でマイグレーションができる仕組みを入れました。[#31](https://github.com/Shirakumo/radiance/issues/31)で修正を加えました。この機能は、すでにRediance自体とモジュールで、新しい環境ディレクトリ(environment directories)を構成するために使われており、自動で以前のデータを現在の新たな場所に移動してくれます。詳しくは`§1.12`を参考にしてください。
 
-* issue [#26](https://github.com/Shirakumo/radiance/issues/26)の後、モジュールのソースを変更することなく、管理者がモジュールのテンプレートや静的ファイルを上書きできるようになりました。関連する環境についてのドキュメントは、`§1.11`を参照してください。
+* issue [#26](https://github.com/Shirakumo/radiance/issues/26)の後、モジュールのソースを変更することなく、管理者がモジュールのテンプレートや静的ファイルを上書きできるようになりました。環境に関連するドキュメントは、`§1.11`を参照してください。
 
-* ユーザ・インターフェイスは、整数のuser:idが各々のユーザ・オブジェクトにサポートするように要求されます。このことにより、データベースでユーザを参照できるようになり、より効率的に記録できるようになりました。
+* ユーザ・インターフェイスは、整数のuser:idが、各々のユーザ・オブジェクトをサポートすることを求められます。これにより、データベースでユーザを参照できて、より効率的に記録できるようになりました。
 
 * データベース・インターフェイスは、`:unique`、`db:select`、`db:iterate`のサポートを求められます。
 
 ## 参考
 
-* [modularize](https://shinmera.github.io/modularize) パッケージのメタシステム
-* [modularize-interfaces](https://shinmera.github.io/modularize-interfaces) インターフェイスと実装の拡張
-* [modularize-hooks](https://shinmera.github.io/modularize-hooks) フックとトリガーの仕組み
-* [ubiquitous](https://shinmera.github.io/ubiquitous) 環境設定
-* [radiance-contribs](https://shirakumo.org/projects/radiance-contribs) インターフェイスの実装、他便利な機能
+* [modularize](https://shinmera.github.io/modularize) ：パッケージのメタシステム
+* [modularize-interfaces](https://shinmera.github.io/modularize-interfaces) ：インターフェイスと実装の拡張
+* [modularize-hooks](https://shinmera.github.io/modularize-hooks) ：フックとトリガーの仕組み
+* [ubiquitous](https://shinmera.github.io/ubiquitous)： 環境設定
+* [radiance-contribs](https://shirakumo.org/projects/radiance-contribs) ：インターフェイスの実装、他便利な機能
