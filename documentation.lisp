@@ -3893,7 +3893,9 @@ Effectively, FUNCTION is called with a single argument--
 a hash-table filled with the requested field values-- for
 each record in the collection that satisfies the QUERY.
 The fields in the table are keyed by their name as a
-string with the case converted downwards.
+string with the case converted downwards. The consequences
+of calling another DATABASE function from within the
+FUNCTION are implementation dependant.
 
 The QUERY must be a value returned by the DATABASE:QUERY
 macro.
