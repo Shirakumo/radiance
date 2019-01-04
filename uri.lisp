@@ -131,7 +131,7 @@
                             fragment)
   (let* ((uri (represent-uri uri representation))
          (schema (or schema
-                     (cond ((= 443 (port uri))  "https")
+                     (cond ((eql 443 (port uri))  "https")
                            ((boundp '*request*) (header "X-Forwarded-Proto")))
                      "http"))
          (port (case (port uri)
