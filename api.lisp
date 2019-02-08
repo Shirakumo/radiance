@@ -156,8 +156,12 @@
                                      (url-encode message)))
                    (api-output err :status code :message message)))))
       (handler-case
-          (handler-bind ((api-error #'maybe-invoke-debugger))
-            (call-api-request api-endpoint *request*))
+          (restart-case
+              (handler-bind ((api-error #'maybe-invoke-debugger))
+                (call-api-request api-endpoint *request*))
+            (api-error (err)
+              :report "Treat as API error."
+              (output-error err 500)))
         (api-error (err)
           (output-error err 500))
         (request-not-found (err)
