@@ -152,8 +152,7 @@
     (flet ((output-error (err code)
              (let ((message (or (message err) (princ-to-string err))))
                (if (string= (post/get "browser") "true")
-                   (redirect (format NIL "~a?error=~a" (cut-get-part (referer))
-                                     (url-encode message)))
+                   (redirect (merge-url (referer) :parameters `(("error" . ,(princ-to-string message)))))
                    (api-output err :status code :message message)))))
       (handler-case
           (restart-case

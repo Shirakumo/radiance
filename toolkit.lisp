@@ -132,9 +132,6 @@
                                 (unless (string= ,arg "") ,arg)
                                 ,arg))))))
 
-(defun cut-get-part (url)
-  (subseq url 0 (position #\? url)))
-
 ;; FIXME: Move to USER?
 (defmacro perm (&rest tree)
   (let ((perm (format NIL "~{~(~a~)~^.~}" tree)))
@@ -207,6 +204,40 @@
 (defun format-urlpart (stream arg &rest args)
   (declare (ignore args))
   (url-encode arg :stream stream :allowed "-._~!$&()*+,;=:@/"))
+
+(defun rewrite-url (url &key (schema NIL schemap)
+                             (domains NIL domainsp)
+                             (port NIL portp)
+                             (path NIL pathp)
+                             (parameters NIL parametersp)
+                             (fragment NIL fragmentp))
+  (let ((url (etypecase url
+               (string (puri:parse-uri url))
+               (puri:uri url)
+               (uri (puri:parse-uri (uri-to-url url :schema schema))))))
+    (when schemap (setf (puri:uri-scheme url) schema))
+    (when domainsp (setf (puri:uri-host url) (format NIL "~{~a~^.~}" (reverse domains))))
+    (when portp (setf (puri:uri-port url) port))
+    (when pathp (setf (puri:uri-path url) (format NIL "~/radiance-core::format-urlpart/" path)))
+    (when parametersp (setf (puri:uri-query url) (format NIL "~/radiance-core::format-query/" parameters)))
+    (when fragmentp (setf (puri:uri-fragment url) (format NIL "~/radiance-core::format-urlpart/" fragment)))
+    (puri:render-uri url NIL)))
+
+(defun merge-url (url &key schema domains port path parameters fragment)
+  (let ((url (etypecase url
+               (string (puri:parse-uri url))
+               (puri:uri url)
+               (uri (puri:parse-uri (uri-to-url url :schema schema))))))
+    (when schema (setf (puri:uri-scheme url) schema))
+    (when domains (setf (puri:uri-host url) (format NIL "~{~a~^.~}~@[.~a~]"
+                                                    (reverse domains) (puri:uri-host url))))
+    (when port (setf (puri:uri-port url) port))
+    (when path (setf (puri:uri-path url) (format NIL "~@[~a/~]~/radiance-core::format-urlpart/"
+                                                 (puri:uri-path url) path)))
+    (when parameters (setf (puri:uri-query url) (format NIL "~/radiance-core::format-query/~@[&~a~]"
+                                                        parameters (puri:uri-query url))))
+    (when fragment (setf (puri:uri-fragment url) (format NIL "~/radiance-core::format-urlpart/" fragment)))
+    (puri:render-uri url NIL)))
 
 (defun ecompile (name &optional definition)
   (multiple-value-bind (function warnings-p failure-p) (compile name definition)

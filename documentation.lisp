@@ -2586,9 +2586,6 @@ This is often handy in the context of query
 parameters from the outside world where an
 empty string represents no value.")
 
-  (function cut-get-part
-    "Returns the url string without the get part.")
-
   (function perm
     "Macro to encompass a permission.
 
@@ -2612,6 +2609,75 @@ or ..")
 
 This means that characters that are not one of a-Z 0-9 - . _ ~
 are written down in percent-encoded schema.")
+
+  (function rewrite-url
+    "Rewrites the URL, replacing components with the given parts.
+
+Accepts a URL string, a URI, or a PURI:URI. In the case of
+a URI, the URI is treated as-is and no routing is performed.
+
+Returns the rewritten URL as a string.
+
+The meanings of the parameters are the same as for URIs
+URI-TO-URL respectively, namely:
+
+SCHEMA     --- The schema or scheme of the url as a string.
+DOMAINS    --- A list of domains in order. Eg: (com example www)
+PORT       --- The port as an integer.
+PATH       --- The directory path as a string.
+PARAMETERS --- Query GET parameters as an alist.
+FRAGMENT   --- The URL fragment or anchor as a string.
+
+All of these parameters should /NOT/ be passed URL-ENCODED.
+This function will take care of the appropriate URL-ENCODING
+if necessary.
+
+If a parameter is passed as NIL, it means that the component
+should be absent from the URL.
+
+See URI
+See URI-TO-URL
+See MERGE-URL")
+
+  (function merge-url
+    "Rewrites the URL, merging the given parts where appropriate.
+
+Accepts a URL string, a URI, or a PURI:URI. In the case of
+a URI, the URI is treated as-is and no routing is performed.
+
+Returns the rewritten URL as a string.
+
+The meanings of the parameters are the same as for URIs
+URI-TO-URL respectively, namely:
+
+SCHEMA     --- The schema or scheme of the url as a string.
+               Overrides if already existing.
+DOMAINS    --- A list of domains in order. Eg: (com example www)
+               These domains are prepended in the rendered URL.
+               Eg: \"www\"+\"example.com\" = \"www.example.com\"
+PORT       --- The port as an integer.
+               Overrides if already existing.
+PATH       --- The directory path as a string.
+               The path will appear appended in the rendered URL.
+               Eg: \"foo\"+\"/bar\" = \"/bar/foo\"
+PARAMETERS --- Query GET parameters as an alist.
+               The parameters are prepended in the rendered URL.
+               Eg: \"a=b\"+\"a=a\" = \"a=b&a=a\"
+FRAGMENT   --- The URL fragment or anchor as a string.
+               Overrides if already existing.
+
+All of these parameters should /NOT/ be passed URL-ENCODED.
+This function will take care of the appropriate URL-ENCODING
+if necessary.
+
+This function can be especially useful for automating redirects.
+For instance, if you would like to redirect back but add a
+message that should be displayed, you can use APPEND-URL on the
+REFERER and add the message with the PARAMETERS argument.
+
+See URI
+See URI-TO-URL
+See REWRITE-URL")
 
   (function with-actions
     "A macro to help handle different actions in a submission context.

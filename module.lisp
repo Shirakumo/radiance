@@ -314,6 +314,8 @@
    #:perm
    #:parse-path-safely
    #:url-encode
+   #:rewrite-url
+   #:merge-url
    #:with-actions)
   ;; uri.lisp
   (:export

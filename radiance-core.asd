@@ -50,5 +50,6 @@
                :bordeaux-threads
                :documentation-utils
                :babel
+               :puri
                :closer-mop)
   :in-order-to ((asdf:test-op (asdf:test-op :radiance-test))))
