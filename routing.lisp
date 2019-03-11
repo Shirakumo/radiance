@@ -133,7 +133,7 @@
                   finally (return body)))))))
 
 (defmacro with-route-part-bindings ((value-form test-form) &body body)
-  (etypecase test-form
+  (typecase test-form
     ((eql *)
      `(progn ,@body))
     ((integer 0)

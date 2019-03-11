@@ -26,8 +26,8 @@
                                   (error 'request-not-found :message "Reached dispatch fallback."))
                                  (T
                                   (error 'request-not-found :request NIL :message "Reached dispatch fallback.")))))
-(declaim (function *uri-fallback*))
-(declaim ((simple-array uri-dispatcher 1) *uri-priority*))
+(declaim (type function *uri-fallback*))
+(declaim (type (simple-array uri-dispatcher 1) *uri-priority*))
 
 (defmethod print-object ((dispatcher uri-dispatcher) stream)
   (print-unreadable-object (dispatcher stream :type T)
