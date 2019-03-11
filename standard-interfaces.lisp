@@ -6,6 +6,11 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
+;; KLUDGE: ECL is non-standard in defining a USER nickname for CL-USER.
+#+ecl
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (rename-package "COMMON-LISP-USER" "COMMON-LISP-USER" '("CL-USER")))
+
 (define-interface admin
   (define-resource-locator page (&optional category panel &rest args))
   (defun list-panels ())
