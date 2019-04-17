@@ -1867,19 +1867,37 @@ Should be one of :GET :HEAD :POST :PUT :DELETE :TRACE :CONNECT
 See REQUEST")
 
   (function headers
-    "Accesses the table of headers that the request received or the response should send out.
+    "Accesses the hash table of headers that the request received or the response should send out.
 
 See REQUEST
 See RESPONSE")
 
   (function post-data
-    "Accesses the table of POST-body variables that the request received.
+    "Accesses the hash table of POST-body variables that the request received.
 
+keys are strings, case-insensitive. If the key ends with \"[]\", the
+value is a list of payloads, otherwise a single payload. If no POST parameter
+of the given key was passed on the request, the value is NIL.
+
+A payload is either a single data string, or if the request was performed
+with multipart/form-data and the parameter is a file upload, a list of
+ (PATH ORIGINAL-FILENAME MIME-TYPE), the first being a pathname, the rest
+being strings.
+
+See POST-VAR
+See POST/GET
+See FILE
 See REQUEST")
 
   (function get-data
-    "Accesses the table of GET variables that the request received.
+    "Accesses the hash table of GET variables that the request received.
 
+keys are strings, case-insensitive. If the key ends with \"[]\", the
+value is a list of strings, otherwise a single string. If no GET parameter
+of the given key was passed on the request, the value is NIL.
+
+See GET-VAR
+See POST/GET
 See REQUEST")
 
   (function cookies
