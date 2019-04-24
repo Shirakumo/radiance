@@ -224,6 +224,7 @@
    #:request
    #:uri
    #:http-method
+   #:body-stream
    #:headers
    #:post-data
    #:get-data

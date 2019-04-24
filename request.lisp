@@ -17,6 +17,7 @@
 (defclass request ()
   ((uri :initarg :uri :accessor uri)
    (http-method :initarg :http-method :accessor http-method)
+   (body-stream :initarg :body-stream :accessor body-stream)
    (headers :initarg :headers :accessor headers)
    (post-data :initarg :post-data :accessor post-data)
    (get-data :initarg :get-data :accessor get-data)
@@ -28,6 +29,7 @@
   (:default-initargs
    :uri (error "URI required")
    :http-method :get
+   :body-stream NIL
    :headers (make-hash-table :test 'equalp)
    :post-data (make-hash-table :test 'equalp)
    :get-data (make-hash-table :test 'equalp)

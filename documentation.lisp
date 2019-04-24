@@ -1832,6 +1832,7 @@ See *RESPONSE*")
 
 See URI
 See HTTP-METHOD
+See BODY-STREAM
 See HEADERS
 See POST-DATA
 See GET-DATA
@@ -1863,6 +1864,18 @@ See REQUEST")
     "Accesses the HTTP method that was used to request the page.
 
 Should be one of :GET :HEAD :POST :PUT :DELETE :TRACE :CONNECT
+
+See REQUEST")
+
+  (function body-stream
+    "Accesses the request's binary input stream for the HTTP body.
+
+This may return NIL, or a closed or empty stream if the HTTP request was
+made with a content-type that is either application/x-www-form-urlencoded
+or multipart/form-data. In that case, the POST-DATA table will be populated
+with the body contents instead. Otherwise, this stream will allow you to
+read the request body data and parse it as appropriate. If a stream is
+returned, it must have the element-type (UNSIGNED-BYTE 8).
 
 See REQUEST")
 
