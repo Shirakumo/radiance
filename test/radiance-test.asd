@@ -33,5 +33,6 @@
                :parachute
                :alexandria
                :dexador
+               :cl-ppcre
                :verbose)
   :perform (asdf:test-op (op c) (uiop:symbol-call :radiance-test :run-test)))
