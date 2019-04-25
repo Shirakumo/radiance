@@ -95,7 +95,7 @@
          (setf (gethash k table) (nreverse (gethash k table))))
        table))))
 
-(defun request (to-uri &key (representation :internal) (http-method :GET) headers post get cookies (remote "unknown") (response (make-instance 'response)))
+(defun request (to-uri &key (representation :internal) (http-method :GET) body-stream headers post get cookies (remote "unknown") (response (make-instance 'response)))
   (declare (optimize (speed 3)))
   ;; KLUDGE!
   ;; This should be handled nicer somehow, but
@@ -111,6 +111,7 @@
                     'request
                     :uri to-uri
                     :http-method http-method
+                    :body-stream body-stream
                     :headers (ensure-request-hash-table headers)
                     :post-data (ensure-request-hash-table post)
                     :get-data (ensure-request-hash-table get)
