@@ -38,6 +38,15 @@ to val."
       (when found
         (string= val value))))
 
+(defun remote-addr-p (addr)
+  "Tests whether addr is a remote IP address."
+  (cond ((not (stringp addr)) nil)
+        ((string= addr "::1") t)
+        ((string= addr "127.0.0.1") t)
+        ((cl-ppcre:scan-to-strings "^\\d+\\.\\d+\\.\\d+\\.\\d+$" addr) t)
+        ((cl-ppcre:scan-to-strings "^[0-9abcdef:]+$" addr) t)
+        (t nil)))
+
 (define-test requests
   :parent radiance
   :fix (*requests*))
@@ -68,6 +77,9 @@ to val."
     (true (null (radiance:body-stream req1)))
     (true (null (radiance:body-stream req2)))
     (true (null (radiance:body-stream req3)))
+    (true (remote-addr-p (radiance:remote req1)))
+    (true (remote-addr-p (radiance:remote req2)))
+    (true (remote-addr-p (radiance:remote req3)))
     (destructuring-bind (get1 get2 get3)
         (list (radiance:get-data req1)
               (radiance:get-data req2)
@@ -106,6 +118,9 @@ to val."
     (true (null (radiance:body-stream req1)))
     (true (null (radiance:body-stream req2)))
     (true (null (radiance:body-stream req3)))
+    (true (remote-addr-p (radiance:remote req1)))
+    (true (remote-addr-p (radiance:remote req2)))
+    (true (remote-addr-p (radiance:remote req3)))
     (destructuring-bind (post1 post2 post3)
         (list (radiance:post-data req1)
               (radiance:post-data req2)
