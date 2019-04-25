@@ -7,7 +7,7 @@
 (asdf:defsystem radiance-test
   :class "radiance:virtual-module"
   :defsystem-depends-on (:radiance)
-  :version "0.0.1"
+  :version "0.0.2"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
@@ -17,7 +17,8 @@
                (:file "radiance")
                (:file "database")
                (:file "ban")
-               (:file "cache"))
+               (:file "cache")
+               (:file "server"))
   :depends-on ((:interface :ban)
                (:interface :rate)
                (:interface :admin)
@@ -31,5 +32,6 @@
                (:interface :database)
                :parachute
                :alexandria
+               :dexador
                :verbose)
   :perform (asdf:test-op (op c) (uiop:symbol-call :radiance-test :run-test)))
