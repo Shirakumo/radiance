@@ -96,10 +96,11 @@
   (when versions
     (let* ((versions (version-region versions :start start :end end))
            (last (last versions)))
-      (when (and start-p (version< start (first versions)))
-        (push start versions))
-      (when (and end (version< (car last) end))
-        (setf (cdr last) (list end)))
+      (when versions
+        (when (and start-p (version< start (first versions)))
+          (push start versions))
+        (when (and end (version< (car last) end))
+          (setf (cdr last) (list end))))
       versions)))
 
 (defmethod last-known-system-version ((system asdf:system))
