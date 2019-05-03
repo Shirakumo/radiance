@@ -169,7 +169,7 @@ their body-streams."
   :fix (*body-streams*)
   (setf *requests* nil)
   (setf *body-streams* nil)
-  (let ((json "{ \"user\": \"john_doe\", \"mail:\" \"abc@hotmail.com\" }"))
+  (let ((json "{ \"user\": \"john_doe\", \"mail\": \"abc@hotmail.com\" }"))
     (dex:post *raw-uri*
               :headers '(("content-type" . "application/json")
                          ("User-Agent" . "test-suite"))
