@@ -102,7 +102,8 @@
   (mconfig-pathname designator type))
 
 (defun mconfig-storage (module)
-  (let ((module (module module)))
+  (let* ((module (module module))
+         (*package* module))
     (or (module-storage module :config)
         (setf (module-storage module :config)
               (ubiquitous:with-local-storage (module :transaction NIL)
@@ -120,17 +121,20 @@
       (apply #'ubiquitous:value path))))
 
 (defun (setf mconfig) (value module &rest path)
-  (let ((module (module module)))
+  (let* ((module (module module))
+         (*package* module))
     (ubiquitous:with-local-storage (module :storage (mconfig-storage module))
       (apply #'(setf ubiquitous:value) value path))))
 
 (defun defaulted-mconfig (default module &rest path)
-  (let ((module (module module)))
+  (let* ((module (module module))
+         (*package* module))
     (ubiquitous:with-local-storage (module :storage (mconfig-storage module))
       (apply #'ubiquitous:defaulted-value default path))))
 
 (defun remmconfig (module &rest path)
-  (let ((module (module module)))
+  (let* ((module (module module))
+         (*package* module))
     (ubiquitous:with-local-storage (module :storage (mconfig-storage module))
       (apply #'ubiquitous:remvalue path))))
 
