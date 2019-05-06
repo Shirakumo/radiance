@@ -93,6 +93,11 @@
   (check-environment)
   (setf (environment) (environment)))
 
+(defun sync-environment ()
+  (dolist (module (modularize:list-modules) T)
+    (ubiquitous:with-local-storage (module :storage (mconfig-storage module))
+      (ubiquitous:offload))))
+
 (defun mconfig-pathname (module &optional (type :lisp))
   (make-pathname :name (string-downcase (module-name module))
                  :type (format NIL "conf.~(~a~)" type)

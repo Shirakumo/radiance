@@ -853,6 +853,21 @@ exception of the radiance-core configuration.
 See CHECK-ENVIRONMENT
 See ENVIRONMENT")
 
+  (function sync-environment
+    "Forces the writing of all configuration files.
+
+This will cause the configuration file for every loaded module to
+be written to disk. Note that this will /not/ necessarily first
+try to load the files from disk, so changes to the files may be
+overwritten and lost by this operation.
+
+Typically configuration files are automatically synced to disc
+on write, so this function should not be necessary most of the
+time.
+
+See MODULARIZE:LIST-MODULES
+See MCONFIG-STORAGE")
+
   (function mconfig-pathname
     "Returns the proper pathname to the module according to the current environment.
 

@@ -129,6 +129,7 @@
    #:check-environment
    #:set-environment
    #:reload-environment
+   #:sync-environment
    #:mconfig-pathname
    #:mconfig-storage
    #:mconfig
