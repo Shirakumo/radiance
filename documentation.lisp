@@ -2002,7 +2002,7 @@ See RESPONSE")
 This returns the number of octets of content to be read from the
 BODY-STREAM, or NIL if the header was absent or malformed.
 
-Note that even if this header is set you, should not trust the returned
+Note that even if this header is set, you should not trust the returned
 number unconditionally as it could be arbitrarily forged. If you need to
 buffer the whole data from the body stream, you should make sure to check
 an upper bound on the content-length first.
