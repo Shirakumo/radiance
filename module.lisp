@@ -260,6 +260,7 @@
    #:post-var
    #:post/get
    #:header
+   #:content-length
    #:file
    #:redirect
    #:serve-file

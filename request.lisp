@@ -131,6 +131,14 @@
 (defun (setf header) (value name &optional (response *response*))
   (setf (gethash name (headers response)) value))
 
+(defmethod content-type ((request request))
+  (header "content-type"))
+
+(defmethod content-length ((request request))
+  (let ((header (header "content-length")))
+    (when (and header (< 0 (length header)))
+      (ignore-errors (parse-integer header)))))
+
 (defun file (name &optional (request *request*))
   "Returns file info about a form uploaded file.
  (PATH ORIGINAL-FILENAME MIME-TYPE)"

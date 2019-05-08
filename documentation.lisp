@@ -1983,12 +1983,33 @@ Defaults to 200.
 See RESPONSE")
 
   (function content-type
-    "Accesses the HTTP content-type to send out.
+    "Accesses the HTTP content-type header.
 
-Defaults to *DEFAULT-CONTENT-TYPE*
+For a REQUEST object, this simply acts as a shorthand for
+ (HEADER \"content-type\"), which should identify the type of content
+that the client sent to the server and how it should be decoded.
+For a RESPONSE object, this designates the content-type header to
+send out and defaults to *DEFAULT-CONTENT-TYPE*.
 
 See *DEFAULT-CONTENT-TYPE*
+See HEADER
+See REQUEST
 See RESPONSE")
+
+  (function content-length
+    "Retrieves the HTTP content-length header.
+
+This returns the number of octets of content to be read from the
+BODY-STREAM, or NIL if the header was absent or malformed.
+
+Note that even if this header is set you, should not trust the returned
+number unconditionally as it could be arbitrarily forged. If you need to
+buffer the whole data from the body stream, you should make sure to check
+an upper bound on the content-length first.
+
+See HEADER
+See REQUEST
+See BODY-STREAM")
 
   (function external-format
     "Accesses the external-format to use to serialise the text data.
