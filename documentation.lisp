@@ -1892,7 +1892,11 @@ with the body contents instead. Otherwise, this stream will allow you to
 read the request body data and parse it as appropriate. If a stream is
 returned, it must have the element-type (UNSIGNED-BYTE 8).
 
-See REQUEST")
+Consult the content-type and content-length headers for how to handle the
+data encoded in this stream.
+
+See REQUEST
+See HEADER")
 
   (function headers
     "Accesses the hash table of headers that the request received or the response should send out.
