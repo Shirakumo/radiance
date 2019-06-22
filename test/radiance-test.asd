@@ -8,7 +8,7 @@
   :class "radiance:virtual-module"
   :defsystem-depends-on (:radiance)
   :version "0.0.2"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Test suite system for Radiance"

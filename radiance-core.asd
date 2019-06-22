@@ -9,7 +9,7 @@
   :defsystem-depends-on (:modularize)
   :module-name "RADIANCE-CORE"
   :version "2.1.1"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Core component of Radiance, an extensible web application environment."

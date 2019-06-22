@@ -6,7 +6,7 @@
 
 (asdf:defsystem radiance
   :version "2.1.1"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A web application environment."
