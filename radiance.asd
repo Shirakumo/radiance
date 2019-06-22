@@ -5,7 +5,7 @@
 |#
 
 (asdf:defsystem radiance
-  :version "2.1.1"
+  :version "2.1.2"
   :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"

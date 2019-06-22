@@ -3918,8 +3918,9 @@ must be of the following structure:
 
   STRUCTURE ::= (FIELD*)
   FIELD     ::= (NAME TYPE)
-  TYPE      ::= :id | :text | :float
-                | VARCHAR | INTEGER
+  TYPE      ::= ID | :text | :float | :boolean | VARCHAR
+              | INTEGER
+  ID        ::= :id | (:id COLLECTION)
   INTEGER   ::= :integer | (:integer BYTES)
   VARCHAR   ::= (:varchar LENGTH)
 
@@ -3931,9 +3932,12 @@ The types of a field are specified as follows:
 
    :ID       An implementation-defined type that is used
              to uniquely identify a record within a
-             collection.
+             collection. If the COLLECTION is given, the
+             value may be checked to be a reference to the
+             _ID field of the COLLECTION.
    :TEXT     A string of arbitrary length.
    :FLOAT    A double-float.
+   :BOOLEAN  A boolean (NIL or T) value.
    :INTEGER  A signed integer within the range denoted by
              the number of bytes of its size in one's
              complement. Attempting to store a value
@@ -3952,6 +3956,9 @@ The implementation is allowed to upgrade any field type
 to a type that can encompass the specified range and more.
 For example, an implementation is permitted to upgrade an
 \(:integer 4) to an (:integer 8) or a (:varchar 5) to :text.
+
+The implementation may support additional field types not
+specified here.
 
 The implementation may or may not permit you to store data
 in fields outside of the ones specified in the structure
