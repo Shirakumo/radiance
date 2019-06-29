@@ -3932,9 +3932,7 @@ The types of a field are specified as follows:
 
    :ID       An implementation-defined type that is used
              to uniquely identify a record within a
-             collection. If the COLLECTION is given, the
-             value may be checked to be a reference to the
-             _ID field of the COLLECTION.
+             collection.
    :TEXT     A string of arbitrary length.
    :FLOAT    A double-float.
    :BOOLEAN  A boolean (NIL or T) value.
@@ -3956,6 +3954,19 @@ The implementation is allowed to upgrade any field type
 to a type that can encompass the specified range and more.
 For example, an implementation is permitted to upgrade an
 \(:integer 4) to an (:integer 8) or a (:varchar 5) to :text.
+
+If a COLLECTION is passed to an :ID field, the field is
+called a \"reference field\", and the ID must be of a record
+in the referenced collection. Upon inserting or updating a
+record with a reference field, the implementation may check
+that the referenced record does exist and, if it does not
+exist, will signal an error. Similarly, an implementation 
+may delete records with a reference field if the record being
+referenced is deleted. This is commonly referred to as
+cascading deletes. Note that an implementation either must
+always perform the check or never, and must always perform
+the cascading delete or never. It must be predictable in the
+behaviour, if the behaviour is specified.
 
 The implementation may support additional field types not
 specified here.
