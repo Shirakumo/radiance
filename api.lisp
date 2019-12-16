@@ -144,7 +144,7 @@
   `(error 'api-error :message (format NIL ,format-string ,@format-args)))
 
 ;;; Actual page handler
-(define-uri-dispatcher api ("^/api/.*" 100)
+(define-uri-dispatcher api ("/^api/.*" 100)
   (let* ((path (path (uri *request*)))
          (slashpos (position #\/ path))
          (subpath (subseq path (1+ slashpos)))
