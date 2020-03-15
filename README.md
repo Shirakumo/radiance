@@ -403,6 +403,11 @@ See `user:user` for a description of permissions and their behaviour.
 
 See `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `user:get`, `user:id`, `user:username`, `user:fields`, `user:field`, `user:remove-field`, `user:remove`, `user:check`, `user:grant`, `user:revoke`, `user:add-default-permissions`, `user:create`, `user:remove`, `user:action`, `user:ready`, `user:unready`
 
+### 2.13 relational-database
+This is an extension of the database interface. Any module implementing this interface must also implement the database interface. This interface provides some extensions to allow more expressive database operations that are only directly supported by relational database systems.
+
+See `relational-database:join`
+
 ## Version Changes
 ### 1.0 -> 2.0
 

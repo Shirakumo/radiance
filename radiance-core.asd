@@ -8,7 +8,7 @@
   :class "modularize:virtual-module"
   :defsystem-depends-on (:modularize)
   :module-name "RADIANCE-CORE"
-  :version "2.1.2"
+  :version "2.2.0"
   :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"

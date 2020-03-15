@@ -100,6 +100,7 @@
                            :ban
                            :cache
                            :database
+                           :relational-database
                            :logger
                            :mail
                            :profile

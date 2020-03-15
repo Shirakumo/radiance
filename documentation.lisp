@@ -4298,3 +4298,56 @@ See DATABASE:SELECT
 See DATABASE:COUNT
 See DATABASE:REMOVE
 See DATABASE:UPDATE"))
+
+;; Relational Database
+(docs:define-docs
+  (function relational-database:join
+    "Constructs a value to be used for the COLLECTION argument in database operations.
+
+Using this for a COLLECTION is as if there were a real
+collection that had the joined records as designated by this
+construct.
+
+LEFT-COLLECTION and RIGHT-COLLECTION must follow this syntax:
+
+  COLLECTION ::= NAME | (OPERAND OPERAND &optional TYPE)
+  TYPE       ::= :INNER | :LEFT | :RIGHT | :OUTER
+  OPERAND    ::= (COLLECTION FIELD)
+  NAME       --- A collection name.
+  FIELD      --- A field name.
+
+The COLLECTION recursion allows joining more than two collections
+together.
+
+TYPE designates the type of join and may take the following values:
+
+  :INNER  --- Only records that match in both left and right are
+              included in the result.
+  :LEFT   --- Include all records from the left table and those that
+              match in the right collection. Fields from the right
+              side on records that did not match will be NIL.
+  :RIGHT  --- Include all records from the right collection and those
+              that match in the left collection. Fields from the left
+              side on records that did not match will be NIL.
+  :OUTER  --- Include all records from the left and right
+              collections. Fields from the left or right side on
+              records that do not have a matching left or right side
+              will be NIL.
+
+The matching mentioned here only relates to the respective FIELD of
+both sides being considered equal (by := of a QUERY), not to any
+possible additional constraint on the records imposed by a QUERY
+argument passed to the database operation the JOIN was passed to.
+
+Fields from both the left and right hand side of a join are merged
+into the same namespace. The consequences of accessing a field,
+be that through a QUERY or by reading it out of the resulting
+records, with a name that exists in both the left and right
+collections is implementation dependant.
+
+See DATABASE:QUERY
+See DATABASE:ITERATE
+See DATABASE:SELECT
+See DATABASE:COUNT
+See DATABASE:REMOVE
+See DATABASE:UPDATE"))
