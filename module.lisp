@@ -87,6 +87,7 @@
    #:api-argument-invalid
    #:api-call-not-found
    #:api-unknown-format
+   #:api-unserializable-object
    #:interface-implementation-not-set
    #:unparsable-uri-string
    #:no-such-post-parameter
