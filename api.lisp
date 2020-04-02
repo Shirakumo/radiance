@@ -28,7 +28,7 @@
            (block ,name
              ,@body))))
 
-(defun api-output (data &key (status 200) (message "Ok.") (format (post/get "data-format")))
+(defun api-output (data &rest metadata &key (status 200) (message "Ok.") (format (post/get "data-format")) &allow-other-keys)
   (let ((format (or format *default-api-format*)))
     (funcall (or (api-format format)
                  (error 'api-unknown-format :format format))
@@ -36,6 +36,9 @@
                (setf (gethash "status" table) status
                      (gethash "message" table) message
                      (gethash "data" table) data)
+               (loop for (key val) on metadata by #'cddr
+                     do (unless (or (eql key :status) (eql key :message) (eql key :format))
+                          (setf (gethash (string-downcase key) table) val)))
                table))))
 
 (defgeneric api-serialize (object))
