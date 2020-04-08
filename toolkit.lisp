@@ -203,7 +203,7 @@
 
 (defun format-urlpart (stream arg &rest args)
   (declare (ignore args))
-  (url-encode arg :stream stream :allowed "-._~!$&()*+,;=:@/"))
+  (url-encode arg :stream stream :allowed "-._~!$&()*,;=:@/"))
 
 (defun rewrite-url (url &key (schema NIL schemap)
                              (domains NIL domainsp)
