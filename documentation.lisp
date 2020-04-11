@@ -4218,6 +4218,7 @@ The query form must be of the following structure:
 FORM     ::= COMBINE | CLAUSE | :all
 COMBINE  ::= (:and FORM*) | (:or FORM*) | (:not FORM)
 CLAUSE   ::= (OPERATOR VALUE VALUE) | (:in VALUE VALUE*)
+           | (:NULL VALUE)
 OPERATOR ::= := | :/= | :> | :< | :<= | :>= | :MATCHES
 VALUE    ::= (:field NAME) | 'NAME | LFORM
 NAME     --- A field name.
@@ -4245,6 +4246,7 @@ And the clauses have the following comparison behaviour:
   :>=       True if the two values are > if they are both
             of type :integer or :float, or STRING>= if they
             are both of type :varchar or :text
+  :NULL     True if the value is unset.
   :MATCHES  True if the first value matches the regular
             expression of the second value. The extent of
             regular-expression syntax support is up to the
