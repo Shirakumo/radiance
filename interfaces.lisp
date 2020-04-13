@@ -59,7 +59,7 @@
   (let* ((interface (interface interface))
          (configured-implementation (config :interfaces (intern (string (module-name interface)) :KEYWORD))))
     (cond ((implementation interface)
-           (or (virtual-module interface)
+           (or (virtual-module (implementation interface))
                (asdf:find-system "radiance-core")))
           ((not configured-implementation)
            (error 'interface-implementation-not-set :interface interface))
