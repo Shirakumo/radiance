@@ -1260,7 +1260,11 @@ not yet been installed, it is installed automatically.
 The system is not loaded, however.
 
 If no implementation has been configured for the interface,
-an INTERFACE-IMPLEMENTATION-NOT-SET error is signalled.")
+an INTERFACE-IMPLEMENTATION-NOT-SET error is signalled.
+
+You may SETF this place to a suitable implementation for
+the given interface. The implementation should be a
+virtual module designator.")
 
   (function load-implementation
     "Attempts to silently load the implementation for the interface if necessary.

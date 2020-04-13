@@ -77,6 +77,14 @@
           (T
            configured-implementation))))
 
+(defun (setf find-implementation) (implementation interface)
+  (check-environment)
+  (setf (config :interfaces (intern (string (module-name interface)) :KEYWORD))
+        (etypecase implementation
+          ((or string keyword) implementation)
+          (package (asdf:component-name (virtual-module implementation)))
+          (virtual-module (asdf:component-name implementation)))))
+
 (indent:define-indentation define-interface (4 &rest (&whole 2 0 4 &body)))
 
 (defun load-implementation (interface)
