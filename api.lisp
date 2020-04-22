@@ -154,7 +154,7 @@
          (api-endpoint (or (api-endpoint subpath) (api-endpoint ""))))
     (flet ((output-error (err code)
              (let ((message (or (message err) (princ-to-string err))))
-               (if (string= (post/get "browser") "true")
+               (if (and (string= (post/get "browser") "true") (referer))
                    (redirect (merge-url (referer) :parameters `(("error" . ,(princ-to-string message)))))
                    (api-output err :status code :message message)))))
       (handler-case
