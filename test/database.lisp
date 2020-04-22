@@ -11,9 +11,9 @@
 
 (define-test connection
   :parent database
-  (fail (db:connect "this-db-should-not-exist") 'db:connection-failed)
-  (finish (db:connect "test"))
-  (fail (db:connect "test") 'db:connection-already-open)
+  (fail (db:connect :this-db-should-not-exist) 'db:connection-failed)
+  (finish (db:connect :test))
+  (fail (db:connect :test) 'db:connection-already-open)
   (true (db:connected-p))
   (finish (db:disconnect)))
 
@@ -30,7 +30,7 @@
 (define-test collection
   :parent database
   :depends-on (connection)
-  (with-clean-database ("test")
+  (with-clean-database (:test)
     (is equal () (db:collections))
     (false (db:collection-exists-p "test"))
     (fail (db:create ":" ()) 'db:invalid-collection)
@@ -62,7 +62,7 @@
 (define-test record
   :parent database
   :depends-on (collection)
-  (with-clean-database ("test")
+  (with-clean-database (:test)
     (db:create "test" '((number :integer)
                         (name (:varchar 32))
                         (text :text)))
@@ -142,7 +142,7 @@
 (define-test transactions
   :parent database
   :depends-on (record)
-  (with-clean-database ("test")
+  (with-clean-database (:test)
     (db:create "test" '((number :integer)))
     (finish (db:with-transaction ()
               (db:insert "test" '((number . 0)))))
@@ -155,7 +155,7 @@
 (define-test benchmark
   :parent database
   :depends-on (record)
-  (with-clean-database ("test")
+  (with-clean-database (:test)
     (db:create "test" '((number :integer)))
     (finish (dotimes (i 1000)
               (db:insert "test" '((number . 0)))))
