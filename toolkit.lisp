@@ -35,11 +35,11 @@
 (defun get-unix-time ()
   (universal-to-unix-time (get-universal-time)))
 
-(defun format-relative-time (stamp)
+(defun format-relative-time (stamp &optional stream)
   (when (typep stamp 'local-time:timestamp)
     (setf stamp (local-time:timestamp-to-universal stamp)))
   (if (= stamp 0)
-      (format NIL "0 seconds")
+      (format stream "0 seconds")
       (let ((seconds   (mod (floor (/ stamp 1)) 60))
             (minutes   (mod (floor (/ stamp 60)) 60))
             (hours     (mod (floor (/ stamp 60 60)) 24))
@@ -64,42 +64,42 @@
           (p decades "~a decade~:p")
           (p centuries "~a centur~:@p")
           (p aeons "~a æon~:p")
-          (format NIL "~{~a~^, ~}" non-NIL)))))
+          (format stream "~{~a~^, ~}" non-NIL)))))
 
-(defun format-clock-time (stamp)
+(defun format-clock-time (stamp &optional stream)
   (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
   (local-time:format-timestring
-   NIL stamp :format '(:hour ":" (:min 2) ":" (:sec 2))
-             :timezone local-time:+utc-zone+))
+   stream stamp :format '(:hour ":" (:min 2) ":" (:sec 2))
+                :timezone local-time:+utc-zone+))
 
-(defun format-machine-date (stamp)
+(defun format-machine-date (stamp &optional stream)
   (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
   (local-time:format-timestring
-   NIL stamp :format '((:year 4) "-" (:month 2) "-" (:day 2) "T" (:hour 2) ":" (:min 2) ":" (:sec 2))
-             :timezone local-time:+utc-zone+))
+   stream stamp :format '((:year 4) "-" (:month 2) "-" (:day 2) "T" (:hour 2) ":" (:min 2) ":" (:sec 2))
+                :timezone local-time:+utc-zone+))
 
-(defun format-human-date (stamp)
+(defun format-human-date (stamp &optional stream)
   (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
   (local-time:format-timestring
-   NIL stamp :format '((:year 4) "." (:month 2) "." (:day 2) " " (:hour 2) ":" (:min 2) ":" (:sec 2))
-             :timezone local-time:+utc-zone+))
+   stream stamp :format '((:year 4) "." (:month 2) "." (:day 2) " " (:hour 2) ":" (:min 2) ":" (:sec 2))
+                :timezone local-time:+utc-zone+))
 
-(defun format-fancy-date (stamp)
+(defun format-fancy-date (stamp &optional stream)
   (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
   (local-time:format-timestring
-   NIL stamp :format '(:long-weekday ", " :ordinal-day " of " :long-month " " :year ", " :hour ":" (:min 2) ":" (:sec 2) " UTC")
-             :timezone local-time:+utc-zone+))
+   stream stamp :format '(:long-weekday ", " :ordinal-day " of " :long-month " " :year ", " :hour ":" (:min 2) ":" (:sec 2) " UTC")
+                :timezone local-time:+utc-zone+))
 
-(defun format-time (stamp &optional (relative-time-threshold (* 60 60 24)))
+(defun format-time (stamp &optional (relative-time-threshold (* 60 60 24)) stream)
   (when (typep stamp 'local-time:timestamp)
     (setf stamp (local-time:timestamp-to-universal stamp)))
   (let ((now (get-universal-time)))
     (cond ((and (< (- now relative-time-threshold) stamp) (<= stamp now))
-           (format NIL "~a ago" (format-relative-time (- now stamp))))
+           (format stream "~a ago" (format-relative-time (- now stamp))))
           ((and (< stamp (+ now relative-time-threshold)) (< now stamp))
-           (format NIL "in ~a" (format-relative-time (- stamp now))))
+           (format stream "in ~a" (format-relative-time (- stamp now))))
           (T
-           (format NIL "at ~a" (format-human-date stamp))))))
+           (format stream "at ~a" (format-human-date stamp))))))
 
 (defun make-random-string (&optional (length 16) (chars *random-string-characters*))
   (loop with string = (make-array length :element-type 'character)
