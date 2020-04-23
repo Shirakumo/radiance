@@ -6,7 +6,7 @@
 
 (asdf:defsystem radiance-core
   :class "modularize:virtual-module"
-  :defsystem-depends-on (:modularize)
+  :defsystem-depends-on (:modularize :deploy)
   :module-name "RADIANCE-CORE"
   :version "2.2.0"
   :license "zlib"
@@ -14,6 +14,11 @@
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Core component of Radiance, an extensible web application environment."
   :homepage "https://github.com/Shirakumo/radiance"
+  :build-operation "deploy-op"
+  :build-pathname #+linux "radiance-linux.run"
+                  #+darwin "radiance-macos"
+                  #+win32 "radiance-windows"
+  :entry-point "org.shirakumo.radiance.core::startup-binary"
   :serial T
   :components ((:file "module")
                (:file "toolkit")
@@ -37,6 +42,7 @@
                (:file "migration")
                (:file "init")
                (:file "version-upgrades")
+               (:file "deploy")
                (:file "documentation"))
   :depends-on (:modularize-hooks
                :modularize-interfaces

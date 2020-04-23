@@ -13,5 +13,7 @@
   :homepage "https://github.com/Shirakumo/radiance"
   :serial T
   :depends-on (:modularize
+               :deploy
                :radiance-core)
-  :in-order-to ((asdf:test-op (asdf:test-op :radiance-core))))
+  :in-order-to ((asdf:test-op (asdf:test-op :radiance-core))
+                (asdf:build-op (asdf:build-op :radiance-core))))
