@@ -5,6 +5,7 @@
   (:cache . "r-simple-cache")
   (:data-model . "r-simple-model")
   (:database . "i-lambdalite")
+  (:relational-database . "i-sqlite")
   (:logger . "i-verbose")
   (:mail . "i-sendmail")
   (:profile . "r-simple-profile")
