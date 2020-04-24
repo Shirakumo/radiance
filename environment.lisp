@@ -6,6 +6,7 @@
 
 (in-package #:org.shirakumo.radiance.core)
 
+(defvar *deploying-p* NIL)
 (defvar *environment* NIL)
 
 (define-hook environment-change ())
@@ -158,7 +159,8 @@
         (merge-pathnames namestring (merge-pathnames "static/" (merge-pathnames (resolve-base base)))))))
 
 (defmacro @static (&environment env namestring)
-  (if (constantp namestring env)
+  (if (and (constantp namestring env)
+           (not *deploying-p*))
       `(load-time-value (static-file ,namestring ,*package*))
       `(static-file ,namestring ,*package*)))
 
@@ -168,6 +170,7 @@
         (merge-pathnames namestring (merge-pathnames "template/" (merge-pathnames (resolve-base base)))))))
 
 (defmacro @template (&environment env namestring)
-  (if (constantp namestring env)
+  (if (and (constantp namestring env)
+           (not *deploying-p*))
       `(load-time-value (template-file ,namestring ,*package*))
       `(template-file ,namestring ,*package*)))

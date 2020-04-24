@@ -8,6 +8,7 @@
 
 (deploy:define-hook (:load load-modules) ()
   (deploy:status 0 "Configuring environment")
+  (setf *deploying-p* T)
   ;; Set desired environment or quietly load separate default.
   (setf (environment) (if (boundp 'cl-user::environment)
                           (symbol-value 'cl-user::environment)
@@ -16,8 +17,7 @@
   ;; Load all target modules.
   (when (boundp 'cl-user::modules)
     (dolist (module (symbol-value 'cl-user::modules))
-      #+quicklisp (ql:quickload module)
-      #-quicklisp (asdf:load-system module)))
+      (asdf:load-system module)))
   (deploy:status 1 "Performing boot to load required interfaces")
   (radiance:startup)
   (radiance:shutdown)
