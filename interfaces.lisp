@@ -88,21 +88,22 @@
 (indent:define-indentation define-interface (4 &rest (&whole 2 0 4 &body)))
 
 (defun load-implementation (interface)
-  (let ((*load-verbose* nil)
-        (*compile-verbose* nil)
-        (*load-print* nil)
-        (*compile-print* nil))
-    (handler-bind ((warning #'muffle-warning))
-      (let* ((interface (interface interface)))
-        (let ((implementation (find-implementation interface NIL)))
-          (unless (and (asdf:find-system implementation NIL)
-                       (asdf:component-loaded-p
-                        (asdf:find-system implementation)))
-            #-quicklisp
-            (asdf:load-system implementation)
-            #+:quicklisp
-            (ql:quickload implementation))
-          implementation)))))
+  (let ((interface (interface interface)))
+    (unless (implementation interface)
+      (let ((implementation (find-implementation interface NIL)))
+        (unless (and (asdf:find-system implementation NIL)
+                     (asdf:component-loaded-p
+                      (asdf:find-system implementation)))
+          (handler-bind ((warning #'muffle-warning))
+            (let ((*load-verbose* nil)
+                  (*compile-verbose* nil)
+                  (*load-print* nil)
+                  (*compile-print* nil))
+              #-quicklisp
+              (asdf:load-system implementation)
+              #+quicklisp
+              (ql:quickload implementation))))
+        implementation))))
 
 (defmacro define-interface (name &body components)
   `(interfaces:define-interface ,name

@@ -22,6 +22,8 @@
   (radiance:startup)
   (radiance:shutdown)
   ;; Clear ASDF/QL
+  (mapc #'asdf:register-immutable-system (asdf:already-loaded-systems))
+  (asdf:clear-source-registry)
   (setf asdf:*central-registry* NIL)
   #+quicklisp (setf ql:*local-project-directories* ()))
 
@@ -44,8 +46,7 @@
     (dolist (path '("modules/"
                     "config/"
                     "data/"
-                    "cache/"
-                    "override/"
+                    "cache/asdf/"
                     "override/template/"
                     "override/static/"))
       (ensure-directories-exist (path path)))
@@ -111,6 +112,7 @@
     (reload-environment)
     (deploy:status 1 "Loading setup file")
     (setf asdf:*central-registry* (list (path "modules/")))
+    (setf asdf:*user-cache* (path "cache/asdf/"))
     (when (probe-file (path "setup.lisp"))
       (load (path "setup.lisp")))))
 
@@ -128,11 +130,14 @@
           (T
            (shiftf /// // / (multiple-value-list (eval -)))
            (shiftf +++ ++ + -)
-           (shiftf *** ** * (first /))))))
+           (shiftf *** ** * (first /))
+           (print *)))))
 
 (defun startup-binary ()
-  (deploy:status 0 "Starting up...")
-  (radiance:startup)
+  (handler-bind ((warning #'invoke-debugger))
+    (radiance:startup))
+  ;; We are done starting up, now deregister systems so we can load/update later. Maybe.
+  (asdf/system-registry:clear-registered-systems)
   ;; Primitive repl
   (setf *package* (find-package '#:rad-user))
   (if (open-stream-p *standard-input*)
