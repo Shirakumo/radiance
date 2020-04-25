@@ -134,8 +134,7 @@
            (print *)))))
 
 (defun startup-binary ()
-  (handler-bind ((warning #'invoke-debugger))
-    (radiance:startup))
+  (radiance:startup)
   ;; We are done starting up, now deregister systems so we can load/update later. Maybe.
   (asdf/system-registry:clear-registered-systems)
   ;; Primitive repl
