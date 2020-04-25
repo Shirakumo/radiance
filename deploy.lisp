@@ -135,6 +135,8 @@
 
 (defun startup-binary ()
   (radiance:startup)
+  (deploy:status 0 "Server started up at http://~a~@[:~a~]"
+                 (first (config :domains)) (config :port))
   ;; We are done starting up, now deregister systems so we can load/update later. Maybe.
   (asdf/system-registry:clear-registered-systems)
   ;; Primitive repl
