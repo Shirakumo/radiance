@@ -150,6 +150,17 @@
     (fail (db:with-transaction ()
             (db:insert "test" '((number . 1)))
             (error "Exit transaction")))
+    (is = 1 (db:count "test" (db:query :all)))
+    (finish (db:with-transaction ()
+              (db:with-transaction ()
+                (db:remove "test" (db:query :all)))))
+    (is = 0 (db:count "test" (db:query :all)))
+    (finish (db:with-transaction ()
+              (db:insert "test" '((number . 0)))
+              (ignore-errors
+               (db:with-transaction ()
+                 (db:insert "test" '((number . 1)))
+                 (error "Exit inner.")))))
     (is = 1 (db:count "test" (db:query :all)))))
 
 (define-test benchmark
