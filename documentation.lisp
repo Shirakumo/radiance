@@ -4224,6 +4224,7 @@ COMBINE  ::= (:and FORM*) | (:or FORM*) | (:not FORM)
 CLAUSE   ::= (OPERATOR VALUE VALUE) | (:in VALUE VALUE*)
            | (:NULL VALUE)
 OPERATOR ::= := | :/= | :> | :< | :<= | :>= | :MATCHES
+           | :MATCHES*
 VALUE    ::= (:field NAME) | 'NAME | LFORM
 NAME     --- A field name.
 LFORM    --- A lisp form that evaluates to a lisp value.
@@ -4260,6 +4261,8 @@ And the clauses have the following comparison behaviour:
             The following character classes must be understood
             as well:
               \\d \\w \\s \\D \\W \\S
+  :MATCHES* Same as :MATCHES except the match is performed in
+            case insensitive mode.
   :IN       True if the first value is EQUAL to one of the
             remaining values.
 
