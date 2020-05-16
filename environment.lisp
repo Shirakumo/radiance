@@ -47,7 +47,10 @@
 (defmethod environment-directory ((environment (eql T)) kind)
   (environment-directory *environment* kind))
 
-(defmethod environment-module-directory (module kind)
+(defmethod environment-module-directory (identifier kind)
+  (environment-module-directory (module identifier) kind))
+
+(defmethod environment-module-directory ((module package) kind)
   (check-environment)
   (let ((name (module-name module)))
     (merge-pathnames
