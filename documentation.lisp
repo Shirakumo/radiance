@@ -3242,8 +3242,8 @@ See SESSION:SESSION")
   (function session:start
     "Starts a new session in the current request context and returns it.
 
-If the request already has a session associated with it, it is
-replaced.
+If the request already has a session associated with it, it
+is not replaced.
 
 Once a session has been started, the client must receive
 the same session on future requests to the server. How this
@@ -3292,6 +3292,9 @@ If no SESSION-ID is given, the session associated with the
 current client is used.
 
 The keys must be objects comparable under EQL.
+
+When a session field is set, the session is automatically started
+and thus persistently associated with the client as much as possible.
 
 See SESSION:SESSION")
 
