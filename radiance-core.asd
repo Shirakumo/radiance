@@ -18,6 +18,7 @@
   :build-pathname #+linux "radiance-linux.run"
                   #+darwin "radiance-macos"
                   #+win32 "radiance-windows"
+                  #+(and bsd (not darwin)) "radiance-bsd.run"
   :entry-point "org.shirakumo.radiance.core::startup-binary"
   :serial T
   :components ((:file "module")
