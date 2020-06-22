@@ -25,7 +25,9 @@
     (apply #'invoke-restart restart values)))
 
 (defun handle-condition (condition)
-  (l:debug :radiance condition)
+  (if (typep condition 'radiance-condition)
+      (l:debug :radiance condition)
+      (l:warn :radiance condition))
   (l:warn :radiance "Handling stray condition: ~a" condition)
   (restart-case
       (maybe-invoke-debugger condition 'abort)

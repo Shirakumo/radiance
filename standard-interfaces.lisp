@@ -24,7 +24,7 @@
   (defun current (&optional default session))
   (defun associate (user &optional session))
   (define-hook associate (session))
-  (define-hook no-associated-user (session)))
+  (define-hook no-associated-user ()))
 
 (define-interface ban
   (defun jail (ip &key duration))
