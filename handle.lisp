@@ -22,7 +22,8 @@
     (with-simple-restart (continue "Don't handle ~a." condition)
       (invoke-debugger condition)))
   (when restart
-    (apply #'invoke-restart restart values)))
+    (when (find-restart restart)
+      (apply #'invoke-restart restart values))))
 
 (defun handle-condition (condition)
   (if (typep condition 'radiance-condition)
