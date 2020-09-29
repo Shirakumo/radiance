@@ -115,7 +115,8 @@
                    (T (output (api-serialize object))))))
         (output object)))))
 
-(setf *default-api-format* "lisp")
+(unless (boundp '*default-api-format*)
+  (setf *default-api-format* "lisp"))
 
 ;; Default urls
 (define-page favicon ("/^favicon.ico$" 10) ()
@@ -230,30 +231,31 @@
                ))))))
 
 ;;; Default logger to make sure we can log even before the real impl is loaded.
-(defun l:log (level category log-string &rest format-args)
-  (if (stringp log-string)
-      (format *error-output* "~&~a [~a] <~a> ~?~%"
-              (format-human-date (get-universal-time)) level category log-string format-args)
-      (format *error-output* "~&~a [~a] <~a> ~a~%"
-              (format-human-date (get-universal-time)) level category log-string)))
+(unless (implementation 'logger)
+  (defun l:log (level category log-string &rest format-args)
+    (if (stringp log-string)
+        (format *error-output* "~&~a [~a] <~a> ~?~%"
+                (format-human-date (get-universal-time)) level category log-string format-args)
+        (format *error-output* "~&~a [~a] <~a> ~a~%"
+                (format-human-date (get-universal-time)) level category log-string)))
 
-(defun l:trace (category log-string &rest format-args)
-  (declare (ignore category log-string format-args)))
+  (defun l:trace (category log-string &rest format-args)
+    (declare (ignore category log-string format-args)))
 
-(defun l:debug (category log-string &rest format-args)
-  (declare (ignore category log-string format-args)))
+  (defun l:debug (category log-string &rest format-args)
+    (declare (ignore category log-string format-args)))
 
-(defun l:info (category log-string &rest format-args)
-  (apply #'l:log :info category log-string format-args))
+  (defun l:info (category log-string &rest format-args)
+    (apply #'l:log :info category log-string format-args))
 
-(defun l:warn (category log-string &rest format-args)
-  (apply #'l:log :warn category log-string format-args))
+  (defun l:warn (category log-string &rest format-args)
+    (apply #'l:log :warn category log-string format-args))
 
-(defun l:error (category log-string &rest format-args)
-  (apply #'l:log :error category log-string format-args))
+  (defun l:error (category log-string &rest format-args)
+    (apply #'l:log :error category log-string format-args))
 
-(defun l:severe (category log-string &rest format-args)
-  (apply #'l:log :severe category log-string format-args))
+  (defun l:severe (category log-string &rest format-args)
+    (apply #'l:log :severe category log-string format-args))
 
-(defun l:fatal (category log-string &rest format-args)
-  (apply #'l:log :fatal category log-string format-args))
+  (defun l:fatal (category log-string &rest format-args)
+    (apply #'l:log :fatal category log-string format-args)))

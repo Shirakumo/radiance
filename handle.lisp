@@ -36,10 +36,11 @@
       :report "Render error page."
       (invoke-restart 'set-data (render-error-page condition)))))
 
-(defun render-error-page (condition)
-  (setf (return-code *response*) 500)
-  (setf (content-type *response*) "text/plain")
-  (format NIL "Internal error: ~s" condition))
+(unless (fdefinition 'render-error-page)
+  (defun render-error-page (condition)
+    (setf (return-code *response*) 500)
+    (setf (content-type *response*) "text/plain")
+    (format NIL "Internal error: ~s" condition)))
 
 ;; FIXME: Add support for STREAMs in data of response to the implementations.
 ;; FIXME: Access to the input stream of the body without parsing, somehow?
