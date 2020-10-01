@@ -36,7 +36,7 @@
       :report "Render error page."
       (invoke-restart 'set-data (render-error-page condition)))))
 
-(unless (fdefinition 'render-error-page)
+(unless (fboundp 'render-error-page)
   (defun render-error-page (condition)
     (setf (return-code *response*) 500)
     (setf (content-type *response*) "text/plain")
