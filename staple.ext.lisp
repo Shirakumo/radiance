@@ -5,6 +5,9 @@
   (:export #:generate))
 (in-package #:org.shirakumo.radiance.staple)
 
+#+quicklisp (ql:quickload :staple-markdown :cl-who)
+#-quicklisp (asdf:load-systems :staple-markdown :cl-who)
+
 (defclass api-endpoint (definitions:global-definition definitions:callable) ())
 
 (definitions:define-simple-type-map api-endpoint radiance:api-endpoint)
