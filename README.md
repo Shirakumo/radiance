@@ -30,7 +30,7 @@ If this is your first time setting up Radiance, you'll get a note about it using
   "Hi!")
 ```
 
-Visiting [localhost:8080/example](http://localhost:8080/example) should now just show "Hi". Rather boring indeed. So let's spit out some HTML instead. For now, we'll use [cl-who](http://weitz.de/cl-who/) since it is very simple.
+Visiting [localhost:8080/example](http://localhost:8080/example) should now just show "Hi". Rather boring indeed. So let's spit out some HTML instead. For now, we'll use [cl-who](http://weitz.de/cl-who/) since it is very simple. First quickload it, then run the following:
 
 ```common-lisp
 (define-page example "/example" ()
@@ -70,6 +70,7 @@ Pages are identified by a name symbol. Since we now have our own module, and thu
 (remove-page 'rad-user::example)
 ```
 
+Make sure to load the example file whenever you change it now for the changes to take effect.
 Next let's create a simple CSS file to spruce things up a little. The file will be `example.css` placed in the `static` folder. Here's a sample CSS if you don't want to write your own.
 
 ```CSS
