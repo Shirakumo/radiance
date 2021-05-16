@@ -152,6 +152,7 @@
     (with-open-file (s (merge-pathnames (format NIL "~a.asd" name) root) :direction :output)
       (format s "(in-package #:cl-user)~%~
  (asdf:defsystem #:~a
+  :version \"0.0.0\"
   :defsystem-depends-on (:radiance)
   :class \"radiance:virtual-module\"
   :components ((:file \"~a\"))
