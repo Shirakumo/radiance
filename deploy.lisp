@@ -9,18 +9,22 @@
 (deploy:define-hook (:load load-modules) ()
   (deploy:status 0 "Configuring environment")
   (setf *deploying-p* T)
-  ;; Set desired environment or quietly load separate default.
   (setf (environment) (if (boundp 'cl-user::environment)
                           (symbol-value 'cl-user::environment)
                           "deploy"))
+  
   (deploy:status 1 "Loading target modules")
-  ;; Load all target modules.
   (when (boundp 'cl-user::modules)
     (dolist (module (symbol-value 'cl-user::modules))
       (asdf:load-system module)))
-  (deploy:status 1 "Performing boot to load required interfaces")
-  (radiance:startup)
-  (radiance:shutdown)
+
+  (deploy:status 1 "Simulating boot to load required interfaces")
+  (load-implementation 'logger)
+  (load-implementation 'server)
+  (dolist (module (config :startup))
+    #+quicklisp (ql:quickload module)
+    #-quicklisp (asdf:load-system module))
+  
   ;; Clear ASDF/QL
   (mapc #'asdf:register-immutable-system (asdf:already-loaded-systems))
   (asdf:clear-source-registry)
