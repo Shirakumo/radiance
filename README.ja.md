@@ -7,7 +7,7 @@ Radianceは、Webアプリケーションの開発環境です。Webフレーム
 Radiance本体、関連するモジュールやアプリケーションは、Quicklispを通して配布されています。Radianceをインストールするには、次のようにします。
 
 ```lisp
-(ql-dist:install-dist "http://dist.tymoon.eu/shirakumo.txt")
+(ql-dist:install-dist "http://dist.shirakumo.org/shirakumo.txt")
 (ql:quickload :radiance)
 ```
 

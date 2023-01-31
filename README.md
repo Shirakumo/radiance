@@ -4,7 +4,7 @@ Radiance is a web application environment, which is sort of like a web framework
 ## Getting It
 Radiance and associated modules and applications are distributed via Quicklisp in a separate dist. To install Radiance, do:
 
-    (ql-dist:install-dist "http://dist.tymoon.eu/shirakumo.txt")
+    (ql-dist:install-dist "http://dist.shirakumo.org/shirakumo.txt")
     (ql:quickload :radiance)
 
 From there on out you should be able to load and use any kind of Radiance module like [Purplish](https://github.com/Shirakumo/purplish) directly via Quicklisp's `quickload`.
