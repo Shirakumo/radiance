@@ -232,30 +232,38 @@
 
 ;;; Default logger to make sure we can log even before the real impl is loaded.
 (unless (implementation 'logger)
-  (defun l:log (level category log-string &rest format-args)
-    (if (stringp log-string)
-        (format *error-output* "~&~a [~a] <~a> ~?~%"
-                (format-human-date (get-universal-time)) level category log-string format-args)
-        (format *error-output* "~&~a [~a] <~a> ~a~%"
-                (format-human-date (get-universal-time)) level category log-string)))
+  (setf (fdefinition 'l:log)
+        (lambda (level category log-string &rest format-args)
+          (if (stringp log-string)
+              (format *error-output* "~&~a [~a] <~a> ~?~%"
+                      (format-human-date (get-universal-time)) level category log-string format-args)
+              (format *error-output* "~&~a [~a] <~a> ~a~%"
+                      (format-human-date (get-universal-time)) level category log-string))))
 
-  (defun l:trace (category log-string &rest format-args)
-    (declare (ignore category log-string format-args)))
+  (setf (fdefinition 'l:trace)
+        (lambda (category log-string &rest format-args)
+          (declare (ignore category log-string format-args))))
 
-  (defun l:debug (category log-string &rest format-args)
-    (declare (ignore category log-string format-args)))
+  (setf (fdefinition 'l:debug)
+        (lambda (category log-string &rest format-args)
+          (declare (ignore category log-string format-args))))
 
-  (defun l:info (category log-string &rest format-args)
-    (apply #'l:log :info category log-string format-args))
+  (setf (fdefinition 'l:info)
+        (lambda (category log-string &rest format-args)
+          (apply #'l:log :info category log-string format-args)))
 
-  (defun l:warn (category log-string &rest format-args)
-    (apply #'l:log :warn category log-string format-args))
+  (setf (fdefinition 'l:warn)
+        (lambda (category log-string &rest format-args)
+          (apply #'l:log :warn category log-string format-args)))
 
-  (defun l:error (category log-string &rest format-args)
-    (apply #'l:log :error category log-string format-args))
+  (setf (fdefinition 'l:error)
+        (lambda (category log-string &rest format-args)
+          (apply #'l:log :error category log-string format-args)))
 
-  (defun l:severe (category log-string &rest format-args)
-    (apply #'l:log :severe category log-string format-args))
+  (setf (fdefinition 'l:severe)
+        (lambda (category log-string &rest format-args)
+          (apply #'l:log :severe category log-string format-args)))
 
-  (defun l:fatal (category log-string &rest format-args)
-    (apply #'l:log :fatal category log-string format-args)))
+  (setf (fdefinition 'l:fatal)
+        (lambda (category log-string &rest format-args)
+          (apply #'l:log :fatal category log-string format-args))))
