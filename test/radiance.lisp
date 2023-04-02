@@ -7,12 +7,11 @@
 (in-package #:org.shirakumo.radiance.test)
 
 (defun run-test (&key (report 'parachute:plain) (test 'radiance))
-  (v:with-muffled-logging ()
-    (let ((*package* #.*package*))
-      (parachute:test (etypecase test
-                        (symbol test)
-                        (string (find-symbol test *package*)))
-                      :report report))))
+  (let ((*package* #.*package*))
+    (parachute:test (etypecase test
+                      (symbol test)
+                      (string (find-symbol test *package*)))
+                    :report report)))
 
 (define-test radiance
   (unless (radiance:started-p)
