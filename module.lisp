@@ -311,6 +311,7 @@
    #:format-human-date
    #:format-fancy-date
    #:format-time
+   #:parse-time
    #:make-random-string
    #:file-size
    #:resolve-base
