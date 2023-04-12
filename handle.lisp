@@ -56,11 +56,14 @@
             (trigger 'request request response)
             (let ((result (dispatch (uri request))))
               (typecase result
-                (string (setf (data *response*) result))
-                (pathname (serve-file result))
-                ((array (unsigned-byte 8)) (setf (data *response*) result))
-                (stream (setf (data *response*) result))
-                (response (setf *response* result)))))
+                ((or string stream function (array (unsigned-byte 8)))
+                 (unless (data *response*)
+                   (setf (data *response*) result)))
+                (pathname
+                 (unless (data *response*)
+                   (serve-file result)))
+                (response
+                 (setf *response* result)))))
         (set-data (data)
           :report "Set the response data."
           :interactive read-value
