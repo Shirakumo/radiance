@@ -1,16 +1,10 @@
-#|
- This file is a part of Radiance
- (c) 2014 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (asdf:defsystem radiance-test
   :class "radiance:virtual-module"
   :defsystem-depends-on (:radiance)
   :version "0.0.2"
   :license "zlib"
-  :author "Nicolas Hafner <shinmera@tymoon.eu>"
-  :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
+  :author "Yukari Hafner <shinmera@tymoon.eu>"
+  :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "Test suite system for Radiance"
   :serial T
   :components ((:file "package")

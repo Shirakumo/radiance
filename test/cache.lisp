@@ -1,9 +1,3 @@
-#|
-This file is a part of Radiance
-(c) 2017 Shirakumo https://shirakumo.org/ (i@joram.io)
-Author: Joram Schrijver <i@joram.io>
-|#
-
 (in-package #:org.shirakumo.radiance.test)
 
 (define-test cache

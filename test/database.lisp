@@ -1,9 +1,3 @@
-#|
- This file is a part of Radiance
- (c) 2014 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (in-package #:org.shirakumo.radiance.test)
 
 (define-test database
@@ -74,7 +68,7 @@
     ;; Test ID coercion
     (let ((id (db:insert "test" (alexandria:alist-hash-table
                                  '((number . 1)
-                                   (name . "Nicolas Hafner")
+                                   (name . "Yukari Hafner")
                                    (text . "Someone insignificant."))))))
       (is = 2 (db:count "test" (db:query :all)))
       (of-type db:id (db:ensure-id (princ-to-string id))))

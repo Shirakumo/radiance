@@ -1,8 +1,3 @@
-#|
-This file is a part of Radiance
-(c) 2019 Shirakumo https://shirakumo.org/ (shinmera@tymoon.eu)
-Author: Harald Judt <h.judt@gmx.at>
-|#
 (in-package #:org.shirakumo.radiance.test)
 
 (defparameter *requests* nil

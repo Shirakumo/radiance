@@ -1,17 +1,11 @@
-#|
- This file is a part of Radiance
- (c) 2014 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (asdf:defsystem radiance-core
   :class "modularize:virtual-module"
   :defsystem-depends-on (:modularize :deploy)
   :module-name "RADIANCE-CORE"
   :version "2.2.0"
   :license "zlib"
-  :author "Nicolas Hafner <shinmera@tymoon.eu>"
-  :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
+  :author "Yukari Hafner <shinmera@tymoon.eu>"
+  :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "Core component of Radiance, an extensible web application environment."
   :homepage "https://github.com/Shirakumo/radiance"
   :build-operation "deploy-op"
