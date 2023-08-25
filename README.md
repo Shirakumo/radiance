@@ -426,3 +426,10 @@ See `relational-database:join`
 * [ubiquitous](https://shinmera.github.io/ubiquitous) For configuration management
 * [radiance-contribs](https://shirakumo.org/projects/radiance-contribs) Default interface implementations and other convenience modules for Radiance
 * [radiance-bootstrap](https://shirakumo.org/projects/radiance-bootstrap) A script to automate Radiance deployments on production systems
+
+## Support
+If you'd like to support the continued development of Radiance, please consider becoming a backer on Patreon:
+
+<a href="https://patreon.com/shinmera">
+  <img alt="Patreon" src="https://filebox.tymoon.eu//file/TWpjeU9RPT0=" />
+</a>
