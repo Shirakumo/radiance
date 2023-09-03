@@ -38,6 +38,11 @@
     (format stream "~a ~s" (http-method request) (uri request)))
   request)
 
+(defmethod initialize-instance :after ((request request) &key)
+  (let ((header (gethash "X-Forwarded-For" (headers request))))
+    (when header
+      (setf (remote request) header))))
+
 (defclass response ()
   ((data :initarg :data :accessor data)
    (return-code :initarg :return-code :accessor return-code)
