@@ -23,7 +23,8 @@
   (if (typep condition 'radiance-condition)
       (l:debug :radiance condition)
       (l:warn :radiance condition))
-  (l:warn :radiance "Handling stray condition: ~a" condition)
+  (l:warn :radiance "~@[(~a) ~]Handling stray condition: ~a"
+          (when *request* (remote *request*)) condition)
   (restart-case
       (maybe-invoke-debugger condition 'abort)
     (abort ()
