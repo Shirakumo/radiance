@@ -69,7 +69,7 @@
 (defun format-machine-date (stamp &optional stream)
   (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
   (local-time:format-timestring
-   stream stamp :format '((:year 4) "-" (:month 2) "-" (:day 2) "T" (:hour 2) ":" (:min 2) ":" (:sec 2))
+   stream stamp :format '((:year 4) "-" (:month 2) "-" (:day 2) "T" (:hour 2) ":" (:min 2) ":" (:sec 2) "Z")
                 :timezone local-time:+utc-zone+))
 
 (defun format-human-date (stamp &optional stream)
