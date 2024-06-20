@@ -84,6 +84,12 @@
    stream stamp :format '(:long-weekday ", " :ordinal-day " of " :long-month " " :year ", " :hour ":" (:min 2) ":" (:sec 2) " UTC")
                 :timezone local-time:+utc-zone+))
 
+(defun format-only-date (stamp &optional stream)
+  (when (integerp stamp) (setf stamp (local-time:universal-to-timestamp stamp)))
+  (local-time:format-timestring
+   stream stamp :format '((:year 4) "-" (:month 2) "-" (:day 2))
+                :timezone local-time:+utc-zone+))
+
 (defun format-time (stamp &optional (relative-time-threshold (* 60 60 24)) stream)
   (when (typep stamp 'local-time:timestamp)
     (setf stamp (local-time:timestamp-to-universal stamp)))

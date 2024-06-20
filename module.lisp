@@ -304,6 +304,7 @@
    #:format-machine-date
    #:format-human-date
    #:format-fancy-date
+   #:format-only-date
    #:format-time
    #:parse-time
    #:make-random-string
