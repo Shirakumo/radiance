@@ -407,7 +407,7 @@ See `user:condition`, `user:not-found`, `user:user`, `user:=`, `user:list`, `use
 ### 2.13 relational-database
 This is an extension of the database interface. Any module implementing this interface must also implement the database interface. This interface provides some extensions to allow more expressive database operations that are only directly supported by relational database systems.
 
-See `relational-database:join`
+See `relational-database:join`, `relational-database:sql`
 
 ## Version Changes
 ### 1.0 -> 2.0
