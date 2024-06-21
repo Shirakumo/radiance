@@ -169,3 +169,20 @@
         for sys = (asdf:find-system (pathname-name asd) NIL)
         when (typep sys 'radiance:virtual-module)
         collect (asdf:component-name sys)))
+
+(defun update-module (module &key reset reload)
+  (let* ((module (if (typep module 'asdf:system)
+                     module
+                     (virtual-module (module-name module))))
+         (dir (asdf:system-source-directory module)))
+    (uiop:run-program (list "git" "-C" (uiop:native-namestring dir) "fetch" "--all")
+                      :output T :error-output T)
+    (if reset
+        (uiop:run-program (list "git" "-C" (uiop:native-namestring dir) "reset" "--hard" "@{u}")
+                          :output T :error-output T)
+        (uiop:run-program (list "git" "-C" (uiop:native-namestring dir) "pull" "--ff-only")
+                          :output T :error-output T))
+    (when reload
+      #+quicklisp (ql:quickload module)
+      #-quicklisp (asdf:load-system module))
+    module))
