@@ -4356,4 +4356,25 @@ See DATABASE:ITERATE
 See DATABASE:SELECT
 See DATABASE:COUNT
 See DATABASE:REMOVE
-See DATABASE:UPDATE"))
+See DATABASE:UPDATE")
+
+  (function relational-database:sql
+    "Execute a raw SQL prepared statement.
+
+SQL should be a SQL query in string form, with placeholder variables
+being denoted as a question mark (?). Those variables must be provided
+in the &rest arguments of the call.
+
+The return value is the same as for a DB:SELECT call, meaning all
+matched rows are returned as a list of hash tables.
+
+Please note that the exact set of supported SQL features, operators,
+types, and syntax are implementation-dependant. In order to ensure
+compatibility with different implementations, you should restrict your
+queries to standard SQL. An implementation MAY rewrite your query.
+
+For the proper name conversion of collections to table names, please
+see DATABASE:CREATE.
+
+See DATABASE:SELECT
+See DATABASE:CREATE"))

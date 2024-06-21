@@ -68,7 +68,8 @@
   (define-hook-switch connected disconnected (name)))
 
 (define-interface (relational-database rdb)
-  (defmacro join ((left-collection left-field) (right-collection right-field) &optional (type :inner))))
+  (defmacro join ((left-collection left-field) (right-collection right-field) &optional (type :inner)))
+  (defun sql (query &rest vars)))
 
 (define-interface (logger l)
   (defun log (level category log-string &rest format-args))
