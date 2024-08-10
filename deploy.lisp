@@ -7,8 +7,8 @@
                           (symbol-value 'cl-user::environment)
                           "deploy"))
   
-  (deploy:status 1 "Loading target modules")
   (when (boundp 'cl-user::modules)
+    (deploy:status 1 "Loading target modules")
     (dolist (module (symbol-value 'cl-user::modules))
       (asdf:load-system module)))
 
@@ -118,7 +118,7 @@
   (terpri out)
   (loop (format out "~%~a> " (package-name *package*))
         (finish-output out)
-        (setf - (read in))
+        (setf - (read in NIL :quit))
         (case -
           (:quit
            (radiance:shutdown)
@@ -139,7 +139,8 @@
   (asdf/system-registry:clear-registered-systems)
   ;; Primitive repl
   (setf *package* (find-package '#:rad-user))
-  (if (open-stream-p *standard-input*)
+  (if (and (open-stream-p *standard-input*)
+           (ignore-errors (read-char-no-hang *standard-input*) T))
       (primitive-repl)
       (loop while (started-p)
             do (sleep 60))))
