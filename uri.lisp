@@ -131,8 +131,11 @@
          (port (case (port uri)
                  ((443 80) NIL)
                  (T (port uri)))))
-    (format NIL "~a://~{~a~^.~}~@[:~a~]/~/radiance-core::format-urlpart/~@[?~/radiance-core::format-query/~]~@[#~/radiance-core::format-urlpart/~]"
-            schema (reverse (domains uri)) port (or (path uri) "") query fragment)))
+    (if (domains uri)
+        (format NIL "~a://~{~a~^.~}~@[:~a~]/~/radiance-core::format-urlpart/~@[?~/radiance-core::format-query/~]~@[#~/radiance-core::format-urlpart/~]"
+                schema (reverse (domains uri)) port (or (path uri) "") query fragment)
+        (format NIL "/~/radiance-core::format-urlpart/~@[?~/radiance-core::format-query/~]~@[#~/radiance-core::format-urlpart/~]"
+                (or (path uri) "") query fragment))))
 
 (defun make-url (&key domains port path schema query fragment (representation :external))
   (uri-to-url (make-uri :domains domains
