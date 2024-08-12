@@ -9,10 +9,11 @@
   :description "Core component of Radiance, an extensible web application environment."
   :homepage "https://github.com/Shirakumo/radiance"
   :build-operation "deploy-op"
-  :build-pathname #+linux "radiance-linux.run"
-                  #+darwin "radiance-macos"
-                  #+win32 "radiance-windows"
-                  #+(and bsd (not darwin)) "radiance-bsd.run"
+  :build-pathname
+  #+linux "radiance.run"
+  #+darwin "radiance.app"
+  #+(or windows win32) "radiance"
+  #-(or linux darwin win32 windows) "radiance.o"
   :entry-point "org.shirakumo.radiance.core::startup-binary"
   :serial T
   :components ((:file "module")
