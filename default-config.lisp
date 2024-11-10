@@ -13,7 +13,7 @@
   (:server . "i-hunchentoot")
   (:session . "r-simple-sessions")
   (:user . "r-simple-users"))
- (:domains . ("radiance" "localhost" "127.0.0.1" "::1"))
+ (:domains . ("radiance" "localhost"))
  (:startup :r-welcome :r-simple-errors)
  (:routes)
  (:debugger . :if-swank-connected))

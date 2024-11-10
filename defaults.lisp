@@ -154,16 +154,21 @@
   (config :domains))
 
 (defun compile-domain-internalizers (&optional (domains (config :domains)))
-  (loop for domain in domains
-        collect (let ((parts (nreverse (cl-ppcre:split "\\." domain)))
-                      (domain domain))
-                  (lambda (uri)
-                    (loop for subdomains = (domains uri) then (cdr subdomains)
-                          for a = (car subdomains)
-                          for b in parts
-                          when (or (not subdomains) (not (string-equal a b)))
-                          do (return NIL)
-                          finally (return (values domain subdomains)))))))
+  (list*
+   (lambda (uri)
+     (when (loop for domain in (domains uri)
+                 always (cl-ppcre:scan "^\\d+$" domain))
+       (values (format NIL "~{~a~^.~}" (reverse (domains uri))) ())))
+   (loop for domain in domains
+         collect (let ((parts (nreverse (cl-ppcre:split "\\." domain)))
+                       (domain domain))
+                   (lambda (uri)
+                     (loop for subdomains = (domains uri) then (cdr subdomains)
+                           for a = (car subdomains)
+                           for b in parts
+                           when (or (not subdomains) (not (string-equal a b)))
+                           do (return NIL)
+                           finally (return (values domain subdomains))))))))
 
 (define-trigger (environment-change 'compile-domain-internalizers) ()
   (setf *domain-internalizers* (compile-domain-internalizers)))
