@@ -7,7 +7,7 @@
   (:database . "i-lambdalite")
   (:relational-database . "i-sqlite")
   (:logger . "i-verbose")
-  (:mail . "i-sendmail")
+  (:mail . "i-smtp")
   (:profile . "r-simple-profile")
   (:rate . "r-simple-rate")
   (:server . "i-hunchentoot")
