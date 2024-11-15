@@ -1,12 +1,15 @@
 (in-package #:org.shirakumo.radiance.core)
 
-(deploy:define-hook (:load load-modules) ()
+(deploy:define-hook (:pre-load set-environment) ()
   (deploy:status 0 "Configuring environment")
   (setf *deploying-p* T)
-  (setf (environment) (if (boundp 'cl-user::environment)
-                          (symbol-value 'cl-user::environment)
-                          "deploy"))
-  
+  (unless *environment*
+    (let ((*default-environment-config* (asdf:system-relative-pathname :radiance "default-config-deploy.lisp")))
+      (setf (environment) (if (boundp 'cl-user::environment)
+                              (symbol-value 'cl-user::environment)
+                              "deploy")))))
+
+(deploy:define-hook (:load load-modules) ()
   (when (boundp 'cl-user::modules)
     (deploy:status 1 "Loading target modules")
     (dolist (module (symbol-value 'cl-user::modules))
@@ -20,10 +23,12 @@
     #-quicklisp (asdf:load-system module))
   
   ;; Clear ASDF/QL
-  (mapc #'asdf:register-immutable-system (asdf:already-loaded-systems))
-  (asdf:clear-source-registry)
-  (setf asdf:*central-registry* NIL)
-  #+quicklisp (setf ql:*local-project-directories* ()))
+  (asdf:clear-configuration)
+  (setf (fdefinition 'asdf:upgrade-asdf) (lambda ()))
+  #+quicklisp (setf ql:*local-project-directories* ())
+  (dolist (system (asdf:already-loaded-systems))
+    (asdf:register-immutable-system system)
+    (asdf:clear-system system)))
 
 (deploy:define-hook (:deploy copy-resources) (directory)
   ;; Ensure expected directory structure:

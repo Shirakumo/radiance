@@ -2,6 +2,8 @@
 
 (defvar *deploying-p* NIL)
 (defvar *environment* NIL)
+(defvar *default-environment-config*
+  (asdf:system-relative-pathname :radiance "default-config.lisp"))
 
 (define-hook environment-change ())
 
@@ -71,7 +73,7 @@
       (ubiquitous:restore #.*package*)
     (ubiquitous:no-storage-file ()
       (warn "Configuration for ~s not found-- creating from defaults." environment)
-      (ubiquitous:restore (asdf:system-relative-pathname :radiance "default-config.lisp"))
+      (ubiquitous:restore *default-environment-config*)
       (ubiquitous:offload #.*package*)))
   (trigger 'environment-change))
 
