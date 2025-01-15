@@ -61,6 +61,7 @@
            ;; If quicklisp is available, the system might be loadable, but
            ;; may not have been installed yet. Check for this and install if
            ;; necessary.
+           #+quicklisp
            (unless (asdf:find-system configured-implementation NIL)
              (let ((ql-system (ql-dist:find-system configured-implementation)))
                (when (and ql-system (not (ql-dist:installedp ql-system)))
