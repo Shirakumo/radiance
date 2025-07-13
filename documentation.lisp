@@ -82,6 +82,14 @@ pass to this function must not reference any values that
 have a type outside of this set.
 
 See API-FORMAT")
+
+  (function api-redirect
+    "Redirects to the target from an API endpoint.
+
+This is the same as calling REDIRECT with the parameters set to
+:AS-IS and 303.
+
+See REDIRECT")
   
   (function api-serialize
     "Cause the object to be serialised into a more favourable structure.

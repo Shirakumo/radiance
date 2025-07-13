@@ -140,6 +140,9 @@
 (defmacro api-error (format-string &rest format-args)
   `(error 'api-error :message (format NIL ,format-string ,@format-args)))
 
+(defun api-redirect (&optional (new-address (referer)) (response *response*))
+  (redirect new-address :as-is 303 response))
+
 ;;; Actual page handler
 (define-uri-dispatcher api ("/^api/.*" 100)
   (let* ((path (path (uri *request*)))
@@ -149,7 +152,7 @@
     (flet ((output-error (err code)
              (let ((message (or (message err) (princ-to-string err))))
                (if (and (string= (post/get "browser") "true") (referer))
-                   (redirect (merge-url (referer) :parameters `(("error" . ,(princ-to-string message)))))
+                   (api-redirect (merge-url (referer) :parameters `(("error" . ,(princ-to-string message)))))
                    (api-output err :status code :message message)))))
       (handler-case
           (restart-case
