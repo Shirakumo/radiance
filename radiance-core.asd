@@ -7,7 +7,7 @@
   :author "Yukari Hafner <shinmera@tymoon.eu>"
   :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "Core component of Radiance, an extensible web application environment."
-  :homepage "https://github.com/Shirakumo/radiance"
+  :homepage "https://shirakumo.org/project/radiance"
   :build-operation "deploy-op"
   :build-pathname
   #+linux "radiance.run"

@@ -11,11 +11,11 @@ Radiance本体、関連するモジュールやアプリケーションは、Qui
 (ql:quickload :radiance)
 ```
 
-以上で、Quicklispの`quickload`コマンドで[Purplish](https://github.com/Shirakumo/purplish)などのRadianceモジュールを利用できるようになります。
+以上で、Quicklispの`quickload`コマンドで[Purplish](https://shirakumo.org/project/purplish)などのRadianceモジュールを利用できるようになります。
 
 ## チュートリアル
 
-Radianceのチュートリアルは[こちら](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md)です。チュートリアルを通して、Radianceの使い方に慣れることができます。Radianceの重要な概念やWebアプリケーションの書き方を紹介しています。特定の機能が必要なときに、どこを調べれば良いかが分かるようにしました。チュートリアルの最後では、Radianceの本番環境でのインストールとデプロイ方法について説明しています。
+Radianceのチュートリアルは[こちら](https://shirakumo.org/project/radiance-tutorial/blob/master/Part%200.md)です。チュートリアルを通して、Radianceの使い方に慣れることができます。Radianceの重要な概念やWebアプリケーションの書き方を紹介しています。特定の機能が必要なときに、どこを調べれば良いかが分かるようにしました。チュートリアルの最後では、Radianceの本番環境でのインストールとデプロイ方法について説明しています。
 
 ## 簡単な例
 
@@ -328,7 +328,7 @@ Radianceは、標準のインターフェイスを提供します。それぞれ
 
 環境のシステムの一部として、Radianceは、あなたのアプリケーションで使える(使うべき)設定システムを提供します。設定システムを使うと、それぞれの環境ごとに、適切に設定することができます。その設定は、いつでも持続性があるうえに可読性にも優れたフォーマットで保存されるので、特別なツールで読み込んだり修正したりする必要はありません。
 
-実際に設定手順でどのように保存処理がされているかを知りたい方は、[ubiquitous](https://shinmera.github.io/ubiquitous)を参考にしてください。 `value`関数の代わりに、Radianceでは`config`関数を使えます。
+実際に設定手順でどのように保存処理がされているかを知りたい方は、[ubiquitous](https://shinmera.com/docs/ubiquitous)を参考にしてください。 `value`関数の代わりに、Radianceでは`config`関数を使えます。
 
 設定ファイルとは別に、環境は、ユーザのアップロードやキャッシュなどのランタイムのデータのために、継続的な記憶場所を提供します。`environment-module-directory`と`environment-module-pathname`を使うことで、この場所から情報を取り出すことができます。アップロードやキャッシュを保存するとき、モジュールはこれらのパス(path)を利用して、継続的なインターフェイスを管理者に与えます。デプロイされたシステムでは、環境の記憶場所を変更することが望ましいかもしれません。そのような場合、管理者は、想定通りに動作させるために`environment-directory`と `environment-module-directory`の上で新たなメソッドを与えることをおすすめします。詳しい動作については、関連するドキュメントを参照してください。
 
@@ -472,11 +472,11 @@ userインターフェースは、ユーザオブジェクトを永続させ、�
 
 ### 1.0 -> 2.0
 
-* issue [#28](https://github.com/Shirakumo/radiance/issues/28)のなかで、`*environment-root*`は削除されました。[#29](https://github.com/Shirakumo/radiance/pull/29)で問題点が修正されました。`*environment-root*`は、`environment-directory`関数に統合されることにより、より汎用的なメカニズムに置き換えられました。もし`*environment-root*`をカスタマイズして利用していた場合、`§1.11`を参考に`environment-directory`を変更してください。
+* issue [#28](https://shirakumo.org/project/radiance/issues/28)のなかで、`*environment-root*`は削除されました。[#29](https://shirakumo.org/project/radiance/pull/29)で問題点が修正されました。`*environment-root*`は、`environment-directory`関数に統合されることにより、より汎用的なメカニズムに置き換えられました。もし`*environment-root*`をカスタマイズして利用していた場合、`§1.11`を参考に`environment-directory`を変更してください。
 
-* issue [#30](https://github.com/Shirakumo/radiance/issues/30)で、モジュールのバージョンを変更するために、自動でマイグレーションができる仕組みを入れました。[#31](https://github.com/Shirakumo/radiance/issues/31)で修正を加えました。この機能は、すでにRediance自体とモジュールで、新しい環境ディレクトリ(environment directories)を構成するために使われており、自動で以前のデータを現在の新たな場所に移動してくれます。詳しくは`§1.12`を参考にしてください。
+* issue [#30](https://shirakumo.org/project/radiance/issues/30)で、モジュールのバージョンを変更するために、自動でマイグレーションができる仕組みを入れました。[#31](https://shirakumo.org/project/radiance/issues/31)で修正を加えました。この機能は、すでにRediance自体とモジュールで、新しい環境ディレクトリ(environment directories)を構成するために使われており、自動で以前のデータを現在の新たな場所に移動してくれます。詳しくは`§1.12`を参考にしてください。
 
-* issue [#26](https://github.com/Shirakumo/radiance/issues/26)の後、モジュールのソースを変更することなく、管理者がモジュールのテンプレートや静的ファイルを上書きできるようになりました。環境に関連するドキュメントは、`§1.11`を参照してください。
+* issue [#26](https://shirakumo.org/project/radiance/issues/26)の後、モジュールのソースを変更することなく、管理者がモジュールのテンプレートや静的ファイルを上書きできるようになりました。環境に関連するドキュメントは、`§1.11`を参照してください。
 
 * ユーザ・インターフェイスは、整数のuser:idが、各々のユーザ・オブジェクトをサポートすることを求められます。これにより、データベースでユーザを参照できて、より効率的に記録できるようになりました。
 
@@ -484,8 +484,8 @@ userインターフェースは、ユーザオブジェクトを永続させ、�
 
 ## 参考
 
-* [modularize](https://shinmera.github.io/modularize) ：パッケージのメタシステム
-* [modularize-interfaces](https://shinmera.github.io/modularize-interfaces) ：インターフェイスと実装の拡張
-* [modularize-hooks](https://shinmera.github.io/modularize-hooks) ：フックとトリガーの仕組み
-* [ubiquitous](https://shinmera.github.io/ubiquitous)： 環境設定
+* [modularize](https://shinmera.com/docs/modularize) ：パッケージのメタシステム
+* [modularize-interfaces](https://shinmera.com/docs/modularize-interfaces) ：インターフェイスと実装の拡張
+* [modularize-hooks](https://shinmera.com/docs/modularize-hooks) ：フックとトリガーの仕組み
+* [ubiquitous](https://shinmera.com/docs/ubiquitous)： 環境設定
 * [radiance-contribs](https://shirakumo.org/projects/radiance-contribs) ：インターフェイスの実装、他便利な機能

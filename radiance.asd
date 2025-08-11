@@ -4,7 +4,7 @@
   :author "Yukari Hafner <shinmera@tymoon.eu>"
   :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "A web application environment."
-  :homepage "https://github.com/Shirakumo/radiance"
+  :homepage "https://shirakumo.org/project/radiance"
   :serial T
   :depends-on (:modularize
                :deploy

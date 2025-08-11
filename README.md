@@ -7,10 +7,10 @@ Radiance and associated modules and applications are distributed via Quicklisp i
     (ql-dist:install-dist "http://dist.shirakumo.org/shirakumo.txt")
     (ql:quickload :radiance)
 
-From there on out you should be able to load and use any kind of Radiance module like [Purplish](https://github.com/Shirakumo/purplish) directly via Quicklisp's `quickload`.
+From there on out you should be able to load and use any kind of Radiance module like [Purplish](https://shirakumo.org/project/purplish) directly via Quicklisp's `quickload`.
 
 ## A Lengthy and In-Depth Example
-You can find a tutorial that introduces Radiance and most of the important concepts, and explores how to write a web application in general, [here](https://github.com/Shirakumo/radiance-tutorial/blob/master/Part%200.md). It should give you a good feeling for how to go about things, and give you pointers about where to look if you need a particular feature. In the last part it'll also go into the actual setup and deployment of a Radiance installation on a production server.
+You can find a tutorial that introduces Radiance and most of the important concepts, and explores how to write a web application in general, [here](https://shirakumo.org/project/radiance-tutorial/blob/master/Part%200.md). It should give you a good feeling for how to go about things, and give you pointers about where to look if you need a particular feature. In the last part it'll also go into the actual setup and deployment of a Radiance installation on a production server.
 
 ## A Simple Example
 The most basic thing you most likely want to do is serve some kind of HTML. So let's work towards that and gradually extend it. Before we can begin, we need to start up Radiance.
@@ -281,7 +281,7 @@ The particular environment that is used is chosen at the latest when `startup` i
 
 As part of the environment system, Radiance provides you with a configuration system that you can --and probably should-- use for your application. It ensures that the settings are properly multiplexed for each environment, and that the settings are always persistent. It also uses a human-readable storage format, such that the files can be read and modified without requiring any special tools.
 
-See [ubiquitous](https://shinmera.github.io/ubiquitous) for the actual handling and use-instructions of the configuration storage. Just note that instead of the `value` functions, Radiance provides `config` functions.
+See [ubiquitous](https://shinmera.com/docs/ubiquitous) for the actual handling and use-instructions of the configuration storage. Just note that instead of the `value` functions, Radiance provides `config` functions.
 
 Aside from configuration files, the environment also provides consistent storage locations for runtime data files, such as user uploads, cache files, and so forth. You can retrieve this location by using `environment-module-directory` and `environment-module-pathname`. When storing uploads and caches, a module should make use of these paths to present a consistent interface to the administrator.
 
@@ -412,18 +412,18 @@ See `relational-database:join`, `relational-database:sql`
 ## Version Changes
 ### 1.0 -> 2.0
 
-* The variable `*environment-root*` has been removed as per issue [#28](https://github.com/Shirakumo/radiance/issues/28) and fix [#29](https://github.com/Shirakumo/radiance/pull/29). It has instead been replaced by a more generic mechanism for environment directories, incorporated by the function `environment-directory`. If you previously customised `*environment-root*`, please now change `environment-directory` instead, as described in §1.11.
-* A new facility to automate migration for changes between module versions has been added as per issue [#30](https://github.com/Shirakumo/radiance/issues/30) and fix [#31](https://github.com/Shirakumo/radiance/issues/31). This facility is already being used in existing modules and Radiance itself to account for the new environment directories and automatically move previously existing data to the correct, new locations. Please see §1.12 for an explanation of the facility.
-* It is now possible for an administrator to override templates and static files of a module without changing the module's source as per issue [#26](https://github.com/Shirakumo/radiance/issues/26). Please see §1.11 for the relevant environment documentation, as well as functions `template-file` and `static-file`.
+* The variable `*environment-root*` has been removed as per issue [#28](https://shirakumo.org/project/radiance/issues/28) and fix [#29](https://shirakumo.org/project/radiance/pull/29). It has instead been replaced by a more generic mechanism for environment directories, incorporated by the function `environment-directory`. If you previously customised `*environment-root*`, please now change `environment-directory` instead, as described in §1.11.
+* A new facility to automate migration for changes between module versions has been added as per issue [#30](https://shirakumo.org/project/radiance/issues/30) and fix [#31](https://shirakumo.org/project/radiance/issues/31). This facility is already being used in existing modules and Radiance itself to account for the new environment directories and automatically move previously existing data to the correct, new locations. Please see §1.12 for an explanation of the facility.
+* It is now possible for an administrator to override templates and static files of a module without changing the module's source as per issue [#26](https://shirakumo.org/project/radiance/issues/26). Please see §1.11 for the relevant environment documentation, as well as functions `template-file` and `static-file`.
 * The user interface is now required to support an integer `user:id` identifier for each user object, allowing you to reference users in databases and records more efficiently.
 * The database interface is now required to support the keyword `:unique` on `db:select` and `db:iterate`.
 
 ## Also See
 
-* [modularize](https://shinmera.github.io/modularize) For the primary package metadata system
-* [modularize-interfaces](https://shinmera.github.io/modularize-interfaces) For the interface and implementations extensions
-* [modularize-hooks](https://shinmera.github.io/modularize-hooks) For the hooks and triggers mechanisms
-* [ubiquitous](https://shinmera.github.io/ubiquitous) For configuration management
+* [modularize](https://shinmera.com/docs/modularize) For the primary package metadata system
+* [modularize-interfaces](https://shinmera.com/docs/modularize-interfaces) For the interface and implementations extensions
+* [modularize-hooks](https://shinmera.com/docs/modularize-hooks) For the hooks and triggers mechanisms
+* [ubiquitous](https://shinmera.com/docs/ubiquitous) For configuration management
 * [radiance-contribs](https://shirakumo.org/projects/radiance-contribs) Default interface implementations and other convenience modules for Radiance
 * [radiance-bootstrap](https://shirakumo.org/projects/radiance-bootstrap) A script to automate Radiance deployments on production systems
 
